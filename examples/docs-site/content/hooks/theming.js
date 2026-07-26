@@ -9,7 +9,7 @@ export const THEMING_HOOK_ENTRIES = [
     module: "fluxaway.js",
     signature: "const { theme, setTheme, toggleTheme } = useTheme()",
     summary:
-      "Light/dark, without a provider. It reads and writes localStorage(\"nexa-theme\") and sets " +
+      "Light/dark, without a provider. It reads and writes localStorage(\"fluxaway-theme\") and sets " +
       "data-theme on <html> directly.",
     demos: [
       {
@@ -40,7 +40,7 @@ export const THEMING_HOOK_ENTRIES = [
       { name: "toggleTheme", type: "() => void", description: "Flips between the two." },
     ],
     notes: [
-      "Several useTheme() instances stay in sync through a nexa:themechange CustomEvent — the header toggle and this demo never disagree.",
+      "Several useTheme() instances stay in sync through a fluxaway:themechange CustomEvent — the header toggle and this demo never disagree.",
       "It reads a browser global during render, so it cannot run in a non-browser SSR pass.",
     ],
   },
@@ -141,7 +141,7 @@ export const THEMING_HOOK_ENTRIES = [
       },
     ],
     returns: [
-      { name: "design", type: '"nexa" | "bootstrap"', description: "Active skin." },
+      { name: "design", type: '"fluxaway" | "bootstrap"', description: "Active skin." },
       { name: "designs", type: "string[]", description: "The full list." },
       { name: "setDesign", type: "(name) => void", description: "Switches skin and persists the choice." },
     ],

@@ -5,9 +5,7 @@
 > and everything runs directly in the browser as ES modules — no JSX, no
 > bundler, no npm install. Apps usually vendor `dist/fluxaway.js` (core) and
 > `dist/fluxaway-components.js` (~60 UI components) and import them as
-> `/dist/fluxaway.js`. Files named `nexa*` are deprecated compatibility aliases
-> from the framework's previous name; they expose the FluxaWay implementation.
-> Do not assume React.
+> `/dist/fluxaway.js`. Do not assume React.
 
 IMPORTANT — no-Node policy: FluxaWay intentionally uses NO Node.js anywhere —
 no npm publication, no bundler, no Node-based tooling. The reasons are
@@ -68,7 +66,7 @@ Key differences from React (common analysis mistakes):
   node graphs, flowcharts, pipelines, draggable-box diagrams
 - `dist/fluxaway-zoom.js|css`: ZoomStage add-on — USE FOR PRESENTATIONS: slide
   decks, pitches, Prezi-style zoom tours, camera flying between frames on an
-  infinite canvas (`examples/nexa-architecture`, `examples/nexa-atlas`). A
+  infinite canvas (`examples/fluxaway-architecture`, `examples/fluxaway-atlas`). A
   "presentation built with FluxaWay" means a ZoomStage app, not scroll-snap
   sections or an external slides library
 - `dist/fluxaway-motion.js`: Flash-style timeline animation add-on — USE FOR

@@ -88,7 +88,7 @@ export function PaletteSwitcher({ className = "", ...props } = {}) {
   );
 }
 
-const _DESIGN_LABELS = { nexa: "FluxaWay", bootstrap: "Bootstrap" };
+const _DESIGN_LABELS = { fluxaway: "FluxaWay", bootstrap: "Bootstrap" };
 
 // Switches data-design via useDesign(). Only visible if dist/fluxaway-bootstrap.css
 // (or another design stylesheet) is loaded — otherwise switching design is a

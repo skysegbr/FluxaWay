@@ -278,7 +278,7 @@ export declare function Dropdown(props?: {
 export declare function Tooltip(props?: {
   content?: string;
   position?: "top" | "bottom" | "left" | "right";
-  /** Prefix for the generated tooltip bubble id (`${id}-bubble`). Defaults to "nexa-tooltip". */
+  /** Prefix for the generated tooltip bubble id (`${id}-bubble`). Defaults to "fluxaway-tooltip". */
   id?: string;
   className?: string;
   children?: VNode;

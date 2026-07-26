@@ -23,7 +23,7 @@ export function ProjectBar({ doc, onLoad, onNew }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${name.trim() || "movie"}.nexa-motion.json`;
+    link.download = `${name.trim() || "movie"}.fluxaway-motion.json`;
     link.click();
     URL.revokeObjectURL(url);
   };

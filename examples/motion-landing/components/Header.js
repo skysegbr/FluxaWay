@@ -30,8 +30,8 @@ export function Header() {
       h(
         "a",
         { className: "ml-brand", href: "#top", ref: tl.track("brand"), ariaLabel: "FluxaWay Motion — home" },
-        h("span", { className: "ml-brand-mark" }, "N"),
-        h("span", null, "NEXA / MOTION"),
+        h("span", { className: "ml-brand-mark" }, "F"),
+        h("span", null, "FLUXAWAY / MOTION"),
       ),
       h(
         "nav",

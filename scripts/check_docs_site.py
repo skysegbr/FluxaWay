@@ -41,7 +41,7 @@ def run(browser_type, base: str) -> list[str]:
     passed: list[str] = []
 
     desktop = browser_type.launch().new_page(viewport={"width": 1440, "height": 900})
-    desktop.add_init_script("localStorage.setItem('nexa-theme', 'light')")
+    desktop.add_init_script("localStorage.setItem('fluxaway-theme', 'light')")
     errors: list[str] = []
     failed_responses: list[str] = []
     requests: list[str] = []
@@ -203,7 +203,7 @@ def run(browser_type, base: str) -> list[str]:
     desktop.context.browser.close()
 
     mobile = browser_type.launch().new_page(viewport={"width": 390, "height": 844})
-    mobile.add_init_script("localStorage.setItem('nexa-theme', 'light')")
+    mobile.add_init_script("localStorage.setItem('fluxaway-theme', 'light')")
     mobile_errors: list[str] = []
     mobile.on("pageerror", lambda error: mobile_errors.append(str(error)))
     mobile.on(

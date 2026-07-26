@@ -162,8 +162,8 @@ Apply the relevant baseline to every component, then its specific rows.
 
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
-| SC-THM-01 | `useTheme` toggle | `data-theme` on `<html>`; `localStorage('nexa-theme')`; no provider needed | browser |
-| SC-THM-02 | Multiple `useTheme` in sync | all instances update via `nexa:themechange` event | browser |
+| SC-THM-01 | `useTheme` toggle | `data-theme` on `<html>`; `localStorage('fluxaway-theme')`; no provider needed | browser |
+| SC-THM-02 | Multiple `useTheme` in sync | all instances update via `fluxaway:themechange` event | browser |
 | SC-THM-03 | `usePalette` set/custom | `data-palette`; `setCustomColor(hex)` writes `--m-primary`, derives shades; invalid hex ignored | browser |
 | SC-THM-04 | `usePalette` invalid name | `setPalette('x')` no-op | suite |
 | SC-THM-05 | `useDesign` bootstrap | `data-design="bootstrap"` only skins when `fluxaway-bootstrap.css` loaded; composes with theme/palette | visual |
@@ -270,7 +270,7 @@ Apply the relevant baseline to every component, then its specific rows.
 |---|---|---|---|
 | SC-C-THM-01 | ThemeToggle | toggles theme, reflects current, a11y label | browser |
 | SC-C-THM-02 | PaletteSwitcher | lists palettes; selects; custom color input (squared vs round presets) | browser |
-| SC-C-THM-03 | DesignSwitcher | switches nexa↔bootstrap; inert without bootstrap.css | browser |
+| SC-C-THM-03 | DesignSwitcher | switches fluxaway↔bootstrap; inert without bootstrap.css | browser |
 
 ## §10. Forms integration — `SC-FORM`
 
@@ -298,7 +298,7 @@ Apply the relevant baseline to every component, then its specific rows.
 
 ## §12. Add-ons — `SC-ADDON`
 
-### ZoomStage (`SC-ZOOM`) — examples: nexa-architecture, nexa-atlas, star-atlas
+### ZoomStage (`SC-ZOOM`) — examples: fluxaway-architecture, fluxaway-atlas, star-atlas
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
 | SC-ZOOM-01 | Frames render on canvas | all frames present, positioned | browser |
@@ -381,10 +381,9 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-BUILD-03 | `minify.py` correctness | minified JS behaves identically (suite passes on `.min` too); `/*!` banners preserved; import specifiers rewritten to `.min` | suite/static |
 | SC-BUILD-04 | `split_css.py --check` / `--list` | check green when synced; `--list` maps every section; unmapped section = hard error | static |
 | SC-BUILD-05 | `split_css.py` losslessness | base+categories reconstruct `fluxaway-ui.css` byte-for-byte | static |
-| SC-BUILD-06 | `sync_legacy_aliases.py --check` | all Nexa compatibility aliases forward to the canonical FluxaWay artifact and are current | static/suite |
-| SC-BUILD-07 | `bundle.py` python engine | one JS + one CSS; `@import` inlined; assets copied/rewritten; app renders | browser (smoke) |
-| SC-BUILD-08 | `bundle.py --setup-esbuild` + esbuild engine | builds esbuild from Go source (no Node/npm); tree-shaken output renders | browser (smoke) |
-| SC-BUILD-09 | `bundle.py --smoke` | headless render, no page errors, no local 404 | browser |
+| SC-BUILD-06 | `bundle.py` python engine | one JS + one CSS; `@import` inlined; assets copied/rewritten; app renders | browser (smoke) |
+| SC-BUILD-07 | `bundle.py --setup-esbuild` + esbuild engine | builds esbuild from Go source (no Node/npm); tree-shaken output renders | browser (smoke) |
+| SC-BUILD-08 | `bundle.py --smoke` | headless render, no page errors, no local 404 | browser |
 | SC-BUILD-09 | `server.py` HMR | edit a `.js/.css/.html` → SSE reload event → browser reloads | browser |
 | SC-BUILD-10 | CI parity | `.github/workflows/ci.yml` runs validate + split-check + minify-check + suite×3 | static |
 
@@ -401,7 +400,7 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-04 | form | validation, field types, submit states | browser |
 | SC-APP-05 | mobile | app-bar/bottom-nav/bottom-sheet, swipe, safe-area | browser (touch) |
 | SC-APP-06 | ssr | hydration round-trip (SC-SSR-09) | browser |
-| SC-APP-07 | nexa-architecture / nexa-atlas | ZoomStage nav (SC-ZOOM) | browser |
+| SC-APP-07 | fluxaway-architecture / fluxaway-atlas | ZoomStage nav (SC-ZOOM) | browser |
 | SC-APP-08 | fluxaway-motion / motion-editor | motion + editor (SC-MOTION) | browser |
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |

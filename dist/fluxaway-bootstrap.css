@@ -11,7 +11,7 @@
  * stays untouched) and switch data-design="bootstrap" on <html> via
  * useDesign() to activate it. Every rule below is scoped under
  * [data-design="bootstrap"], so not loading this file — or leaving
- * data-design at its default "nexa" — changes nothing.
+ * data-design at its default "fluxaway" — changes nothing.
  *
  * FluxaWay's whole visual system already runs on --m-* custom properties, so
  * most of Bootstrap's look comes from re-pointing those tokens at

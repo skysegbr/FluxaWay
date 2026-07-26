@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Record the fluxaway-motion video tutorial.
 
-Serves the repo root (the player embeds /examples/nexa-motion/ and, for the
+Serves the repo root (the player embeds /examples/fluxaway-motion/ and, for the
 final step, /examples/motion-editor/ in an iframe), drives the live examples
 — replaying the intro, jumping scenes with gotoAndPlay, then dragging a
 keyframe in the editor — and saves the Playwright screen recording as
-nexa-motion-tutorial.webm next to this script.
+fluxaway-motion-tutorial.webm next to this script.
 
 Requires playwright (`pip install playwright && playwright install chromium`)
 — same dependency as the test suite, no Node.
 
 Run from anywhere:
-    python3 tutorials/nexa-motion/record.py
+    python3 tutorials/fluxaway-motion/record.py
 """
 
 import http.server
@@ -26,7 +26,7 @@ from playwright.sync_api import sync_playwright
 
 TUT_DIR = Path(__file__).resolve().parent
 REPO = TUT_DIR.parents[1]
-OUT = TUT_DIR / "nexa-motion-tutorial.webm"
+OUT = TUT_DIR / "fluxaway-motion-tutorial.webm"
 
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
@@ -49,7 +49,7 @@ def main():
         )
         page = ctx.new_page()
         page.on("pageerror", lambda e: print(f"page error: {e}", file=sys.stderr))
-        page.goto(f"http://127.0.0.1:{port}/tutorials/nexa-motion/index.html")
+        page.goto(f"http://127.0.0.1:{port}/tutorials/fluxaway-motion/index.html")
         page.wait_for_function("() => typeof window.__setStep === 'function'")
 
         example = page.frame_locator(".tut-frame")

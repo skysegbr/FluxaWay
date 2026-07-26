@@ -78,10 +78,10 @@ def main() -> int:
 
             page.goto(f"http://127.0.0.1:{port}/tests/")
             page.wait_for_function(
-                "() => window.__nexaTestResults !== undefined",
+                "() => window.__fluxawayTestResults !== undefined",
                 timeout=RESULTS_TIMEOUT_MS,
             )
-            results = page.evaluate("() => window.__nexaTestResults")
+            results = page.evaluate("() => window.__fluxawayTestResults")
             browser.close()
     finally:
         server.shutdown()

@@ -1,5 +1,5 @@
-// Tutorial player for the "nexa-architecture" example: left = code for the
-// current step, right = the real examples/nexa-architecture ZoomStage deck
+// Tutorial player for the "fluxaway-architecture" example: left = code for the
+// current step, right = the real examples/fluxaway-architecture ZoomStage deck
 // running in an iframe, bottom = caption. The recording driver advances
 // steps via window.__setStep(n).
 
@@ -135,7 +135,7 @@ function App() {
         h("li", null, "controllerRef: next / prev / goTo(id)"),
         h("li", null, "the camera is the only imperative part"),
       ),
-      h("p", null, "github.com/skysegbr/FluxaWay — examples/nexa-architecture"),
+      h("p", null, "github.com/skysegbr/FluxaWay — examples/fluxaway-architecture"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · ZoomStage tutorial"),
@@ -147,7 +147,7 @@ function App() {
         h("pre", null, ...highlight(s.code)),
       ),
       h("div", { className: "tut-demo" },
-        h("iframe", { className: "tut-frame", src: "/examples/nexa-architecture/index.html", title: "FluxaWay architecture example" }),
+        h("iframe", { className: "tut-frame", src: "/examples/fluxaway-architecture/index.html", title: "FluxaWay architecture example" }),
       ),
     ),
     h("footer", { className: "tut-caption" }, s.caption),

@@ -32,7 +32,7 @@ export const THEME_ENTRIES = [
       { name: "className", type: "string", description: "Extra classes for the button." },
     ],
     notes: [
-      "Every useTheme() instance stays in sync through a nexa:themechange CustomEvent, so several toggles on one page never disagree.",
+      "Every useTheme() instance stays in sync through a fluxaway:themechange CustomEvent, so several toggles on one page never disagree.",
       "The accessible name flips with the state: \"Switch to dark theme\" / \"Switch to light theme\".",
     ],
   },

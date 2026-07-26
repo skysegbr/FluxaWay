@@ -10,7 +10,7 @@ export function TastingHUD({ courses, index, auto, onAuto, controllerRef }) {
       h("div", { className: "pj-now", ariaLive: "polite" }, h("small", null, "NOW SERVING"), h("strong", null, current.course)),
       h("div", { className: "pj-time" }, h("small", null, "LOCAL TIME"), h("strong", null, current.time)),
     ),
-    h("aside", { className: "pj-side-note", ariaHidden: "true" }, "A TEN-COURSE STORY", h("i"), "NEXA / LIVE"),
+    h("aside", { className: "pj-side-note", ariaHidden: "true" }, "A TEN-COURSE STORY", h("i"), "FLUXAWAY / LIVE"),
     h("footer", { className: "pj-hud-bottom" },
       h("div", { className: "pj-arrows" },
         h("button", { type: "button", ariaLabel: "Previous course", disabled: index === 0, onClick: () => nav?.prev() }, "←"),

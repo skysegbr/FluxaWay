@@ -5,7 +5,7 @@
 
 import { h, render, useState } from "/dist/fluxaway.js";
 
-const INTRO = "/examples/nexa-motion/index.html";
+const INTRO = "/examples/fluxaway-motion/index.html";
 const EDITOR = "/examples/motion-editor/index.html";
 
 // ── steps ────────────────────────────────────────────────────────────────────
@@ -172,7 +172,7 @@ function App() {
         h("li", null, "movie clips: nested components with their own timelines"),
         h("li", null, "motion guides, color tweens, sprite steps — and a visual editor"),
       ),
-      h("p", null, "github.com/skysegbr/FluxaWay — examples/nexa-motion · examples/motion-editor"),
+      h("p", null, "github.com/skysegbr/FluxaWay — examples/fluxaway-motion · examples/motion-editor"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · Motion tutorial"),

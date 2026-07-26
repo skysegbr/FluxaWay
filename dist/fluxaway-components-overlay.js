@@ -40,7 +40,7 @@ function startDrag(e, panel) {
 
 export function Dialog({
   open = false,
-  id = "nexa-dialog",
+  id = "fluxaway-dialog",
   title,
   closeLabel = "Close",
   onClose,
@@ -179,7 +179,7 @@ export function Toast({
 
 export function Drawer({
   open = false,
-  id = "nexa-drawer",
+  id = "fluxaway-drawer",
   side = "left",
   width = 280,
   title,
@@ -381,7 +381,7 @@ export function Dropdown({
 export function Tooltip({
   content,
   position = "top",
-  id = "nexa-tooltip",
+  id = "fluxaway-tooltip",
   className = "",
   children,
   ...props
@@ -907,7 +907,7 @@ export function Popover({
 
 export function CommandPalette({
   open = false,
-  id = "nexa-command",
+  id = "fluxaway-command",
   onClose,
   commands = [],
   placeholder = "Type a command…",

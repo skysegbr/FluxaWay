@@ -13,7 +13,7 @@ Engines (--engine auto|esbuild|python, default auto):
   python   Zero dependencies beyond this repo: module-level bundling (only
            modules reachable from the entry are included) + scripts/minify.py.
            Correct by construction, ~honest sizes, no mangling.
-  auto     esbuild if a binary is found (PATH, $NEXA_ESBUILD, tools/bin/),
+  auto     esbuild if a binary is found (PATH, $FLUXAWAY_ESBUILD, tools/bin/),
            else python.
 
 The esbuild binary is built from source with the Go toolchain — never
@@ -281,7 +281,7 @@ def bundle_js_python(entry: Path, root: Path) -> str:
 # ── esbuild engine ────────────────────────────────────────────────────────────
 
 def find_esbuild() -> str | None:
-    cand = [os.environ.get("NEXA_ESBUILD"), shutil.which("esbuild"),
+    cand = [os.environ.get("FLUXAWAY_ESBUILD"), shutil.which("esbuild"),
             str(REPO_ROOT / "tools/bin/esbuild")]
     for c in cand:
         if c and Path(c).exists():

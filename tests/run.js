@@ -18,7 +18,7 @@ import { run } from "./runner.js";
 // run_browser_tests.py) can wait for completion and read the results
 // without scraping the DOM.
 run(document.getElementById("results")).then((results) => {
-  window.__nexaTestResults = results.map(({ name, status, error }) => ({
+  window.__fluxawayTestResults = results.map(({ name, status, error }) => ({
     name,
     status,
     error: error ? String(error.message || error) : null,

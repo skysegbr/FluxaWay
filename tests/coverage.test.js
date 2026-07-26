@@ -197,7 +197,7 @@ test("useFetch: refetch uses the options from the latest render", async () => {
 // ── useLocalStorage ─────────────────────────────────────────────────────────
 
 test("useLocalStorage: falls back to initialValue when nothing is stored", async () => {
-  const key = "nexa-test-ls-initial";
+  const key = "fluxaway-test-ls-initial";
   localStorage.removeItem(key);
 
   let captured;
@@ -215,7 +215,7 @@ test("useLocalStorage: falls back to initialValue when nothing is stored", async
 });
 
 test("useLocalStorage: reads a previously-stored, JSON-parsed value", async () => {
-  const key = "nexa-test-ls-seeded";
+  const key = "fluxaway-test-ls-seeded";
   localStorage.setItem(key, JSON.stringify({ count: 5 }));
 
   let captured;
@@ -233,7 +233,7 @@ test("useLocalStorage: reads a previously-stored, JSON-parsed value", async () =
 });
 
 test("useLocalStorage: setValue persists to storage and supports a functional updater", async () => {
-  const key = "nexa-test-ls-set";
+  const key = "fluxaway-test-ls-set";
   localStorage.removeItem(key);
 
   let captured;
@@ -419,7 +419,7 @@ test("Drawer: renders side/width/title, closes on backdrop click", async () => {
 // ── useTheme ──────────────────────────────────────────────────────────────
 
 test("useTheme: resolves from localStorage, applies data-theme, and setTheme updates both", async () => {
-  const key = "nexa-theme";
+  const key = "fluxaway-theme";
   localStorage.setItem(key, "dark");
 
   let captured;
@@ -446,7 +446,7 @@ test("useTheme: resolves from localStorage, applies data-theme, and setTheme upd
 });
 
 test("useTheme: toggleTheme flips the value and stays in sync across instances", async () => {
-  localStorage.setItem("nexa-theme", "light");
+  localStorage.setItem("fluxaway-theme", "light");
 
   let a, b;
   function Widget() {
@@ -463,17 +463,17 @@ test("useTheme: toggleTheme flips the value and stays in sync across instances",
   await flush();
 
   assertEqual(a.theme, "dark", "toggling flips from light to dark");
-  assertEqual(b.theme, "dark", "the other instance picks up the change via the nexa:themechange event");
+  assertEqual(b.theme, "dark", "the other instance picks up the change via the fluxaway:themechange event");
 
   document.documentElement.removeAttribute("data-theme");
-  localStorage.removeItem("nexa-theme");
+  localStorage.removeItem("fluxaway-theme");
 });
 
 // ── usePalette ────────────────────────────────────────────────────────────
 
 test('usePalette: defaults to "default", setPalette persists and applies data-palette, unknown values ignored', async () => {
-  localStorage.removeItem("nexa-palette");
-  localStorage.removeItem("nexa-palette-custom-color");
+  localStorage.removeItem("fluxaway-palette");
+  localStorage.removeItem("fluxaway-palette-custom-color");
 
   let captured;
   function Widget() {
@@ -492,19 +492,19 @@ test('usePalette: defaults to "default", setPalette persists and applies data-pa
 
   assertEqual(captured.palette, "violet");
   assertEqual(document.documentElement.getAttribute("data-palette"), "violet");
-  assertEqual(localStorage.getItem("nexa-palette"), "violet");
+  assertEqual(localStorage.getItem("fluxaway-palette"), "violet");
 
   captured.setPalette("not-a-real-palette");
   await flush();
   assertEqual(captured.palette, "violet", "unknown palettes are ignored");
 
   document.documentElement.removeAttribute("data-palette");
-  localStorage.removeItem("nexa-palette");
+  localStorage.removeItem("fluxaway-palette");
 });
 
 test('usePalette: setCustomColor switches to the "custom" palette and sets --m-primary; invalid hex is ignored', async () => {
-  localStorage.removeItem("nexa-palette");
-  localStorage.removeItem("nexa-palette-custom-color");
+  localStorage.removeItem("fluxaway-palette");
+  localStorage.removeItem("fluxaway-palette-custom-color");
 
   let captured;
   function Widget() {
@@ -528,14 +528,14 @@ test('usePalette: setCustomColor switches to the "custom" palette and sets --m-p
 
   document.documentElement.removeAttribute("data-palette");
   document.documentElement.style.removeProperty("--m-primary");
-  localStorage.removeItem("nexa-palette");
-  localStorage.removeItem("nexa-palette-custom-color");
+  localStorage.removeItem("fluxaway-palette");
+  localStorage.removeItem("fluxaway-palette-custom-color");
 });
 
 // ── useDesign ─────────────────────────────────────────────────────────────
 
-test('useDesign: defaults to "nexa", setDesign persists and applies data-design, unknown values ignored', async () => {
-  localStorage.removeItem("nexa-design");
+test('useDesign: defaults to "fluxaway", setDesign persists and applies data-design, unknown values ignored', async () => {
+  localStorage.removeItem("fluxaway-design");
 
   let captured;
   function Widget() {
@@ -546,7 +546,7 @@ test('useDesign: defaults to "nexa", setDesign persists and applies data-design,
   render(Widget, mountPoint());
   await flush();
 
-  assertEqual(captured.design, "nexa");
+  assertEqual(captured.design, "fluxaway");
   assertEqual(captured.designs.length, 2);
 
   captured.setDesign("bootstrap");
@@ -554,14 +554,34 @@ test('useDesign: defaults to "nexa", setDesign persists and applies data-design,
 
   assertEqual(captured.design, "bootstrap");
   assertEqual(document.documentElement.getAttribute("data-design"), "bootstrap");
-  assertEqual(localStorage.getItem("nexa-design"), "bootstrap");
+  assertEqual(localStorage.getItem("fluxaway-design"), "bootstrap");
 
   captured.setDesign("not-a-real-design");
   await flush();
   assertEqual(captured.design, "bootstrap", "unknown designs are ignored");
 
   document.documentElement.removeAttribute("data-design");
-  localStorage.removeItem("nexa-design");
+  localStorage.removeItem("fluxaway-design");
+});
+
+test("useDesign: an unrecognized stored design falls back to the default", async () => {
+  localStorage.setItem("fluxaway-design", "not-a-real-design");
+
+  let captured;
+  function Widget() {
+    captured = useDesign();
+    return h("div", null);
+  }
+
+  render(Widget, mountPoint());
+  await flush();
+
+  assertEqual(captured.design, "fluxaway", "a junk stored value does not leak into state");
+  assertEqual(document.documentElement.getAttribute("data-design"), "fluxaway");
+  assertEqual(localStorage.getItem("fluxaway-design"), "fluxaway", "storage is rewritten to the default");
+
+  document.documentElement.removeAttribute("data-design");
+  localStorage.removeItem("fluxaway-design");
 });
 
 // ── useToast ──────────────────────────────────────────────────────────────
@@ -1381,7 +1401,7 @@ test("DatePicker: ArrowRight moves the roving focus by one day, and Enter select
 });
 
 test("useLocalStorage: burst of functional updates in one render window all apply", async () => {
-  const key = "nexa-test-ls-burst";
+  const key = "fluxaway-test-ls-burst";
   localStorage.removeItem(key);
 
   let captured;

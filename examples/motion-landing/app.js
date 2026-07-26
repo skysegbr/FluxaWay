@@ -26,7 +26,7 @@ function App() {
     h(
       "footer",
       { className: "ml-footer" },
-      h("a", { href: "#top", className: "ml-footer-brand" }, "NEXA / MOTION"),
+      h("a", { href: "#top", className: "ml-footer-brand" }, "FLUXAWAY / MOTION"),
       h("p", null, "A build-free experience. Made directly in the browser."),
       h("span", null, "© 2026 — frame 001"),
     ),
