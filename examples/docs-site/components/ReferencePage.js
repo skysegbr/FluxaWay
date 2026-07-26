@@ -4,9 +4,10 @@ import { DemoBlock } from "./DemoBlock.js";
 import { PropsTable } from "./PropsTable.js";
 import { PageToc } from "./PageToc.js";
 
-// One generic page renders every component's docs — adding a component to the
-// site is a content module, never a new page component.
-export function ComponentPage({ entry }) {
+// One page renders every reference entry — a component (props) or a hook
+// (signature + parameters + returns). Adding either is a content descriptor,
+// never a new page component.
+export function ReferencePage({ entry }) {
   useHead({
     title: `${entry.name} — Nexa Docs`,
     meta: [{ name: "description", content: entry.summary }],
@@ -20,6 +21,8 @@ export function ComponentPage({ entry }) {
 
   const toc = [
     ...entry.demos.map((demo) => ({ id: demo.id, title: demo.title })),
+    ...(entry.params?.length ? [{ id: "params", title: "Parameters" }] : []),
+    ...(entry.returns?.length ? [{ id: "returns", title: "Returns" }] : []),
     ...(entry.props?.length ? [{ id: "props", title: "Props" }] : []),
   ];
 
@@ -37,8 +40,13 @@ export function ComponentPage({ entry }) {
       ),
       h("p", { className: "nd-article-lead" }, entry.summary),
       h("figure", { className: "nd-import" }, h("code", null, importLine)),
+      entry.signature
+        ? h("figure", { className: "nd-signature" }, h("code", null, entry.signature))
+        : null,
       entry.demos.map((demo) => h(DemoBlock, { key: demo.id, demo })),
-      h(PropsTable, { props: entry.props }),
+      h(PropsTable, { id: "params", title: "Parameters", rows: entry.params, nameHeader: "Argument" }),
+      h(PropsTable, { id: "returns", title: "Returns", rows: entry.returns, nameHeader: "Key" }),
+      h(PropsTable, { id: "props", title: "Props", rows: entry.props }),
       entry.notes
         ? h(
             "section",

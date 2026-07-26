@@ -8,7 +8,7 @@ import { Sidebar } from "./components/Sidebar.js";
 import { SearchPalette } from "./components/SearchPalette.js";
 import { HomePage } from "./components/HomePage.js";
 import { GuidePage } from "./components/GuidePage.js";
-import { ComponentPage } from "./components/ComponentPage.js";
+import { ReferencePage } from "./components/ReferencePage.js";
 import { NotFoundPage } from "./components/NotFoundPage.js";
 import { SIDEBAR_GROUPS, entryFor } from "./content/index.js";
 
@@ -66,7 +66,7 @@ function routeTo(path) {
 
   if (path.startsWith("/components/")) {
     const entry = entryFor(path.slice("/components/".length));
-    if (entry) return h(ComponentPage, { entry });
+    if (entry) return h(ReferencePage, { entry });
   }
 
   return h(NotFoundPage, { path });

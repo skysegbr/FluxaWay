@@ -21,11 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   dependency-free ~90-line syntax highlighter (`components/highlight.js`) that
   tokenizes JS/HTML/CSS with one combined regex per language and emits vdom
   spans (never an HTML string), colored from the same `--m-*` tokens as the
-  rest of the system. Covers **all six component categories — 61 components**
-  (core, forms, overlay, data, nav, theme), each with live demos and a full
-  props table, with `DesignSwitcher` reskinning the entire site to Bootstrap 5
-  live. New priority flow `SC-APP-12` exercises sidebar navigation, the code
-  toggle and the palette.
+  rest of the system. Covers **all six component categories (61 components)
+  and 33 hooks** — 94 pages in total. Components get live demos and a props
+  table; hooks get a call signature plus Parameters and Returns tables, and
+  their demos run the real hook (the useVirtualList page reports how many of
+  its 5,000 rows are actually in the DOM). `DesignSwitcher` reskins the entire
+  site to Bootstrap 5 live. New priority flow `SC-APP-12` exercises sidebar
+  navigation, the code toggle, the palette and a hook page's live demo.
 
 ### Removed
 - **Examples pruned 32 → 21.** The gallery had grown redundant rather than
@@ -44,6 +46,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `examples/` tree drops from 15.9 MB to 11.8 MB.
 
 ### Fixed
+- **AI_SPEC §6 documented three mobile hooks with the wrong return type** —
+  found by writing each docs page against the actual `dist/nexa.js` signature
+  instead of the spec. `useNetworkStatus()` returns the **boolean** itself (not
+  `{ online, type }`), `useOrientation()` returns the **string**
+  `"portrait" | "landscape"` (not `{ angle, type }`), and `useVibrate()`
+  returns the **vibrate function** (not `{ vibrate }`). Following the old text
+  gave you `undefined` for the first two and a TypeError on the third. Also
+  documents `useVirtualList`'s real item shape (`{ item, index, offsetTop }` —
+  there is no ready-made `style`, so rows must be positioned by the caller) and
+  `useToast`'s top-level `dismiss`.
 - **Docs claimed example coverage that never existed**: AI_SPEC §10 and AI_QA
   §3.3 pointed at `examples/mindmap` as the **PipelineCanvas** reference and
   `examples/designer` as the **FullCodeEditor** reference — mindmap is

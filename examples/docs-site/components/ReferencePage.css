@@ -54,3 +54,15 @@
 @media (max-width: 1200px) {
   .nd-page { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* A hook's call signature, shown right under the import line. */
+.nd-signature {
+  margin: var(--m-space-3) 0 0;
+  padding: var(--m-space-3) var(--m-space-4);
+  border: 1px solid var(--m-border);
+  border-inline-start: 3px solid var(--m-primary);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+  overflow-x: auto;
+  font-size: var(--m-font-size-sm);
+}

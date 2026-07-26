@@ -7,7 +7,7 @@
 @import url("./components/CodeBlock.css");
 @import url("./components/DemoBlock.css");
 @import url("./components/PropsTable.css");
-@import url("./components/ComponentPage.css");
+@import url("./components/ReferencePage.css");
 @import url("./components/HomePage.css");
 @import url("./components/GuidePage.css");
 
@@ -75,4 +75,41 @@ body {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
   }
+}
+
+/* Demo surfaces for usePresence and useVirtualList. */
+.nd-presence {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-3);
+  padding: var(--m-space-2) var(--m-space-3);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+  opacity: 1;
+  transform: none;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.nd-presence-exit {
+  opacity: 0;
+  transform: translateX(1.5rem);
+}
+
+.nd-virtual {
+  height: 12rem;
+  overflow-y: auto;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+}
+
+.nd-virtual-row {
+  inset-inline: 0;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--m-space-3);
+  border-bottom: 1px solid var(--m-border);
+  font-size: var(--m-font-size-sm);
 }
