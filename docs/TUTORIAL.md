@@ -144,7 +144,7 @@ GitHub build through jsDelivr:
 ```
 
 For production, prefer a fixed tag instead of `@main`, such as
-`https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.20.0/dist/fluxaway.js`.
+`https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.20.1/dist/fluxaway.js`.
 
 ## 3. First Component
 
