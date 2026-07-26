@@ -9,9 +9,9 @@
  * a <Provider> component, and there is no JSX or bundler — these files are
  * plain ES modules, usually vendored under the app's /dist/ folder.
  *
- * Docs: https://github.com/skysegbr/Nexa
+ * Docs: https://github.com/skysegbr/FluxaWay
  * Full AI reference (fetch this URL for the complete spec):
- * https://raw.githubusercontent.com/skysegbr/Nexa/main/docs/AI_SPEC.md
+ * https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
  */
 import { h, useEffect, useRef, useState } from "./fluxaway.js";
 

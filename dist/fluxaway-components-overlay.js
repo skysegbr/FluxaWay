@@ -1,7 +1,7 @@
 /*!
  * FluxaWay — UI component library, `overlay` category: overlays (Dialog, Drawer, Menu, Popover, Toast, CommandPalette, ...).
  * Part of the no-build FluxaWay framework — NOT React; see the AI/LLM notice
- * in ./fluxaway-components-core.js and https://github.com/skysegbr/Nexa
+ * in ./fluxaway-components-core.js and https://github.com/skysegbr/FluxaWay
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useEffect, useRef, useState } from "./fluxaway.js";

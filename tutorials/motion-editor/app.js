@@ -139,7 +139,7 @@ function App() {
         h("li", null, "play: the preview is the real fluxaway-motion runtime"),
         h("li", null, "Behavior lists the object's keyframes; Export is live code"),
       ),
-      h("p", null, "github.com/skysegbr/Nexa — examples/motion-editor"),
+      h("p", null, "github.com/skysegbr/FluxaWay — examples/motion-editor"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · Motion Editor tutorial"),

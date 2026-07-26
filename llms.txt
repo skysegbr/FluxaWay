@@ -43,7 +43,7 @@ Key differences from React (common analysis mistakes):
   AI assistants — critical rules, all hooks, all components, project
   structure conventions, gotcha checklist. Read this before writing FluxaWay code.
   Stable fetchable URL:
-  https://raw.githubusercontent.com/skysegbr/Nexa/main/docs/AI_SPEC.md
+  https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
 - [AI_QA.md](docs/AI_QA.md): QA runbook for an AI (or human) running a full
   quality pass — Python-only gates, the ~300-test browser suite across three
   engines, and AI-executable visual/example checks. Read this before running

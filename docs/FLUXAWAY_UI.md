@@ -15,7 +15,7 @@ Or load the public build from jsDelivr:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css"
 />
 ```
 
@@ -49,7 +49,7 @@ import {
   Button,
   Card,
   TextField,
-} from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.js";
+} from "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components.js";
 ```
 
 ## Tokens

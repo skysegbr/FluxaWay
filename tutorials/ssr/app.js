@@ -152,7 +152,7 @@ function App() {
         h("li", null, "hydrate() adopts the server DOM, it never recreates it"),
         h("li", null, "no Node required — any backend can send the string"),
       ),
-      h("p", null, "github.com/skysegbr/Nexa — examples/ssr · docs/AI_SPEC.md §6"),
+      h("p", null, "github.com/skysegbr/FluxaWay — examples/ssr · docs/AI_SPEC.md §6"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · SSR tutorial"),

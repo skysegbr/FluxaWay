@@ -127,13 +127,13 @@ GitHub build through jsDelivr:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css"
 />
 
 <main id="app"></main>
 
 <script type="module">
-  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
+  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js";
 
   function App() {
     return h("h1", null, "Hello from FluxaWay");
@@ -144,7 +144,7 @@ GitHub build through jsDelivr:
 ```
 
 For production, prefer a fixed tag instead of `@main`, such as
-`https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.js`.
+`https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.1/dist/fluxaway.js`.
 
 ## 3. First Component
 

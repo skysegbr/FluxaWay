@@ -135,7 +135,7 @@ function App() {
         h("li", null, "controllerRef: next / prev / goTo(id)"),
         h("li", null, "the camera is the only imperative part"),
       ),
-      h("p", null, "github.com/skysegbr/Nexa — examples/nexa-architecture"),
+      h("p", null, "github.com/skysegbr/FluxaWay — examples/nexa-architecture"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · ZoomStage tutorial"),

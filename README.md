@@ -114,42 +114,42 @@ FluxaWay is published as a public GitHub repository, so you can load the browser
 modules directly through jsDelivr:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-core.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-forms.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-overlay.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-data.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-nav.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-theme.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor-snippets.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-bootstrap.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-server.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-core.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-forms.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-overlay.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-data.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-nav.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-theme.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor-snippets.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-bootstrap.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-server.js
 ```
 
 Every file above also ships a minified twin (same path, `.min.js`/`.min.css`
 before the extension) — same API, smaller payload:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor-snippets.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-bootstrap.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-server.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor-snippets.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-bootstrap.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-server.min.js
 ```
 
 See [examples/minified](./examples/minified) for a full page built entirely
@@ -160,7 +160,7 @@ Minimal page:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css"
 />
 
 <main id="app"></main>
@@ -171,11 +171,11 @@ Minimal page:
     render,
     useState,
     useTheme,
-  } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
+  } from "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js";
   import {
     Button,
     ThemeToggle,
-  } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.js";
+  } from "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components.js";
 
   function App() {
     const [count, setCount] = useState(0);
@@ -198,12 +198,12 @@ Minimal page:
 tag and pin the CDN URL to it, for example:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.1/dist/fluxaway.js
 ```
 
 ### Subresource Integrity (SRI) — pin the bytes, not just the tag
 
-Pinning to `@v0.19.0` pins the *URL*, but a git tag can still be moved, so it is
+Pinning to `@v0.19.1` pins the *URL*, but a git tag can still be moved, so it is
 not a cryptographic guarantee of *which bytes* run. For the strongest
 supply-chain posture — the whole reason FluxaWay ships zero dependencies — add an
 `integrity` hash so the browser refuses to execute a file that doesn't match,
@@ -213,13 +213,13 @@ even if the CDN or the tag is ever tampered with. Pair it with
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway-ui.min.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.1/dist/fluxaway-ui.min.css"
   integrity="sha384-…"
   crossorigin="anonymous"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.min.js"
+  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.1/dist/fluxaway.min.js"
   integrity="sha384-…"
   crossorigin="anonymous"
 ></script>
@@ -233,7 +233,7 @@ local file or straight from the CDN URL:
 python -c "import base64,hashlib,sys;print('sha384-'+base64.b64encode(hashlib.sha384(open(sys.argv[1],'rb').read()).digest()).decode())" dist/fluxaway.min.js
 
 # from the pinned CDN URL (verifies what will actually be served)
-python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.min.js
+python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.1/dist/fluxaway.min.js
 ```
 
 **ES-module caveat.** `integrity` only covers the file the browser fetches
@@ -377,9 +377,9 @@ location /dist/ {
 is a footgun on an *unversioned* path like `/dist/fluxaway.js` served from your own
 origin: after you update the file, browsers keep the stale copy for a year.
 Immutable caching is safe only when the URL changes whenever the content does —
-a pinned CDN tag (`@v0.19.0`), a bundler output filename, or a versioned path
-such as `/dist/0.19.0/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
-`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.19.0`
+a pinned CDN tag (`@v0.19.1`), a bundler output filename, or a versioned path
+such as `/dist/0.19.1/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
+`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.19.1`
 query and bump it on release.
 
 Pair this with [SRI](#subresource-integrity-sri--pin-the-bytes-not-just-the-tag)
