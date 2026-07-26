@@ -427,8 +427,6 @@ def minify_css(src: str) -> str:
 # ── driver ───────────────────────────────────────────────────────────────────
 
 def _targets():
-    # Only canonical FluxaWay sources are minified. The deprecated nexa*
-    # compatibility files are generated afterwards by sync_legacy_aliases.py.
     js = sorted(
         p
         for p in DIST.glob("fluxaway*.js")

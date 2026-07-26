@@ -102,7 +102,7 @@ test("useHead: sets document.title and upserts meta tags on the client", async (
       );
     assertEqual(metas().length, 1);
     assertEqual(metas()[0].getAttribute("content"), "d-First Title");
-    assert(metas()[0].hasAttribute("data-nexa-head"), "expected data-nexa-head marker");
+    assert(metas()[0].hasAttribute("data-fluxaway-head"), "expected data-fluxaway-head marker");
 
     setTitle("Second Title");
     await flush();
@@ -138,10 +138,10 @@ test("useHead: renderToString collects entries for renderHeadToString", async ()
   assert(head.includes("<title>Page Title</title>"), `last title wins, got: ${head}`);
   assert(!head.includes("App"), "overridden title must not appear");
   assert(
-    head.includes('<meta name="description" content="page &quot;level&quot;" data-nexa-head>'),
+    head.includes('<meta name="description" content="page &quot;level&quot;" data-fluxaway-head>'),
     `expected deduped+escaped description, got: ${head}`,
   );
-  assert(head.includes('<meta property="og:title" content="OG Page" data-nexa-head>'));
+  assert(head.includes('<meta property="og:title" content="OG Page" data-fluxaway-head>'));
 
   assertEqual(renderHeadToString(), "", "a second call must return nothing (already consumed)");
 });

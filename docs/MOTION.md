@@ -351,7 +351,7 @@ and a control deck scrubs and replays it.
 import { h, render, useState } from "/dist/fluxaway.js";
 import { useTimeline, stagger } from "/dist/fluxaway-motion.js";
 
-const TITLE = "NEXA".split("");
+const TITLE = "FLUXAWAY".split("");
 
 function buildTracks() {
   const tracks = {
@@ -406,7 +406,7 @@ render(App, document.getElementById("app"));
 
 ## See also
 
-- **`examples/nexa-motion`** — the full Flash-style intro: preloader, flying
+- **`examples/fluxaway-motion`** — the full Flash-style intro: preloader, flying
   logo, letter cascade, frame scripts, a nested looping movie clip, SKIP INTRO,
   and a control deck with scrubber, reverse, speed, and `gotoAndPlay` scene jumps.
 - **`examples/motion-editor`** — a Flash-8-style visual authoring IDE built on
@@ -415,7 +415,7 @@ render(App, document.getElementById("app"));
   code export.
 - **`examples/motion-landing`** — an animated product landing page built on the
   add-on itself (hero timeline, scroll-driven scenes, replayable intro).
-- **Video tutorials** — [`tutorials/nexa-motion`](../tutorials/nexa-motion/) and
+- **Video tutorials** — [`tutorials/fluxaway-motion`](../tutorials/fluxaway-motion/) and
   [`tutorials/motion-editor`](../tutorials/motion-editor/) (auto-generated screen
   recordings driven by the real framework).
 - **`docs/AI_SPEC.md` §10** — the terse API quick-reference (also covers the

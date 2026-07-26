@@ -11,25 +11,10 @@ import * as overlay from "../dist/fluxaway-components-overlay.js";
 import * as data from "../dist/fluxaway-components-data.js";
 import * as nav from "../dist/fluxaway-components-nav.js";
 import * as theme from "../dist/fluxaway-components-theme.js";
-import * as legacyCore from "../dist/nexa.js";
-import * as legacyBarrel from "../dist/nexa-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 const categories = { core, forms, overlay, data, nav, theme };
 const { h, render } = runtime;
-
-test("compatibility: Nexa aliases expose the canonical FluxaWay modules", () => {
-  for (const key of Object.keys(runtime)) {
-    assert(key in legacyCore, `legacy core is missing ${key}`);
-    assert(legacyCore[key] === runtime[key], `legacy core.${key} is not canonical`);
-  }
-  assertEqual(Object.keys(legacyCore).length, Object.keys(runtime).length);
-  for (const key of Object.keys(barrel)) {
-    assert(key in legacyBarrel, `legacy barrel is missing ${key}`);
-    assert(legacyBarrel[key] === barrel[key], `legacy barrel.${key} is not canonical`);
-  }
-  assertEqual(Object.keys(legacyBarrel).length, Object.keys(barrel).length);
-});
 
 test("categories: the barrel re-exports every category export as the same reference", () => {
   for (const [name, mod] of Object.entries(categories)) {

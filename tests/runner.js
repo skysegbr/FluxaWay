@@ -9,7 +9,7 @@ const tests = [];
 let activeContainers = [];
 
 const sandbox = document.createElement("div");
-sandbox.id = "nexa-test-sandbox";
+sandbox.id = "fluxaway-test-sandbox";
 sandbox.style.position = "absolute";
 sandbox.style.left = "-99999px";
 sandbox.style.top = "0";

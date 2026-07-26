@@ -9,10 +9,6 @@
 > **code editor** (FullCodeEditor, §10). If the user's task sounds like one
 > of those, use the add-on — do not hand-roll it and do not reach for an
 > external library.
->
-> **Rename compatibility:** `fluxaway*` files are canonical. Deprecated
-> `nexa*` aliases remain for existing applications. Runtime keys and events
-> containing `nexa` are compatibility contracts and must not be renamed.
 
 ---
 
@@ -43,8 +39,8 @@ mean an add-on, not hand-rolled code:
 | state, routing, SSR, context, fetch | core hooks (§6) | `/dist/fluxaway.js` |
 
 A "presentation about X" in FluxaWay is a **ZoomStage app** (frames laid out on an
-infinite canvas, camera flying between them — see `examples/nexa-architecture`
-and `examples/nexa-atlas`), optionally with fluxaway-motion for entrances inside
+infinite canvas, camera flying between them — see `examples/fluxaway-architecture`
+and `examples/fluxaway-atlas`), optionally with fluxaway-motion for entrances inside
 frames. It is NOT a stack of `<section>`s with scroll-snap.
 
 ### No-Node policy (read before evaluating or suggesting tooling)
@@ -111,7 +107,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.19.2`.
+release tag such as `@v0.20.0`.
 
 Typical HTML entry point:
 
@@ -226,7 +222,7 @@ The sanctioned validation workflow is Python + a real browser:
 python server.py                        # serve the repo/app over HTTP (dev server + HMR)
 # open http://localhost:8000/<app>/ in a browser — the console is the truth
 
-python scripts/validate_fluxaway.py         # static checks: imports resolve, assets exist,
+python scripts/validate_fluxaway.py     # static checks: imports resolve, assets exist,
                                         # HTML references, monolith guard, version sync
 python scripts/run_browser_tests.py     # full test suite in headless Chromium
                                         # (playwright-python — pip, not npm)
@@ -237,6 +233,24 @@ For an app outside this repo, any static file server works
 (`python -m http.server`) — the rule is: **served over HTTP, judged in a
 browser**. Syntax-check a single file, if you must, with the browser itself
 (the console reports the parse error and line) — never with `node --check`.
+
+### ❌ NEVER edit a generated file in `dist/`
+
+Two families under `dist/` are generated. An edit there is silently overwritten
+the next time its generator runs — write the fix in the source of truth instead:
+
+| Generated | Source of truth | Regenerate with |
+|---|---|---|
+| `dist/*.min.js`, `dist/*.min.css` | the unminified sibling | `python scripts/minify.py` |
+| `dist/fluxaway-ui-{base,core,forms,overlay,data,nav,theme}.css` | `dist/fluxaway-ui.css` | `python scripts/split_css.py` |
+
+Order matters when both are stale: split the CSS first, then minify (the
+minifier reads the category files the splitter writes). Both accept `--check`,
+which verifies the committed outputs match their sources without rewriting them
+— that is what CI runs.
+
+After changing anything under `dist/`, re-run `python scripts/minify.py` so the
+committed `*.min.*` don't drift from their sources.
 
 ---
 
@@ -589,7 +603,7 @@ function DashboardPage() {
   semantics as writing `document.title` directly), so every page should
   declare its own head.
 - Meta tags are keyed by `name` OR `property` and updated **in place** (one
-  tag per key, marked `data-nexa-head`) — no duplicates accumulate.
+  tag per key, marked `data-fluxaway-head`) — no duplicates accumulate.
 - Client: applied after the render commits (an effect).
 - Server: `renderToString()` collects the calls; `renderHeadToString()`
   (exported from `/dist/fluxaway-server.js` too) then returns the
@@ -609,9 +623,9 @@ const page = `<!doctype html><html><head>${head}</head><body>
 ```js
 const { theme, setTheme, toggleTheme } = useTheme();
 // theme: 'light' | 'dark'
-// Standalone — reads/writes localStorage('nexa-theme') and sets data-theme on <html>
+// Standalone — reads/writes localStorage('fluxaway-theme') and sets data-theme on <html>
 // Does NOT require ThemeProvider. Multiple useTheme() instances stay in sync via
-// a 'nexa:themechange' CustomEvent.
+// a 'fluxaway:themechange' CustomEvent.
 ```
 
 ### `usePalette`
@@ -620,7 +634,7 @@ const { theme, setTheme, toggleTheme } = useTheme();
 const { palette, palettes, setPalette, customColor, setCustomColor } = usePalette();
 // palette: 'default' | 'violet' | 'rose' | 'blue' | 'amber' | 'emerald' | 'custom'
 // palettes: the full list, for building a picker UI
-// Standalone, same pattern as useTheme — reads/writes localStorage('nexa-palette')
+// Standalone, same pattern as useTheme — reads/writes localStorage('fluxaway-palette')
 // and sets data-palette on <html>. Independent of useTheme: fluxaway-ui.css pairs
 // each preset palette with both a light and a dark variant, so the two compose freely.
 // setPalette(x) is a no-op if x isn't in `palettes`.
@@ -635,15 +649,15 @@ const { palette, palettes, setPalette, customColor, setCustomColor } = usePalett
 
 ```js
 const { design, designs, setDesign } = useDesign();
-// design: 'nexa' | 'bootstrap'
+// design: 'fluxaway' | 'bootstrap'
 // designs: the full list, for building a picker UI
 // Standalone, same pattern as useTheme/usePalette — reads/writes
-// localStorage('nexa-design') and sets data-design on <html>.
+// localStorage('fluxaway-design') and sets data-design on <html>.
 //
-// "nexa" (default) needs nothing beyond fluxaway-ui.css. "bootstrap" only takes
-// visual effect if dist/fluxaway-bootstrap.css is ALSO loaded — that stylesheet
-// is scoped entirely under [data-design="bootstrap"], so it's inert until
-// this hook (or a manual data-design="bootstrap" attribute) switches to it.
+// "fluxaway" (default) needs nothing beyond fluxaway-ui.css. "bootstrap" only
+// takes visual effect if dist/fluxaway-bootstrap.css is ALSO loaded — that
+// stylesheet is scoped entirely under [data-design="bootstrap"], so it's inert
+// until this hook (or a manual data-design="bootstrap" attribute) switches to it.
 // Composes freely with useTheme and usePalette.
 ```
 
@@ -1780,8 +1794,8 @@ tour → **ZoomStage**; animation / intro / keyframes → **fluxaway-motion**;
 node graph / flowchart / pipeline → **PipelineCanvas**; embedded code
 editor → **FullCodeEditor**. These are first-party — never substitute
 reveal.js, GSAP, mermaid or CodeMirror-from-CDN when the task fits an
-add-on. Working references: `examples/nexa-architecture` and
-`examples/nexa-atlas` (presentations), `examples/nexa-motion`,
+add-on. Working references: `examples/fluxaway-architecture` and
+`examples/fluxaway-atlas` (presentations), `examples/fluxaway-motion`,
 `examples/motion-landing` and `examples/motion-editor` (animation),
 `examples/star-atlas` (free-zoom explorer). **PipelineCanvas and
 FullCodeEditor currently have no example app** — their APIs below and the
@@ -1853,7 +1867,7 @@ function Intro() {
   (direction-aware); `gotoAndPlay` also executes a script sitting exactly on
   the target (as Flash did); plain seeks fire nothing.
 - **MovieClips**: a child component with its own `useTimeline` is a movie
-  clip — nest freely, each ticks independently (see `examples/nexa-motion`'s
+  clip — nest freely, each ticks independently (see `examples/fluxaway-motion`'s
   pulsing ring).
 - **`stagger(keyframes, eachMs, index)`** shifts a keyframe list for cascade
   entrances. `createTimeline(spec)` is the imperative, hook-free variant
@@ -1870,7 +1884,7 @@ function Intro() {
   flicker when an ancestor (like `ZoomStage`'s world) is scaled at the same
   time. Animate its `opacity` instead, or animate a small child element.
 
-Full showcase: `examples/nexa-motion` — preloader, flying logo, letter
+Full showcase: `examples/fluxaway-motion` — preloader, flying logo, letter
 cascade, SKIP INTRO, scrubber and scene-jump deck. Visual authoring:
 `examples/motion-editor` — a Flash-IDE-style timeline editor (draggable
 keyframe diamonds with multi-selection, undo/redo via `useHistory`, motion
@@ -1980,7 +1994,7 @@ domain-componentized rule from §12 applies here. Keep `data.js` holding
 plain geometry + content *descriptors* (`{ kind: "title", heading, body }`),
 and build the actual `content: h(...)` vdom in `app.js` right before passing
 `frames` to `ZoomStage`. See
-[examples/nexa-architecture](../examples/nexa-architecture) for the full
+[examples/fluxaway-architecture](../examples/fluxaway-architecture) for the full
 pattern (`components/FrameContent.js` dispatches on `data.kind`).
 
 ### `FullCodeEditor`
@@ -2022,7 +2036,8 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
 --m-text-muted     /* secondary text #617080 */
 --m-border         /* borders #cbd6e0 */
 
---m-primary        /* brand teal #0f766e */
+--m-primary        /* primary teal #0f766e (the design-system default; the
+                      FluxaWay brand palette in docs/BRAND.md is separate) */
 --m-primary-hover  /* #115e59 */
 --m-primary-soft   /* light tint #d9f3ef */
 --m-secondary      /* #3f4f9f */

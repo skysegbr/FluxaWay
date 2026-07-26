@@ -74,8 +74,8 @@ return h(ZoomStage, {
       { name: "controllerRef", type: "Ref", description: "Exposes navigation and camera controls." },
     ],
     resources: [
-      { label: "Architecture presentation", href: "/examples/nexa-architecture/" },
-      { label: "Atlas presentation", href: "/examples/nexa-atlas/" },
+      { label: "Architecture presentation", href: "/examples/fluxaway-architecture/" },
+      { label: "Atlas presentation", href: "/examples/fluxaway-atlas/" },
       { label: "Free-zoom star atlas", href: "/examples/star-atlas/" },
     ],
     notes: [

@@ -486,7 +486,7 @@ export function useId() {
 
   if (owner.hooks[cursor] === undefined) {
     nextIdCounter += 1;
-    owner.hooks[cursor] = `nexa-${nextIdCounter}`;
+    owner.hooks[cursor] = `fluxaway-${nextIdCounter}`;
   }
 
   owner.hookCursor += 1;
@@ -1287,7 +1287,7 @@ function createDom(vnode, parentDom) {
   // through patch), so handle it here: render children into the target and
   // return a comment placeholder for the current parent.
   if (vnode.type === PORTAL) {
-    const placeholder = document.createComment("nexa-portal");
+    const placeholder = document.createComment("fluxaway-portal");
     vnode._dom = placeholder;
     vnode._portalChildren = patchChildren(vnode.props.target, [], vnode.props.children);
     return placeholder;
@@ -1432,7 +1432,7 @@ function patchPortal(parent, oldVNode, newVNode) {
   if (sameTarget) {
     newVNode._dom = oldVNode._dom;
   } else {
-    const placeholder = document.createComment("nexa-portal");
+    const placeholder = document.createComment("fluxaway-portal");
     newVNode._dom = placeholder;
     if (oldVNode?._dom?.parentNode === parent) {
       parent.replaceChild(placeholder, oldVNode._dom);
@@ -2271,14 +2271,14 @@ export function useTranslation(dict = {}) {
 //   });
 //
 // Client: applied after the render commits (an effect). Meta tags managed by
-// useHead carry data-nexa-head and are updated in place — one tag per
+// useHead carry data-fluxaway-head and are updated in place — one tag per
 // name/property. Nothing is removed on unmount: like document.title itself,
 // metadata persists until another component declares a new value.
 //
 // Server: renderToString() collects every useHead call from the rendered
 // tree; call renderHeadToString() afterwards to get the <title>/<meta>
 // markup for the document <head>. Server-emitted tags also carry
-// data-nexa-head, so the client render finds and reuses them.
+// data-fluxaway-head, so the client render finds and reuses them.
 
 let ssrHeadEntries = [];
 
@@ -2335,7 +2335,7 @@ function applyHead(head) {
       existingTags.set(`${keyAttr}:${keyValue}`, tag);
     }
 
-    tag.setAttribute("data-nexa-head", "");
+    tag.setAttribute("data-fluxaway-head", "");
     tag.setAttribute("content", String(entry.content ?? ""));
   }
 }
@@ -2363,7 +2363,7 @@ export function renderHeadToString() {
     const keyAttr = entry.name != null ? "name" : "property";
     const keyValue = escapeAttribute(String(entry.name ?? entry.property));
     const content = escapeAttribute(String(entry.content ?? ""));
-    parts.push(`<meta ${keyAttr}="${keyValue}" content="${content}" data-nexa-head>`);
+    parts.push(`<meta ${keyAttr}="${keyValue}" content="${content}" data-fluxaway-head>`);
   }
 
   return parts.join("\n");
@@ -2391,7 +2391,7 @@ export function useContextMenu() {
 export function useTheme() {
   const getResolved = () => {
     try {
-      const stored = localStorage.getItem("nexa-theme");
+      const stored = localStorage.getItem("fluxaway-theme");
       if (stored === "dark" || stored === "light") return stored;
     } catch {}
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -2402,19 +2402,19 @@ export function useTheme() {
   // Apply to DOM and persist.
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    try { localStorage.setItem("nexa-theme", theme); } catch {}
+    try { localStorage.setItem("fluxaway-theme", theme); } catch {}
   }, [theme]);
 
   // Stay in sync when another useTheme instance changes the theme.
   useEffect(() => {
     const handler = (e) => setThemeState(e.detail);
-    window.addEventListener("nexa:themechange", handler);
-    return () => window.removeEventListener("nexa:themechange", handler);
+    window.addEventListener("fluxaway:themechange", handler);
+    return () => window.removeEventListener("fluxaway:themechange", handler);
   }, []);
 
   const _apply = (next) => {
     setThemeState(next);
-    window.dispatchEvent(new CustomEvent("nexa:themechange", { detail: next }));
+    window.dispatchEvent(new CustomEvent("fluxaway:themechange", { detail: next }));
   };
 
   const setTheme = (next) => _apply(next);
@@ -2422,7 +2422,7 @@ export function useTheme() {
   const toggleTheme = () =>
     setThemeState((current) => {
       const next = current === "dark" ? "light" : "dark";
-      window.dispatchEvent(new CustomEvent("nexa:themechange", { detail: next }));
+      window.dispatchEvent(new CustomEvent("fluxaway:themechange", { detail: next }));
       return next;
     });
 
@@ -2451,7 +2451,7 @@ const HEX_COLOR_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 export function usePalette() {
   const getResolved = () => {
     try {
-      const stored = localStorage.getItem("nexa-palette");
+      const stored = localStorage.getItem("fluxaway-palette");
       if (PALETTES.includes(stored)) return stored;
     } catch {}
     return "default";
@@ -2459,7 +2459,7 @@ export function usePalette() {
 
   const getResolvedCustomColor = () => {
     try {
-      const stored = localStorage.getItem("nexa-palette-custom-color");
+      const stored = localStorage.getItem("fluxaway-palette-custom-color");
       if (HEX_COLOR_RE.test(stored)) return stored;
     } catch {}
     return null;
@@ -2471,7 +2471,7 @@ export function usePalette() {
   // Apply to DOM and persist.
   useEffect(() => {
     document.documentElement.setAttribute("data-palette", palette);
-    try { localStorage.setItem("nexa-palette", palette); } catch {}
+    try { localStorage.setItem("fluxaway-palette", palette); } catch {}
 
     if (palette === "custom" && customColor) {
       document.documentElement.style.setProperty("--m-primary", customColor);
@@ -2486,15 +2486,15 @@ export function usePalette() {
       setPaletteState(e.detail.palette);
       setCustomColorState(e.detail.customColor);
     };
-    window.addEventListener("nexa:palettechange", handler);
-    return () => window.removeEventListener("nexa:palettechange", handler);
+    window.addEventListener("fluxaway:palettechange", handler);
+    return () => window.removeEventListener("fluxaway:palettechange", handler);
   }, []);
 
   const _apply = (nextPalette, nextCustomColor) => {
     setPaletteState(nextPalette);
     setCustomColorState(nextCustomColor);
     window.dispatchEvent(
-      new CustomEvent("nexa:palettechange", {
+      new CustomEvent("fluxaway:palettechange", {
         detail: { palette: nextPalette, customColor: nextCustomColor },
       }),
     );
@@ -2507,7 +2507,7 @@ export function usePalette() {
 
   const setCustomColor = (hex) => {
     if (!HEX_COLOR_RE.test(hex)) return;
-    try { localStorage.setItem("nexa-palette-custom-color", hex); } catch {}
+    try { localStorage.setItem("fluxaway-palette-custom-color", hex); } catch {}
     _apply("custom", hex);
   };
 
@@ -2517,7 +2517,7 @@ export function usePalette() {
 // ── useDesign ──────────────────────────────────────────────
 //
 // Switches the overall visual design, independent of theme and palette.
-// Sets data-design on <html>; "nexa" (default) needs no stylesheet beyond
+// Sets data-design on <html>; "fluxaway" (default) needs no stylesheet beyond
 // fluxaway-ui.css. "bootstrap" only takes effect if the optional
 // dist/fluxaway-bootstrap.css is also loaded — it's scoped entirely under
 // [data-design="bootstrap"], so loading it changes nothing until this hook
@@ -2527,15 +2527,15 @@ export function usePalette() {
 //   const { design, designs, setDesign } = useDesign();
 //   setDesign("bootstrap");
 
-const DESIGNS = ["nexa", "bootstrap"];
+const DESIGNS = ["fluxaway", "bootstrap"];
 
 export function useDesign() {
   const getResolved = () => {
     try {
-      const stored = localStorage.getItem("nexa-design");
+      const stored = localStorage.getItem("fluxaway-design");
       if (DESIGNS.includes(stored)) return stored;
     } catch {}
-    return "nexa";
+    return "fluxaway";
   };
 
   const [design, setDesignState] = useState(getResolved);
@@ -2543,20 +2543,20 @@ export function useDesign() {
   // Apply to DOM and persist.
   useEffect(() => {
     document.documentElement.setAttribute("data-design", design);
-    try { localStorage.setItem("nexa-design", design); } catch {}
+    try { localStorage.setItem("fluxaway-design", design); } catch {}
   }, [design]);
 
   // Stay in sync when another useDesign instance changes the design.
   useEffect(() => {
     const handler = (e) => setDesignState(e.detail);
-    window.addEventListener("nexa:designchange", handler);
-    return () => window.removeEventListener("nexa:designchange", handler);
+    window.addEventListener("fluxaway:designchange", handler);
+    return () => window.removeEventListener("fluxaway:designchange", handler);
   }, []);
 
   const setDesign = (next) => {
     if (!DESIGNS.includes(next)) return;
     setDesignState(next);
-    window.dispatchEvent(new CustomEvent("nexa:designchange", { detail: next }));
+    window.dispatchEvent(new CustomEvent("fluxaway:designchange", { detail: next }));
   };
 
   return { design, designs: DESIGNS, setDesign };

@@ -79,13 +79,6 @@ function App() {
   const initialRoute = useRef(true);
   const routeHeadingText = useRef(null);
 
-  // Keep bookmarks created before the FluxaWay rename working.
-  useEffect(() => {
-    if (path === "/addons/nexa-motion") {
-      navigate("/addons/fluxaway-motion");
-    }
-  }, [path, navigate]);
-
   // A new page starts at the top and moves keyboard/screen-reader focus to its
   // heading. Lazy routes can briefly leave the previous h1 mounted, so observe
   // the main landmark until its heading text actually changes.

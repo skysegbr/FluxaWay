@@ -62,13 +62,13 @@ return h("div", { ref: timeline.track("mark") }, "FW");`,
       { name: "gotoAndPlay / gotoAndStop", type: "functions", description: "Seek by time or label." },
     ],
     resources: [
-      { label: "Runtime showcase", href: "/examples/nexa-motion/" },
+      { label: "Runtime showcase", href: "/examples/fluxaway-motion/" },
       { label: "Motion editor", href: "/examples/motion-editor/" },
       { label: "Motion guide", href: "/docs/MOTION.md" },
     ],
     notes: [
       "Animate transform and opacity on reasonably-sized elements; avoid promoting giant canvas nodes.",
-      "See examples/nexa-motion and examples/motion-editor for the full runtime and visual authoring flow.",
+      "See examples/fluxaway-motion and examples/motion-editor for the full runtime and visual authoring flow.",
     ],
   },
 ];

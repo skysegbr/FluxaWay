@@ -20,8 +20,6 @@ jobs:
         run: python3 scripts/split_css.py --check
       - name: Check minified dist files are up to date
         run: python3 scripts/minify.py --check
-      - name: Check Nexa compatibility aliases are up to date
-        run: python3 scripts/sync_legacy_aliases.py --check
 
   browser-tests:
     name: Browser tests (${{ matrix.browser }})

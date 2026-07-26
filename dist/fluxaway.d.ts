@@ -365,7 +365,7 @@ export declare function useForm<
  * Use `ctx.provide(value, () => h(Child, null))` instead of a
  * `<Context.Provider>` component — FluxaWay evaluates children eagerly.
  */
-export interface NexaContext<T> {
+export interface FluxaWayContext<T> {
   /**
    * Makes `value` available to `useContext(ctx)` calls inside `renderFn`.
    * Returns whatever `renderFn()` returns.
@@ -385,13 +385,13 @@ export interface NexaContext<T> {
  * @example
  * const ThemeCtx = createContext('light');
  */
-export declare function createContext<T>(defaultValue: T): NexaContext<T>;
+export declare function createContext<T>(defaultValue: T): FluxaWayContext<T>;
 
 /**
  * Consume the nearest `.provide()` value for `context`.
  * Must be called unconditionally at the top of a component.
  */
-export declare function useContext<T>(context: NexaContext<T>): T;
+export declare function useContext<T>(context: FluxaWayContext<T>): T;
 
 // ── Mobile hooks ───────────────────────────────────────────────────────────
 
@@ -679,7 +679,7 @@ export declare function useContextMenu(): {
 /**
  * Reads and sets the `data-theme` attribute on `<html>`.
  * Persists the choice in `localStorage`; multiple instances stay in sync via
- * a `nexa:themechange` custom event.
+ * a `fluxaway:themechange` custom event.
  */
 export declare function useTheme(): {
   theme: "light" | "dark";
@@ -706,7 +706,7 @@ export declare function usePalette(): {
 
 // ── useDesign ──────────────────────────────────────────────────────────────
 
-export type Design = "nexa" | "bootstrap";
+export type Design = "fluxaway" | "bootstrap";
 
 /**
  * Switches the overall visual design via `data-design` on `<html>`.

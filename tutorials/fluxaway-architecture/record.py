@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Record the nexa-architecture (ZoomStage) video tutorial.
+"""Record the fluxaway-architecture (ZoomStage) video tutorial.
 
-Serves the repo root (the player embeds /examples/nexa-architecture/ in an
+Serves the repo root (the player embeds /examples/fluxaway-architecture/ in an
 iframe), drives the live deck with real clicks — NavDock arrows, an idle
 frame, the stage background — and saves the Playwright screen recording as
-nexa-architecture-tutorial.webm next to this script.
+fluxaway-architecture-tutorial.webm next to this script.
 
 Requires playwright (`pip install playwright && playwright install chromium`)
 — same dependency as the test suite, no Node.
 
 Run from anywhere:
-    python3 tutorials/nexa-architecture/record.py
+    python3 tutorials/fluxaway-architecture/record.py
 """
 
 import http.server
@@ -25,7 +25,7 @@ from playwright.sync_api import sync_playwright
 
 TUT_DIR = Path(__file__).resolve().parent
 REPO = TUT_DIR.parents[1]
-OUT = TUT_DIR / "nexa-architecture-tutorial.webm"
+OUT = TUT_DIR / "fluxaway-architecture-tutorial.webm"
 
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
@@ -48,7 +48,7 @@ def main():
         )
         page = ctx.new_page()
         page.on("pageerror", lambda e: print(f"page error: {e}", file=sys.stderr))
-        page.goto(f"http://127.0.0.1:{port}/tutorials/nexa-architecture/index.html")
+        page.goto(f"http://127.0.0.1:{port}/tutorials/fluxaway-architecture/index.html")
         page.wait_for_function("() => typeof window.__setStep === 'function'")
 
         deck = page.frame_locator(".tut-frame")

@@ -87,7 +87,7 @@ export function Hero() {
       h(
         "div",
         { className: "ml-hero-copy" },
-        h("p", { className: "ml-kicker", ref: intro.track("eyebrow") }, "NEXA MOTION / 001"),
+        h("p", { className: "ml-kicker", ref: intro.track("eyebrow") }, "FLUXAWAY MOTION / 001"),
         h(
           "h1",
           null,

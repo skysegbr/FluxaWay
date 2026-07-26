@@ -15,7 +15,7 @@ to category imports.
 
 Result across the 17 examples that use fluxaway-components: **components payload
 −45% (1 856 KB → 1 015 KB)**, total JS −20%. Pages that use a narrow slice
-(basic, core, ssr, zoom-stage, nexa-deck) dropped ~86–90%; pages that use
+(basic, core, ssr, zoom-stage) dropped ~86–90%; pages that use
 every category (complete-page, the components gallery) pay +2.8% for the
 extra module headers — the expected worst case of the trade-off.
 

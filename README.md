@@ -98,16 +98,6 @@ components to applications. **Way** is the freedom to choose modules, patterns,
 and architecture without adopting a mandatory toolchain. The full story and
 identity guidance live in [docs/BRAND.md](./docs/BRAND.md).
 
-## Nexa compatibility
-
-FluxaWay is the new name of the framework previously called Nexa. New code
-should import the canonical files whose names start with `fluxaway`, such as
-`dist/fluxaway.js`. Small aliases whose names start with `nexa`, such as
-`dist/nexa.js`, remain available during the compatibility window, so existing
-applications do not need an immediate migration. Runtime integration keys such as
-`nexa-theme`, `data-nexa-head`, and `nexa:*` events remain stable in this
-release.
-
 ## Using The CDN
 
 FluxaWay is published as a public GitHub repository, so you can load the browser
@@ -198,12 +188,12 @@ Minimal page:
 tag and pin the CDN URL to it, for example:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.2/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.20.0/dist/fluxaway.js
 ```
 
 ### Subresource Integrity (SRI) — pin the bytes, not just the tag
 
-Pinning to `@v0.19.2` pins the *URL*, but a git tag can still be moved, so it is
+Pinning to `@v0.20.0` pins the *URL*, but a git tag can still be moved, so it is
 not a cryptographic guarantee of *which bytes* run. For the strongest
 supply-chain posture — the whole reason FluxaWay ships zero dependencies — add an
 `integrity` hash so the browser refuses to execute a file that doesn't match,
@@ -213,13 +203,13 @@ even if the CDN or the tag is ever tampered with. Pair it with
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.2/dist/fluxaway-ui.min.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.20.0/dist/fluxaway-ui.min.css"
   integrity="sha384-…"
   crossorigin="anonymous"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.2/dist/fluxaway.min.js"
+  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.20.0/dist/fluxaway.min.js"
   integrity="sha384-…"
   crossorigin="anonymous"
 ></script>
@@ -233,7 +223,7 @@ local file or straight from the CDN URL:
 python -c "import base64,hashlib,sys;print('sha384-'+base64.b64encode(hashlib.sha384(open(sys.argv[1],'rb').read()).digest()).decode())" dist/fluxaway.min.js
 
 # from the pinned CDN URL (verifies what will actually be served)
-python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.19.2/dist/fluxaway.min.js
+python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.20.0/dist/fluxaway.min.js
 ```
 
 **ES-module caveat.** `integrity` only covers the file the browser fetches
@@ -377,9 +367,9 @@ location /dist/ {
 is a footgun on an *unversioned* path like `/dist/fluxaway.js` served from your own
 origin: after you update the file, browsers keep the stale copy for a year.
 Immutable caching is safe only when the URL changes whenever the content does —
-a pinned CDN tag (`@v0.19.2`), a bundler output filename, or a versioned path
+a pinned CDN tag (`@v0.20.0`), a bundler output filename, or a versioned path
 such as `/dist/0.19.2/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
-`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.19.2`
+`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.20.0`
 query and bump it on release.
 
 Pair this with [SRI](#subresource-integrity-sri--pin-the-bytes-not-just-the-tag)
@@ -425,10 +415,10 @@ python -m http.server 8080
 | [examples/drug-recalls](./examples/drug-recalls) | Live dashboard over the openFDA drug recall API: debounced search, classification/status filters, donut + bar charts, sortable table, recall detail dialog |
 | [examples/storefront](./examples/storefront) | Domain-componentized architecture: `catalog/`, `cart/`, `auth/` each own their own `createContext` + state hook, composed once in `app.js`, integrated through `Shell.js`. Products fetched live from fakestoreapi.com |
 | [examples/designer](./examples/designer) | Visual UI builder: drag components from a palette onto a canvas, edit props/styles/states in an inspector, live CSS + code export |
-| [examples/nexa-atlas](./examples/nexa-atlas) | Atlas-themed `ZoomStage` tour of FluxaWay: click any background frame to zoom straight to it, plus a live demo frame running real `useState`/`useTheme` mid-presentation |
-| [examples/nexa-architecture](./examples/nexa-architecture) | Modern `ZoomStage` presentation for solution architects: no-build runtime, technical contracts, integration paths, trade-offs, and adoption guidance |
+| [examples/fluxaway-atlas](./examples/fluxaway-atlas) | Atlas-themed `ZoomStage` tour of FluxaWay: click any background frame to zoom straight to it, plus a live demo frame running real `useState`/`useTheme` mid-presentation |
+| [examples/fluxaway-architecture](./examples/fluxaway-architecture) | Modern `ZoomStage` presentation for solution architects: no-build runtime, technical contracts, integration paths, trade-offs, and adoption guidance |
 | [examples/star-atlas](./examples/star-atlas) | Zoomable night sky showcasing `ZoomStage`'s `freeZoom`: scroll/pinch to zoom and drag to roam a starfield of SVG constellations, with a guided tour that flies between them, an auto-play tour, clickable dot rail, and aria-live announcements — all self-contained SVG/CSS, no images |
-| [examples/nexa-motion](./examples/nexa-motion) | Flash-style animated intro on `fluxaway-motion`: preloader, logo flying in with `outBack`, staggered letter cascade, frame scripts, a nested looping movie clip, SKIP INTRO, and a control deck with scrubber, reverse, speed, and `gotoAndPlay` scene jumps |
+| [examples/fluxaway-motion](./examples/fluxaway-motion) | Flash-style animated intro on `fluxaway-motion`: preloader, logo flying in with `outBack`, staggered letter cascade, frame scripts, a nested looping movie clip, SKIP INTRO, and a control deck with scrubber, reverse, speed, and `gotoAndPlay` scene jumps |
 | [examples/motion-editor](./examples/motion-editor) | Flash-8-style visual authoring IDE on the real `fluxaway-motion` runtime: frame-based timeline (fps, dots, tween spans, zoom, labels, loop), auto-key on stage drag, Free Transform (rotate/scale at the playhead), multi-actor layers with folders, animated masks and guide layers, multi-scene movies, linked symbols with nested MovieClip editing, vector Line/Pencil tools, onion skinning with ruler brackets, per-actor Behavior panel and two-way `useTimeline()` code editing, undo/redo, save/load, versioned project schema |
 | [examples/motion-landing](./examples/motion-landing) | Animated product landing page for FluxaWay Motion, built on the add-on itself: hero timeline, scroll-driven scenes, replayable intro |
 | [examples/palate-journey](./examples/palate-journey) | Ten-course food & drink tasting journey: full-screen course cards with staggered `fluxaway-motion` timelines, dot-rail navigation and a "serve for me" autopilot |
@@ -632,7 +622,7 @@ directly as an inline style, and `fluxaway-ui.css` derives `--m-primary-hover`,
 |---|---|
 | `useDesign()` | Returns `{ design, designs, setDesign }` |
 
-FluxaWay's default look ("nexa") needs nothing beyond `fluxaway-ui.css`. To offer a
+FluxaWay's default look ("fluxaway") needs nothing beyond `fluxaway-ui.css`. To offer a
 Bootstrap 5 visual skin as an *option*, also load `dist/fluxaway-bootstrap.css`
 and switch `data-design="bootstrap"` at runtime:
 
@@ -643,7 +633,7 @@ and switch `data-design="bootstrap"` at runtime:
 
 ```js
 const { design, designs, setDesign } = useDesign();
-// design: "nexa" | "bootstrap"
+// design: "fluxaway" | "bootstrap"
 // designs: the full list, for building a picker
 // setDesign("bootstrap")
 ```
@@ -651,7 +641,7 @@ const { design, designs, setDesign } = useDesign();
 This is independent of `useTheme` and `usePalette` — light/dark and accent
 color both keep working under either design. `fluxaway-bootstrap.css` is scoped
 entirely under `[data-design="bootstrap"]`; if it isn't loaded, or the design
-is left at the default `"nexa"`, nothing changes. It re-points FluxaWay's
+is left at the default `"fluxaway"`, nothing changes. It re-points FluxaWay's
 existing `--m-*` tokens (color, radius, shadow, font) at Bootstrap 5's real
 values, plus a handful of grouped overrides for the few things that aren't
 token-driven (font-weight, focus-ring style, badge shape).
@@ -1148,7 +1138,7 @@ steps — sprite sheets via `backgroundPosition`). A component with its own
 `useTimeline` is a movie clip — nest them freely.
 `stagger(keyframes, eachMs, index)` builds cascade entrances;
 `createTimeline(spec)` is the imperative variant for use outside components.
-See [examples/nexa-motion](./examples/nexa-motion) for the full 2003-intro
+See [examples/fluxaway-motion](./examples/fluxaway-motion) for the full 2003-intro
 treatment, and [examples/motion-editor](./examples/motion-editor) for the
 Flash-IDE-style visual timeline editor with live code export.
 
@@ -1215,7 +1205,7 @@ don't need to manage `z-index` for this.
 Once a deck has more than a couple of frame kinds (title, bullets, code, …),
 give each kind its own component under `components/` with a small
 dispatcher for `data.kind`, rather than inlining every frame's rendering in
-`app.js` — see [examples/nexa-architecture](./examples/nexa-architecture) for
+`app.js` — see [examples/fluxaway-architecture](./examples/fluxaway-architecture) for
 the pattern (`components/FrameContent.js`) and a full presentation with a nav
 dock, progress indicator, and keyboard navigation.
 

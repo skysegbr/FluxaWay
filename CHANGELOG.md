@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-07-26
+
+### Removed
+- **Every Nexa compatibility surface is gone.** The 67 `dist/nexa*` forwarding
+  aliases, their generator (`scripts/sync_legacy_aliases.py`) and its CI gate,
+  the `docs/NEXA_UI.md` and `scripts/validate_nexa.py` forwarding entry points,
+  and the orphaned `assets/nexa-logo-*.png` files were all deleted. `fluxaway*`
+  is now the only public surface. **Breaking:** any application loading a
+  `dist/nexa*` path — vendored or through jsDelivr on `@main` — stops
+  resolving. Pinning a released tag such as `@v0.19.2` keeps serving the
+  aliases; migrating means renaming the import to its `fluxaway*` equivalent,
+  which is a pure rename with no API change.
+- **`useDesign()` no longer accepts the pre-rename `"nexa"` value.** The hook
+  takes `"fluxaway"` or `"bootstrap"`; the normalization path and the
+  `LegacyDesign` type were dropped.
+
+### Changed
+- **Runtime integration keys and events now carry the FluxaWay name.**
+  `localStorage` moved from `nexa-theme` / `nexa-palette` /
+  `nexa-palette-custom-color` / `nexa-design` to their `fluxaway-*` spellings,
+  the `nexa:themechange` / `:palettechange` / `:designchange` events became
+  `fluxaway:*`, and the `useHead` marker attribute became `data-fluxaway-head`.
+  **Breaking:** these keys were previously documented as stable contracts, and
+  no migration shim reads the old ones — every visitor's saved theme, palette
+  and design preference resets to the default once, then persists normally.
+- Internal identifiers followed: portal placeholder comments, the `useId`
+  prefix, the default `id` of Dialog/Drawer/Tooltip/CommandPalette, the
+  exported `NexaContext` type (now `FluxaWayContext`), and the test harness
+  globals.
+- The motion editor exports projects as `.fluxaway-motion.json`. This also
+  fixes a round-trip bug: export wrote `.nexa-motion.json` while import only
+  stripped `.fluxaway-motion.json`, so re-importing a project renamed it to
+  `<name>.nexa-motion`.
+- Example and tutorial directories are `fluxaway-architecture`,
+  `fluxaway-atlas` and `fluxaway-motion`, with their recorded tutorial videos
+  renamed to match. The docs-site route `#/addons/nexa-motion` no longer
+  redirects.
+- `docs/AI_QA.md` gate `1.4` and `docs/AI_QA_SCENARIOS.md` `SC-BUILD-06`
+  covered the deleted alias generator and were removed; both tables were
+  renumbered, which also closed a pre-existing duplicate `SC-BUILD-09`.
+
+### Fixed
+- **`scripts/run_priority_flows.py` pointed at the pre-rename example URLs**,
+  which would have 404'd on the next QA run.
+- **`scripts/run_example_qa.py`'s CSS assertions were passing vacuously.** The
+  probes matched `/dist/nexa-ui*`, which no example loads any more, so
+  `fluxaway_css_loaded`, `theme_tokens` and `palette_tokens` returned true
+  without testing anything and the category-CSS parity check never ran.
+- Brand text still reading `NEXA` on screen in the motion-landing and
+  palate-journey examples — in the motion-landing header the accessible name
+  already said FluxaWay while the visible label did not.
+
 ## [0.19.2] - 2026-07-26
 
 ### Fixed

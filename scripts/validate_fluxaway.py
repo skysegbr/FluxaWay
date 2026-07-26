@@ -71,17 +71,16 @@ CHANGELOG_VERSION_RE = re.compile(r"^## \[(\d+\.\d+\.\d+)\]", re.MULTILINE)
 # components render unstyled — a silent failure the monolith never had.
 CSS_CATEGORIES = ("core", "forms", "overlay", "data", "nav", "theme")
 CSS_LOAD_ORDER = ("base",) + CSS_CATEGORIES
-# Accept legacy Nexa aliases while using FluxaWay as the canonical source.
 # The capture is empty ("") for the complete monolith.
 FLUXAWAY_UI_LINK_RE = re.compile(
-    r'href="/dist/(?:fluxaway|nexa)-ui(?:-([a-z]+))?(?:\.min)?\.css"'
+    r'href="/dist/fluxaway-ui(?:-([a-z]+))?(?:\.min)?\.css"'
 )
 FLUXAWAY_UI_RUNTIME_RE = re.compile(
-    r'["\']/dist/(?:fluxaway|nexa)-ui-([a-z]+)(?:\.min)?\.css["\']'
+    r'["\']/dist/fluxaway-ui-([a-z]+)(?:\.min)?\.css["\']'
 )
 FLUXAWAY_COMPONENT_IMPORT_RE = re.compile(
     r"import\s*(?:([\w$]+)\s*,?\s*)?(?:\{([^}]*)\})?\s*from\s*"
-    r"['\"][^'\"]*(?:fluxaway|nexa)-components[^'\"]*['\"]",
+    r"['\"][^'\"]*fluxaway-components[^'\"]*['\"]",
     re.DOTALL,
 )
 CSS_CLASS_SELECTOR_RE = re.compile(r"\.(m-[A-Za-z0-9_-]+)")

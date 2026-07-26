@@ -51,7 +51,7 @@ export function ClosingCta() {
     ),
     h(
       "a",
-      { className: "ml-closing-action", href: "../nexa-motion/", ref: tl.track("action") },
+      { className: "ml-closing-action", href: "../fluxaway-motion/", ref: tl.track("action") },
       h("span", null, "View timeline demo"),
       h("b", null, "↗"),
     ),

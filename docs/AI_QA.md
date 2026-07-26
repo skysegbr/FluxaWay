@@ -88,11 +88,10 @@ assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.6.
 | 1.1 | Static validation | `python scripts/validate_fluxaway.py` | `FluxaWay static validation passed.` (exit 0) | yes |
 | 1.2 | Category CSS in sync | `python scripts/split_css.py --check` | `All 7 category CSS files are up to date.` | yes |
 | 1.3 | Minified files in sync | `python scripts/minify.py --check` | `All N minified outputs are up to date.` | yes |
-| 1.4 | Legacy aliases in sync | `python scripts/sync_legacy_aliases.py --check` | all Nexa compatibility aliases are up to date | yes |
-| 1.5 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
-| 1.6 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
-| 1.7 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
-| 1.8 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
+| 1.4 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
+| 1.5 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
+| 1.6 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
+| 1.7 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
 
 **1.1 Static validation** catches: unresolved local imports, missing HTML/JS
 assets, unbalanced brackets, the 250-line monolith guard, `package.json`↔
@@ -106,9 +105,6 @@ render). Any output other than `FluxaWay static validation passed.` lists concre
 The fix is to run the generator without `--check` (`python scripts/split_css.py`
 then `python scripts/minify.py`) and commit the result — **do not** hand-edit a
 `.min.*` or `fluxaway-ui-<cat>.css` file (they're generated; edit the source).
-
-**1.4** proves every deprecated Nexa filename forwards to its canonical
-FluxaWay artifact. Regenerate aliases only after CSS splitting and minification.
 
 **1.5 must pass on all three engines** (chromium, firefox, webkit) — FluxaWay
 targets each. A test that passes on chromium but fails on webkit is a real bug,
@@ -126,7 +122,7 @@ lock, restore and move focus without overflow.
 
 `tests/index.html` imports `dist/fluxaway.js` and asserts against the real DOM — no
 test framework, no build. `tests/run.js` imports every `*.test.js` and exposes
-the outcome on `window.__nexaTestResults`, which `run_browser_tests.py` reads.
+the outcome on `window.__fluxawayTestResults`, which `run_browser_tests.py` reads.
 
 Coverage (~300 tests across 13 files):
 
@@ -169,7 +165,7 @@ These are AI-executable with playwright — you don't need a human to "look".
 
 Discover the apps: `ls examples/`. Prioritize the broad ones and the add-on
 demos: `docs-site`, `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
-`nexa-architecture`/`nexa-atlas` (ZoomStage), `star-atlas` (ZoomStage
+`fluxaway-architecture`/`fluxaway-atlas` (ZoomStage), `star-atlas` (ZoomStage
 `freeZoom`), `fluxaway-motion`/`motion-editor` (motion), `designer`, `mindmap`,
 `gallery`.
 
@@ -224,7 +220,7 @@ diffs — insert it where the category links were.
 
 ### 3.3 Add-on smoke
 
-- **ZoomStage** (`nexa-architecture`, `nexa-atlas`): frames render; clicking a
+- **ZoomStage** (`fluxaway-architecture`, `fluxaway-atlas`): frames render; clicking a
   thumbnail/next flies the camera; keyboard (arrows) advances; no error on the
   last→first wrap. `star-atlas` covers `freeZoom` (wheel zoom, drag pan,
   `fitAll`/`reset`).
