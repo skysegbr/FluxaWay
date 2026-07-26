@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-07-26
+
+### Added
+- **Responsive “On this page” navigation for the docs-site.** Reference and
+  getting-started pages now expose the same scroll-spy as a compact native
+  disclosure at widths up to 1200 px, including the tablet layout where the
+  main sidebar remains visible. Selecting a section collapses the disclosure
+  and moves focus to its heading.
+
+### Changed
+- **Docs-site route navigation now moves focus to the new page heading.** The
+  shell waits for lazy content to replace the previous heading before focusing
+  it, so sidebar, search, previous/next and mobile Drawer navigation announce
+  the destination consistently. The existing sidebar auto-scroll behavior is
+  now protected by browser regression coverage, and the docs smoke expands to
+  13 checks across desktop, tablet and mobile.
+
 ## [0.17.2] - 2026-07-26
 
 ### Fixed
