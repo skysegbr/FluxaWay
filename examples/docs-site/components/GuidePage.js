@@ -5,6 +5,8 @@ import { PageToc } from "./reference/PageToc.js";
 import { GUIDE_STEPS } from "../data.js";
 
 export function GuidePage() {
+  const toc = GUIDE_STEPS.map((step) => ({ id: step.id, title: step.title }));
+
   useHead({
     title: "Getting started — Nexa Docs",
     meta: [{ name: "description", content: "Run Nexa in the browser in four steps." }],
@@ -22,6 +24,7 @@ export function GuidePage() {
         { className: "nd-article-lead" },
         "Four steps, none of which install anything. The last one does not even download a file.",
       ),
+      h(PageToc, { variant: "mobile", items: toc }),
 
       GUIDE_STEPS.map((step) =>
         h(
@@ -44,7 +47,7 @@ export function GuidePage() {
         ".",
       ),
     ),
-    h(PageToc, { items: GUIDE_STEPS.map((step) => ({ id: step.id, title: step.title })) }),
+    h(PageToc, { variant: "desktop", items: toc }),
   );
 }
 

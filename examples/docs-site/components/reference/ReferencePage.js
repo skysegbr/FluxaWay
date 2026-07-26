@@ -52,6 +52,7 @@ export function ReferencePage({ entry }) {
         h(Badge, { className: "nd-article-badge" }, entry.module),
       ),
       h("p", { className: "nd-article-lead" }, entry.summary),
+      h(PageToc, { variant: "mobile", items: toc }),
       h(CodeBlock, { code: importLine, label: "Import" }),
       entry.signature
         ? h("figure", { className: "nd-signature" }, h("code", null, entry.signature))
@@ -117,7 +118,7 @@ export function ReferencePage({ entry }) {
           : null,
       ),
     ),
-    h(PageToc, { items: toc }),
+    h(PageToc, { variant: "desktop", items: toc }),
   );
 }
 
