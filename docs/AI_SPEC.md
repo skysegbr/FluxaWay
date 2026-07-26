@@ -1029,11 +1029,26 @@ minify/gzip).
 ```js
 // Button
 h(Button, {
-  variant: 'contained',   // 'text' | 'contained' | 'tonal' | 'danger' | 'outline'
+  variant: 'outline',     // 'text' | 'contained' | 'tonal' | 'danger' | 'outline'
+  icon: 'close',          // optional leading icon; 'close' is built in, or pass a VNode/text icon
+  accent: true,           // optional theme-colored leading border + icon emphasis
   type: 'button',         // 'button' | 'submit' | 'reset'
   disabled: false,
   onClick: fn,
-}, 'Label')
+}, 'Clear filters')
+
+// Icon-only Button: ariaLabel or ariaLabelledby is required at runtime.
+h(Button, {
+  variant: 'outline',
+  icon: 'close',
+  ariaLabel: 'Close',
+  onClick: close,
+})
+
+// `outline` is the canonical name. `outlined` remains a compatibility alias
+// for early declarations/examples, but new code should use `outline`.
+// `accent` composes especially well with `outline`; it uses --m-primary and
+// logical border properties, so it follows palettes, themes and RTL layouts.
 
 // IconButton — round button for icons
 h(IconButton, {

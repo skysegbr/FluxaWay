@@ -139,6 +139,7 @@ Buttons:
 h("button", { className: "m-button" }, "Text")
 h("button", { className: "m-button m-button-contained" }, "Save")
 h("button", { className: "m-button m-button-tonal" }, "Filter")
+h("button", { className: "m-button m-button-outline" }, "Clear")
 h("button", { className: "m-button m-button-danger" }, "Remove")
 ```
 
@@ -146,8 +147,23 @@ Or with component helpers:
 
 ```js
 h(Button, { variant: "contained", onClick: save }, "Save")
+h(Button, {
+  variant: "outline",
+  icon: "close",
+  accent: true,
+  disabled: !filtersActive,
+  onClick: clearFilters,
+}, "Clear filters")
+h(Button, { variant: "outline", icon: "close", ariaLabel: "Close" })
 h(IconButton, { label: "Previous" }, "<")
 ```
+
+`outline` is the canonical variant name (`outlined` is retained as a legacy
+alias). `icon` adds a leading icon and accepts the built-in name `"close"` or
+any Nexa VNode/text icon. When the button has no visible text, `ariaLabel` or
+`ariaLabelledby` is required. `accent: true` adds a theme-colored leading
+border and emphasizes the icon using `--m-primary`; it is most useful with
+`variant: "outline"`.
 
 Fields:
 

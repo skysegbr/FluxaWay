@@ -8,6 +8,8 @@ export const BASIC_ENTRIES = [
     propDefs: [
       { key: 'children', label: 'Text', type: 'text' },
       { key: 'variant', label: 'Variant', type: 'select', options: ['text', 'contained', 'tonal', 'outline', 'danger'] },
+      { key: 'icon', label: 'Leading icon (ex: close)', type: 'text' },
+      { key: 'accent', label: 'Leading accent', type: 'boolean' },
       { key: 'disabled', label: 'Disabled', type: 'boolean' },
     ],
   },

@@ -1,4 +1,5 @@
 @import "./components/switches/PageSwitches.css";
+@import "./components/buttons/PageButtons.css";
 @import "./components/primitives/SidebarNav.css";
 @import "./components/accordion/PageAccordion.css";
 

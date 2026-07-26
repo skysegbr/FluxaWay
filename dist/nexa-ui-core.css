@@ -605,12 +605,72 @@ textarea.m-field {
   border-color: var(--m-border);
   background: transparent;
   color: var(--m-text);
+  transition:
+    border-color var(--m-transition-fast),
+    background-color var(--m-transition-fast),
+    color var(--m-transition-fast);
 }
 
-.m-button-outline:hover {
+.m-button-outline:focus-visible {
+  outline-color: color-mix(in srgb, var(--m-focus) 50%, var(--m-text));
+}
+
+.m-button-outline:hover:not(:disabled) {
   border-color: var(--m-primary);
+  background: var(--m-surface-raised);
+  color: var(--m-text);
+}
+
+.m-button-outline:disabled {
+  border-color: var(--m-border);
+  background: var(--m-surface-muted);
+  color: var(--m-text-muted);
+  cursor: not-allowed;
+}
+
+.m-button-with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--m-space-2);
+}
+
+.m-button-icon-only {
+  padding-inline: 0;
+}
+
+.m-button-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
+  place-items: center;
+  color: currentColor;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.m-button-icon > :is(svg, img) {
+  width: 100%;
+  height: 100%;
+}
+
+.m-button-accent {
+  border-inline-start-width: var(--m-space-1);
+  border-inline-start-color: var(--m-primary);
+  padding-inline-start: var(--m-space-3);
+}
+
+.m-button-accent .m-button-icon {
   color: var(--m-primary);
-  background: var(--m-primary-soft);
+}
+
+.m-button-outline.m-button-accent:disabled {
+  border-inline-start-color: var(--m-text-muted);
+}
+
+.m-button-accent.m-button-icon-only {
+  padding-inline: 0;
 }
 
 .m-button-full { width: 100%; }

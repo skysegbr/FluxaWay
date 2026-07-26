@@ -50,7 +50,7 @@ function App() {
         "div",
         { className: "ssr-row" },
         h(Button, { variant: "contained", onClick: () => setN((v) => v + 1) }, "Add"),
-        h(Button, { variant: "outlined", onClick: () => setN(0) }, "Reset"),
+        h(Button, { variant: "outline", onClick: () => setN(0) }, "Reset"),
       ),
     ),
   );

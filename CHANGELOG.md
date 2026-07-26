@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **`Button` `outline` variant** — the existing token-based `m-button-outline` visual is now available through the public `Button` API (with the legacy `outlined` spelling kept as an alias). `Button` also accepts a leading `icon` (`"close"` built in, or any VNode/text icon), an `accent` modifier for a theme-colored leading border/icon, enforces an accessible name for icon-only usage, and documents/tests native click, keyboard, disabled, light/dark-theme, focus-ring and contrast behavior. The components showcase now has a dedicated Buttons catalog, and the designer exposes the official variant and modifier.
+
 ## [0.16.0] - 2026-07-20
 
 ### Added

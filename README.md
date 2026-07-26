@@ -1036,7 +1036,7 @@ version of Nexa.
 | `AvatarGroup` | `avatars`, `max`, `size` — overlapping stack, extras collapse into a `+N` counter |
 | `Badge` | — |
 | `Breadcrumb` | `items` (`{ label, href?, onClick?, icon? }`), `separator` — last item gets `aria-current="page"` |
-| `Button` | `variant` (text · contained · tonal · danger), `type`, `disabled` |
+| `Button` | `variant` (text · contained · tonal · outline · danger), `icon`, `accent`, `type`, `disabled` — `accent` adds a token-colored leading border; icon-only usage requires `ariaLabel`/`ariaLabelledby` |
 | `Card` | `padded` — combine with `m-card-media`/`-zoom`, `m-card-reveal`, `m-card-float`, `m-card-glow` (+ `-amber`/`-violet`/`-emerald`), `m-card-expand-group`/`-expand`, or `m-card-pricing` for the CSS-only card variants (see `docs/AI_SPEC.md` §9) |
 | `Checkbox` | `id`, `label`, `checked`, `onChange` |
 | `Chip` | `active` |

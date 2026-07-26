@@ -10,6 +10,7 @@ import { PageContextMenu } from "./components/PageContextMenu.js";
 import { PageFileDrop }    from "./components/PageFileDrop.js";
 import { PageCodeEditor }  from "./components/PageCodeEditor.js";
 import { PageToasts }      from "./components/PageToasts.js";
+import { PageButtons }     from "./components/buttons/PageButtons.js";
 import { PagePrimitives }  from "./components/primitives/PagePrimitives.js";
 import { PageCards }       from "./components/cards/PageCards.js";
 import { PageAccordion }   from "./components/accordion/PageAccordion.js";
@@ -26,6 +27,7 @@ const EXAMPLE_PAGES = [
   { key: "filedrop",   label: "File Drop",             path: "/filedrop",   icon: "bi-cloud-upload" },
   { key: "editor",     label: "Code Editor",           path: "/editor",     icon: "bi-code-slash" },
   { key: "toasts",     label: "Toasts & Dialog",       path: "/toasts",     icon: "bi-bell" },
+  { key: "buttons",    label: "Buttons",                path: "/buttons",    icon: "bi-hand-index" },
   { key: "primitives", label: "UI Primitives",         path: "/primitives", icon: "bi-stars" },
   { key: "cards",      label: "Cards",                 path: "/cards",      icon: "bi-postcard" },
   { key: "accordion",  label: "Accordion",             path: "/accordion",  icon: "bi-chevron-expand" },
@@ -84,6 +86,7 @@ function renderPage(path, toast) {
   if (path === "/filedrop")  return h(PageFileDrop,   { toast });
   if (path === "/editor")    return h(PageCodeEditor);
   if (path === "/toasts")    return h(PageToasts,     { toast });
+  if (path === "/buttons")   return h(PageButtons);
   if (path === "/primitives") return h(PagePrimitives);
   if (path === "/cards")     return h(PageCards);
   if (path === "/accordion") return h(PageAccordion);

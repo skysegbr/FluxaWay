@@ -22,9 +22,13 @@ type ExtraProps = Record<string, unknown>;
 // ── Button ─────────────────────────────────────────────────────────────────
 
 export declare function Button(props?: {
-  variant?: "text" | "outlined" | "tonal" | "contained";
+  variant?: "text" | "contained" | "tonal" | "danger" | "outline" | "outlined";
+  icon?: VNode;
+  accent?: boolean;
   className?: string;
   type?: "button" | "submit" | "reset";
+  ariaLabel?: string;
+  ariaLabelledby?: string;
   children?: VNode;
 } & ExtraProps): VNode;
 
@@ -32,7 +36,7 @@ export declare function Button(props?: {
 
 export declare function IconButton(props?: {
   label: string;
-  variant?: "text" | "outlined" | "tonal" | "contained";
+  variant?: "text" | "contained" | "tonal" | "danger" | "outline" | "outlined";
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;

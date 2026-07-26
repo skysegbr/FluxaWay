@@ -22,6 +22,13 @@ const buttonVariants = {
   contained: "m-button m-button-contained",
   tonal: "m-button m-button-tonal",
   danger: "m-button m-button-danger",
+  outline: "m-button m-button-outline",
+  // Backward-compatible alias: early declarations/examples used "outlined".
+  outlined: "m-button m-button-outline",
+};
+
+const namedButtonIcons = {
+  close: "×",
 };
 
 const alertVariants = {
@@ -33,18 +40,52 @@ const alertVariants = {
 
 export function Button({
   variant = "text",
+  icon,
+  accent = false,
   className = "",
   type = "button",
+  ariaLabel,
+  ariaLabelledby,
   children,
   ...props
 } = {}) {
+  const hasIcon = icon !== undefined && icon !== null && icon !== false;
+  const hasLabel = hasChildren(children);
+
+  if (
+    hasIcon &&
+    !hasLabel &&
+    !ariaLabel &&
+    !ariaLabelledby &&
+    !props["aria-label"] &&
+    !props["aria-labelledby"]
+  ) {
+    throw new TypeError(
+      "Button: icon-only buttons require `ariaLabel` or `ariaLabelledby`.",
+    );
+  }
+
   return h(
     "button",
     {
+      ariaLabel,
+      ariaLabelledby,
       ...props,
       type,
-      className: joinClasses(buttonVariants[variant] || buttonVariants.text, className),
+      className: joinClasses(
+        buttonVariants[variant] || buttonVariants.text,
+        hasIcon && "m-button-with-icon",
+        hasIcon && !hasLabel && "m-button-icon-only",
+        accent && "m-button-accent",
+        className,
+      ),
     },
+    hasIcon &&
+      h(
+        "span",
+        { className: "m-button-icon", ariaHidden: "true" },
+        icon === "close" ? namedButtonIcons.close : icon,
+      ),
     children,
   );
 }

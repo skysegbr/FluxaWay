@@ -1,0 +1,48 @@
+.button-catalog-header {
+  display: grid;
+  gap: var(--m-space-2);
+}
+
+.button-catalog-header > * {
+  margin-block: 0;
+}
+
+.button-catalog-section {
+  display: grid;
+  gap: var(--m-space-4);
+  padding: var(--m-space-5);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-lg);
+  background: var(--m-surface);
+}
+
+.button-catalog-section.is-featured {
+  background: var(--m-surface-soft);
+}
+
+.button-catalog-copy {
+  display: grid;
+  gap: var(--m-space-1);
+}
+
+.button-catalog-copy h3,
+.button-catalog-copy p {
+  margin: 0;
+}
+
+.button-catalog-copy h3 {
+  color: var(--m-text);
+  font-size: var(--m-font-size-base);
+}
+
+.button-catalog-copy p {
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+}
+
+.button-catalog-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--m-space-3);
+}

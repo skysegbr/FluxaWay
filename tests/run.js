@@ -3,6 +3,7 @@ import "./new-features.test.js";
 import "./hooks.test.js";
 import "./ssr.test.js";
 import "./a11y.test.js";
+import "./button.test.js";
 import "./coverage.test.js";
 import "./components-new.test.js";
 import "./categories.test.js";
