@@ -9,6 +9,7 @@ import {
   useRouter,
   useRoutes,
   useEffect,
+  useRef,
   useMediaQuery,
 } from "/dist/nexa.js";
 import { Drawer } from "/dist/nexa-components-overlay.js";
@@ -75,11 +76,60 @@ function App() {
   const mobile = useMediaQuery("(max-width: 900px)");
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const initialRoute = useRef(true);
+  const routeHeadingText = useRef(null);
 
-  // A new page should start at the top, not wherever the previous one was.
+  // A new page starts at the top and moves keyboard/screen-reader focus to its
+  // heading. Lazy routes can briefly leave the previous h1 mounted, so observe
+  // the main landmark until its heading text actually changes.
   useEffect(() => {
     window.scrollTo({ top: 0 });
     setMenuOpen(false);
+
+    const main = document.getElementById("docs-content");
+    let focusFrame;
+    let observer;
+
+    const captureInitialHeading = () => {
+      const heading = main?.querySelector("h1");
+      if (!heading) return false;
+      routeHeadingText.current = heading.textContent;
+      return true;
+    };
+
+    if (initialRoute.current) {
+      initialRoute.current = false;
+      if (!captureInitialHeading() && main) {
+        observer = new MutationObserver(() => {
+          if (captureInitialHeading()) observer.disconnect();
+        });
+        observer.observe(main, { childList: true, subtree: true });
+      }
+      return () => observer?.disconnect();
+    }
+
+    const previousHeadingText = routeHeadingText.current;
+    const focusNewHeading = () => {
+      const heading = main?.querySelector("h1");
+      if (!heading || heading.textContent === previousHeadingText) return false;
+      routeHeadingText.current = heading.textContent;
+      observer?.disconnect();
+      focusFrame = requestAnimationFrame(() => {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      });
+      return true;
+    };
+
+    if (!focusNewHeading() && main) {
+      observer = new MutationObserver(focusNewHeading);
+      observer.observe(main, { childList: true, subtree: true, characterData: true });
+    }
+
+    return () => {
+      observer?.disconnect();
+      if (focusFrame) cancelAnimationFrame(focusFrame);
+    };
   }, [path]);
 
   const goTo = (target) => {

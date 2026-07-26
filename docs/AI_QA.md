@@ -112,8 +112,9 @@ not flake; report the engine.
 
 **1.5** protects the documentation app itself: home payload stays lazy,
 category CSS and CodeMirror load on demand, search navigates, all four add-on
-pages render, the catalog matches its 98 descriptors, and the mobile drawer
-locks scroll, closes with Escape and restores focus.
+pages render, the catalog matches its 98 descriptors, route changes focus the
+new heading, the sidebar reveals its active page, and mobile navigation/TOC
+lock, restore and move focus without overflow.
 
 ---
 

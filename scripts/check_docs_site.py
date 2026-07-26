@@ -7,6 +7,7 @@ import argparse
 import http.server
 import sys
 import threading
+import traceback
 from functools import partial
 from pathlib import Path
 
@@ -62,6 +63,21 @@ def run(browser_type, base: str) -> list[str]:
     expect(not any("/dist/nexa-ui.css" in url for url in requests), "home loaded monolithic UI CSS")
     passed.append("home renders without eager reference payload")
 
+    desktop.locator('.nd-sidebar-link[href="#/getting-started"]').click()
+    desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
+    desktop.wait_for_function(
+        "() => document.activeElement === document.querySelector('#docs-content h1')"
+    )
+    passed.append("route navigation focuses the new page heading")
+
+    desktop.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+    desktop.wait_for_function(
+        """() => document.querySelector(
+          ".nd-toc-list li:last-child .nd-toc-link"
+        )?.getAttribute("aria-current") === "location" """
+    )
+    passed.append("scroll spy activates the final section at page end")
+
     desktop.keyboard.press("Control+k")
     desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
     expect(
@@ -102,6 +118,21 @@ def run(browser_type, base: str) -> list[str]:
         open_route(desktop, base, route, heading)
         expect(desktop.locator(".nd-demo-preview").count() == 1, f"{route}: live demo missing")
     passed.append("all four add-on pages render live demos")
+
+    desktop.set_viewport_size({"width": 1440, "height": 520})
+    open_route(desktop, base, "/addons/zoom-stage", "ZoomStage")
+    active_link_visible = desktop.evaluate(
+        """() => {
+          const nav = document.querySelector(".nd-sidebar:not(.nd-sidebar-mobile)");
+          const link = nav?.querySelector('[aria-current="page"]');
+          if (!nav || !link) return false;
+          const navRect = nav.getBoundingClientRect();
+          const linkRect = link.getBoundingClientRect();
+          return linkRect.top >= navRect.top && linkRect.bottom <= navRect.bottom;
+        }"""
+    )
+    expect(active_link_visible, "sidebar did not reveal its active link")
+    passed.append("sidebar keeps its active link visible")
 
     catalog = desktop.evaluate(
         """async () => {
@@ -159,6 +190,54 @@ def run(browser_type, base: str) -> list[str]:
         "nd-header-burger" in (mobile.evaluate("document.activeElement?.className") or ""),
         "drawer did not restore focus",
     )
+
+    mobile.locator(".nd-header-burger").click()
+    mobile.wait_for_selector(".m-drawer")
+    mobile.locator('.m-drawer a[href="#/getting-started"]').click()
+    mobile.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
+    mobile.wait_for_function(
+        "() => document.activeElement === document.querySelector('#docs-content h1')"
+    )
+    expect(mobile.locator(".m-drawer").count() == 0, "route navigation did not close drawer")
+
+    mobile.wait_for_selector(".nd-toc-mobile")
+    summary = mobile.locator(".nd-toc-mobile summary")
+    expect(summary.get_attribute("aria-expanded") != "true", "mobile TOC starts expanded")
+    summary.click()
+    expect(
+        mobile.locator(".nd-toc-mobile .nd-toc-link").count() == 4,
+        "mobile TOC does not list all sections",
+    )
+    mobile.locator(".nd-toc-mobile .nd-toc-link").last.click()
+    mobile.wait_for_function(
+        """() => document.querySelector(
+          ".nd-toc-mobile .nd-toc-list li:last-child .nd-toc-link"
+        )?.getAttribute("aria-current") === "location" """
+    )
+    expect(
+        mobile.locator(".nd-toc-mobile details").get_attribute("open") is None,
+        "mobile TOC did not collapse after navigation",
+    )
+    mobile.wait_for_function(
+        """() => document.activeElement === document.querySelector(
+          "#cdn h2"
+        )"""
+    )
+    expect(
+        mobile.evaluate("document.documentElement.scrollWidth <= innerWidth"),
+        "mobile TOC caused overflow",
+    )
+    passed.append("mobile TOC and route focus are accessible")
+
+    mobile.set_viewport_size({"width": 1024, "height": 768})
+    mobile.wait_for_selector(".nd-sidebar:not(.nd-sidebar-mobile)")
+    expect(mobile.locator(".nd-toc-mobile").count() == 1, "tablet TOC is missing")
+    expect(
+        mobile.evaluate("document.documentElement.scrollWidth <= innerWidth"),
+        "tablet layout overflow",
+    )
+    passed.append("compact TOC works alongside the tablet sidebar")
+
     expect(not mobile_errors, "mobile browser errors: " + " | ".join(mobile_errors))
     passed.append("mobile header and drawer are accessible")
     mobile.context.browser.close()
@@ -179,6 +258,7 @@ def main() -> int:
             passed = run(getattr(playwright, args.browser), f"http://127.0.0.1:{port}/examples/docs-site/")
     except Exception as error:
         print(f"✗ docs-site smoke ({args.browser}) — {error}", file=sys.stderr)
+        traceback.print_exc()
         return 1
     finally:
         server.shutdown()
