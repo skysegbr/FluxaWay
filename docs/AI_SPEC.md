@@ -422,7 +422,7 @@ const { data, loading, error, refetch } = useFetch('/api/users');
 ### `useToast`
 
 ```js
-const { toasts, toast } = useToast();
+const { toasts, toast, dismiss } = useToast();
 // toast.success('Saved!')
 // toast.error('Failed to save.', { title: 'Error' })
 // toast.warning(msg) / toast.info(msg) — same signature
@@ -652,9 +652,14 @@ See §7 below.
 ```js
 useSwipe(ref, { onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold });
 useLongPress(ref, { onLongPress, delay });
-useNetworkStatus() // → { online, type }
-useOrientation()   // → { angle, type }
-useVibrate()       // → { vibrate(pattern) }
+// These three return a BARE value, not an object — destructuring them
+// (`const { online } = useNetworkStatus()`) silently yields undefined, and
+// `const { vibrate } = useVibrate()` throws when you call it.
+const online      = useNetworkStatus(); // → boolean, tracks online/offline events
+const orientation = useOrientation();   // → "portrait" | "landscape"
+const vibrate     = useVibrate();       // → (pattern = 10) => void  (no-op where unsupported)
+vibrate(10);
+vibrate([100, 50, 100]);
 
 const { state, set, undo, redo, canUndo, canRedo } = useHistory(initial, { limit: 50 });
 // Undo/redo stack. set(value) or set(prev => next). canUndo/canRedo are booleans.
@@ -685,8 +690,14 @@ const { status, lastMessage, send } = useWebSocket('wss://api.example.com/ws');
 // send(data) — serializes objects to JSON automatically
 
 // Virtual list — renders only visible rows (all items must have equal fixed height)
-const { containerRef, virtualItems, totalHeight } = useVirtualList(rows, { itemHeight: 48 });
-// attach containerRef to the scrollable wrapper; render virtualItems; use totalHeight for spacer
+const { containerRef, virtualItems, totalHeight, startIndex, endIndex } =
+  useVirtualList(rows, { itemHeight: 48, overscan: 3 });
+// Attach containerRef to the scrollable wrapper and give it a fixed height.
+// virtualItems is [{ item, index, offsetTop }] — there is no ready-made
+// `style`, so position each row yourself:
+//   h('div', { key: index, style: { position: 'absolute', top: `${offsetTop}px`,
+//                                   height: '48px' } }, item.label)
+// wrapped in a { height: totalHeight, position: 'relative' } spacer.
 
 // i18n
 const { t } = useTranslation({ hello: 'Hello, {name}!' });

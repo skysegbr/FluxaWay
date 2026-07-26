@@ -8,6 +8,19 @@ export function DemoBlock({ demo }) {
   const [open, setOpen] = useState(demo.expanded !== false);
   const code = demo.code ?? sourceOf(demo.render);
 
+  // A few APIs cannot run inside a docs page (a live WebSocket, a device
+  // vibration). Those entries ship code without a `render`, and the snippet is
+  // then the whole demo — no preview box, no toggle to hide the only content.
+  if (!demo.render) {
+    return h(
+      "section",
+      { className: "nd-demo", id: demo.id },
+      h("h3", { className: "nd-demo-title" }, demo.title),
+      demo.note ? h("p", { className: "nd-demo-note" }, demo.note) : null,
+      h(CodeBlock, { code, lang: demo.lang ?? "js" }),
+    );
+  }
+
   return h(
     "section",
     { className: "nd-demo", id: demo.id },

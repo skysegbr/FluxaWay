@@ -1,7 +1,7 @@
 // The single registry every part of the site reads: sidebar, router and the
-// Ctrl+K palette all derive from ENTRIES. Documenting a new component means
-// adding it to one content module — nothing here needs a matching edit beyond
-// the import.
+// Ctrl+K palette all derive from ENTRIES. Documenting a component or a hook
+// means adding it to one content module — nothing here needs a matching edit
+// beyond the import.
 
 import { BUTTON_ENTRIES } from "./core/buttons.js";
 import { FEEDBACK_ENTRIES } from "./core/feedback.js";
@@ -21,6 +21,16 @@ import { TAB_ENTRIES } from "./nav/tabs.js";
 import { SHELL_ENTRIES } from "./nav/shell.js";
 import { ACTION_ENTRIES } from "./nav/actions.js";
 import { THEME_ENTRIES } from "./theme/switchers.js";
+import { STATE_HOOK_ENTRIES } from "./hooks/state.js";
+import { MEMO_HOOK_ENTRIES } from "./hooks/memoization.js";
+import { DATA_HOOK_ENTRIES } from "./hooks/data.js";
+import { QUEUE_HOOK_ENTRIES } from "./hooks/queues.js";
+import { ROUTING_HOOK_ENTRIES } from "./hooks/routing.js";
+import { THEMING_HOOK_ENTRIES } from "./hooks/theming.js";
+import { UI_HOOK_ENTRIES } from "./hooks/ui.js";
+import { LIST_HOOK_ENTRIES } from "./hooks/lists.js";
+import { MISC_HOOK_ENTRIES } from "./hooks/misc.js";
+import { DEVICE_HOOK_ENTRIES } from "./hooks/device.js";
 
 export const ENTRIES = [
   ...BUTTON_ENTRIES,
@@ -41,9 +51,27 @@ export const ENTRIES = [
   ...SHELL_ENTRIES,
   ...ACTION_ENTRIES,
   ...THEME_ENTRIES,
+  ...STATE_HOOK_ENTRIES,
+  ...MEMO_HOOK_ENTRIES,
+  ...DATA_HOOK_ENTRIES,
+  ...QUEUE_HOOK_ENTRIES,
+  ...ROUTING_HOOK_ENTRIES,
+  ...THEMING_HOOK_ENTRIES,
+  ...UI_HOOK_ENTRIES,
+  ...LIST_HOOK_ENTRIES,
+  ...MISC_HOOK_ENTRIES,
+  ...DEVICE_HOOK_ENTRIES,
 ];
 
+// Sidebar order, top to bottom: the framework first, then the library built
+// on it.
 export const CATEGORIES = [
+  { key: "hooks-state", title: "Hooks · State", icon: "bi-braces" },
+  { key: "hooks-data", title: "Hooks · Data", icon: "bi-database" },
+  { key: "hooks-routing", title: "Hooks · Routing", icon: "bi-signpost" },
+  { key: "hooks-theming", title: "Hooks · Theming", icon: "bi-brush" },
+  { key: "hooks-ui", title: "Hooks · UI", icon: "bi-magic" },
+  { key: "hooks-device", title: "Hooks · Device", icon: "bi-phone" },
   { key: "core", title: "Core", icon: "bi-box-seam" },
   { key: "forms", title: "Forms", icon: "bi-input-cursor-text" },
   { key: "overlay", title: "Overlay", icon: "bi-layers" },
