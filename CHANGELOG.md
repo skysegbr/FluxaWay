@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-07-26
+
+### Fixed
+- **Docs-site “On this page” scroll-spy now activates the final section at the
+  bottom of the document.** Short final sections often cannot cross the
+  viewport's 25% activation line, leaving the penultimate link highlighted
+  even after the reader reaches the end. The shared `PageToc` now treats the
+  scroll boundary as the final section and the browser smoke suite locks the
+  behavior with an `aria-current="location"` regression check.
+
 ## [0.17.1] - 2026-07-26
 
 ### Added
