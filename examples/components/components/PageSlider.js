@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { Slider, RangeSlider } from "/dist/nexa-components-forms.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Slider, RangeSlider } from "/dist/fluxaway-components-forms.js";
 
 export function PageSlider() {
   const [volume, setVolume] = useState(40);

@@ -1,11 +1,11 @@
-# Motion in Nexa (nexa-motion)
+# Motion in FluxaWay (fluxaway-motion)
 
-`nexa-motion` is the timeline-animation add-on: the Macromedia Flash mental model
+`fluxaway-motion` is the timeline-animation add-on: the Macromedia Flash mental model
 rebuilt on browser primitives — a timeline with keyframes and tweens, labels,
 frame scripts, and the classic `play() / stop() / gotoAndPlay() / gotoAndStop()`
 quartet. It has no dependencies and no CSS file (it animates inline `transform`
-and `opacity`), and it is **not** part of `nexa-components.js` — import it
-directly from `/dist/nexa-motion.js`.
+and `opacity`), and it is **not** part of `fluxaway-components.js` — import it
+directly from `/dist/fluxaway-motion.js`.
 
 Reach for it whenever the task is animation, an intro/splash, keyframes, tweens,
 staggered entrances, or anything "like Flash / a movie clip". Don't hand-roll
@@ -15,7 +15,7 @@ staggered entrances, or anything "like Flash / a movie clip". Don't hand-roll
 
 ## Concept
 
-An animation in nexa-motion follows this pattern:
+An animation in fluxaway-motion follows this pattern:
 
 1. Describe the movie as data: a `duration`, some `labels`, and `tracks` — each
    track is a named list of keyframes.
@@ -31,7 +31,7 @@ Flash's separate motion tweens). Only `transform` and `opacity` are tweened, so
 animations stay on the GPU.
 
 ```js
-import { useTimeline, easings, stagger } from "/dist/nexa-motion.js";
+import { useTimeline, easings, stagger } from "/dist/fluxaway-motion.js";
 ```
 
 ---
@@ -299,11 +299,11 @@ Drop `h(PulsingRing)` anywhere in the parent movie; it runs on its own.
 ## createTimeline — the imperative variant
 
 `createTimeline(spec)` is the hook-free constructor for code outside a component
-(a plain script, a class, a non-Nexa page). Same spec, same controller — but
+(a plain script, a class, a non-FluxaWay page). Same spec, same controller — but
 **you own the lifecycle**: call `destroy()` yourself.
 
 ```js
-import { createTimeline } from "/dist/nexa-motion.js";
+import { createTimeline } from "/dist/fluxaway-motion.js";
 
 const tl = createTimeline({ duration: 2000, tracks: { /* … */ } });
 // the ref returned by track() is just a function — call it with the element:
@@ -328,12 +328,12 @@ the browser to tile it; the tiles can blank out and flicker (especially while an
 ancestor is scaled at the same time). Animate its `opacity` instead, or animate
 a small child element.
 
-**Reduced motion is your responsibility.** Unlike `ZoomStage`, nexa-motion does
+**Reduced motion is your responsibility.** Unlike `ZoomStage`, fluxaway-motion does
 **not** auto-honor `prefers-reduced-motion` — gate it yourself. A clean pattern
 is to start paused and jump to the end for users who ask for less motion:
 
 ```js
-import { useMediaQuery } from "/dist/nexa.js";
+import { useMediaQuery } from "/dist/fluxaway.js";
 
 const reduce = useMediaQuery("(prefers-reduced-motion: reduce)");
 const tl = useTimeline({ duration: 3000, tracks, autoplay: !reduce });
@@ -348,8 +348,8 @@ A small self-contained movie: a logo flies in, a two-word title cascades in,
 and a control deck scrubs and replays it.
 
 ```js
-import { h, render, useState } from "/dist/nexa.js";
-import { useTimeline, stagger } from "/dist/nexa-motion.js";
+import { h, render, useState } from "/dist/fluxaway.js";
+import { useTimeline, stagger } from "/dist/fluxaway-motion.js";
 
 const TITLE = "NEXA".split("");
 
@@ -420,4 +420,4 @@ render(App, document.getElementById("app"));
   recordings driven by the real framework).
 - **`docs/AI_SPEC.md` §10** — the terse API quick-reference (also covers the
   other add-ons: ZoomStage, PipelineCanvas, FullCodeEditor).
-- **`dist/nexa-motion.d.ts`** — full TypeScript declarations.
+- **`dist/fluxaway-motion.d.ts`** — full TypeScript declarations.

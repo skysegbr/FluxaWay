@@ -2,7 +2,7 @@
 // lines and freehand pencil paths. Every gesture previews locally and
 // commits one actor on release.
 
-import { useState } from "/dist/nexa.js";
+import { useState } from "/dist/fluxaway.js";
 import { capturePointer } from "./editorUtils.js";
 import { vectorActorFromPoints } from "./vectorGeometry.js";
 

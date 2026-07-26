@@ -1,5 +1,5 @@
-import { h, useHead } from "/dist/nexa.js";
-import { Alert } from "/dist/nexa-components-core.js";
+import { h, useHead } from "/dist/fluxaway.js";
+import { Alert } from "/dist/fluxaway-components-core.js";
 import { CodeBlock } from "./reference/CodeBlock.js";
 import { PageToc } from "./reference/PageToc.js";
 import { GUIDE_STEPS } from "../data.js";

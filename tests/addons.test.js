@@ -1,11 +1,11 @@
-// Tests for the canvas add-ons: PipelineCanvas (nexa-canvas.js) and
-// ZoomStage (nexa-zoom.js). Both are imperative controllers wrapped in a
-// Nexa component, so the tests drive them through real DOM events and the
+// Tests for the canvas add-ons: PipelineCanvas (fluxaway-canvas.js) and
+// ZoomStage (fluxaway-zoom.js). Both are imperative controllers wrapped in a
+// FluxaWay component, so the tests drive them through real DOM events and the
 // controllerRef API.
 
-import { h, render, unmount, useState } from "../dist/nexa.js";
-import { PipelineCanvas } from "../dist/nexa-canvas.js";
-import { ZoomStage } from "../dist/nexa-zoom.js";
+import { h, render, unmount, useState } from "../dist/fluxaway.js";
+import { PipelineCanvas } from "../dist/fluxaway-canvas.js";
+import { ZoomStage } from "../dist/fluxaway-zoom.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

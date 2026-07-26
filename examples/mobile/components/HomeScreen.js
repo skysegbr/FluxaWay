@@ -1,5 +1,5 @@
-import { h, useRef, useState, useSwipe, useLongPress, useVibrate } from "/dist/nexa.js";
-import { Button, Card } from "/dist/nexa-components-core.js";
+import { h, useRef, useState, useSwipe, useLongPress, useVibrate } from "/dist/fluxaway.js";
+import { Button, Card } from "/dist/fluxaway-components-core.js";
 
 import { FEATURES } from "../data.js";
 

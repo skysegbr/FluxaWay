@@ -7,7 +7,7 @@
 @import './components/admin/AdminPage.css';
 @import './components/admin/AdminProdutos.css';
 
-/* ── Design tokens: sobrescreve paleta padrão do Nexa ── */
+/* ── Design tokens: sobrescreve paleta padrão do FluxaWay ── */
 :root {
   --m-primary:   #d4400a;
   --m-secondary: #8b2500;

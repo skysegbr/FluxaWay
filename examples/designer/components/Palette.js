@@ -1,4 +1,4 @@
-import { h, useState } from '/dist/nexa.js';
+import { h, useState } from '/dist/fluxaway.js';
 import { CATALOG, CATEGORIES } from '../data.js';
 
 export function Palette({ onAdd }) {

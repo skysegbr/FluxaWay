@@ -2,8 +2,8 @@
 // demo + state inspector, bottom = caption. The recording driver advances
 // steps via window.__setStep(n).
 
-import { h, render, useState, useForm } from "/dist/nexa.js";
-import { TextField, Textarea, Button } from "/dist/nexa-components.js";
+import { h, render, useState, useForm } from "/dist/fluxaway.js";
+import { TextField, Textarea, Button } from "/dist/fluxaway-components.js";
 
 // ── steps ────────────────────────────────────────────────────────────────────
 
@@ -13,7 +13,7 @@ const STEPS = [
   },
   {
     title: "1. The hook",
-    code: `import { useForm } from "/dist/nexa.js";
+    code: `import { useForm } from "/dist/fluxaway.js";
 
 function Signup() {
   const form = useForm({
@@ -167,7 +167,7 @@ function App() {
   return h("div", { className: "tut-root" },
     step === 0 && h("div", { className: "tut-overlay" },
       h("h1", null, "Forms with ", h("em", null, "useForm")),
-      h("p", null, "Nexa — the no-build frontend framework, straight in the browser"),
+      h("p", null, "FluxaWay — the no-build frontend framework, straight in the browser"),
     ),
     step === STEPS.length - 1 && h("div", { className: "tut-overlay" },
       h("h1", null, h("em", null, "useForm"), " — recap"),
@@ -181,7 +181,7 @@ function App() {
       h("p", null, "github.com/skysegbr/Nexa — docs/FORMS.md"),
     ),
     h("header", { className: "tut-header" },
-      h("div", { className: "tut-brand" }, h("em", null, "Nexa"), " · useForm tutorial"),
+      h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · useForm tutorial"),
       h("div", { className: "tut-stepno" }, step > 0 && step < STEPS.length - 1 ? `step ${step} of ${STEPS.length - 2}` : ""),
     ),
     h("main", { className: "tut-main" },

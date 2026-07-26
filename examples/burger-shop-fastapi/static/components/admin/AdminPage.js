@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { Tabs, TabPanel } from "/dist/nexa-components-nav.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Tabs, TabPanel } from "/dist/fluxaway-components-nav.js";
 import { AdminProdutos } from "./AdminProdutos.js";
 import { AdminPedidos }  from "./AdminPedidos.js";
 

@@ -5,7 +5,7 @@
 // on a light interval; the setState no-ops while nothing changed. Pass a
 // null id to park the hook.
 
-import { useEffect, useState } from "/dist/nexa.js";
+import { useEffect, useState } from "/dist/fluxaway.js";
 
 export function useMeasuredBox(stageRef, actorId, intervalMs = 80) {
   const [box, setBox] = useState(null);

@@ -1,10 +1,10 @@
-// Nexa Star Atlas — a zoomable night sky built on the ZoomStage add-on.
+// FluxaWay Star Atlas — a zoomable night sky built on the ZoomStage add-on.
 // freeZoom lets you scroll/pinch to zoom and drag to roam; the guided tour
 // flies the camera from constellation to constellation. app.js is the
 // orchestrator: it builds the frames and wires the transport.
 
-import { h, render, useRef, useState } from "/dist/nexa.js";
-import { ZoomStage } from "/dist/nexa-zoom.js";
+import { h, render, useRef, useState } from "/dist/fluxaway.js";
+import { ZoomStage } from "/dist/fluxaway-zoom.js";
 import { CONSTELLATIONS, TOUR, WORLD } from "./data.js";
 import { Starfield } from "./components/Starfield.js";
 import { Constellation } from "./components/Constellation.js";

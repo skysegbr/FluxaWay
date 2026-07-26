@@ -1,6 +1,6 @@
 // Engine tests: hooks, scheduling, and keyed reconciliation.
 //
-// These cover the riskiest parts of dist/nexa.js — the parts a silent
+// These cover the riskiest parts of dist/fluxaway.js — the parts a silent
 // regression would be most expensive to ship: state updates, effect
 // ordering/cleanup, memoization, and how the patcher reuses vs. discards
 // DOM nodes and hook state.
@@ -16,7 +16,7 @@ import {
   useMemo,
   useCallback,
   useErrorBoundary,
-} from "../dist/nexa.js";
+} from "../dist/fluxaway.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -24,7 +24,7 @@ const HTML_NS = "http://www.w3.org/1999/xhtml";
 
 test("h() builds a tree and render() mounts it to the DOM", async () => {
   function Hello() {
-    return h("h1", { className: "title" }, "Hello, Nexa");
+    return h("h1", { className: "title" }, "Hello, FluxaWay");
   }
 
   const container = mountPoint();
@@ -33,7 +33,7 @@ test("h() builds a tree and render() mounts it to the DOM", async () => {
 
   const heading = container.querySelector("h1.title");
   assert(heading, "expected an <h1.title> in the DOM");
-  assertEqual(heading.textContent, "Hello, Nexa");
+  assertEqual(heading.textContent, "Hello, FluxaWay");
 });
 
 test("useState updates trigger a re-render with the new value", async () => {
@@ -467,7 +467,7 @@ test("<select value> re-selects correctly when a patch adds new options and a va
 });
 
 // Render and effect errors are reported through console.error by design (see
-// runSafely / scheduleRender in dist/nexa.js) — these tests trigger them on
+// runSafely / scheduleRender in dist/fluxaway.js) — these tests trigger them on
 // purpose, so we capture console.error instead of letting it spam the run.
 async function withSilencedConsoleError(fn) {
   const original = console.error;

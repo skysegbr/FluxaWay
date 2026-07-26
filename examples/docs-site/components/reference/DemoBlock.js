@@ -1,4 +1,4 @@
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 import { CodeBlock } from "./CodeBlock.js";
 import { sourceOf } from "./source.js";
 

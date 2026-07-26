@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { FormControls } from "./FormControls.js";
 import { StatsDemo } from "./StatsDemo.js";
 import { TreeViewDemo } from "./TreeViewDemo.js";

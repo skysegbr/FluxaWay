@@ -1,9 +1,9 @@
-// Tests for the nexa-motion add-on: Flash-style timelines — keyframe
+// Tests for the fluxaway-motion add-on: Flash-style timelines — keyframe
 // interpolation, easings, labels, the play/stop/gotoAnd* quartet, loops,
 // frame scripts, stagger, and the useTimeline lifecycle.
 
-import { h, render, useState } from "../dist/nexa.js";
-import { createTimeline, useTimeline, easings, stagger } from "../dist/nexa-motion.js";
+import { h, render, useState } from "../dist/fluxaway.js";
+import { createTimeline, useTimeline, easings, stagger } from "../dist/fluxaway-motion.js";
 import { assert, assertEqual, flush, mountPoint, test } from "./runner.js";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

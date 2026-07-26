@@ -1,72 +1,74 @@
-# Nexa
+# FluxaWay
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/nexa-logo-dark-bg.png">
-    <img src="./assets/nexa-logo-transparent.png" alt="Nexa logo" width="160">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/brand/fluxaway-logo-inverse.svg">
+    <img src="./assets/brand/fluxaway-logo.svg" alt="FluxaWay logo" width="420">
   </picture>
 </p>
 
-Nexa is a next-generation frontend framework in plain JavaScript. It is designed
-for the browser: no Node, no JSX, no Vite, no Babel, and no build step.
+<p align="center"><strong>Code flows. Your way.</strong></p>
+
+FluxaWay is the no-build UI framework for plain JavaScript. It is designed for
+the browser: no Node, no JSX, no Vite, no Babel, and no build step.
 
 Its core ships in three files:
 
-- `dist/nexa.js` — components, state, effects, rendering, and mobile hooks.
-- `dist/nexa-components.js` — optional UI helpers built on top of `h`. This is
-  a barrel over six category modules (`nexa-components-core.js`, `-forms.js`,
+- `dist/fluxaway.js` — components, state, effects, rendering, and mobile hooks.
+- `dist/fluxaway-components.js` — optional UI helpers built on top of `h`. This is
+  a barrel over six category modules (`fluxaway-components-core.js`, `-forms.js`,
   `-overlay.js`, `-data.js`, `-nav.js`, `-theme.js`) — import a category
   directly to load only the components you use.
-- `dist/nexa-ui.css` — mobile-first CSS framework with a 12-column grid,
+- `dist/fluxaway-ui.css` — mobile-first CSS framework with a 12-column grid,
   responsive utilities, dark mode, and mobile shell components. Also ships
-  pre-split by category (`nexa-ui-base.css` + `nexa-ui-core.css`, `-forms.css`,
+  pre-split by category (`fluxaway-ui-base.css` + `fluxaway-ui-core.css`, `-forms.css`,
   `-overlay.css`, `-data.css`, `-nav.css`, `-theme.css`) to match the JS
   modules — load only the CSS a page uses.
 
-Four optional add-ons build on top of that core:
+Optional modules build on top of that core:
 
-- `dist/nexa-motion.js` — Flash-style timeline animation: keyframe
+- `dist/fluxaway-motion.js` — Flash-style timeline animation: keyframe
   tracks, Penner easings, labels, frame scripts, motion guides, and
   `play()/stop()/gotoAndPlay()/gotoAndStop()`
 
-- `dist/nexa-canvas.js` + `dist/nexa-canvas.css` — `PipelineCanvas`, an
+- `dist/fluxaway-canvas.js` + `dist/fluxaway-canvas.css` — `PipelineCanvas`, an
   SVG node editor with drag, pan, zoom, mini-map, and undo/redo.
-- `dist/nexa-zoom.js` + `dist/nexa-zoom.css` — `ZoomStage`, a pan/zoom
+- `dist/fluxaway-zoom.js` + `dist/fluxaway-zoom.css` — `ZoomStage`, a pan/zoom
   presentation canvas with animated camera pan/zoom/rotate between frames,
   optional free zoom/pan exploration (`freeZoom`), swipe/keyboard nav, and
   screen-reader announcements.
-- `dist/nexa-editor.js` + `dist/nexa-editor.css` (+ `dist/nexa-editor-snippets.js`)
+- `dist/fluxaway-editor.js` + `dist/fluxaway-editor.css` (+ `dist/fluxaway-editor-snippets.js`)
   — `FullCodeEditor`, a [CodeMirror](https://codemirror.net/5/) wrapper with a
   toolbar, snippet browser, and autocomplete. Requires the local CodeMirror
   assets in `assets/codemirror/` (no CDN).
-- `dist/nexa-bootstrap.css` — optional Bootstrap 5 visual skin, switched at
+- `dist/fluxaway-bootstrap.css` — optional Bootstrap 5 visual skin, switched at
   runtime with `useDesign()`. See [Design](#design) below.
-- `dist/nexa-server.js` — server-side rendering entry: `renderToString(App)`
+- `dist/fluxaway-server.js` — server-side rendering entry: `renderToString(App)`
   produces an HTML string (SEO / first paint), no DOM and no build required.
 
 ## No Node, By Design
 
-Nexa deliberately does not use Node.js — not as a runtime, not as a build
+FluxaWay deliberately does not use Node.js — not as a runtime, not as a build
 tool, not in CI, not for tests. This is an architectural decision, not a
 missing feature:
 
 - **Supply chain and security.** A typical npm toolchain pulls in hundreds of
   transitive dependencies, each a potential vulnerability that must be
-  audited and patched. Nexa has zero runtime dependencies and no
+  audited and patched. FluxaWay has zero runtime dependencies and no
   `node_modules`, so its supply-chain surface is essentially the browser
   itself.
 - **Maintenance cost.** Keeping Node, npm, bundlers, and transpilers updated
-  and mutually compatible is a permanent tax. Nexa's dist files are plain ES
+  and mutually compatible is a permanent tax. FluxaWay's dist files are plain ES
   modules that browsers execute directly; there is nothing to rebuild or
   re-lock.
-- **Longevity.** An app written against `dist/nexa.js` today will still load
+- **Longevity.** An app written against `dist/fluxaway.js` today will still load
   in a browser years from now without regenerating a lockfile or migrating a
   bundler config.
 
 What this means in practice:
 
 - Distribution is via **static files** (vendored `dist/` copies) or the
-  **jsDelivr CDN** — never `npm install`. Nexa is not published to npm and
+  **jsDelivr CDN** — never `npm install`. FluxaWay is not published to npm and
   there is no plan to publish it.
 - `package.json` exists **only** so editors, TypeScript, and other tooling
   can identify the module type and find the type declarations. It is marked
@@ -87,72 +89,67 @@ conventions. The absence of Node is the point.
 
 ## Logo Meaning
 
-The Nexa logo combines the letter **N** with circuit-like paths and connected
-nodes, representing a frontend framework that is modular, connected, and built
-to run directly in the browser.
+The FluxaWay symbol fuses **F** and **W** into a continuous mark. The stable
+**F** represents structure; its middle arm becomes the opening stroke of the
+fluid **W**, representing movement, choice, and the developer's path.
 
-The central cyan path suggests the clean flow from plain JavaScript to rendered
-interface: no build step, no JSX, and no required tooling chain. The surrounding
-paths and nodes represent components, hooks, state, events, and rendering
-working together as a small, coherent system. They also echo Nexa's optional
-canvas and editor add-ons, where structured nodes, connections, and direct
-browser interaction are part of the experience.
+**Fluxa** is the flow from events to state, from state to rendering, and from
+components to applications. **Way** is the freedom to choose modules, patterns,
+and architecture without adopting a mandatory toolchain. The full story and
+identity guidance live in [docs/BRAND.md](./docs/BRAND.md).
 
-The open spaces in the mark reinforce Nexa's lightweight approach: less hidden
-machinery between code and UI, more clarity and control for the developer. The
-cyan accent brings motion and technology, the lime nodes highlight interaction
-points, and the dark or light structural forms keep the mark stable across both
-light and dark themes.
+## Nexa compatibility
 
-The hexagonal outline frames all of this as a single, self-contained system.
-Hexagons tile edge-to-edge with no gaps, mirroring how Nexa's components
-compose into an app with no build-step glue between them. It is also the most
-material-efficient shape for covering a surface, echoing the framework's
-lightweight footprint. And as a six-sided node, it extends the circuit motif
-inside the mark outward: Nexa itself as one connected node in a larger system.
+FluxaWay is the new name of the framework previously called Nexa. New code
+should import the canonical files whose names start with `fluxaway`, such as
+`dist/fluxaway.js`. Small aliases whose names start with `nexa`, such as
+`dist/nexa.js`, remain available during the compatibility window, so existing
+applications do not need an immediate migration. Runtime integration keys such as
+`nexa-theme`, `data-nexa-head`, and `nexa:*` events remain stable in this
+release.
 
 ## Using The CDN
 
-Nexa is published as a public GitHub repository, so you can load the browser
+FluxaWay is published as a public GitHub repository, so you can load the browser
 modules directly through jsDelivr:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components-core.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components-forms.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components-overlay.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components-data.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components-nav.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components-theme.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-ui.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-canvas.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-canvas.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-zoom.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-zoom.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-editor.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-editor.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-editor-snippets.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-bootstrap.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-server.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-core.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-forms.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-overlay.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-data.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-nav.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components-theme.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor-snippets.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-bootstrap.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-server.js
 ```
 
 Every file above also ships a minified twin (same path, `.min.js`/`.min.css`
 before the extension) — same API, smaller payload:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-ui.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-canvas.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-canvas.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-zoom.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-zoom.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-editor.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-editor.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-editor-snippets.min.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-bootstrap.min.css
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-server.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-canvas.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-zoom.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-editor-snippets.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-bootstrap.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-server.min.js
 ```
 
 See [examples/minified](./examples/minified) for a full page built entirely
@@ -163,7 +160,7 @@ Minimal page:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-ui.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css"
 />
 
 <main id="app"></main>
@@ -174,11 +171,11 @@ Minimal page:
     render,
     useState,
     useTheme,
-  } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.js";
+  } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
   import {
     Button,
     ThemeToggle,
-  } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-components.js";
+  } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.js";
 
   function App() {
     const [count, setCount] = useState(0);
@@ -187,7 +184,7 @@ Minimal page:
       "section",
       { className: "m-page m-stack" },
       h(ThemeToggle, null),
-      h("h1", { className: "m-title-xl" }, "Nexa"),
+      h("h1", { className: "m-title-xl" }, "FluxaWay"),
       h("p", { className: "m-body" }, `Clicks: ${count}`),
       h(Button, { variant: "contained", onClick: () => setCount((v) => v + 1) }, "Add"),
     );
@@ -201,14 +198,14 @@ Minimal page:
 tag and pin the CDN URL to it, for example:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.4.0/dist/nexa.js
+https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.js
 ```
 
 ### Subresource Integrity (SRI) — pin the bytes, not just the tag
 
-Pinning to `@v0.4.0` pins the *URL*, but a git tag can still be moved, so it is
+Pinning to `@v0.19.0` pins the *URL*, but a git tag can still be moved, so it is
 not a cryptographic guarantee of *which bytes* run. For the strongest
-supply-chain posture — the whole reason Nexa ships zero dependencies — add an
+supply-chain posture — the whole reason FluxaWay ships zero dependencies — add an
 `integrity` hash so the browser refuses to execute a file that doesn't match,
 even if the CDN or the tag is ever tampered with. Pair it with
 `crossorigin="anonymous"` (required for SRI on cross-origin resources):
@@ -216,13 +213,13 @@ even if the CDN or the tag is ever tampered with. Pair it with
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.4.0/dist/nexa-ui.min.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway-ui.min.css"
   integrity="sha384-…"
   crossorigin="anonymous"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.4.0/dist/nexa.min.js"
+  src="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.min.js"
   integrity="sha384-…"
   crossorigin="anonymous"
 ></script>
@@ -233,15 +230,15 @@ local file or straight from the CDN URL:
 
 ```bash
 # from a vendored file
-python -c "import base64,hashlib,sys;print('sha384-'+base64.b64encode(hashlib.sha384(open(sys.argv[1],'rb').read()).digest()).decode())" dist/nexa.min.js
+python -c "import base64,hashlib,sys;print('sha384-'+base64.b64encode(hashlib.sha384(open(sys.argv[1],'rb').read()).digest()).decode())" dist/fluxaway.min.js
 
 # from the pinned CDN URL (verifies what will actually be served)
-python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.4.0/dist/nexa.min.js
+python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.min.js
 ```
 
 **ES-module caveat.** `integrity` only covers the file the browser fetches
 because of that tag — it does **not** extend to the modules that file `import`s.
-So SRI on `nexa.min.js` protects the entry, but the component modules it (or
+So SRI on `fluxaway.min.js` protects the entry, but the component modules it (or
 your app) imports across files are not covered by that one hash. Two ways to get
 full coverage:
 
@@ -259,7 +256,7 @@ For maximum immutability without SRI, you can also pin to a **commit SHA**
 
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<link rel="stylesheet" href="./dist/nexa-ui.css" />
+<link rel="stylesheet" href="./dist/fluxaway-ui.css" />
 <script type="module" src="./app.js"></script>
 ```
 
@@ -285,7 +282,7 @@ import {
   useOrientation,
   useSwipe,
   useVibrate,
-} from "./dist/nexa.js";
+} from "./dist/fluxaway.js";
 
 import {
   Alert,
@@ -317,7 +314,7 @@ import {
   ThemeToggle,
   Toast,
   Tooltip,
-} from "./dist/nexa-components.js";
+} from "./dist/fluxaway-components.js";
 ```
 
 ## Production Bundling (Optional)
@@ -354,7 +351,7 @@ Limits: top-level import/export only, no circular imports, and dynamic
 ## Production Serving (compression + caching)
 
 `python server.py` is a **dev** server — no compression, no cache headers, and
-that is by design. In production Nexa is just static files, so the two wins are
+that is by design. In production FluxaWay is just static files, so the two wins are
 at the HTTP layer, not in the framework:
 
 **1. Serve the `.min.*` files and compress them.** The minified CSS/JS still
@@ -377,12 +374,12 @@ location /dist/ {
 ```
 
 **2. Cache immutably — but only versioned URLs.** `Cache-Control: immutable`
-is a footgun on an *unversioned* path like `/dist/nexa.js` served from your own
+is a footgun on an *unversioned* path like `/dist/fluxaway.js` served from your own
 origin: after you update the file, browsers keep the stale copy for a year.
 Immutable caching is safe only when the URL changes whenever the content does —
-a pinned CDN tag (`@v0.4.0`), a bundler output filename, or a versioned path
-such as `/dist/0.18.0/nexa.min.js`. For an unversioned self-hosted `/dist`, use
-`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.18.0`
+a pinned CDN tag (`@v0.19.0`), a bundler output filename, or a versioned path
+such as `/dist/0.19.0/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
+`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.19.0`
 query and bump it on release.
 
 Pair this with [SRI](#subresource-integrity-sri--pin-the-bytes-not-just-the-tag)
@@ -390,10 +387,10 @@ above: compression and caching make it fast, `integrity` makes it tamper-proof.
 
 ## Documentation
 
-- [Nexa tutorial](./docs/TUTORIAL.md)
-- [Nexa UI guide](./docs/NEXA_UI.md)
-- [Nexa forms guide](./docs/FORMS.md)
-- [Nexa motion guide](./docs/MOTION.md) — Flash-style timeline animation (`nexa-motion`)
+- [FluxaWay tutorial](./docs/TUTORIAL.md)
+- [FluxaWay UI guide](./docs/FLUXAWAY_UI.md)
+- [FluxaWay forms guide](./docs/FORMS.md)
+- [FluxaWay motion guide](./docs/MOTION.md) — Flash-style timeline animation (`fluxaway-motion`)
 - [Video tutorials](./tutorials/) — auto-generated screen recordings
   (each folder has the player page and the `record.py` that regenerates the video)
 - [AI reference spec](./docs/AI_SPEC.md) — comprehensive reference for every hook, component, and pattern
@@ -414,12 +411,12 @@ python -m http.server 8080
 
 | Example | What it shows |
 |---|---|
-| [examples/minified](./examples/minified) | Runs the minified build (`/dist/nexa.min.js`, `nexa-ui.min.css`) with `useRoutes` nested routing — same API as the readable sources |
+| [examples/minified](./examples/minified) | Runs the minified build (`/dist/fluxaway.min.js`, `fluxaway-ui.min.css`) with `useRoutes` nested routing — same API as the readable sources |
 | [examples/ssr](./examples/ssr) | Full SSR round-trip in the browser: `renderToString(App)` → inject as server HTML → `hydrate(App, #app)` adopts the DOM and wires up handlers |
-| [examples/basic](./examples/basic) | Start here — minimal screen: `h`, `render`, `useState`, `useEffect`, components from `nexa-components.js` and `ThemeToggle` for dark mode |
+| [examples/basic](./examples/basic) | Start here — minimal screen: `h`, `render`, `useState`, `useEffect`, components from `fluxaway-components.js` and `ThemeToggle` for dark mode |
 | [examples/form](./examples/form) | Controlled fields, validation, loading submit, reset, `useForm` |
 | [examples/complete-page](./examples/complete-page) | App-shell with sidebar, table, dialog, tabs, and toast |
-| [examples/docs-site](./examples/docs-site) | Bootstrap-style documentation site for the design system, built in Nexa: sticky sidebar, scroll-spy "on this page" rail, Ctrl+K `CommandPalette` search, live demo + copyable snippet per example (derived from the demo's own source, so the two cannot drift), props tables, and a dependency-free syntax highlighter. Documents all six component categories (61 components) and 33 hooks, each with a signature plus Parameters/Returns tables |
+| [examples/docs-site](./examples/docs-site) | Bootstrap-style documentation site for the design system, built in FluxaWay: sticky sidebar, scroll-spy "on this page" rail, Ctrl+K `CommandPalette` search, live demo + copyable snippet per example (derived from the demo's own source, so the two cannot drift), props tables, and a dependency-free syntax highlighter. Documents all six component categories (61 components) and 33 hooks, each with a signature plus Parameters/Returns tables |
 | [examples/components](./examples/components) | `Switch`, `Collapse`, `Combobox`, `ContextMenu`, `FileDropZone`, `CodeEditor`, toasts, a `Cards` page showcasing the `m-card-*` variants + `SpeedDial`, `Accordion`, `Slider`/`RangeSlider`, `Menu` with nested submenus, `DataTable`, `DatePicker`, a `Forms & Widgets` page with `RadioGroup`, `NumberInput`, `TimePicker`, `Stat`, `TreeView`, `Popover`, and `CommandPalette`, plus a `UI Primitives` page driving `Avatar`, `Breadcrumb`, `Skeleton`, and `Divider` through the component API |
 | [examples/mobile](./examples/mobile) | Mobile shell: `AppBar`, `BottomNav`, `BottomSheet`, `FAB`, swipe, long press |
 | [examples/landing](./examples/landing) | SaaS landing page: sticky nav with mobile menu, SVG hero chart, testimonial carousel, pricing toggle |
@@ -428,13 +425,13 @@ python -m http.server 8080
 | [examples/drug-recalls](./examples/drug-recalls) | Live dashboard over the openFDA drug recall API: debounced search, classification/status filters, donut + bar charts, sortable table, recall detail dialog |
 | [examples/storefront](./examples/storefront) | Domain-componentized architecture: `catalog/`, `cart/`, `auth/` each own their own `createContext` + state hook, composed once in `app.js`, integrated through `Shell.js`. Products fetched live from fakestoreapi.com |
 | [examples/designer](./examples/designer) | Visual UI builder: drag components from a palette onto a canvas, edit props/styles/states in an inspector, live CSS + code export |
-| [examples/nexa-atlas](./examples/nexa-atlas) | Atlas-themed `ZoomStage` tour of Nexa: click any background frame to zoom straight to it, plus a live demo frame running real `useState`/`useTheme` mid-presentation |
+| [examples/nexa-atlas](./examples/nexa-atlas) | Atlas-themed `ZoomStage` tour of FluxaWay: click any background frame to zoom straight to it, plus a live demo frame running real `useState`/`useTheme` mid-presentation |
 | [examples/nexa-architecture](./examples/nexa-architecture) | Modern `ZoomStage` presentation for solution architects: no-build runtime, technical contracts, integration paths, trade-offs, and adoption guidance |
 | [examples/star-atlas](./examples/star-atlas) | Zoomable night sky showcasing `ZoomStage`'s `freeZoom`: scroll/pinch to zoom and drag to roam a starfield of SVG constellations, with a guided tour that flies between them, an auto-play tour, clickable dot rail, and aria-live announcements — all self-contained SVG/CSS, no images |
-| [examples/nexa-motion](./examples/nexa-motion) | Flash-style animated intro on `nexa-motion`: preloader, logo flying in with `outBack`, staggered letter cascade, frame scripts, a nested looping movie clip, SKIP INTRO, and a control deck with scrubber, reverse, speed, and `gotoAndPlay` scene jumps |
-| [examples/motion-editor](./examples/motion-editor) | Flash-8-style visual authoring IDE on the real `nexa-motion` runtime: frame-based timeline (fps, dots, tween spans, zoom, labels, loop), auto-key on stage drag, Free Transform (rotate/scale at the playhead), multi-actor layers with folders, animated masks and guide layers, multi-scene movies, linked symbols with nested MovieClip editing, vector Line/Pencil tools, onion skinning with ruler brackets, per-actor Behavior panel and two-way `useTimeline()` code editing, undo/redo, save/load, versioned project schema |
-| [examples/motion-landing](./examples/motion-landing) | Animated product landing page for Nexa Motion, built on the add-on itself: hero timeline, scroll-driven scenes, replayable intro |
-| [examples/palate-journey](./examples/palate-journey) | Ten-course food & drink tasting journey: full-screen course cards with staggered `nexa-motion` timelines, dot-rail navigation and a "serve for me" autopilot |
+| [examples/nexa-motion](./examples/nexa-motion) | Flash-style animated intro on `fluxaway-motion`: preloader, logo flying in with `outBack`, staggered letter cascade, frame scripts, a nested looping movie clip, SKIP INTRO, and a control deck with scrubber, reverse, speed, and `gotoAndPlay` scene jumps |
+| [examples/motion-editor](./examples/motion-editor) | Flash-8-style visual authoring IDE on the real `fluxaway-motion` runtime: frame-based timeline (fps, dots, tween spans, zoom, labels, loop), auto-key on stage drag, Free Transform (rotate/scale at the playhead), multi-actor layers with folders, animated masks and guide layers, multi-scene movies, linked symbols with nested MovieClip editing, vector Line/Pencil tools, onion skinning with ruler brackets, per-actor Behavior panel and two-way `useTimeline()` code editing, undo/redo, save/load, versioned project schema |
+| [examples/motion-landing](./examples/motion-landing) | Animated product landing page for FluxaWay Motion, built on the add-on itself: hero timeline, scroll-driven scenes, replayable intro |
+| [examples/palate-journey](./examples/palate-journey) | Ten-course food & drink tasting journey: full-screen course cards with staggered `fluxaway-motion` timelines, dot-rail navigation and a "serve for me" autopilot |
 | [examples/burger-shop-fastapi](./examples/burger-shop-fastapi) | Same app as burger-shop, backed by a real FastAPI + SQLModel + SQLite app instead of `http.server` — same frontend, `/dist` mounted straight from the monorepo |
 
 The burger shop example requires its own backend:
@@ -446,8 +443,8 @@ cd examples/burger-shop-fastapi && uv run uvicorn app.main:app --port 8000 --rel
 
 ## Testing
 
-Nexa stays dependency-free in its tests too: [tests/index.html](./tests) is a
-page that imports `dist/nexa.js` directly and runs assertions against the real
+FluxaWay stays dependency-free in its tests too: [tests/index.html](./tests) is a
+page that imports `dist/fluxaway.js` directly and runs assertions against the real
 DOM — no test framework, no build step.
 
 ```bash
@@ -538,7 +535,7 @@ function Counter() {
 
 ### `createContext` + `useContext`
 
-Nexa evaluates `h(Child)` eagerly — children render before the parent function
+FluxaWay evaluates `h(Child)` eagerly — children render before the parent function
 returns. Because of this, the standard `Provider` component pattern would set
 the context value _after_ children have already rendered. The solution is
 `Context.provide(value, renderFn)`:
@@ -587,7 +584,7 @@ function Boundary() {
 
 `guard` only catches errors thrown while *building* the subtree (i.e. during
 render) — effects, event handlers, and async code run outside of render and
-need their own `try`/`catch`. Nexa already isolates those for you: a throwing
+need their own `try`/`catch`. FluxaWay already isolates those for you: a throwing
 effect or cleanup is reported via `console.error` without blocking its
 neighbors or skipping the rest of an unmount.
 
@@ -624,7 +621,7 @@ const { palette, palettes, setPalette, customColor, setCustomColor } = usePalett
 ```
 
 `"custom"` is a free-form palette: `setCustomColor(hex)` writes `--m-primary`
-directly as an inline style, and `nexa-ui.css` derives `--m-primary-hover`,
+directly as an inline style, and `fluxaway-ui.css` derives `--m-primary-hover`,
 `--m-primary-soft`, `--m-secondary`, and `--m-focus` from it with `color-mix()`
 — any color works without computing shades by hand. Requires a browser with
 `color-mix()` support (all evergreen browsers since 2023).
@@ -635,13 +632,13 @@ directly as an inline style, and `nexa-ui.css` derives `--m-primary-hover`,
 |---|---|
 | `useDesign()` | Returns `{ design, designs, setDesign }` |
 
-Nexa's default look ("nexa") needs nothing beyond `nexa-ui.css`. To offer a
-Bootstrap 5 visual skin as an *option*, also load `dist/nexa-bootstrap.css`
+FluxaWay's default look ("nexa") needs nothing beyond `fluxaway-ui.css`. To offer a
+Bootstrap 5 visual skin as an *option*, also load `dist/fluxaway-bootstrap.css`
 and switch `data-design="bootstrap"` at runtime:
 
 ```html
-<link rel="stylesheet" href="./dist/nexa-ui.css" />
-<link rel="stylesheet" href="./dist/nexa-bootstrap.css" />
+<link rel="stylesheet" href="./dist/fluxaway-ui.css" />
+<link rel="stylesheet" href="./dist/fluxaway-bootstrap.css" />
 ```
 
 ```js
@@ -652,9 +649,9 @@ const { design, designs, setDesign } = useDesign();
 ```
 
 This is independent of `useTheme` and `usePalette` — light/dark and accent
-color both keep working under either design. `nexa-bootstrap.css` is scoped
+color both keep working under either design. `fluxaway-bootstrap.css` is scoped
 entirely under `[data-design="bootstrap"]`; if it isn't loaded, or the design
-is left at the default `"nexa"`, nothing changes. It re-points Nexa's
+is left at the default `"nexa"`, nothing changes. It re-points FluxaWay's
 existing `--m-*` tokens (color, radius, shadow, font) at Bootstrap 5's real
 values, plus a handful of grouped overrides for the few things that aren't
 token-driven (font-weight, focus-ring style, badge shape).
@@ -881,7 +878,7 @@ there is no default export.
 
 Call `createLazy` at **module scope**, never inside a component body — it holds
 its load state internally, so a new instance per render would never resolve.
-And since Nexa is no-build ESM, code splitting only works when the `import()`
+And since FluxaWay is no-build ESM, code splitting only works when the `import()`
 loader is the *only* path to the module: any remaining static `import` of it
 fetches it eagerly at startup. In large apps, make route-level pages `lazy:`
 routes and keep heavy widgets behind `createLazy`; optionally preload on
@@ -921,14 +918,14 @@ ones as `fallback` (default `""`). Pure string logic — same result on the clie
 and in `renderToString`.
 
 ```js
-import { safeUrl } from "./dist/nexa.js";
+import { safeUrl } from "./dist/fluxaway.js";
 
 h("a",   { href: safeUrl(user.website) }, user.website)
 h("img", { src:  safeUrl(user.avatar) })
 h("a",   { href: safeUrl(user.link, "#") }, "Profile")   // custom fallback
 ```
 
-Opt-in by design — Nexa never rewrites your URLs (a `data:` image or custom app
+Opt-in by design — FluxaWay never rewrites your URLs (a `data:` image or custom app
 scheme may be intended), so wrap the ones that came from user input or an API.
 It's the URL counterpart of the `innerHTML` sanitizing rule.
 
@@ -967,7 +964,7 @@ the network unless you pass `--host` explicitly.
 Add the HMR client to your HTML (development only):
 
 ```html
-<script src="/dist/nexa-hmr.js"></script>
+<script src="/dist/fluxaway-hmr.js"></script>
 ```
 
 The browser reconnects automatically if the server restarts. Remove the
@@ -976,12 +973,12 @@ wasted request.
 
 ## Server-Side Rendering
 
-`dist/nexa-server.js` re-exports `renderToString` and `hydrate` from the core
+`dist/fluxaway-server.js` re-exports `renderToString` and `hydrate` from the core
 — a separate entry point so a non-browser runtime (or the browser) imports
 only what it needs.
 
 ```js
-import { renderToString } from "./dist/nexa-server.js";
+import { renderToString } from "./dist/fluxaway-server.js";
 
 const html = renderToString(App);                    // a component
 const html = renderToString(App, { title: "Home" });  // with root props
@@ -996,7 +993,7 @@ attribute values are HTML-escaped (no injection); event handlers and `ref`s
 are omitted, since the client wires those up on hydration.
 
 ```js
-import { hydrate } from "./dist/nexa-server.js";
+import { hydrate } from "./dist/fluxaway-server.js";
 
 // The server sent `<div id="app">${renderToString(App)}</div>`
 hydrate(App, document.getElementById("app"));
@@ -1008,7 +1005,7 @@ hydrate(App, document.getElementById("app"));
 ## Components API
 
 All components are pure functions that return virtual nodes and work with any
-version of Nexa.
+version of FluxaWay.
 
 ### General UI
 
@@ -1110,17 +1107,17 @@ h(FAB, { label: "New", aboveNav: true, onClick: openSheet }, "+")
 ## Canvas, Editor & Motion
 
 Optional add-ons, each with its own dist files. They are not included in
-`nexa-components.js` — import them directly when you need them.
+`fluxaway-components.js` — import them directly when you need them.
 
-### `nexa-motion` — Flash-style timelines
+### `fluxaway-motion` — Flash-style timelines
 
-`dist/nexa-motion.js` (no stylesheet — it tweens inline `transform`/`opacity`).
+`dist/fluxaway-motion.js` (no stylesheet — it tweens inline `transform`/`opacity`).
 The Macromedia Flash mental model on top of `requestAnimationFrame`: a
 timeline with keyframes, tweens and labels, frame scripts, and the API every
 Flash author knew by heart.
 
 ```js
-import { useTimeline, stagger, easings } from "./dist/nexa-motion.js";
+import { useTimeline, stagger, easings } from "./dist/fluxaway-motion.js";
 
 const tl = useTimeline({
   duration: 3000,
@@ -1157,7 +1154,7 @@ Flash-IDE-style visual timeline editor with live code export.
 
 ### `PipelineCanvas`
 
-`dist/nexa-canvas.js` + `dist/nexa-canvas.css`. An SVG-based node editor: drag
+`dist/fluxaway-canvas.js` + `dist/fluxaway-canvas.css`. An SVG-based node editor: drag
 nodes, draw connections, pan and zoom, mini-map, and built-in undo/redo.
 
 | Prop | Description |
@@ -1168,7 +1165,7 @@ nodes, draw connections, pan and zoom, mini-map, and built-in undo/redo.
 | `onContextMenu` | Right-click handler — pair with `useContextMenu` + `ContextMenu` |
 
 ```js
-import { PipelineCanvas } from "./dist/nexa-canvas.js";
+import { PipelineCanvas } from "./dist/fluxaway-canvas.js";
 
 h(PipelineCanvas, {
   nodes,
@@ -1179,12 +1176,12 @@ h(PipelineCanvas, {
 ```
 
 Drag, pan/zoom, connection drawing, selection, undo/redo, and a mini-map are
-all built into the controller — see [dist/nexa-canvas.js](./dist/nexa-canvas.js).
+all built into the controller — see [dist/fluxaway-canvas.js](./dist/fluxaway-canvas.js).
 
 ### `ZoomStage`
 
-`dist/nexa-zoom.js` + `dist/nexa-zoom.css`. A pan/zoom presentation, in the
-style of non-linear zooming presentation tools: frame content is normal Nexa
+`dist/fluxaway-zoom.js` + `dist/fluxaway-zoom.css`. A pan/zoom presentation, in the
+style of non-linear zooming presentation tools: frame content is normal FluxaWay
 vdom positioned on one large canvas, and a single animated camera
 pans/zooms/rotates between frames.
 
@@ -1199,7 +1196,7 @@ pans/zooms/rotates between frames.
 | `advanceOnClick` | Click the stage background to advance (default `true`) |
 
 ```js
-import { ZoomStage } from "./dist/nexa-zoom.js";
+import { ZoomStage } from "./dist/fluxaway-zoom.js";
 
 h(ZoomStage, {
   frames,
@@ -1224,7 +1221,7 @@ dock, progress indicator, and keyboard navigation.
 
 ### `FullCodeEditor`
 
-`dist/nexa-editor.js` + `dist/nexa-editor.css` (+ `dist/nexa-editor-snippets.js`
+`dist/fluxaway-editor.js` + `dist/fluxaway-editor.css` (+ `dist/fluxaway-editor-snippets.js`
 for the snippet browser). A [CodeMirror 5](https://codemirror.net/5/) wrapper
 with a toolbar, language switcher, snippet browser, and autocomplete.
 
@@ -1232,13 +1229,13 @@ with a toolbar, language switcher, snippet browser, and autocomplete.
 |---|---|
 | `value`, `onChange` | Controlled source code |
 | `language`, `onLanguageChange` | Active language (`python`, `cython`, `go`, `rust`, `kotlin`, …) |
-| `snippets` | Snippet catalog — see `BOILERPLATES` and friends in `nexa-editor-snippets.js` |
+| `snippets` | Snippet catalog — see `BOILERPLATES` and friends in `fluxaway-editor-snippets.js` |
 | `onCheckSyntax` | Async `(code) => { ok, message }` — wired to the toolbar's "check" action |
 | `showToolbar`, `showSnippets`, `height` | Layout toggles |
 
 ```js
-import { FullCodeEditor } from "./dist/nexa-editor.js";
-import { BOILERPLATES } from "./dist/nexa-editor-snippets.js";
+import { FullCodeEditor } from "./dist/fluxaway-editor.js";
+import { BOILERPLATES } from "./dist/fluxaway-editor-snippets.js";
 
 h(FullCodeEditor, {
   value: code,
@@ -1254,36 +1251,36 @@ for the full list of `<script>`/`<link>` tags to include.
 
 ## CSS Framework
 
-`dist/nexa-ui.css` is mobile-first. Base styles target small screens; larger
+`dist/fluxaway-ui.css` is mobile-first. Base styles target small screens; larger
 screens add layout via `min-width` media queries.
 
 ### Category CSS (optional)
 
-`nexa-ui.css` is the whole design system in one file — the simple default. It
+`fluxaway-ui.css` is the whole design system in one file — the simple default. It
 also ships **pre-split by category**, mirroring the JS component modules, so a
 production page can load only the CSS it uses:
 
 | File | Contents |
 |---|---|
-| `nexa-ui-base.css` | tokens, dark mode, palettes, reset, grid, utilities, typography, animations (always required) |
-| `nexa-ui-core.css` | Card, Button, Chip, Badge, Alert, form-field base, Progress, Spinner, Divider, Avatar, Skeleton |
-| `nexa-ui-forms.css` | Switch, Slider, Combobox, Date/Time/Number pickers, Radio, FileDropZone, CodeEditor |
-| `nexa-ui-overlay.css` | Dialog, Drawer, Dropdown, Tooltip, Popover, Menu, ContextMenu, BottomSheet, CommandPalette, Toast |
-| `nexa-ui-data.css` | Table, DataTable, Pagination, Stat, TreeView, Accordion, Collapse |
-| `nexa-ui-nav.css` | Tabs, Navbar, AppBar, BottomNav, Breadcrumb, Stepper, FAB, SpeedDial, Sidebar |
-| `nexa-ui-theme.css` | PaletteSwitcher, DesignSwitcher |
+| `fluxaway-ui-base.css` | tokens, dark mode, palettes, reset, grid, utilities, typography, animations (always required) |
+| `fluxaway-ui-core.css` | Card, Button, Chip, Badge, Alert, form-field base, Progress, Spinner, Divider, Avatar, Skeleton |
+| `fluxaway-ui-forms.css` | Switch, Slider, Combobox, Date/Time/Number pickers, Radio, FileDropZone, CodeEditor |
+| `fluxaway-ui-overlay.css` | Dialog, Drawer, Dropdown, Tooltip, Popover, Menu, ContextMenu, BottomSheet, CommandPalette, Toast |
+| `fluxaway-ui-data.css` | Table, DataTable, Pagination, Stat, TreeView, Accordion, Collapse |
+| `fluxaway-ui-nav.css` | Tabs, Navbar, AppBar, BottomNav, Breadcrumb, Stepper, FAB, SpeedDial, Sidebar |
+| `fluxaway-ui-theme.css` | PaletteSwitcher, DesignSwitcher |
 
 ```html
 <!-- base is always required; add core, then only the categories you use -->
-<link rel="stylesheet" href="./dist/nexa-ui-base.css" />
-<link rel="stylesheet" href="./dist/nexa-ui-core.css" />
-<link rel="stylesheet" href="./dist/nexa-ui-forms.css" />
+<link rel="stylesheet" href="./dist/fluxaway-ui-base.css" />
+<link rel="stylesheet" href="./dist/fluxaway-ui-core.css" />
+<link rel="stylesheet" href="./dist/fluxaway-ui-forms.css" />
 ```
 
-Loading all seven is byte-for-byte identical to loading `nexa-ui.css`; a
+Loading all seven is byte-for-byte identical to loading `fluxaway-ui.css`; a
 core-only page instead drops ~114 KB to ~52 KB (before minify/gzip). The files
 are generated from the monolith by `python scripts/split_css.py` — edit
-`nexa-ui.css`, never the `nexa-ui-*.css` files (CI verifies they're in sync).
+`fluxaway-ui.css`, never the `fluxaway-ui-*.css` files (CI verifies they're in sync).
 
 ### Breakpoints
 
@@ -1351,7 +1348,7 @@ The CSS respects `prefers-color-scheme` automatically. Use `useTheme()` or
 
 ## DOM Features
 
-Nexa props cover the most common needs of a real page:
+FluxaWay props cover the most common needs of a real page:
 
 - events: `onClick`, `onInput`, `onSubmit`, `onChange`, `onBlur`, and more
 - `className`, `htmlFor`, `ariaLabel`, and other `aria*` aliases
@@ -1388,17 +1385,17 @@ when parsing markup. The namespace is read straight off the live DOM tree, so
 nesting, patches, and re-renders all stay correct with zero setup. (Earlier,
 this gap is what forced `PipelineCanvas` to bypass the virtual DOM entirely
 and hand-roll its own `createElementNS` controller — see
-[dist/nexa-canvas.js](./dist/nexa-canvas.js).)
+[dist/fluxaway-canvas.js](./dist/fluxaway-canvas.js).)
 
 SVG attribute names are case-sensitive and mostly hyphenated
 (`stroke-width`, `stroke-dasharray`, `clip-path`, `font-size`, …) — pass them
 as quoted string keys exactly as the SVG spec writes them, the same way
-`dist/nexa-canvas.js` already does internally. CamelCase JSX-style aliases
+`dist/fluxaway-canvas.js` already does internally. CamelCase JSX-style aliases
 (`strokeWidth`) are *not* translated for you.
 
 ## Status
 
-Nexa `0.12.1` covers:
+FluxaWay `0.12.1` covers:
 
 **Engine**
 - Function components with local hook state and multiple independent roots
@@ -1418,7 +1415,7 @@ Nexa `0.12.1` covers:
 - `loadCSS` — load a stylesheet once, deduped by URL; the CSS half of code splitting
 - `useId` — stable, unique string ID per component instance
 - `useRoutes` + `matchPath` — nested routes with path params, an `outlet` prop, and `lazy: () => import(...)` + `css:` per route
-- `renderToString` + `hydrate` (`dist/nexa-server.js`) — server-side rendering with HTML-escaped output, plus client-side hydration that adopts the server DOM in place
+- `renderToString` + `hydrate` (`dist/fluxaway-server.js`) — server-side rendering with HTML-escaped output, plus client-side hydration that adopts the server DOM in place
 
 **Mobile hooks**
 - `useSwipe`, `useLongPress`, `useNetworkStatus`, `useOrientation`, `useVibrate`
@@ -1446,11 +1443,11 @@ Nexa `0.12.1` covers:
 
 **Canvas & Editor add-ons**
 - `PipelineCanvas` — SVG node editor with drag, pan, zoom, mini-map, undo/redo
-  (`nexa-canvas.js` / `nexa-canvas.css`)
+  (`fluxaway-canvas.js` / `fluxaway-canvas.css`)
 - `ZoomStage` — pan/zoom presentation canvas with animated camera
-  pan/zoom/rotate (`nexa-zoom.js` / `nexa-zoom.css`)
+  pan/zoom/rotate (`fluxaway-zoom.js` / `fluxaway-zoom.css`)
 - `FullCodeEditor` — CodeMirror 5 wrapper with toolbar, snippet browser, and
-  autocomplete (`nexa-editor.js` / `nexa-editor.css` / `nexa-editor-snippets.js`)
+  autocomplete (`fluxaway-editor.js` / `fluxaway-editor.css` / `fluxaway-editor-snippets.js`)
 
 **CSS framework**
 - Mobile-first with `sm / md / lg / xl` breakpoints

@@ -2,7 +2,7 @@
 // RadioGroup, Avatar/AvatarGroup, Breadcrumb, Skeleton, Divider, Stat,
 // NumberInput, TimePicker, Popover, TreeView, CommandPalette.
 
-import { h, render, unmount, useState } from "../dist/nexa.js";
+import { h, render, unmount, useState } from "../dist/fluxaway.js";
 import {
   Radio,
   RadioGroup,
@@ -18,7 +18,7 @@ import {
   TreeView,
   CommandPalette,
   Button,
-} from "../dist/nexa-components.js";
+} from "../dist/fluxaway-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 function keydown(target, key) {
@@ -470,7 +470,7 @@ test("CommandPalette: Escape closes without running anything", async () => {
 // the toolbar renders regardless.)
 
 test("FullCodeEditor: language select covers the default list and keeps unknown modes visible", async () => {
-  const { FullCodeEditor, DEFAULT_LANGUAGES } = await import("../dist/nexa-editor.js");
+  const { FullCodeEditor, DEFAULT_LANGUAGES } = await import("../dist/fluxaway-editor.js");
 
   function App() {
     return h(FullCodeEditor, { value: "", language: "sql", showSnippets: false });

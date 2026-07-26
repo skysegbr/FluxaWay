@@ -1,6 +1,6 @@
-import { h, useState } from "/dist/nexa.js";
-import { Button, Badge } from "/dist/nexa-components-core.js";
-import { Tooltip, Popover, CommandPalette } from "/dist/nexa-components-overlay.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Button, Badge } from "/dist/fluxaway-components-core.js";
+import { Tooltip, Popover, CommandPalette } from "/dist/fluxaway-components-overlay.js";
 
 // Overlays anchored to a trigger (or to the viewport, for the palette) rather
 // than the pointer — see menus.js for the pointer/list family.
@@ -9,7 +9,7 @@ export const ANCHORED_ENTRIES = [
     slug: "tooltip",
     name: "Tooltip",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary: "A short text hint on hover and on keyboard focus. Text only — never interactive content.",
     demos: [
       {
@@ -44,7 +44,7 @@ export const ANCHORED_ENTRIES = [
     slug: "popover",
     name: "Popover",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "An anchored panel for arbitrary interactive content — the middle ground between Tooltip " +
       "(text) and Dropdown (action list). It is not modal, so Tab is not trapped.",
@@ -83,7 +83,7 @@ export const ANCHORED_ENTRIES = [
     slug: "command-palette",
     name: "CommandPalette",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "The Ctrl/Cmd+K launcher. Controlled like Dialog — it only handles what happens while it " +
       "is open, so the global shortcut is yours to bind. This very site uses it for search.",

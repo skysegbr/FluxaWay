@@ -1,4 +1,4 @@
-import { h } from '/dist/nexa.js';
+import { h } from '/dist/fluxaway.js';
 import { COMPONENT_MAP, CATALOG } from '../data.js';
 
 const GRID = 24; // matches background dot grid
@@ -90,7 +90,7 @@ function getCatalogIcon(type) {
 }
 
 // ── Drag ──────────────────────────────────────────────────────────────────
-// Uses transform:translate() during drag so Nexa VDOM re-renders
+// Uses transform:translate() during drag so FluxaWay VDOM re-renders
 // (triggered by onSelect) never reset the imperative left/top mid-drag.
 // Only left/top are committed to state on mouseup.
 

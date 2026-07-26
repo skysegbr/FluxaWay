@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { useTimeline } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { useTimeline } from "/dist/fluxaway-motion.js";
 
 function MotionPreview() {
   const timeline = useTimeline({
@@ -17,16 +17,16 @@ function MotionPreview() {
   return h(
     "div",
     { className: "nd-addon-motion" },
-    h("div", { ref: timeline.track("mark"), className: "nd-addon-motion-mark" }, "N"),
+    h("div", { ref: timeline.track("mark"), className: "nd-addon-motion-mark" }, "FW"),
   );
 }
 
 export const ADDON_ENTRIES = [
   {
     name: "useTimeline",
-    slug: "nexa-motion",
+    slug: "fluxaway-motion",
     category: "addons",
-    module: "nexa-motion.js",
+    module: "fluxaway-motion.js",
     summary:
       "Flash-style timeline animation with keyframes, Penner easings, labels, frame scripts and motion guides.",
     signature: "const timeline = useTimeline(spec)",
@@ -47,7 +47,7 @@ export const ADDON_ENTRIES = [
   },
 });
 
-return h("div", { ref: timeline.track("mark") }, "N");`,
+return h("div", { ref: timeline.track("mark") }, "FW");`,
       },
     ],
     params: [

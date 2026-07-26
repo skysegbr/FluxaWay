@@ -1,12 +1,12 @@
-import { h, useRouter, matchPath } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
+import { h, useRouter, matchPath } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
 
 export const ROUTING_HOOK_ENTRIES = [
   {
     slug: "use-router",
     name: "useRouter",
     category: "hooks-routing",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: 'const { path, navigate, params } = useRouter({ mode: "hash" })',
     summary:
       "The router primitive. Hash mode by default, which works on any static host with no server " +
@@ -67,7 +67,7 @@ const { path, navigate } = useRouter({ mode: "history" });`,
     slug: "use-routes",
     name: "useRoutes",
     category: "hooks-routing",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const element = useRoutes(routes, { mode, notFound })",
     summary:
       "Nested routing from a config array: path patterns, index routes, an outlet for children, " +

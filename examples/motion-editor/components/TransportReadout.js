@@ -3,7 +3,7 @@
 // instead of re-rendering the whole transport row (and through it the
 // timeline lanes). Single-root on purpose, like TimelineCursor.
 
-import { h, useEffect, useState } from "/dist/nexa.js";
+import { h, useEffect, useState } from "/dist/fluxaway.js";
 import { frameOf } from "./editorUtils.js";
 
 export function TransportReadout({ tl, fps }) {

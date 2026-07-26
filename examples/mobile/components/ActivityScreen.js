@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
 
 import { ACTIVITY_ITEMS } from "../data.js";
 

@@ -1,6 +1,6 @@
-import { h, useContextMenu } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Dropdown, Menu, ContextMenu } from "/dist/nexa-components-overlay.js";
+import { h, useContextMenu } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Dropdown, Menu, ContextMenu } from "/dist/fluxaway-components-overlay.js";
 
 export const MENU_ITEMS = [
   { label: "Rename", icon: h("i", { className: "bi bi-pencil" }) },
@@ -14,7 +14,7 @@ export const MENU_ENTRIES = [
     slug: "dropdown",
     name: "Dropdown",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "A trigger plus a list of actions. It owns its own open state and closes on outside click, " +
       "on Escape and after an item runs.",
@@ -51,7 +51,7 @@ export const MENU_ENTRIES = [
     slug: "menu",
     name: "Menu",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "Dropdown's bigger sibling: the same shape, plus flyout submenus — an item nests a " +
       "children array, any number of levels deep.",
@@ -93,7 +93,7 @@ export const MENU_ENTRIES = [
     slug: "context-menu",
     name: "ContextMenu",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "A right-click menu positioned at the pointer. Pair it with the useContextMenu hook, which " +
       "holds the open flag and the x/y coordinates.",

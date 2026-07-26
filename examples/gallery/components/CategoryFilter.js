@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function CategoryFilter({ categories, active, onSelect }) {
   return h(

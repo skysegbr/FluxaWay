@@ -1,10 +1,10 @@
-import { h, useState, useTheme } from "/dist/nexa.js";
-import { Badge, Button, Progress } from "/dist/nexa-components-core.js";
-import { Switch, TextField } from "/dist/nexa-components-forms.js";
+import { h, useState, useTheme } from "/dist/fluxaway.js";
+import { Badge, Button, Progress } from "/dist/fluxaway-components-core.js";
+import { Switch, TextField } from "/dist/fluxaway-components-forms.js";
 
-// The one frame in this deck that isn't a picture of Nexa — it IS Nexa.
+// The one frame in this deck that isn't a picture of FluxaWay — it IS FluxaWay.
 // Its useState/useTheme calls are real hooks, owned by this component's own
-// position in the tree (see dist/nexa.js renderComponent/componentIdentity),
+// position in the tree (see dist/fluxaway.js renderComponent/componentIdentity),
 // so the counter, the toggle and the typed text all survive camera moves —
 // ZoomStage keeps every frame mounted, it only animates the viewport.
 export function LiveDemoFrame({ data }) {

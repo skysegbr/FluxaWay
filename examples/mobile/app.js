@@ -1,8 +1,8 @@
-import { Fragment, h, render, useCallback, useState } from "/dist/nexa.js";
-import { Button, IconButton } from "/dist/nexa-components-core.js";
-import { BottomSheet, Toast } from "/dist/nexa-components-overlay.js";
-import { AppBar, BottomNav, FAB } from "/dist/nexa-components-nav.js";
-import { ThemeToggle } from "/dist/nexa-components-theme.js";
+import { Fragment, h, render, useCallback, useState } from "/dist/fluxaway.js";
+import { Button, IconButton } from "/dist/fluxaway-components-core.js";
+import { BottomSheet, Toast } from "/dist/fluxaway-components-overlay.js";
+import { AppBar, BottomNav, FAB } from "/dist/fluxaway-components-nav.js";
+import { ThemeToggle } from "/dist/fluxaway-components-theme.js";
 
 import { HomeScreen }     from "./components/HomeScreen.js";
 import { ExploreScreen }  from "./components/ExploreScreen.js";
@@ -17,7 +17,7 @@ const TABS = [
 ];
 
 const TITLES = {
-  home:     "Nexa Mobile",
+  home:     "FluxaWay Mobile",
   explore:  "Explore",
   activity: "Activity",
   profile:  "Profile",

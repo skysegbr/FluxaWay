@@ -1,11 +1,11 @@
 // Incremental test coverage for hooks/components that had none: useFetch,
 // useLocalStorage, Table, Dialog, Drawer, useTheme, usePalette, useDesign,
 // useToast, Accordion, Stepper, Pagination, FileDropZone, Navbar
-// (Nexa backlog Task 3).
+// (FluxaWay backlog Task 3).
 
-import { h, render, useState } from "../dist/nexa.js";
-import { useFetch, useLocalStorage, useTheme, usePalette, useDesign, useToast } from "../dist/nexa.js";
-import { Table, Dialog, Drawer, Button, Accordion, Stepper, Pagination, FileDropZone, Navbar, Slider, RangeSlider, Menu, DataTable, DatePicker } from "../dist/nexa-components.js";
+import { h, render, useState } from "../dist/fluxaway.js";
+import { useFetch, useLocalStorage, useTheme, usePalette, useDesign, useToast } from "../dist/fluxaway.js";
+import { Table, Dialog, Drawer, Button, Accordion, Stepper, Pagination, FileDropZone, Navbar, Slider, RangeSlider, Menu, DataTable, DatePicker } from "../dist/fluxaway-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 // ── useFetch ────────────────────────────────────────────────────────────────
@@ -818,7 +818,7 @@ test("Navbar: the toggle button opens/closes the menu with correct aria-expanded
   const container = mountPoint();
 
   function Widget() {
-    return h(Navbar, { brand: "Nexa", items: [{ key: "home", label: "Home", href: "#/" }] });
+    return h(Navbar, { brand: "FluxaWay", items: [{ key: "home", label: "Home", href: "#/" }] });
   }
 
   render(Widget, container);

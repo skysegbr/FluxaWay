@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { FileDropZone } from "/dist/nexa-components-forms.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { FileDropZone } from "/dist/fluxaway-components-forms.js";
 
 export function PageFileDrop({ toast }) {
   const [files,    setFiles]    = useState([]);

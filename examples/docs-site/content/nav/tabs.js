@@ -1,12 +1,12 @@
-import { h, useState } from "/dist/nexa.js";
-import { Tabs, TabPanel, Breadcrumb, Stepper } from "/dist/nexa-components-nav.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Tabs, TabPanel, Breadcrumb, Stepper } from "/dist/fluxaway-components-nav.js";
 
 export const TAB_ENTRIES = [
   {
     slug: "tabs",
     name: "Tabs",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "A WAI-ARIA tablist. Controlled: you hold the active value and pair it with TabPanel to " +
       "render the matching content.",
@@ -59,7 +59,7 @@ export const TAB_ENTRIES = [
     slug: "tab-panel",
     name: "TabPanel",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "The content half of Tabs. It renders its children only while id === activeId, and returns " +
       "null otherwise — no hidden DOM left behind.",
@@ -99,7 +99,7 @@ export const TAB_ENTRIES = [
     slug: "breadcrumb",
     name: "Breadcrumb",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "The trail to the current page. The last crumb renders as plain text with aria-current, " +
       "never as a link.",
@@ -147,7 +147,7 @@ export const TAB_ENTRIES = [
     slug: "stepper",
     name: "Stepper",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary: "Progress through a multi-step flow. Steps before the active one are marked done.",
     demos: [
       {

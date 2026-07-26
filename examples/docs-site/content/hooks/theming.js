@@ -1,12 +1,12 @@
-import { h, useState, useTheme, usePalette, useDesign } from "/dist/nexa.js";
-import { Badge, Button, Card } from "/dist/nexa-components-core.js";
+import { h, useState, useTheme, usePalette, useDesign } from "/dist/fluxaway.js";
+import { Badge, Button, Card } from "/dist/fluxaway-components-core.js";
 
 export const THEMING_HOOK_ENTRIES = [
   {
     slug: "use-theme",
     name: "useTheme",
     category: "hooks-theming",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { theme, setTheme, toggleTheme } = useTheme()",
     summary:
       "Light/dark, without a provider. It reads and writes localStorage(\"nexa-theme\") and sets " +
@@ -49,7 +49,7 @@ export const THEMING_HOOK_ENTRIES = [
     slug: "use-palette",
     name: "usePalette",
     category: "hooks-theming",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { palette, palettes, setPalette, customColor, setCustomColor } = usePalette()",
     summary:
       "Six preset accent palettes plus any custom hex. Independent of the theme: each palette ships " +
@@ -59,7 +59,7 @@ export const THEMING_HOOK_ENTRIES = [
         id: "use-palette-basic",
         title: "Recoloring from a hex",
         stack: true,
-        note: "nexa-ui.css derives the hover/soft/secondary/focus shades from --m-primary with color-mix(), so one hex is enough.",
+        note: "fluxaway-ui.css derives the hover/soft/secondary/focus shades from --m-primary with color-mix(), so one hex is enough.",
         render: () => {
           const { palette, palettes, setPalette, setCustomColor } = usePalette();
           const [hex, setHex] = useState("#ff6600");
@@ -111,7 +111,7 @@ export const THEMING_HOOK_ENTRIES = [
     slug: "use-design",
     name: "useDesign",
     category: "hooks-theming",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { design, designs, setDesign } = useDesign()",
     summary:
       "Swaps the visual skin between the native FluxaWay look and a Bootstrap 5 one, by setting " +
@@ -146,7 +146,7 @@ export const THEMING_HOOK_ENTRIES = [
       { name: "setDesign", type: "(name) => void", description: "Switches skin and persists the choice." },
     ],
     notes: [
-      '"bootstrap" only takes visual effect when dist/nexa-bootstrap.css is also loaded. That stylesheet is scoped under [data-design="bootstrap"], so it is inert until then.',
+      '"bootstrap" only takes visual effect when dist/fluxaway-bootstrap.css is also loaded. That stylesheet is scoped under [data-design="bootstrap"], so it is inert until then.',
       "Composes freely with useTheme and usePalette — bootstrap skin, dark theme and the rose palette all apply at once.",
     ],
   },

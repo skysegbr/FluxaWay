@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { CoverFrame } from "./CoverFrame.js";
 import { LensFrame } from "./LensFrame.js";
 import { MapFrame } from "./MapFrame.js";

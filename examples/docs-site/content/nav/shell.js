@@ -1,13 +1,13 @@
-import { h, useState } from "/dist/nexa.js";
-import { Badge, Button, IconButton } from "/dist/nexa-components-core.js";
-import { Navbar, AppBar, BottomNav } from "/dist/nexa-components-nav.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Badge, Button, IconButton } from "/dist/fluxaway-components-core.js";
+import { Navbar, AppBar, BottomNav } from "/dist/fluxaway-components-nav.js";
 
 export const SHELL_ENTRIES = [
   {
     slug: "navbar",
     name: "Navbar",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "The desktop top bar: a brand, a link list that collapses behind a burger on small screens, " +
       "and an actions slot on the right.",
@@ -47,7 +47,7 @@ export const SHELL_ENTRIES = [
     slug: "app-bar",
     name: "AppBar",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "The mobile-style header: a leading slot (back arrow, menu), a title, and trailing actions. " +
       "Respects the top safe-area inset.",
@@ -78,7 +78,7 @@ export const SHELL_ENTRIES = [
     slug: "bottom-nav",
     name: "BottomNav",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "The phone tab bar, pinned to the bottom edge with safe-area padding. Controlled through " +
       "value and onChange.",

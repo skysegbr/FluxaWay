@@ -1,6 +1,6 @@
-import { h, useState, useRef, useMemo, useCallback, useId, useErrorBoundary } from "/dist/nexa.js";
-import { Badge, Button, Alert } from "/dist/nexa-components-core.js";
-import { TextField } from "/dist/nexa-components-forms.js";
+import { h, useState, useRef, useMemo, useCallback, useId, useErrorBoundary } from "/dist/fluxaway.js";
+import { Badge, Button, Alert } from "/dist/fluxaway-components-core.js";
+import { TextField } from "/dist/fluxaway-components-forms.js";
 
 // Memoization, identity and render-time recovery.
 export const MEMO_HOOK_ENTRIES = [
@@ -8,7 +8,7 @@ export const MEMO_HOOK_ENTRIES = [
     slug: "use-memo",
     name: "useMemo",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const value = useMemo(factory, dependencies)",
     summary: "Caches an expensive computation between renders, recomputing only when a dependency changes.",
     demos: [
@@ -51,7 +51,7 @@ export const MEMO_HOOK_ENTRIES = [
     slug: "use-callback",
     name: "useCallback",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const fn = useCallback(callback, dependencies)",
     summary:
       "Keeps a function identity stable between renders — useful for a memo()'d child's props or " +
@@ -88,7 +88,7 @@ export const MEMO_HOOK_ENTRIES = [
     slug: "use-id",
     name: "useId",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const id = useId()",
     summary:
       "A unique, render-stable id. Use it to tie a label to a control, or aria-controls to a panel, " +
@@ -120,7 +120,7 @@ export const MEMO_HOOK_ENTRIES = [
     slug: "use-error-boundary",
     name: "useErrorBoundary",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const [error, reset, guard] = useErrorBoundary()",
     summary:
       "Catches render errors thrown inside a subtree, so one broken branch shows a fallback " +

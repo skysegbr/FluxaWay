@@ -1,6 +1,6 @@
 // Scene controls in the movie, breadcrumb navigation inside MovieClips.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { SceneBar } from "./SceneBar.js";
 
 export function EditorContextBar({ doc, sceneProps, onExitSymbol }) {

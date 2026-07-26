@@ -1,8 +1,8 @@
 // Code and CSS generation for canvas items — turns the designer's item
-// objects back into copy-pasteable Nexa source and stylesheet rules.
+// objects back into copy-pasteable FluxaWay source and stylesheet rules.
 
 // Category module of each palette component, so generated code imports only
-// the nexa-components-* files it needs (smaller payload than the barrel).
+// the fluxaway-components-* files it needs (smaller payload than the barrel).
 const COMPONENT_CATEGORY = {
   Button: 'core', Badge: 'core', Chip: 'core', Alert: 'core', Card: 'core',
   Spinner: 'core', Progress: 'core', EmptyState: 'core', IconButton: 'core',
@@ -21,7 +21,7 @@ export function generateCode(items) {
   const byCategory = new Map();
   for (const type of usedTypes) {
     const cat = COMPONENT_CATEGORY[type];
-    const file = cat ? `/dist/nexa-components-${cat}.js` : '/dist/nexa-components.js';
+    const file = cat ? `/dist/fluxaway-components-${cat}.js` : '/dist/fluxaway-components.js';
     if (!byCategory.has(file)) byCategory.set(file, []);
     byCategory.get(file).push(type);
   }
@@ -31,7 +31,7 @@ export function generateCode(items) {
 
   const lines = items.map((item) => '    ' + generateItemCode(item)).join(',\n');
 
-  return `import { h } from '/dist/nexa.js';
+  return `import { h } from '/dist/fluxaway.js';
 ${importLines}
 
 function MyComponent() {

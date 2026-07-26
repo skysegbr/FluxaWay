@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Menu } from "/dist/nexa-components-overlay.js";
+import { h } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Menu } from "/dist/fluxaway-components-overlay.js";
 
 export function PageMenu({ toast }) {
   const notify = (label) => toast.info(`"${label}" clicked`);

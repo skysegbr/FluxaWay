@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function NavDock({ index, total, label, controllerRef }) {
   const current = index + 1;

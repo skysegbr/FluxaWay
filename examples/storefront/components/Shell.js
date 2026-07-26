@@ -1,6 +1,6 @@
-import { h, useContext, useState, useToast } from "/dist/nexa.js";
-import { ToastStack } from "/dist/nexa-components-overlay.js";
-import { ThemeToggle } from "/dist/nexa-components-theme.js";
+import { h, useContext, useState, useToast } from "/dist/fluxaway.js";
+import { ToastStack } from "/dist/fluxaway-components-overlay.js";
+import { ThemeToggle } from "/dist/fluxaway-components-theme.js";
 import { CatalogFilters } from "./catalog/CatalogFilters.js";
 import { ProductGrid } from "./catalog/ProductGrid.js";
 import { CartContext } from "./cart/CartContext.js";
@@ -40,7 +40,7 @@ export function Shell() {
     h(
       "header",
       { className: "sf-topbar" },
-      h("span", { className: "sf-brand" }, h("i", { className: "bi-bag" }), "Nexa Shop"),
+      h("span", { className: "sf-brand" }, h("i", { className: "bi-bag" }), "FluxaWay Shop"),
       h(
         "div",
         { className: "sf-topbar-actions" },

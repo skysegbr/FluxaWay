@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { RadioGroup, NumberInput, TimePicker } from "/dist/nexa-components-forms.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { RadioGroup, NumberInput, TimePicker } from "/dist/fluxaway-components-forms.js";
 
 export function FormControls() {
   const [frequency, setFrequency] = useState("daily");

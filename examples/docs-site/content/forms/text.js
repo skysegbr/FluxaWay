@@ -1,12 +1,12 @@
-import { h, Fragment, useState } from "/dist/nexa.js";
-import { TextField, Textarea, NumberInput } from "/dist/nexa-components-forms.js";
+import { h, Fragment, useState } from "/dist/fluxaway.js";
+import { TextField, Textarea, NumberInput } from "/dist/fluxaway-components-forms.js";
 
 export const TEXT_ENTRIES = [
   {
     slug: "text-field",
     name: "TextField",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary:
       "A labelled text input. Every native input prop (type, placeholder, value, onInput, " +
       "required, autocomplete…) is forwarded to the underlying element.",
@@ -68,7 +68,7 @@ export const TEXT_ENTRIES = [
     slug: "textarea",
     name: "Textarea",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "The multi-line counterpart of TextField, with the same label/help/error contract.",
     demos: [
       {
@@ -103,7 +103,7 @@ export const TEXT_ENTRIES = [
     slug: "number-input",
     name: "NumberInput",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A numeric field with stepper buttons, clamped between min and max.",
     demos: [
       {

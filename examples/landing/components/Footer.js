@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function Footer({ columns }) {
   return h(
@@ -39,7 +39,7 @@ export function Footer({ columns }) {
       "div",
       { className: "l-footer-bottom" },
       h("p", null, "© 2026 Orbiq. All rights reserved."),
-      h("p", null, "Example built with ", h("a", { href: "/" }, "Nexa"), " — no build, no dependencies."),
+      h("p", null, "Example built with ", h("a", { href: "/" }, "FluxaWay"), " — no build, no dependencies."),
     ),
   );
 }

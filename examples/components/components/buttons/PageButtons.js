@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
 
 const icon = (name) => h("i", { className: `bi ${name}` });
 

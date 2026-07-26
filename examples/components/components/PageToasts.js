@@ -1,7 +1,7 @@
-import { h, useState } from "/dist/nexa.js";
-import { Button, Chip } from "/dist/nexa-components-core.js";
-import { Switch } from "/dist/nexa-components-forms.js";
-import { Dialog } from "/dist/nexa-components-overlay.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Button, Chip } from "/dist/fluxaway-components-core.js";
+import { Switch } from "/dist/fluxaway-components-forms.js";
+import { Dialog } from "/dist/fluxaway-components-overlay.js";
 
 export function PageToasts({ toast }) {
   const [dialogOpen, setDialogOpen] = useState(false);

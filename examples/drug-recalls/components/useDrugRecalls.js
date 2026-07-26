@@ -1,4 +1,4 @@
-import { useEffect, useState } from "/dist/nexa.js";
+import { useEffect, useState } from "/dist/fluxaway.js";
 import { ENFORCEMENT_URL } from "../data.js";
 
 // openFDA's query language: AND/OR are literal tokens, joined into the URL

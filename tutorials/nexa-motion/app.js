@@ -1,9 +1,9 @@
-// Tutorial player for nexa-motion: left = code for the current step, right =
+// Tutorial player for fluxaway-motion: left = code for the current step, right =
 // a real example running in an iframe (the Flash-style intro for steps 1-4,
 // the Motion Editor for step 5), bottom = caption. The recording driver
 // advances steps via window.__setStep(n).
 
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 
 const INTRO = "/examples/nexa-motion/index.html";
 const EDITOR = "/examples/motion-editor/index.html";
@@ -17,7 +17,7 @@ const STEPS = [
   {
     title: "1. The timeline is back",
     src: INTRO,
-    code: `import { useTimeline } from "/dist/nexa-motion.js";
+    code: `import { useTimeline } from "/dist/fluxaway-motion.js";
 
 const tl = useTimeline({
   duration: 5200,
@@ -33,7 +33,7 @@ const tl = useTimeline({
 
 // bind an element to a track:
 h("div", { ref: tl.track("logo") })`,
-    caption: "nexa-motion brings the Flash mental model to the browser: a timeline with keyframes and tweens, labels, and elements bound by ref. On the right: this movie playing for real — no plugin required.",
+    caption: "fluxaway-motion brings the Flash mental model to the browser: a timeline with keyframes and tweens, labels, and elements bound by ref. On the right: this movie playing for real — no plugin required.",
   },
   {
     title: "2. Easing & stagger",
@@ -160,11 +160,11 @@ function App() {
 
   return h("div", { className: "tut-root" },
     step === 0 && h("div", { className: "tut-overlay" },
-      h("h1", null, "Flash-style animation with ", h("em", null, "Nexa Motion")),
+      h("h1", null, "Flash-style animation with ", h("em", null, "FluxaWay Motion")),
       h("p", null, "timelines · tweens · gotoAndPlay — the glory days, no plugin"),
     ),
     step === STEPS.length - 1 && h("div", { className: "tut-overlay" },
-      h("h1", null, h("em", null, "Nexa Motion"), " — recap"),
+      h("h1", null, h("em", null, "FluxaWay Motion"), " — recap"),
       h("ul", null,
         h("li", null, "useTimeline: keyframe tracks, labels, loop, reverse, speed"),
         h("li", null, "Penner easings + stagger() for the classic cascades"),
@@ -175,7 +175,7 @@ function App() {
       h("p", null, "github.com/skysegbr/Nexa — examples/nexa-motion · examples/motion-editor"),
     ),
     h("header", { className: "tut-header" },
-      h("div", { className: "tut-brand" }, h("em", null, "Nexa"), " · Motion tutorial"),
+      h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · Motion tutorial"),
       h("div", { className: "tut-stepno" }, step > 0 && step < STEPS.length - 1 ? `step ${step} of ${STEPS.length - 2}` : ""),
     ),
     h("main", { className: "tut-main" },
@@ -184,7 +184,7 @@ function App() {
         h("pre", null, ...highlight(s.code)),
       ),
       h("div", { className: "tut-demo" },
-        h("iframe", { className: "tut-frame", src: s.src, title: "nexa-motion example" }),
+        h("iframe", { className: "tut-frame", src: s.src, title: "fluxaway-motion example" }),
       ),
     ),
     h("footer", { className: "tut-caption" }, s.caption),

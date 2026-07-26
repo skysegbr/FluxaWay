@@ -1,7 +1,7 @@
 // Fixed left side of the timeline: creation controls and the visible slice
 // of the hierarchical layer tree.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import {
   canIndentLayer,
   layerActorIds,

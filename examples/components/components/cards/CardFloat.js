@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { FLOAT_ITEMS } from "../../data.js";
 
 export function CardFloat() {

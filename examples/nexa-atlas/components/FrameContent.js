@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import {
   CoverFrame, TerritoryFrame, RulesFrame, CodeFrame, StatsFrame, OverviewFrame, CtaFrame,
 } from "./CoreFrames.js";

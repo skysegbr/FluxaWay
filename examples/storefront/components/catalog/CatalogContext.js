@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from "/dist/nexa.js";
+import { createContext, useEffect, useMemo, useState } from "/dist/fluxaway.js";
 
 const PRODUCTS_URL = "https://fakestoreapi.com/products";
 

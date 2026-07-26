@@ -5,7 +5,7 @@ import {
   useRef,
   useThrottle,
   useMediaQuery,
-} from "/dist/nexa.js";
+} from "/dist/fluxaway.js";
 
 // "On this page" with scroll spy. The headings are plain DOM ids rendered by
 // DemoBlock/PropsTable, so the spy reads them back with getElementById rather

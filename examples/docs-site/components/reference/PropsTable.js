@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 // Hand-rolled instead of the Table component: every cell here is markup
 // (<code>, muted defaults), and Table's `rows` take plain values.

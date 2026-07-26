@@ -1,13 +1,13 @@
-import { h, useState, useReducer, useRef, useMemo, useCallback, useEffect, useId } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
-import { TextField } from "/dist/nexa-components-forms.js";
+import { h, useState, useReducer, useRef, useMemo, useCallback, useEffect, useId } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
+import { TextField } from "/dist/fluxaway-components-forms.js";
 
 export const STATE_HOOK_ENTRIES = [
   {
     slug: "use-state",
     name: "useState",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const [value, setValue] = useState(initialValue)",
     summary:
       "Local component state. setState re-renders the component that owns it and its subtree — " +
@@ -54,7 +54,7 @@ export const STATE_HOOK_ENTRIES = [
     slug: "use-reducer",
     name: "useReducer",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const [state, dispatch] = useReducer(reducer, initialArg, init?)",
     summary:
       "State transitions expressed as a reducer. Prefer it over useState when several fields move " +
@@ -101,7 +101,7 @@ export const STATE_HOOK_ENTRIES = [
     slug: "use-effect",
     name: "useEffect",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "useEffect(effect, dependencies?)",
     summary:
       "Side effects after a render: timers, subscriptions, fetches, direct DOM work. The returned " +
@@ -144,7 +144,7 @@ export const STATE_HOOK_ENTRIES = [
     slug: "use-ref",
     name: "useRef",
     category: "hooks-state",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const ref = useRef(initialValue)",
     summary:
       "A mutable box that survives re-renders without causing them. Two uses: reaching a DOM node " +

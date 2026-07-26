@@ -1,5 +1,5 @@
-import { h, useHead } from "/dist/nexa.js";
-import { EmptyState } from "/dist/nexa-components-core.js";
+import { h, useHead } from "/dist/fluxaway.js";
+import { EmptyState } from "/dist/fluxaway-components-core.js";
 
 export function NotFoundPage({ params }) {
   const path = params?.["*"] ? `/${params["*"]}` : location.hash.slice(1);

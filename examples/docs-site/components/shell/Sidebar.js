@@ -1,4 +1,4 @@
-import { h, useEffect, useRef, useState } from "/dist/nexa.js";
+import { h, useEffect, useRef, useState } from "/dist/fluxaway.js";
 
 // Hash links, so a plain <a href="#/components/button"> navigates for free —
 // no onClick, and middle-click / open-in-new-tab keep working.

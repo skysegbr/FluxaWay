@@ -1,6 +1,6 @@
-import { h, useState, useEffect } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { CommandPalette } from "/dist/nexa-components-overlay.js";
+import { h, useState, useEffect } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { CommandPalette } from "/dist/fluxaway-components-overlay.js";
 import { PALETTE_COMMANDS } from "../../data.js";
 
 export function CommandPaletteDemo({ toast }) {

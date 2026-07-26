@@ -1,6 +1,6 @@
-import { h, useHead } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
-import { Breadcrumb } from "/dist/nexa-components-nav.js";
+import { h, useHead } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
+import { Breadcrumb } from "/dist/fluxaway-components-nav.js";
 import { CodeBlock } from "./CodeBlock.js";
 import { DemoBlock } from "./DemoBlock.js";
 import { PropsTable } from "./PropsTable.js";
@@ -17,7 +17,7 @@ export function ReferencePage({ entry }) {
   });
 
   // Split in two literals on purpose: as one string this reads as a real
-  // `import … from "…"` to validate_nexa.py's import scanner, which then tries
+  // `import … from "…"` to validate_fluxaway.py's import scanner, which then tries
   // to resolve the interpolated path and fails the build.
   const importLine =
     `import { ${entry.imports ?? entry.name} } from ` + `"/dist/${entry.module}";`;

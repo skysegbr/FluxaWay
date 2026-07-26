@@ -4,7 +4,7 @@
 // collapse and the eye/lock/outline switches stay transient; hierarchy lives
 // in the document.
 
-import { useEffect, useState } from "/dist/nexa.js";
+import { useEffect, useState } from "/dist/fluxaway.js";
 import { layerDescendantIds, layerForActor } from "./layerOps.js";
 import { isPaintLayer } from "./layerTypes.js";
 

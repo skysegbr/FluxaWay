@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
-import { DataTable } from "/dist/nexa-components-data.js";
+import { h } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
+import { DataTable } from "/dist/fluxaway-components-data.js";
 
 const ROLES = ["Admin", "Editor", "Viewer"];
 const FIRST_NAMES = ["Ana", "Bruno", "Carla", "Diego", "Elisa", "Fabio", "Gabi", "Hugo", "Ines", "Joao"];

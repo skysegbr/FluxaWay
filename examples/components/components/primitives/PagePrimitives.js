@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { Skeleton } from "./Skeleton.js";
 import { Avatar } from "./Avatar.js";
 import { Breadcrumb } from "./Breadcrumb.js";

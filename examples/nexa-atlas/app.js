@@ -1,5 +1,5 @@
-import { h, render, useRef, useState } from "/dist/nexa.js";
-import { ZoomStage } from "/dist/nexa-zoom.js";
+import { h, render, useRef, useState } from "/dist/fluxaway.js";
+import { ZoomStage } from "/dist/fluxaway-zoom.js";
 import { FRAMES } from "./data.js";
 import { FrameContent } from "./components/FrameContent.js";
 import { Compass } from "./components/Compass.js";

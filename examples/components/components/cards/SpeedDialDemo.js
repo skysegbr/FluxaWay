@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { SpeedDial } from "/dist/nexa-components-nav.js";
+import { h } from "/dist/fluxaway.js";
+import { SpeedDial } from "/dist/fluxaway-components-nav.js";
 
 export function SpeedDialDemo() {
   return h(

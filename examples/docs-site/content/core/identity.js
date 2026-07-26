@@ -1,12 +1,12 @@
-import { h, Fragment } from "/dist/nexa.js";
-import { Avatar, AvatarGroup, FormField } from "/dist/nexa-components-core.js";
+import { h, Fragment } from "/dist/fluxaway.js";
+import { Avatar, AvatarGroup, FormField } from "/dist/fluxaway-components-core.js";
 
 export const IDENTITY_ENTRIES = [
   {
     slug: "avatar",
     name: "Avatar",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary:
       "A user picture with an initials fallback derived from name whenever there is no src.",
     demos: [
@@ -54,7 +54,7 @@ export const IDENTITY_ENTRIES = [
     slug: "avatar-group",
     name: "AvatarGroup",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "An overlapping stack of avatars; everything past max collapses into a +N bubble.",
     demos: [
       {
@@ -94,7 +94,7 @@ export const IDENTITY_ENTRIES = [
     slug: "form-field",
     name: "FormField",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary:
       "The label + control + help/error wrapper every form component is built on. Reach for it " +
       "directly when you need a native input the library does not wrap.",

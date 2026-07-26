@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { useTimeline, stagger } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { useTimeline, stagger } from "/dist/fluxaway-motion.js";
 import { useInViewTimeline } from "./useInViewTimeline.js";
 
 function GuideDemo() {
@@ -74,7 +74,7 @@ export function MotionLab() {
         h(
           "p",
           { ref: tl.track("copy") },
-          "Nexa Motion recaptures the clarity of Flash — keyframes, labels, guides, and MovieClips — with the lightness of modern JavaScript.",
+          "FluxaWay Motion recaptures the clarity of Flash — keyframes, labels, guides, and MovieClips — with the lightness of modern JavaScript.",
         ),
       ),
       h(

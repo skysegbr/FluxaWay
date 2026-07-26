@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { ZoomStage } from "/dist/nexa-zoom.js";
+import { h } from "/dist/fluxaway.js";
+import { ZoomStage } from "/dist/fluxaway-zoom.js";
 
 function ZoomPreview() {
   const frames = [
@@ -46,7 +46,7 @@ export const ADDON_ENTRIES = [
     name: "ZoomStage",
     slug: "zoom-stage",
     category: "addons",
-    module: "nexa-zoom.js",
+    module: "fluxaway-zoom.js",
     summary:
       "A Prezi-style presentation canvas whose camera flies between normal FluxaWay content frames.",
     demos: [
@@ -79,7 +79,7 @@ return h(ZoomStage, {
       { label: "Free-zoom star atlas", href: "/examples/star-atlas/" },
     ],
     notes: [
-      "Load /dist/nexa-zoom.css next to the module.",
+      "Load /dist/fluxaway-zoom.css next to the module.",
       "Use ZoomStage for presentations and tours instead of scroll-snap sections.",
     ],
   },

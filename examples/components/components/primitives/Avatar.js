@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Avatar as AvatarComponent, AvatarGroup } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { Avatar as AvatarComponent, AvatarGroup } from "/dist/fluxaway-components-core.js";
 
 export function Avatar() {
   return h(

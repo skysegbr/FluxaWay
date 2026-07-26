@@ -3,14 +3,14 @@
 // by id so it fades in fresh on every navigation. Non-interactive, so drags
 // pass straight through it to the stage.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function InfoPanel({ current }) {
   if (!current) {
     return h(
       "div",
       { className: "sa-info", key: "sky" },
-      h("p", { className: "sa-info-eyebrow" }, "Nexa · ZoomStage"),
+      h("p", { className: "sa-info-eyebrow" }, "FluxaWay · ZoomStage"),
       h("h1", { className: "sa-info-title" }, "Star Atlas"),
       h(
         "p",

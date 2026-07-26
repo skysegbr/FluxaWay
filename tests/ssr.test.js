@@ -10,7 +10,7 @@ import {
   useContext,
   renderToString,
   hydrate,
-} from "../dist/nexa.js";
+} from "../dist/fluxaway.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 // ── basic serialization ────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ test("renderToString output matches the client-rendered DOM", async () => {
   }
   function App() {
     const [n] = useState(3);
-    return h("section", { className: "m-page" }, h(Card, { title: "Nexa", n }));
+    return h("section", { className: "m-page" }, h(Card, { title: "FluxaWay", n }));
   }
 
   // Server HTML, re-parsed by the browser so both sides serialize identically.

@@ -1,7 +1,7 @@
-import { h, useLocalStorage, useState } from "/dist/nexa.js";
-import { Button, Badge } from "/dist/nexa-components-core.js";
-import { Switch } from "/dist/nexa-components-forms.js";
-import { Collapse, Table } from "/dist/nexa-components-data.js";
+import { h, useLocalStorage, useState } from "/dist/fluxaway.js";
+import { Button, Badge } from "/dist/fluxaway-components-core.js";
+import { Switch } from "/dist/fluxaway-components-forms.js";
+import { Collapse, Table } from "/dist/fluxaway-components-data.js";
 import { RUNS } from "../../data.js";
 
 function StatusBadge({ status }) {

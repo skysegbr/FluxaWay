@@ -1,8 +1,8 @@
 // Nested MovieClip playback inside a symbol instance. Each instance owns a
 // small controller slaved to its parent timeline's playhead.
 
-import { h, useEffect, useRef, useState } from "/dist/nexa.js";
-import { createTimeline } from "/dist/nexa-motion.js";
+import { h, useEffect, useRef, useState } from "/dist/fluxaway.js";
+import { createTimeline } from "/dist/fluxaway-motion.js";
 import { ActorArtwork } from "./ActorArtwork.js";
 import { actorStyle } from "./actorGeometry.js";
 import { orderedActors } from "./layerOps.js";

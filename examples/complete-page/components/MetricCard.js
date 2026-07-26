@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Card, Chip } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { Card, Chip } from "/dist/fluxaway-components-core.js";
 
 export function MetricCard({ label, value, trend, active }) {
   return h(

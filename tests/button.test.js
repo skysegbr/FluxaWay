@@ -1,5 +1,5 @@
-import { h, render } from "../dist/nexa.js";
-import { Button } from "../dist/nexa-components-core.js";
+import { h, render } from "../dist/fluxaway.js";
+import { Button } from "../dist/fluxaway-components-core.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 function cssRule(selector) {
@@ -217,7 +217,7 @@ test("Button: icon-only usage requires and exposes an accessible name", async ()
   assertEqual(button.textContent, "×");
 });
 
-test("Button outline: focus, hover and disabled rules use Nexa theme tokens", () => {
+test("Button outline: focus, hover and disabled rules use FluxaWay theme tokens", () => {
   const focus = cssRule(".m-button:focus-visible");
   const outlineFocus = cssRule(".m-button-outline:focus-visible");
   const hover = cssRule(".m-button-outline:hover:not(:disabled)");

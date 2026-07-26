@@ -4,7 +4,7 @@
 // coordinates live in the actor's translate space anchored on its center
 // (see actorGeometry.baseOf).
 
-import { h, useRef, useState } from "/dist/nexa.js";
+import { h, useRef, useState } from "/dist/fluxaway.js";
 import { tweenTranslation, capturePointer } from "./editorUtils.js";
 import { pathAnchors, smoothPath } from "./smoothPath.js";
 import { useStageCreate } from "./useStageCreate.js";

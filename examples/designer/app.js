@@ -1,4 +1,4 @@
-import { h, render, useState, useEffect } from '/dist/nexa.js';
+import { h, render, useState, useEffect } from '/dist/fluxaway.js';
 import { createItem, CATALOG } from './data.js';
 import { generatePreviewCSS } from './codegen.js';
 import { Palette } from './components/Palette.js';
@@ -95,7 +95,7 @@ function App() {
 
     h('header', { className: 'd-header' },
       h('div', { className: 'd-header-brand' },
-        h('span', { className: 'd-logo' }, 'Nexa'),
+        h('span', { className: 'd-logo' }, 'FluxaWay'),
         h('span', { className: 'd-logo-sub' }, 'Designer'),
       ),
       h('div', { className: 'd-header-actions' },

@@ -5,7 +5,7 @@
 // WHERE the object is — the old base-box handles pointed at the wrong
 // place whenever x/y were tweening.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { HANDLES } from "./actorGeometry.js";
 
 const MIN_SHOWN = 14;

@@ -7,13 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-07-26
+
+### Added
+- **FluxaWay is now the official framework identity.** The approved name,
+  “Code flows. Your way.” story, F/W visual system, light/dark logos, app icons,
+  favicons and brand guidance now cover the repository, documentation,
+  examples, test UI and distributable banners.
+- **Compatibility aliases for every previous Nexa artifact.** The 67
+  `dist/nexa*` JS, CSS and declaration files are generated as small forwarding
+  aliases to their canonical `dist/fluxaway*` equivalents. Existing
+  applications keep working while new code loads FluxaWay directly. A
+  Python-only sync gate and browser regression test prevent the two public
+  surfaces from drifting.
+
 ### Changed
-- **The docs-site now presents the approved FluxaWay identity.** Its public
-  copy, metadata, favicon, manifest and social cards use the new brand while
-  the existing `/dist/nexa*.js` compatibility paths remain unchanged. The
+- **The full no-build distribution now uses canonical `fluxaway*` filenames.**
+  Source modules, minified files, declarations, category CSS, add-ons, package
+  metadata, generators, validators, CI, docs, tests and examples all consume
+  the new paths directly. Runtime compatibility contracts (`nexa-theme`,
+  `nexa-palette`, `nexa-design`, `data-nexa-head`, `nexa:*` events and the
+  `"nexa"` design key) remain intentionally stable.
+- **Canonical maintenance and guide entry points are now
+  `scripts/validate_fluxaway.py` and `docs/FLUXAWAY_UI.md`.** Their previous
+  names remain as forwarding compatibility files.
+- **The docs-site presents the approved FluxaWay identity.** Its public copy,
+  metadata, favicon, manifest and social cards use the new brand. The
   header switches between dedicated light- and dark-theme logo variants,
   including the saved/system theme on first render, and the browser smoke now
   protects that behavior alongside the existing desktop and mobile checks.
+- **FluxaWay Motion has a canonical docs route.**
+  `#/addons/fluxaway-motion` replaces the former public slug, while the old
+  route redirects so saved links continue to work.
 
 ## [0.18.0] - 2026-07-26
 

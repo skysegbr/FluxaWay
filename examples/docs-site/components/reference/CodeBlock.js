@@ -1,4 +1,4 @@
-import { h, useState, useEffect, useRef } from "/dist/nexa.js";
+import { h, useState, useEffect, useRef } from "/dist/fluxaway.js";
 import { highlight } from "./highlight.js";
 
 export function CodeBlock({ code, lang = "js", label, id }) {

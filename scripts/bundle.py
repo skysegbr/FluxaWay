@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Nexa production bundler — OPTIONAL deploy step, dev stays 100% no-build.
+"""FluxaWay production bundler — OPTIONAL deploy step, dev stays 100% no-build.
 
-Bundles a Nexa app (an index.html + ES modules importing /dist/nexa*.js)
+Bundles a FluxaWay app (an index.html + ES modules importing /dist/fluxaway*.js)
 into a standalone folder: one JS file, one CSS file, a rewritten index.html
 and the app's other assets. Nothing in dev changes — F5 + ESM + server.py
 remain the workflow; this only shrinks the production payload (fewer
@@ -25,7 +25,7 @@ Usage:
   python3 scripts/bundle.py path/to/app -o out [--root REPO] [--engine X] [--smoke]
 
 Notes / limits (python engine):
-  - Top-level import/export statements only (standard Nexa style).
+  - Top-level import/export statements only (standard FluxaWay style).
   - Live bindings and circular imports are not supported (cycles error out).
   - dynamic import("...") is left as-is and a warning is printed — the target
     is NOT bundled; keep lazy routes unbundled or use the esbuild engine
@@ -87,7 +87,7 @@ def resolve(spec: str, importer: Path, root: Path) -> Path | None:
 
 # ── JS module graph ───────────────────────────────────────────────────────────
 
-# Top-level statement patterns (standard Nexa formatting: column 0).
+# Top-level statement patterns (standard FluxaWay formatting: column 0).
 IMPORT_RE = re.compile(
     r'^import\s+(?:(?P<clause>[^"\';]+?)\s+from\s+)?["\'](?P<spec>[^"\']+)["\'];?[ \t]*$',
     re.M | re.S)
@@ -259,7 +259,7 @@ def transform_module(mod: Module, mod_var: dict[Path, str], root: Path) -> tuple
 def bundle_js_python(entry: Path, root: Path) -> str:
     modules = parse_graph(entry, root)
     order = list(modules)  # post-order: dependencies first
-    mod_var = {p: f"__nexa_m{i}" for i, p in enumerate(order)}
+    mod_var = {p: f"__fluxaway_m{i}" for i, p in enumerate(order)}
 
     externals: list[str] = []
     chunks: list[str] = []
@@ -273,7 +273,7 @@ def bundle_js_python(entry: Path, root: Path) -> str:
         else:
             chunks.append(f"// ── module: {rel} ──\nconst {mod_var[path]} = (() => {{\n"
                           f"{body}\nreturn {exports_obj};\n}})();")
-    header = ("/*! Bundled by Nexa scripts/bundle.py (python engine) — "
+    header = ("/*! Bundled by FluxaWay scripts/bundle.py (python engine) — "
               "generated file, edit the source modules instead. */\n")
     return header + "\n".join(externals) + ("\n" if externals else "") + "\n".join(chunks) + "\n"
 
@@ -310,7 +310,7 @@ def bundle_js_esbuild(entry: Path, root: Path, esbuild: str, out_file: Path) -> 
     """Materialize the graph in a shadow tree (rewriting '/x' specifiers to
     relative paths) and let esbuild tree-shake/bundle/minify it."""
     modules = parse_graph(entry, root)
-    with tempfile.TemporaryDirectory(prefix="nexa-bundle-") as td:
+    with tempfile.TemporaryDirectory(prefix="fluxaway-bundle-") as td:
         shadow = Path(td)
 
         def shadow_path(p: Path) -> Path:

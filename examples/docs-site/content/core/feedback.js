@@ -1,12 +1,12 @@
-import { h, Fragment, useState } from "/dist/nexa.js";
-import { Alert, Badge, Chip, Spinner, Progress, Button } from "/dist/nexa-components-core.js";
+import { h, Fragment, useState } from "/dist/fluxaway.js";
+import { Alert, Badge, Chip, Spinner, Progress, Button } from "/dist/fluxaway-components-core.js";
 
 export const FEEDBACK_ENTRIES = [
   {
     slug: "alert",
     name: "Alert",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "An inline message box for status, validation results and warnings.",
     demos: [
       {
@@ -40,7 +40,7 @@ export const FEEDBACK_ENTRIES = [
     slug: "badge",
     name: "Badge",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "A small count or status label. Color comes from a modifier class, not a prop.",
     demos: [
       {
@@ -71,7 +71,7 @@ export const FEEDBACK_ENTRIES = [
     slug: "chip",
     name: "Chip",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "A toggleable tag, typically used for filters. The active state is yours to hold.",
     demos: [
       {
@@ -106,7 +106,7 @@ export const FEEDBACK_ENTRIES = [
     slug: "spinner",
     name: "Spinner",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "An indeterminate loading indicator with a built-in accessible label.",
     demos: [
       {
@@ -135,7 +135,7 @@ export const FEEDBACK_ENTRIES = [
     slug: "progress",
     name: "Progress",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "A determinate progress bar driven by value and max.",
     demos: [
       {

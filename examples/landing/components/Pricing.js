@@ -1,4 +1,4 @@
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 
 function PriceTag({ plan, annual }) {
   const price = annual ? plan.annualPrice : plan.monthlyPrice;

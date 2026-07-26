@@ -1,14 +1,14 @@
 // The editor's top bar: brand, undo/redo, the project bar (save/load/new)
 // and the context-sensitive hint line.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { ProjectBar } from "./ProjectBar.js";
 
 export function EditorHeader({ editor, drawing, onLoad, onNew }) {
   return h(
     "header",
     { className: "me-header" },
-    h("h1", { className: "me-brand" }, "⬡ Nexa ", h("em", null, "Motion Editor")),
+    h("h1", { className: "me-brand" }, "⬡ FluxaWay ", h("em", null, "Motion Editor")),
     h(
       "div",
       { className: "me-history" },

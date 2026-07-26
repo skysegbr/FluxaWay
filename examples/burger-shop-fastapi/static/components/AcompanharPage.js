@@ -1,8 +1,8 @@
 import {
   h, Fragment, useState, useEffect, useFetch,
-} from "/dist/nexa.js";
-import { Spinner, Alert, Button } from "/dist/nexa-components-core.js";
-import { TextField } from "/dist/nexa-components-forms.js";
+} from "/dist/fluxaway.js";
+import { Spinner, Alert, Button } from "/dist/fluxaway-components-core.js";
+import { TextField } from "/dist/fluxaway-components-forms.js";
 import { STATUS_LABELS } from "../data.js";
 import { brl } from "../api.js";
 import { StatusBadge } from "./StatusBadge.js";

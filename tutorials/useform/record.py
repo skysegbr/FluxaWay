@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Record the useForm video tutorial.
 
-Serves the repo root (so the tutorial page imports /dist/nexa.js directly),
+Serves the repo root (so the tutorial page imports /dist/fluxaway.js directly),
 drives the page step by step with real typing and clicks, and saves the
 Playwright screen recording as useform-tutorial.webm next to this script.
 

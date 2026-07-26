@@ -1,7 +1,7 @@
-import { h, useState } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Checkbox } from "/dist/nexa-components-forms.js";
-import { Popover } from "/dist/nexa-components-overlay.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Checkbox } from "/dist/fluxaway-components-forms.js";
+import { Popover } from "/dist/fluxaway-components-overlay.js";
 
 export function PopoverDemo() {
   const [onlyActive, setOnlyActive] = useState(true);

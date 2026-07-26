@@ -1,11 +1,11 @@
-import { h, useTheme } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
+import { h, useTheme } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
 
 const navItems = ["Overview", "Projects", "Reports", "Settings"];
 
 export function WorkspaceSidebar() {
   const { theme } = useTheme();
-  const logoSrc = theme === "dark" ? "/assets/nexa-logo-dark-theme.png" : "/assets/nexa-logo-transparent.png";
+  const logoSrc = theme === "dark" ? "/assets/brand/fluxaway-symbol-inverse.svg" : "/assets/brand/fluxaway-symbol.svg";
 
   return h(
     "aside",
@@ -17,7 +17,7 @@ export function WorkspaceSidebar() {
         h("img", { src: logoSrc, alt: "" }),
       ),
       h("div", null,
-        h("p", { className: "workspace-kicker" }, "Nexa"),
+        h("p", { className: "workspace-kicker" }, "FluxaWay"),
         h("strong", null, "Workspace"),
       ),
     ),

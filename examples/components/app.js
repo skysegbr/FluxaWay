@@ -1,8 +1,8 @@
-import { h, render, useHead, useToast, useRouter } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { ToastStack, Menu } from "/dist/nexa-components-overlay.js";
-import { Navbar } from "/dist/nexa-components-nav.js";
-import { ThemeToggle, PaletteSwitcher, DesignSwitcher } from "/dist/nexa-components-theme.js";
+import { h, render, useHead, useToast, useRouter } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { ToastStack, Menu } from "/dist/fluxaway-components-overlay.js";
+import { Navbar } from "/dist/fluxaway-components-nav.js";
+import { ThemeToggle, PaletteSwitcher, DesignSwitcher } from "/dist/fluxaway-components-theme.js";
 
 import { PageSwitches }    from "./components/switches/PageSwitches.js";
 import { PageCombobox }    from "./components/PageCombobox.js";
@@ -44,14 +44,14 @@ function App() {
   const current = EXAMPLE_PAGES.find((p) => p.path === path) ?? EXAMPLE_PAGES[0];
 
   // Browser tab follows the selected page.
-  useHead({ title: `${current.label} — Nexa Demo` });
+  useHead({ title: `${current.label} — FluxaWay Demo` });
 
   return h(
     "div",
     { className: "m-app" },
 
     h(Navbar, {
-      brand: h("span", { style: { fontWeight: 900, fontSize: "1.1rem" } }, "⬡ Nexa Demo"),
+      brand: h("span", { style: { fontWeight: 900, fontSize: "1.1rem" } }, "⬡ FluxaWay Demo"),
       actions: [
         h(Menu, {
           key: "examples",

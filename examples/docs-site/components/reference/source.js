@@ -6,7 +6,7 @@
 // still set `code:` explicitly when a hand-written snippet teaches better.
 
 const ARROW = /^\(\s*\)\s*=>\s*/;
-// Deliberately bracket-free: validate_nexa.py's brace-balance lexer has no
+// Deliberately bracket-free: validate_fluxaway.py's brace-balance lexer has no
 // notion of regex character classes, so a literal like [^)] reads to it as an
 // unbalanced paren and fails the whole file.
 const NAMED = /^(?:async\s+)?function\b/;

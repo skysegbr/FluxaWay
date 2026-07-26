@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Table } from "/dist/nexa-components-data.js";
+import { h } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Table } from "/dist/fluxaway-components-data.js";
 import { STATUS_BADGE_CLASS } from "../data.js";
 import { formatFdaDate } from "./format.js";
 

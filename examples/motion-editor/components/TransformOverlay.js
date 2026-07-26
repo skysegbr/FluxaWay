@@ -9,7 +9,7 @@
 // the handles follow the actor wherever the tween has translated it —
 // unlike the base-box resize handles of the selection tool.
 
-import { h, useRef } from "/dist/nexa.js";
+import { h, useRef } from "/dist/fluxaway.js";
 import { capturePointer, tweenRotation, tweenScale } from "./editorUtils.js";
 import { useMeasuredBox } from "./useMeasuredBox.js";
 

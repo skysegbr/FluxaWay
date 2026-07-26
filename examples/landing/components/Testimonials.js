@@ -1,4 +1,4 @@
-import { h, useState, useEffect } from "/dist/nexa.js";
+import { h, useState, useEffect } from "/dist/fluxaway.js";
 
 const ROTATE_MS = 6000;
 

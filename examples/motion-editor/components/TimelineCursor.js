@@ -6,9 +6,9 @@
 //
 // Returns a SINGLE root element on purpose: a fragment/array return would
 // force a full-root re-render on every tick (see renderComponent in
-// nexa.js), which is exactly the cost we're removing.
+// fluxaway.js), which is exactly the cost we're removing.
 
-import { h, useEffect, useRef, useState } from "/dist/nexa.js";
+import { h, useEffect, useRef, useState } from "/dist/fluxaway.js";
 import { snapToFrame, capturePointer, DEFAULT_FPS } from "./editorUtils.js";
 
 export function TimelineCursor({ tl, playheadRef, duration, fps, measureRef, onion, onOnionCount }) {

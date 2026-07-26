@@ -1,4 +1,4 @@
-import { h, useState } from '/dist/nexa.js';
+import { h, useState } from '/dist/fluxaway.js';
 
 // Style editing UI for the Inspector's "Styles" tab: the collapsible
 // property groups and the per-type value editors. Styled by Inspector.css

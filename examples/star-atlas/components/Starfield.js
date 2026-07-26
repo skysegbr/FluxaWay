@@ -3,7 +3,7 @@
 // renders. This is the content of the big "sky" frame, painted behind every
 // constellation (ZoomStage draws the largest-area frame first).
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { WORLD } from "../data.js";
 
 function mulberry32(seed) {

@@ -2,7 +2,7 @@
 // polyline with its dots, the rubber-band preview of a shape being created,
 // and the draggable anchor handles of the selected guide.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function StageOverlay({
   guides,

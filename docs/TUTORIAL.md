@@ -1,6 +1,6 @@
-# Nexa Tutorial
+# FluxaWay Tutorial
 
-Nexa is a next-generation frontend framework in plain JavaScript, designed for
+FluxaWay is a next-generation frontend framework in plain JavaScript, designed for
 the browser and for projects that do not need a build step.
 
 You write plain JavaScript, import the framework in the browser, and build
@@ -8,21 +8,21 @@ interfaces with functions.
 
 ## What "ESM-native" Means
 
-Nexa is **ESM-native**: it uses **ECMAScript Modules** (JavaScript's official
+FluxaWay is **ESM-native**: it uses **ECMAScript Modules** (JavaScript's official
 module system) directly in the browser, with no tool required to convert or
 bundle the code first.
 
 ESM is the standard `import`/`export` syntax of modern JavaScript:
 
 ```js
-import { h, render } from "/dist/nexa.js";
+import { h, render } from "/dist/fluxaway.js";
 
 export function App() {
   /* ... */
 }
 ```
 
-For Nexa, being ESM-native means:
+For FluxaWay, being ESM-native means:
 
 - **The browser loads modules directly** through `<script type="module">`,
   resolving each `import` natively.
@@ -35,7 +35,7 @@ For Nexa, being ESM-native means:
 
 Traditional setup vs. ESM-native:
 
-| Traditional approach            | ESM-native (Nexa)                     |
+| Traditional approach            | ESM-native (FluxaWay)                     |
 | ------------------------------- | ------------------------------------- |
 | Code passes through a bundler   | Browser executes the module directly  |
 | Needs `npm run build`           | No build                              |
@@ -51,7 +51,7 @@ repository and what runs in production, built on a **native web standard**
 of it being on by default. The opposite is **opt-out** (on by default, and you
 have to turn it off).
 
-In Nexa, **"opt-in extensions"** means the extra layers only enter your app if
+In FluxaWay, **"opt-in extensions"** means the extra layers only enter your app if
 you import them on purpose. Nothing beyond the core is loaded automatically:
 
 - You **don't pay** the cost (weight, complexity) of an extension you don't use.
@@ -59,23 +59,23 @@ you import them on purpose. Nothing beyond the core is loaded automatically:
 
 ```js
 // Core — the minimum for an app to run
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 
 // Opt-in: only loads if you want the UI components
-import { Button, Card } from "/dist/nexa-components.js";
+import { Button, Card } from "/dist/fluxaway-components.js";
 
 // Opt-in: add-ons only enter if imported
-import { ZoomStage } from "/dist/nexa-zoom.js";
-import { PipelineCanvas } from "/dist/nexa-canvas.js";
+import { ZoomStage } from "/dist/fluxaway-zoom.js";
+import { PipelineCanvas } from "/dist/fluxaway-canvas.js";
 ```
 
-So the core (`dist/nexa.js`) already sustains a full application on its own,
+So the core (`dist/fluxaway.js`) already sustains a full application on its own,
 while the design system, canvas, zoom-stage, and editor are **optional by
 choice** — the team includes only what it needs, when it needs it.
 
 ## 1. The Main Idea
 
-Nexa does not use JSX or a compiler. Instead, screens are described with the
+FluxaWay does not use JSX or a compiler. Instead, screens are described with the
 `h` function:
 
 ```js
@@ -108,7 +108,7 @@ Create an HTML file with a root element and import your app as a module:
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My Nexa app</title>
+    <title>My FluxaWay app</title>
   </head>
   <body>
     <main id="app"></main>
@@ -121,22 +121,22 @@ Create an HTML file with a root element and import your app as a module:
 
 ### Using the CDN
 
-For quick experiments or apps that do not copy Nexa locally, import the public
+For quick experiments or apps that do not copy FluxaWay locally, import the public
 GitHub build through jsDelivr:
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-ui.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css"
 />
 
 <main id="app"></main>
 
 <script type="module">
-  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.js";
+  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
 
   function App() {
-    return h("h1", null, "Hello from Nexa");
+    return h("h1", null, "Hello from FluxaWay");
   }
 
   render(App, document.getElementById("app"));
@@ -144,14 +144,14 @@ GitHub build through jsDelivr:
 ```
 
 For production, prefer a fixed tag instead of `@main`, such as
-`https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.1.0/dist/nexa.js`.
+`https://cdn.jsdelivr.net/gh/skysegbr/Nexa@v0.19.0/dist/fluxaway.js`.
 
 ## 3. First Component
 
 In `app.js`:
 
 ```js
-import { h, render } from "./nexa.js";
+import { h, render } from "./fluxaway.js";
 
 function App() {
   return h(
@@ -172,14 +172,14 @@ render(App, document.getElementById("app"));
 
 ## 4. Components
 
-Components are functions that return Nexa elements.
+Components are functions that return FluxaWay elements.
 
 ```js
 function Header() {
   return h(
     "header",
     { className: "topbar" },
-    h("strong", null, "Nexa"),
+    h("strong", null, "FluxaWay"),
   );
 }
 
@@ -210,7 +210,7 @@ function App() {
 Use `useState` when a value needs to change and update the screen.
 
 ```js
-import { h, render, useState } from "./nexa.js";
+import { h, render, useState } from "./fluxaway.js";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -230,7 +230,7 @@ function Counter() {
 render(Counter, document.getElementById("app"));
 ```
 
-When `setCount` runs, Nexa renders the screen again and updates the DOM.
+When `setCount` runs, FluxaWay renders the screen again and updates the DOM.
 
 You can also use the functional form:
 
@@ -286,7 +286,7 @@ Use `useForm` for controlled fields, validation, touched state, submit loading,
 reset, and serialization.
 
 ```js
-import { h, render, useForm } from "./nexa.js";
+import { h, render, useForm } from "./fluxaway.js";
 
 function ContactForm() {
   const form = useForm({
@@ -335,7 +335,7 @@ Use `useEffect` to run code after rendering. A common use case is fetching data
 from an API.
 
 ```js
-import { h, render, useEffect, useState } from "./nexa.js";
+import { h, render, useEffect, useState } from "./fluxaway.js";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -382,7 +382,7 @@ function TodoList({ todos }) {
 ```
 
 Because `h` accepts array children, the result of `map` can be passed directly.
-Use `key` in dynamic lists so Nexa can preserve item identity when items are
+Use `key` in dynamic lists so FluxaWay can preserve item identity when items are
 filtered, reordered, or removed.
 
 Keys also matter for components that use hooks:
@@ -473,7 +473,7 @@ Use `useRef` when you need to keep a mutable reference that should not trigger
 rendering. The most common case is accessing a DOM element.
 
 ```js
-import { h, render, useRef } from "./nexa.js";
+import { h, render, useRef } from "./fluxaway.js";
 
 function App() {
   const inputRef = useRef(null);
@@ -506,13 +506,13 @@ Use `Fragment` when a component needs to return multiple elements without
 creating an extra wrapper:
 
 ```js
-import { Fragment, h } from "./nexa.js";
+import { Fragment, h } from "./fluxaway.js";
 
 function Header() {
   return h(
     Fragment,
     null,
-    h("h1", null, "Nexa"),
+    h("h1", null, "FluxaWay"),
     h("p", null, "Plain JavaScript."),
   );
 }
@@ -543,7 +543,7 @@ fetch("http://127.0.0.1:8001/api/todos", {
   headers: {
     "Content-Type": "application/json",
   },
-  body: JSON.stringify({ title: "Study Nexa" }),
+  body: JSON.stringify({ title: "Study FluxaWay" }),
 })
   .then((response) => response.json())
   .then((todo) => console.log(todo));
@@ -572,7 +572,7 @@ fetch("http://127.0.0.1:8001/api/todos/1", {
 ## 13. Small Complete Example
 
 ```js
-import { h, render, useEffect, useState } from "./nexa.js";
+import { h, render, useEffect, useState } from "./fluxaway.js";
 
 const API_URL = "http://127.0.0.1:8001/api/todos";
 
@@ -632,7 +632,7 @@ render(App, document.getElementById("app"));
 
 ## 14. Splitting A Large App (Lazy Loading)
 
-Because Nexa is ESM-native, the browser fetches **every module reachable
+Because FluxaWay is ESM-native, the browser fetches **every module reachable
 through static `import` chains** before the app first paints. That is
 perfect for small and medium apps — but if your app has many pages
 (a dashboard with dozens of screens, or a project migrated from another
@@ -644,8 +644,8 @@ The fix is to load each page only when the user navigates to it.
 `lazy: () => import(...)` instead of importing them at the top of the file:
 
 ```js
-import { h, render, useRoutes } from "/dist/nexa.js";
-import { Spinner } from "/dist/nexa-components.js";
+import { h, render, useRoutes } from "/dist/fluxaway.js";
+import { Spinner } from "/dist/fluxaway-components.js";
 
 // No static imports of Dashboard.js or Reports.js anywhere!
 const routes = [
@@ -679,7 +679,7 @@ page — a chart library, a code editor, a dialog almost nobody opens — use
 its load state internally):
 
 ```js
-import { createLazy, h } from "/dist/nexa.js";
+import { createLazy, h } from "/dist/fluxaway.js";
 
 const Chart = createLazy(() => import("./Chart.js"), h("p", null, "Loading..."));
 
@@ -717,9 +717,9 @@ hovers its menu link: `onMouseEnter: () => import("./components/reports/Reports.
 For the full set of rules (import direction, per-route caching, migration
 checklists), see "Code splitting in large apps" in `docs/AI_SPEC.md` §12.
 
-## 15. What Nexa Covers
+## 15. What FluxaWay Covers
 
-Nexa is intentionally small but complete for most production use cases.
+FluxaWay is intentionally small but complete for most production use cases.
 
 **Core engine**
 - Function components with local hook state and multiple independent roots.
@@ -744,7 +744,7 @@ Nexa is intentionally small but complete for most production use cases.
 
 **CSS framework** — mobile-first grid, spacing, display, and dark mode utilities.
 
-**What Nexa intentionally omits**
+**What FluxaWay intentionally omits**
 - JSX — by design. `h()` is the DSL; no compiler or transpiler needed.
-- SSR — Nexa targets the browser directly.
+- SSR — FluxaWay targets the browser directly.
 - A bundler — no build step is the core design principle.

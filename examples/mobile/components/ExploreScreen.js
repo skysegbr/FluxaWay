@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { Alert, Card, Chip } from "/dist/nexa-components-core.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Alert, Card, Chip } from "/dist/fluxaway-components-core.js";
 
 import { EXPLORE_FILTERS, BREAKPOINTS } from "../data.js";
 

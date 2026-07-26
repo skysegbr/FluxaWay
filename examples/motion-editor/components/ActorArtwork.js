@@ -1,7 +1,7 @@
 // Inner artwork for actors that cannot be painted by the wrapper's CSS.
-// The wrapper still owns layout, selection and the nexa-motion track ref.
+// The wrapper still owns layout, selection and the fluxaway-motion track ref.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { isVectorKind } from "./vectorGeometry.js";
 
 export function ActorArtwork({ actor, outlineColor }) {

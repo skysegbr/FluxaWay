@@ -1,4 +1,4 @@
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 import { SIDEBAR_NAV_ITEMS } from "../../data.js";
 
 export function SidebarNav() {

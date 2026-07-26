@@ -1,4 +1,4 @@
-import { h, render } from "/dist/nexa.js";
+import { h, render } from "/dist/fluxaway.js";
 import { CatalogContext, useCatalogState } from "./components/catalog/CatalogContext.js";
 import { CartContext, useCartState } from "./components/cart/CartContext.js";
 import { AuthContext, useAuthState } from "./components/auth/AuthContext.js";

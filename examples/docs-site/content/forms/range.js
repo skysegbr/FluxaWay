@@ -1,12 +1,12 @@
-import { h, useState } from "/dist/nexa.js";
-import { Slider, RangeSlider } from "/dist/nexa-components-forms.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Slider, RangeSlider } from "/dist/fluxaway-components-forms.js";
 
 export const RANGE_ENTRIES = [
   {
     slug: "slider",
     name: "Slider",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary:
       "A single-value range input. Unlisted props go to the native <input type=\"range\">, so " +
       "you read the value from onInput's event like any other input.",
@@ -49,7 +49,7 @@ export const RANGE_ENTRIES = [
     slug: "range-slider",
     name: "RangeSlider",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary:
       "Two thumbs over one track for a min/max window. Unlike Slider, it owns its onChange and " +
       "hands you the [lower, upper] pair already ordered.",

@@ -1,5 +1,5 @@
-import { h, useHead } from "/dist/nexa.js";
-import { Card } from "/dist/nexa-components-core.js";
+import { h, useHead } from "/dist/fluxaway.js";
+import { Card } from "/dist/fluxaway-components-core.js";
 import { CodeBlock } from "./reference/CodeBlock.js";
 import { ADDON_LINKS, HOME_CARDS, QUICK_START } from "../data.js";
 

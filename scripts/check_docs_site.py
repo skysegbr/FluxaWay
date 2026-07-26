@@ -66,7 +66,7 @@ def run(browser_type, base: str) -> list[str]:
     expect(desktop.evaluate("document.documentElement.scrollWidth <= innerWidth"), "desktop overflow")
     expect(not any("/content/core/" in url for url in requests), "home eagerly loaded reference content")
     expect(not any("codemirror.min.js" in url for url in requests), "home eagerly loaded CodeMirror")
-    expect(not any("/dist/nexa-ui.css" in url for url in requests), "home loaded monolithic UI CSS")
+    expect(not any("/dist/fluxaway-ui.css" in url for url in requests), "home loaded monolithic UI CSS")
     passed.append("home renders without eager reference payload")
 
     expect(
@@ -133,20 +133,20 @@ def run(browser_type, base: str) -> list[str]:
         "CodeMirror was not loaded exactly once",
     )
     expect(
-        desktop.locator('link[href$="/dist/nexa-ui-forms.css"]').count() == 1,
+        desktop.locator('link[href$="/dist/fluxaway-ui-forms.css"]').count() == 1,
         "forms category CSS was not loaded with CodeEditor",
     )
     passed.append("CodeMirror loads only on its route")
 
     open_route(desktop, base, "/components/data-table", "DataTable")
     expect(
-        desktop.locator('link[href$="/dist/nexa-ui-data.css"]').count() == 1,
+        desktop.locator('link[href$="/dist/fluxaway-ui-data.css"]').count() == 1,
         "data category CSS was not loaded with DataTable",
     )
     passed.append("route content loads its matching category CSS")
 
     for route, heading in (
-        ("/addons/nexa-motion", "useTimeline"),
+        ("/addons/fluxaway-motion", "useTimeline"),
         ("/addons/zoom-stage", "ZoomStage"),
         ("/addons/pipeline-canvas", "PipelineCanvas"),
         ("/addons/full-code-editor", "FullCodeEditor"),

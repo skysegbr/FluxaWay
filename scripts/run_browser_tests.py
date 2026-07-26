@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run the Nexa browser test suite headlessly.
+"""Run the FluxaWay browser test suite headlessly.
 
 The suite itself stays exactly as it is — tests/index.html imports
-dist/nexa.js and asserts against the real DOM, no test framework, no build
+dist/fluxaway.js and asserts against the real DOM, no test framework, no build
 step. This script only automates what a human would do by hand: serve the
 repo root, open tests/ in a browser, and read the results.
 

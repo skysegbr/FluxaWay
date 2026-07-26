@@ -1,6 +1,6 @@
-import { h, useState } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
-import { Stat, StatGrid, TreeView, Accordion, Collapse } from "/dist/nexa-components-data.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
+import { Stat, StatGrid, TreeView, Accordion, Collapse } from "/dist/fluxaway-components-data.js";
 
 const TREE = [
   {
@@ -28,7 +28,7 @@ export const PANEL_ENTRIES = [
     slug: "stat",
     name: "Stat",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "A KPI tile: big value, small label, and an optional delta that colors itself from its " +
       "leading sign.",
@@ -64,7 +64,7 @@ export const PANEL_ENTRIES = [
     slug: "stat-grid",
     name: "StatGrid",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary: "The auto-fit wrapper for a row of Stat tiles. No props beyond children.",
     demos: [
       {
@@ -89,7 +89,7 @@ export const PANEL_ENTRIES = [
     slug: "tree-view",
     name: "TreeView",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "A WAI-ARIA tree for hierarchical data. Expansion can be uncontrolled or controlled; " +
       "selection is always controlled.",
@@ -138,7 +138,7 @@ export const PANEL_ENTRIES = [
     slug: "accordion",
     name: "Accordion",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "Grouped collapsible panels. One open at a time by default; multiple lets several stay open.",
     demos: [
@@ -203,7 +203,7 @@ export const PANEL_ENTRIES = [
     slug: "collapse",
     name: "Collapse",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "A single collapsible section, animated with the grid-template-rows 0fr → 1fr trick so it " +
       "grows to its real content height without a hard-coded max-height.",

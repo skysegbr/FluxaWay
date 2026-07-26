@@ -5,7 +5,7 @@
 // the browser's native text editing. Copy is also left alone while real
 // text is selected on the page.
 
-import { useEffect } from "/dist/nexa.js";
+import { useEffect } from "/dist/fluxaway.js";
 
 export function useEditorShortcuts({ undo, redo, onCopy, onPaste, onDuplicate, onDelete, onEscape, onTool, onFrames }) {
   useEffect(() => {

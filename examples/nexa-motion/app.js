@@ -1,4 +1,4 @@
-// Example: nexa-motion — a Flash-style animated intro, 2003 energy included.
+// Example: fluxaway-motion — a Flash-style animated intro, 2003 energy included.
 //
 // One master timeline drives the whole movie (loading bar → logo flies in →
 // title cascade → finale), with labels, frame scripts, easing and a
@@ -7,8 +7,8 @@
 // finale is a nested "movie clip": a child component with its own looping
 // useTimeline.
 
-import { h, render, useState } from "/dist/nexa.js";
-import { useTimeline, stagger } from "/dist/nexa-motion.js";
+import { h, render, useState } from "/dist/fluxaway.js";
+import { useTimeline, stagger } from "/dist/fluxaway-motion.js";
 import { TITLE_LETTERS, TAGLINE, SCENES } from "./data.js";
 import { IntroStage } from "./components/IntroStage.js";
 import { ControlDeck } from "./components/ControlDeck.js";

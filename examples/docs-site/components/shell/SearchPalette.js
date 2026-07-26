@@ -1,5 +1,5 @@
-import { h, useEffect } from "/dist/nexa.js";
-import { CommandPalette } from "/dist/nexa-components-overlay.js";
+import { h, useEffect } from "/dist/fluxaway.js";
+import { CommandPalette } from "/dist/fluxaway-components-overlay.js";
 import { SEARCH_COMMANDS } from "../../content/catalog.js";
 
 // CommandPalette only handles what happens while it is open, so the global

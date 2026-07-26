@@ -12,7 +12,7 @@ export const QUICK_START = `<!doctype html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="/dist/nexa-ui.css" />
+    <link rel="stylesheet" href="/dist/fluxaway-ui.css" />
   </head>
   <body>
     <div id="app"></div>
@@ -20,8 +20,8 @@ export const QUICK_START = `<!doctype html>
   </body>
 </html>`;
 
-export const FIRST_APP = `import { h, render, useState } from "/dist/nexa.js";
-import { Button, Card } from "/dist/nexa-components-core.js";
+export const FIRST_APP = `import { h, render, useState } from "/dist/fluxaway.js";
+import { Button, Card } from "/dist/fluxaway-components-core.js";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -39,20 +39,20 @@ render(App, document.getElementById("app"));`;
 
 export const CDN_SNIPPET = `<link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa-ui.css" />
+  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css" />
 
 <script type="module">
-  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.js";
+  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
 
   render(() => h("h1", null, "Hello from the CDN"), document.body);
 </script>`;
 
 export const CATEGORY_IMPORTS = `// Preferred: only the categories the page actually uses
-import { Button, Card } from "/dist/nexa-components-core.js";
-import { TextField } from "/dist/nexa-components-forms.js";
+import { Button, Card } from "/dist/fluxaway-components-core.js";
+import { TextField } from "/dist/fluxaway-components-forms.js";
 
 // Also valid: the barrel — same names, but downloads every category
-import { Button, Card, TextField } from "/dist/nexa-components.js";`;
+import { Button, Card, TextField } from "/dist/fluxaway-components.js";`;
 
 export const HOME_CARDS = [
   {
@@ -78,7 +78,7 @@ export const HOME_CARDS = [
 ];
 
 export const ADDON_LINKS = [
-  { label: "nexa-motion", href: "#/addons/nexa-motion" },
+  { label: "FluxaWay Motion", href: "#/addons/fluxaway-motion" },
   { label: "ZoomStage", href: "#/addons/zoom-stage" },
   { label: "PipelineCanvas", href: "#/addons/pipeline-canvas" },
   { label: "FullCodeEditor", href: "#/addons/full-code-editor" },

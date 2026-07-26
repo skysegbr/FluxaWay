@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { ThemeToggle, PaletteSwitcher } from "/dist/nexa-components-theme.js";
+import { h } from "/dist/fluxaway.js";
+import { ThemeToggle, PaletteSwitcher } from "/dist/fluxaway-components-theme.js";
 import { NAV_LINKS } from "../../data.js";
 
 export function DocsHeader({ path, onOpenSearch, onToggleMenu, menuOpen, mobile }) {

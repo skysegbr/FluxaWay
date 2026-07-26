@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-Nexa CSS splitter — carve the monolithic design-system stylesheet
-(dist/nexa-ui.css) into per-category files that mirror the six JS component
+FluxaWay CSS splitter — carve the monolithic design-system stylesheet
+(dist/fluxaway-ui.css) into per-category files that mirror the six JS component
 modules, so a page only pays for the CSS of the components it actually imports.
 
-Why: dist/nexa-components*.js is already split into six categories
-(core/forms/overlay/data/nav/theme), but dist/nexa-ui.css was a single ~114 KB
-file — a page importing only `nexa-components-core.js` still had to download the
+Why: dist/fluxaway-components*.js is already split into six categories
+(core/forms/overlay/data/nav/theme), but dist/fluxaway-ui.css was a single
+~114 KB file — a page importing only `fluxaway-components-core.js` still had
+to download the
 CSS for forms, overlays, tables, nav, everything. This tool closes that gap.
 
 Design (matches minify.py's philosophy — pure stdlib, correctness first):
 
-  - dist/nexa-ui.css stays the HAND-AUTHORED source of truth and is shipped
+  - dist/fluxaway-ui.css stays the HAND-AUTHORED source of truth and is shipped
     unchanged, so every existing app that links it is completely unaffected.
     The category files are ADDITIVE, generated siblings.
   - The monolith is a sequence of `/* -- Name -- */` section banners. Each
@@ -21,15 +22,15 @@ Design (matches minify.py's philosophy — pure stdlib, correctness first):
     byte-for-byte. So `base + core + forms + overlay + data + nav + theme`
     equals the monolith exactly — no rule can be dropped, duplicated or altered.
   - A section whose name is not in MANIFEST is a hard error: adding a new
-    section to nexa-ui.css forces a categorization decision here.
+    section to fluxaway-ui.css forces a categorization decision here.
 
 Load model (documented in README / AI_SPEC):
-  nexa-ui.css                         — everything (unchanged default, one <link>)
-  nexa-ui-base.css                    — tokens, reset, grid, utilities, animations
-  nexa-ui-core.css .. -theme.css      — component CSS per category (need base+core)
+  fluxaway-ui.css                      — everything (unchanged default, one <link>)
+  fluxaway-ui-base.css                 — tokens, reset, grid, utilities, animations
+  fluxaway-ui-core.css .. -theme.css   — component CSS (need base + category)
 
 Usage:
-  python scripts/split_css.py            # (re)generate the dist/nexa-ui-*.css files
+  python scripts/split_css.py            # regenerate dist/fluxaway-ui-*.css
   python scripts/split_css.py --check    # verify they are up to date (CI); no writes
   python scripts/split_css.py --list     # print every section name + its bucket
 """
@@ -41,7 +42,7 @@ import sys
 from pathlib import Path
 
 DIST = Path(__file__).resolve().parent.parent / "dist"
-SOURCE = DIST / "nexa-ui.css"
+SOURCE = DIST / "fluxaway-ui.css"
 
 CATEGORIES = ("base", "core", "forms", "overlay", "data", "nav", "theme")
 
@@ -84,7 +85,7 @@ MANIFEST = {
     "Brand": "base",
     "Drag & Drop": "base",
     "Board": "base",
-    # ── core: primitives + Card family (nexa-components-core.js) ────────────
+    # ── core: primitives + Card family (fluxaway-components-core.js) ───────
     "Card": "core",
     "Card: media": "core",
     "Card: reveal": "core",
@@ -103,7 +104,7 @@ MANIFEST = {
     "Divider": "core",
     "Avatar": "core",
     "Skeleton": "core",
-    # ── forms (nexa-components-forms.js) ───────────────────────────────────
+    # ── forms (fluxaway-components-forms.js) ───────────────────────────────
     "Switch": "forms",
     "Combobox": "forms",
     "FileDropZone": "forms",
@@ -113,7 +114,7 @@ MANIFEST = {
     "Radio": "forms",
     "NumberInput": "forms",
     "TimePicker": "forms",
-    # ── overlay (nexa-components-overlay.js) ───────────────────────────────
+    # ── overlay (fluxaway-components-overlay.js) ───────────────────────────
     "Toast": "overlay",
     "Dialog": "overlay",
     "Drawer": "overlay",
@@ -126,7 +127,7 @@ MANIFEST = {
     "Menu": "overlay",
     "Popover": "overlay",
     "CommandPalette": "overlay",
-    # ── data (nexa-components-data.js) ─────────────────────────────────────
+    # ── data (fluxaway-components-data.js) ─────────────────────────────────
     "Table": "data",
     "Pagination": "data",
     "Collapse": "data",
@@ -134,7 +135,7 @@ MANIFEST = {
     "DataTable": "data",
     "Stat / StatGrid": "data",
     "TreeView": "data",
-    # ── nav (nexa-components-nav.js) ───────────────────────────────────────
+    # ── nav (fluxaway-components-nav.js) ───────────────────────────────────
     "Navbar": "nav",
     "App shell": "nav",
     "Mobile App Bar": "nav",
@@ -146,28 +147,28 @@ MANIFEST = {
     "Stepper": "nav",
     "Breadcrumb": "nav",
     "Sidebar nav": "nav",
-    # ── theme (nexa-components-theme.js) ───────────────────────────────────
+    # ── theme (fluxaway-components-theme.js) ───────────────────────────────
     "PaletteSwitcher": "theme",
     "DesignSwitcher": "theme",
 }
 
 LICENSE = (
-    "/*! Nexa — {label} styles. Generated from nexa-ui.css by "
+    "/*! FluxaWay — {label} styles. Generated from fluxaway-ui.css by "
     "scripts/split_css.py. */\n"
 )
 NOTE = (
-    "/* AUTO-GENERATED — do not edit. Edit dist/nexa-ui.css and re-run "
+    "/* AUTO-GENERATED — do not edit. Edit dist/fluxaway-ui.css and re-run "
     "scripts/split_css.py. */\n"
 )
 
 LABELS = {
     "base": "design-system base (tokens, reset, grid, utilities)",
-    "core": "core component (nexa-components-core.js)",
-    "forms": "forms component (nexa-components-forms.js)",
-    "overlay": "overlay component (nexa-components-overlay.js)",
-    "data": "data component (nexa-components-data.js)",
-    "nav": "navigation component (nexa-components-nav.js)",
-    "theme": "theme component (nexa-components-theme.js)",
+    "core": "core component (fluxaway-components-core.js)",
+    "forms": "forms component (fluxaway-components-forms.js)",
+    "overlay": "overlay component (fluxaway-components-overlay.js)",
+    "data": "data component (fluxaway-components-data.js)",
+    "nav": "navigation component (fluxaway-components-nav.js)",
+    "theme": "theme component (fluxaway-components-theme.js)",
 }
 
 
@@ -192,7 +193,7 @@ def parse_sections(text: str):
             banner_idx.append(i)
             names.append(m.group(1))
     if not banner_idx:
-        raise SplitError("no section banners found in nexa-ui.css")
+        raise SplitError("no section banners found in fluxaway-ui.css")
 
     header = "\n".join(lines[: banner_idx[0]])
     sections = []
@@ -209,7 +210,7 @@ def parse_sections(text: str):
         sections.append((key, cat, body))
     if unmapped:
         raise SplitError(
-            "these nexa-ui.css sections are not in MANIFEST (add them to "
+            "these fluxaway-ui.css sections are not in MANIFEST (add them to "
             "scripts/split_css.py):\n  - " + "\n  - ".join(sorted(set(unmapped)))
         )
 
@@ -234,12 +235,12 @@ def build_outputs(text: str) -> dict[str, str]:
         if cat == "base":
             chunk += header + "\n"
         chunk += "".join(bodies)
-        out[cat] = chunk
+        out[cat] = chunk.rstrip() + "\n"
     return out
 
 
 def target_path(cat: str) -> Path:
-    return DIST / f"nexa-ui-{cat}.css"
+    return DIST / f"fluxaway-ui-{cat}.css"
 
 
 def main(argv) -> int:

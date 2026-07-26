@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { FullCodeEditor } from "/dist/nexa-editor.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { FullCodeEditor } from "/dist/fluxaway-editor.js";
 
 function EditorPreview() {
   const [value, setValue] = useState('function hello(name) {\\n  return `Hello, ${name}!`;\\n}');
@@ -21,7 +21,7 @@ export const ADDON_ENTRIES = [
     name: "FullCodeEditor",
     slug: "full-code-editor",
     category: "addons",
-    module: "nexa-editor.js",
+    module: "fluxaway-editor.js",
     summary:
       "A CodeMirror-powered editor with toolbar, languages, snippets, autocomplete and lint hooks.",
     demos: [
@@ -48,11 +48,11 @@ return h(FullCodeEditor, {
       { name: "showSnippets", type: "boolean", default: "true", description: "Shows the snippet browser." },
     ],
     resources: [
-      { label: "FullCodeEditor source", href: "/dist/nexa-editor.js" },
+      { label: "FullCodeEditor source", href: "/dist/fluxaway-editor.js" },
       { label: "Editor API in the README", href: "https://github.com/skysegbr/Nexa#fullcodeeditor" },
     ],
     notes: [
-      "Load /dist/nexa-editor.css and the vendored CodeMirror assets locally.",
+      "Load /dist/fluxaway-editor.css and the vendored CodeMirror assets locally.",
       "Use the lighter CodeEditor form component when a toolbar and snippet browser are unnecessary.",
     ],
   },

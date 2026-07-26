@@ -1,8 +1,8 @@
-// Visual Flash-style timeline editor for nexa-motion. The document lives
+// Visual Flash-style timeline editor for fluxaway-motion. The document lives
 // in useEditorDoc; every committed change rebuilds the createTimeline()
 // controller, so the preview is always the real runtime.
 
-import { h, render, useRef, useState } from "/dist/nexa.js";
+import { h, render, useRef, useState } from "/dist/fluxaway.js";
 import { INITIAL_DOC } from "./data.js";
 import { Stage } from "./components/Stage.js";
 import { Toolbox } from "./components/Toolbox.js";

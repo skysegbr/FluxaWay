@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Card } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { Card } from "/dist/fluxaway-components-core.js";
 
 export function FormSummary({ values }) {
   return h(
