@@ -66,7 +66,7 @@ export const SEARCH_COMMANDS = [
     label: entry.name,
     section: categoryFor(entry.category)?.title ?? "Reference",
     hint: entry.module?.replace("fluxaway-components-", "").replace(".js", "") ?? "add-on",
-    keywords: [entry.slug, entry.name, entry.category],
+    keywords: [entry.slug, entry.name, entry.category, ...(entry.keywords ?? [])],
     path: pathFor(entry),
   })),
 ];

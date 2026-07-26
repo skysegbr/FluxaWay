@@ -146,7 +146,7 @@ def run(browser_type, base: str) -> list[str]:
     passed.append("route content loads its matching category CSS")
 
     for route, heading in (
-        ("/addons/fluxaway-motion", "useTimeline"),
+        ("/addons/fluxaway-motion", "FluxaWay Motion"),
         ("/addons/zoom-stage", "ZoomStage"),
         ("/addons/pipeline-canvas", "PipelineCanvas"),
         ("/addons/full-code-editor", "FullCodeEditor"),

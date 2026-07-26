@@ -23,7 +23,7 @@ function MotionPreview() {
 
 export const ADDON_ENTRIES = [
   {
-    name: "useTimeline",
+    name: "FluxaWay Motion",
     slug: "fluxaway-motion",
     category: "addons",
     module: "fluxaway-motion.js",
