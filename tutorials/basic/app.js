@@ -129,7 +129,7 @@ function App() {
         h("li", null, "useTheme + ThemeToggle: dark mode for free"),
         h("li", null, "one component per file, CSS as a sibling"),
       ),
-      h("p", null, "github.com/skysegbr/Nexa — examples/basic"),
+      h("p", null, "github.com/skysegbr/FluxaWay — examples/basic"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · basic example tutorial"),

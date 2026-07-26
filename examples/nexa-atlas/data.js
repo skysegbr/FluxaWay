@@ -244,7 +244,7 @@ render(App, document.getElementById("app"));`,
       body: "Point to the local dist/ files or pin a CDN version tag — and start drawing your own territory.",
       code: `<link rel="stylesheet" href="/dist/fluxaway-ui.css">
 <script type="module" src="./app.js"></script>`,
-      cdn: "cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js",
+      cdn: "cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js",
     },
   },
 ];

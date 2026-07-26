@@ -105,13 +105,13 @@ Consequences you must respect when writing code, tooling, or reviews:
 Public CDN URLs:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-components.js
-https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.19.0`.
+release tag such as `@v0.19.1`.
 
 Typical HTML entry point:
 

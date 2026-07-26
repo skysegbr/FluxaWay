@@ -37,7 +37,7 @@ const form = useForm({
 CDN import:
 
 ```js
-import { useForm } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
+import { useForm } from "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js";
 ```
 
 ### Returned object

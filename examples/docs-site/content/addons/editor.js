@@ -49,7 +49,7 @@ return h(FullCodeEditor, {
     ],
     resources: [
       { label: "FullCodeEditor source", href: "/dist/fluxaway-editor.js" },
-      { label: "Editor API in the README", href: "https://github.com/skysegbr/Nexa#fullcodeeditor" },
+      { label: "Editor API in the README", href: "https://github.com/skysegbr/FluxaWay#fullcodeeditor" },
     ],
     notes: [
       "Load /dist/fluxaway-editor.css and the vendored CodeMirror assets locally.",

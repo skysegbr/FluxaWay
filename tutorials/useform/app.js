@@ -178,7 +178,7 @@ function App() {
         h("li", null, "handleSubmit validates and blocks invalid submits"),
         h("li", null, "dirty, touched and submitCount for free"),
       ),
-      h("p", null, "github.com/skysegbr/Nexa — docs/FORMS.md"),
+      h("p", null, "github.com/skysegbr/FluxaWay — docs/FORMS.md"),
     ),
     h("header", { className: "tut-header" },
       h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · useForm tutorial"),

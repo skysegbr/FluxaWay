@@ -47,7 +47,7 @@ export const LIST_HOOK_ENTRIES = [
           const [items, setItems] = useState([
             { id: 1, label: "Ship the release notes" },
             { id: 2, label: "Review the changelog" },
-            { id: 3, label: "Tag 0.19.0" },
+            { id: 3, label: "Tag 0.19.1" },
           ]);
           const rows = usePresence(items, { duration: 300, getKey: (item) => item.id });
 

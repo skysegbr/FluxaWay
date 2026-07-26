@@ -39,10 +39,10 @@ render(App, document.getElementById("app"));`;
 
 export const CDN_SNIPPET = `<link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway-ui.css" />
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css" />
 
 <script type="module">
-  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
+  import { h, render } from "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js";
 
   render(() => h("h1", null, "Hello from the CDN"), document.body);
 </script>`;

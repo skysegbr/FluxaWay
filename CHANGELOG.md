@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-07-26
+
+### Changed
+- **The public repository is now `skysegbr/FluxaWay`.** GitHub, raw AI spec,
+  jsDelivr CDN, distribution banners, documentation, examples and tutorials
+  now use the final repository path. The local `origin` follows the renamed
+  repository, while deprecated `nexa*` artifacts and runtime identifiers
+  remain unchanged compatibility contracts.
+
 ## [0.19.0] - 2026-07-26
 
 ### Added
@@ -268,7 +277,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.11.1] - 2026-07-10
 
 ### Changed
-- Dist banners and `llms.txt` now point to the stable, fetchable raw URL of the AI spec (`https://raw.githubusercontent.com/skysegbr/Nexa/main/docs/AI_SPEC.md`) instead of just naming the file — an AI tool with web access can pull the complete reference directly from a vendored copy.
+- Dist banners and `llms.txt` now point to the stable, fetchable raw URL of the AI spec (`https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md`) instead of just naming the file — an AI tool with web access can pull the complete reference directly from a vendored copy.
 
 ## [0.11.0] - 2026-07-10
 
