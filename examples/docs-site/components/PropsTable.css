@@ -1,0 +1,28 @@
+.nd-props {
+  margin-block: var(--m-space-12);
+  scroll-margin-top: 5.5rem;
+}
+
+/* Wide tables scroll inside their own box — the page never scrolls sideways. */
+.nd-props-scroll {
+  margin-top: var(--m-space-4);
+  overflow-x: auto;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+}
+
+.nd-props-table {
+  margin: 0;
+  min-width: 40rem;
+}
+
+.nd-props-table td { vertical-align: top; }
+
+.nd-props-name { font-weight: 700; color: var(--m-primary); }
+
+.nd-props-type {
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+}
+
+.nd-props-empty { color: var(--m-text-muted); }

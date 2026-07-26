@@ -1,0 +1,61 @@
+/* Page-level layout only. Every component's own rules live next to it and are
+   collected here — components never import their own CSS. */
+
+@import url("./components/DocsHeader.css");
+@import url("./components/Sidebar.css");
+@import url("./components/PageToc.css");
+@import url("./components/CodeBlock.css");
+@import url("./components/DemoBlock.css");
+@import url("./components/PropsTable.css");
+@import url("./components/ComponentPage.css");
+@import url("./components/HomePage.css");
+@import url("./components/GuidePage.css");
+
+:root {
+  --nd-header-height: 3.75rem;
+  --nd-sidebar-width: 16rem;
+}
+
+body {
+  margin: 0;
+  background: var(--m-bg);
+}
+
+.nd-app {
+  padding-top: var(--nd-header-height);
+}
+
+.nd-shell {
+  display: grid;
+  grid-template-columns: var(--nd-sidebar-width) minmax(0, 1fr);
+  gap: var(--m-space-8);
+  max-width: 96rem;
+  margin-inline: auto;
+  padding-inline: var(--m-space-4);
+}
+
+.nd-main {
+  min-width: 0;
+  padding-inline-end: var(--m-space-2);
+}
+
+/* Small shared layout helpers used by the demo content modules. */
+.nd-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-2);
+}
+
+.nd-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-3);
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .nd-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

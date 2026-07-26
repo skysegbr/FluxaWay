@@ -390,7 +390,7 @@ Apply the relevant baseline to every component, then its specific rows.
 ## §17. Example apps — `SC-APP`
 
 Run the §3.1 per-example checklist against **every** dir in `examples/`
-(21). Priority + notable per-app scenarios:
+(22). Priority + notable per-app scenarios:
 
 | ID | Example | Notable scenarios | Verify |
 |---|---|---|---|
@@ -405,7 +405,8 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
 | SC-APP-11 | gallery / landing / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; console clean | visual |
-| SC-APP-12 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
+| SC-APP-12 | docs-site | sidebar nav, scroll-spy TOC, Ctrl+K palette, copy button, code toggle | browser |
+| SC-APP-13 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
 
 ## §18. Cross-browser & performance — `SC-XB`
 

@@ -1,0 +1,93 @@
+.nd-header {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--m-z-appbar);
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-4);
+  height: var(--nd-header-height);
+  padding-inline: var(--m-space-4);
+  border-bottom: 1px solid var(--m-border);
+  background: var(--m-surface);
+}
+
+.nd-header-burger {
+  display: none;
+  padding: var(--m-space-1) var(--m-space-2);
+  border: 0;
+  border-radius: var(--m-radius-sm);
+  background: none;
+  color: var(--m-text);
+  font-size: var(--m-font-size-xl);
+  cursor: pointer;
+}
+
+.nd-header-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m-space-2);
+  color: var(--m-text);
+  font-size: var(--m-font-size-lg);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.nd-header-nav {
+  display: flex;
+  gap: var(--m-space-1);
+}
+
+.nd-header-link {
+  padding: var(--m-space-1) var(--m-space-3);
+  border-radius: var(--m-radius-sm);
+  color: var(--m-text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nd-header-link:hover { color: var(--m-text); }
+
+.nd-header-link-active { color: var(--m-primary); }
+
+.nd-header-search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m-space-2);
+  min-width: 15rem;
+  margin-inline-start: auto;
+  padding: var(--m-space-2) var(--m-space-3);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface-muted);
+  color: var(--m-text-muted);
+  font: inherit;
+  font-size: var(--m-font-size-sm);
+  cursor: pointer;
+}
+
+.nd-header-search:hover { border-color: var(--m-primary); }
+
+.nd-header-search-label { margin-inline-end: auto; }
+
+.nd-header-kbd {
+  padding: 2px 6px;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface);
+  font-size: var(--m-font-size-xs);
+}
+
+.nd-header-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-2);
+}
+
+@media (max-width: 900px) {
+  .nd-header-burger { display: inline-block; }
+  .nd-header-nav { display: none; }
+  .nd-header-search { min-width: 0; }
+  .nd-header-search-label,
+  .nd-header-kbd { display: none; }
+}

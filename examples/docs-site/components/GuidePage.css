@@ -1,0 +1,9 @@
+.nd-guide-alert {
+  margin-top: var(--m-space-10);
+}
+
+.nd-guide-alert code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface);
+}
