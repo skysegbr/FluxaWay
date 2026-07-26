@@ -62,6 +62,15 @@ def run(browser_type, base: str) -> list[str]:
     expect(not any("/dist/nexa-ui.css" in url for url in requests), "home loaded monolithic UI CSS")
     passed.append("home renders without eager reference payload")
 
+    open_route(desktop, base, "/getting-started", "Getting started")
+    desktop.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+    desktop.wait_for_function(
+        """() => document.querySelector(
+          ".nd-toc-list li:last-child .nd-toc-link"
+        )?.getAttribute("aria-current") === "location" """
+    )
+    passed.append("scroll spy activates the final section at page end")
+
     desktop.keyboard.press("Control+k")
     desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
     expect(

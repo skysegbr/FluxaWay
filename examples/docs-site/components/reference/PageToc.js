@@ -9,6 +9,19 @@ export function PageToc({ items }) {
   const ids = items.map((item) => item.id).join(",");
 
   const onScroll = useThrottle(() => {
+    const scrollRoot = document.scrollingElement ?? document.documentElement;
+    const atPageEnd =
+      scrollRoot.scrollHeight > window.innerHeight + 1 &&
+      Math.ceil(window.scrollY + window.innerHeight) >= scrollRoot.scrollHeight - 2;
+
+    // The final heading often cannot reach the 25% activation line because
+    // there is not enough content below it. At the document boundary the last
+    // TOC entry is therefore the unambiguous active section.
+    if (atPageEnd) {
+      setActive(items[items.length - 1]?.id ?? null);
+      return;
+    }
+
     const line = window.innerHeight * 0.25;
     let current = items[0]?.id ?? null;
 
