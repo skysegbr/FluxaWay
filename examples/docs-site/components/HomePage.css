@@ -47,7 +47,7 @@
 
 .nd-home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   gap: var(--m-space-4);
   margin-top: var(--m-space-10);
 }
@@ -65,4 +65,24 @@
 .nd-home-card-body {
   margin: 0;
   color: var(--m-text-muted);
+}
+
+.nd-home-addons {
+  margin-top: var(--m-space-10);
+  padding: var(--m-space-6);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-lg);
+  background: var(--m-surface-soft);
+}
+
+.nd-home-addons-title {
+  margin: 0 0 var(--m-space-2);
+  font-size: var(--m-font-size-2xl);
+}
+
+.nd-home-addon-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-2);
+  margin-top: var(--m-space-5);
 }

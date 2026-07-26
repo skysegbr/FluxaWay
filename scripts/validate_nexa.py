@@ -74,6 +74,7 @@ CSS_LOAD_ORDER = ("base",) + CSS_CATEGORIES
 # Captures the category from a nexa-ui link href; the group is empty ("") for
 # the monolith nexa-ui.css / nexa-ui.min.css.
 NEXA_UI_LINK_RE = re.compile(r'href="/dist/nexa-ui(?:-([a-z]+))?(?:\.min)?\.css"')
+NEXA_UI_RUNTIME_RE = re.compile(r'["\']/dist/nexa-ui-([a-z]+)(?:\.min)?\.css["\']')
 NEXA_COMPONENT_IMPORT_RE = re.compile(
     r"import\s*(?:([\w$]+)\s*,?\s*)?(?:\{([^}]*)\})?\s*from\s*"
     r"['\"][^'\"]*nexa-components[^'\"]*['\"]",
@@ -402,6 +403,7 @@ def validate_example_css_categories(root: Path) -> list[Issue]:
             f.read_text(encoding="utf-8", errors="ignore")
             for f in list(index.parent.rglob("*.js")) + list(index.parent.rglob("*.html"))
         )
+        linked_set |= set(NEXA_UI_RUNTIME_RE.findall(source))
         needed = {"base"}
         for match in NEXA_COMPONENT_IMPORT_RE.finditer(source):
             blob = (match.group(2) or "") + "," + (match.group(1) or "")

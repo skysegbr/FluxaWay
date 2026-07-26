@@ -1,6 +1,6 @@
 import { h, useEffect } from "/dist/nexa.js";
 import { CommandPalette } from "/dist/nexa-components-overlay.js";
-import { SEARCH_COMMANDS } from "../content/index.js";
+import { SEARCH_COMMANDS } from "../../content/catalog.js";
 
 // CommandPalette only handles what happens while it is open, so the global
 // Ctrl/Cmd+K shortcut is bound here.

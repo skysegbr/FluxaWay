@@ -1,0 +1,74 @@
+import { h } from "/dist/nexa.js";
+import { useTimeline } from "/dist/nexa-motion.js";
+
+function MotionPreview() {
+  const timeline = useTimeline({
+    duration: 1200,
+    loop: true,
+    tracks: {
+      mark: [
+        { at: 0, x: -90, rotate: -20, opacity: 0.35 },
+        { at: 600, x: 90, rotate: 20, opacity: 1, ease: "inOutCubic" },
+        { at: 1200, x: -90, rotate: -20, opacity: 0.35, ease: "inOutCubic" },
+      ],
+    },
+  });
+
+  return h(
+    "div",
+    { className: "nd-addon-motion" },
+    h("div", { ref: timeline.track("mark"), className: "nd-addon-motion-mark" }, "N"),
+  );
+}
+
+export const ADDON_ENTRIES = [
+  {
+    name: "useTimeline",
+    slug: "nexa-motion",
+    category: "addons",
+    module: "nexa-motion.js",
+    summary:
+      "Flash-style timeline animation with keyframes, Penner easings, labels, frame scripts and motion guides.",
+    signature: "const timeline = useTimeline(spec)",
+    demos: [
+      {
+        id: "motion-preview",
+        title: "A looping timeline",
+        render: MotionPreview,
+        code: `const timeline = useTimeline({
+  duration: 1200,
+  loop: true,
+  tracks: {
+    mark: [
+      { at: 0, x: -90, opacity: 0.35 },
+      { at: 600, x: 90, opacity: 1, ease: "inOutCubic" },
+      { at: 1200, x: -90, opacity: 0.35, ease: "inOutCubic" },
+    ],
+  },
+});
+
+return h("div", { ref: timeline.track("mark") }, "N");`,
+      },
+    ],
+    params: [
+      { name: "duration", type: "number", description: "Timeline length in milliseconds." },
+      { name: "tracks", type: "Record<string, Keyframe[]>", description: "Named element tracks." },
+      { name: "loop", type: "boolean | number", default: "false", description: "Repeat behavior." },
+      { name: "autoplay", type: "boolean", default: "true", description: "Play after mount." },
+    ],
+    returns: [
+      { name: "track", type: "(name) => ref", description: "Binds an element to a named track." },
+      { name: "play / stop", type: "functions", description: "Playback controls." },
+      { name: "gotoAndPlay / gotoAndStop", type: "functions", description: "Seek by time or label." },
+    ],
+    resources: [
+      { label: "Runtime showcase", href: "/examples/nexa-motion/" },
+      { label: "Motion editor", href: "/examples/motion-editor/" },
+      { label: "Motion guide", href: "/docs/MOTION.md" },
+    ],
+    notes: [
+      "Animate transform and opacity on reasonably-sized elements; avoid promoting giant canvas nodes.",
+      "See examples/nexa-motion and examples/motion-editor for the full runtime and visual authoring flow.",
+    ],
+  },
+];

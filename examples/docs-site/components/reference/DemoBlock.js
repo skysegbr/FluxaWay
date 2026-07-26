@@ -15,7 +15,7 @@ export function DemoBlock({ demo }) {
     return h(
       "section",
       { className: "nd-demo", id: demo.id },
-      h("h3", { className: "nd-demo-title" }, demo.title),
+      h("h2", { className: "nd-demo-title" }, demo.title),
       demo.note ? h("p", { className: "nd-demo-note" }, demo.note) : null,
       h(CodeBlock, { code, lang: demo.lang ?? "js" }),
     );
@@ -27,13 +27,14 @@ export function DemoBlock({ demo }) {
     h(
       "header",
       { className: "nd-demo-head" },
-      h("h3", { className: "nd-demo-title" }, demo.title),
+      h("h2", { className: "nd-demo-title" }, demo.title),
       h(
         "button",
         {
           type: "button",
           className: "nd-demo-toggle",
           ariaExpanded: open ? "true" : "false",
+          ariaControls: `${demo.id}-code`,
           onClick: () => setOpen(!open),
         },
         h("i", { className: `bi bi-code-slash`, ariaHidden: "true" }),
@@ -46,6 +47,6 @@ export function DemoBlock({ demo }) {
       { className: `nd-demo-preview${demo.stack ? " nd-demo-preview-stack" : ""}` },
       h(demo.render),
     ),
-    open ? h(CodeBlock, { code, lang: demo.lang ?? "js" }) : null,
+    open ? h(CodeBlock, { id: `${demo.id}-code`, code, lang: demo.lang ?? "js" }) : null,
   );
 }

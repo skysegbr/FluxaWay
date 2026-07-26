@@ -3,19 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Nexa documentation: browser-native components, hooks and first-party add-ons with no build step."
+    />
+    <meta name="theme-color" content="#0f766e" />
+    <meta property="og:title" content="Nexa Docs" />
+    <meta
+      property="og:description"
+      content="Build directly in the browser with Nexa components, hooks and add-ons."
+    />
     <title>Nexa Docs</title>
     <link rel="icon" type="image/png" href="/assets/nexa-logo-dark-bg.png" />
-    <link rel="stylesheet" href="/dist/nexa-ui.css" />
+    <link rel="stylesheet" href="/dist/nexa-ui-base.css" />
+    <link rel="stylesheet" href="/dist/nexa-ui-core.css" />
+    <link rel="stylesheet" href="/dist/nexa-ui-overlay.css" />
+    <link rel="stylesheet" href="/dist/nexa-ui-theme.css" />
     <!-- Inert until DesignSwitcher sets data-design="bootstrap" on <html>. -->
     <link rel="stylesheet" href="/dist/nexa-bootstrap.css" />
     <link rel="stylesheet" href="/assets/fonts/bootstrap-icons.min.css" />
-    <!-- Vendored locally (never a CDN) and only for the CodeEditor demo. -->
-    <link rel="stylesheet" href="/assets/codemirror/codemirror.min.css" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div id="app"></div>
-    <script src="/assets/codemirror/codemirror.min.js"></script>
     <script type="module" src="./app.js"></script>
   </body>
 </html>

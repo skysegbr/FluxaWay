@@ -1,7 +1,7 @@
 import { h, useHead } from "/dist/nexa.js";
 import { Card } from "/dist/nexa-components-core.js";
-import { CodeBlock } from "./CodeBlock.js";
-import { HOME_CARDS, QUICK_START } from "../data.js";
+import { CodeBlock } from "./reference/CodeBlock.js";
+import { ADDON_LINKS, HOME_CARDS, QUICK_START } from "../data.js";
 
 export function HomePage() {
   useHead({
@@ -51,5 +51,29 @@ export function HomePage() {
         ),
       ),
     ),
+    h(
+      "section",
+      { className: "nd-home-addons", ariaLabelledby: "addons-title" },
+      h("p", { className: "nd-hero-kicker" }, "First-party add-ons"),
+      h("h2", { id: "addons-title", className: "nd-home-addons-title" }, "Go beyond app UI"),
+      h(
+        "p",
+        { className: "nd-home-card-body" },
+        "Presentations, timeline animation, node pipelines and full code editing use dedicated Nexa modules.",
+      ),
+      h(
+        "div",
+        { className: "nd-home-addon-links" },
+        ADDON_LINKS.map((addon) =>
+          h(
+            "a",
+            { key: addon.href, className: "m-button m-button-outline", href: addon.href },
+            addon.label,
+          ),
+        ),
+      ),
+    ),
   );
 }
+
+export default HomePage;

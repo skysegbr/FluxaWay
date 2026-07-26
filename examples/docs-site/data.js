@@ -1,5 +1,5 @@
-// Static site configuration. The component list is NOT here — it is derived
-// from content/index.js so a new component only ever touches one file.
+// Static site configuration. Reference metadata and lazy content loaders live
+// in content/catalog.js; this file owns only shell and landing-page data.
 
 export const NAV_LINKS = [
   { label: "Docs", href: "#/getting-started", match: "/getting-started" },
@@ -11,6 +11,7 @@ export const QUICK_START = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/dist/nexa-ui.css" />
   </head>
   <body>
@@ -29,7 +30,7 @@ function App() {
     Card,
     { padded: true },
     h("h1", null, "Clicks: ", count),
-    h(Button, { variant: "contained", onClick: () => setCount(count + 1) }, "Add"),
+    h(Button, { variant: "contained", onClick: () => setCount((value) => value + 1) }, "Add"),
   );
 }
 
@@ -74,6 +75,13 @@ export const HOME_CARDS = [
     title: "Split by category",
     body: "Six JS modules and seven CSS files, so a page ships only the part of the library it renders.",
   },
+];
+
+export const ADDON_LINKS = [
+  { label: "nexa-motion", href: "#/addons/nexa-motion" },
+  { label: "ZoomStage", href: "#/addons/zoom-stage" },
+  { label: "PipelineCanvas", href: "#/addons/pipeline-canvas" },
+  { label: "FullCodeEditor", href: "#/addons/full-code-editor" },
 ];
 
 export const GUIDE_STEPS = [

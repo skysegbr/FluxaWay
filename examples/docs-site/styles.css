@@ -1,15 +1,8 @@
 /* Page-level layout only. Every component's own rules live next to it and are
    collected here — components never import their own CSS. */
 
-@import url("./components/DocsHeader.css");
-@import url("./components/Sidebar.css");
-@import url("./components/PageToc.css");
-@import url("./components/CodeBlock.css");
-@import url("./components/DemoBlock.css");
-@import url("./components/PropsTable.css");
-@import url("./components/ReferencePage.css");
-@import url("./components/HomePage.css");
-@import url("./components/GuidePage.css");
+@import url("./components/shell/DocsHeader.css");
+@import url("./components/shell/Sidebar.css");
 
 :root {
   --nd-header-height: 3.75rem;
@@ -19,6 +12,24 @@
 body {
   margin: 0;
   background: var(--m-bg);
+}
+
+.nd-skip-link {
+  position: fixed;
+  inset-block-start: var(--m-space-2);
+  inset-inline-start: var(--m-space-2);
+  z-index: calc(var(--m-z-tooltip) + 1);
+  padding: var(--m-space-2) var(--m-space-3);
+  border-radius: var(--m-radius);
+  background: var(--m-primary);
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-150%);
+}
+
+.nd-skip-link:focus {
+  transform: none;
 }
 
 .nd-app {
@@ -37,6 +48,26 @@ body {
 .nd-main {
   min-width: 0;
   padding-inline-end: var(--m-space-2);
+}
+
+.nd-main:focus { outline: none; }
+
+.nd-mobile-tools {
+  padding-bottom: var(--m-space-4);
+  margin-bottom: var(--m-space-4);
+  border-bottom: 1px solid var(--m-border);
+}
+
+.nd-mobile-tools .m-palette-switcher {
+  flex-wrap: wrap;
+}
+
+.nd-route-state {
+  display: grid;
+  place-items: center;
+  min-height: 18rem;
+  padding: var(--m-space-10);
+  color: var(--m-text-muted);
 }
 
 /* Small shared layout helpers used by the demo content modules. */

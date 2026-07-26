@@ -13,7 +13,7 @@ export function PropsTable({ rows, title = "Props", id = "props", nameHeader = "
   return h(
     "section",
     { className: "nd-props", id },
-    h("h3", { className: "nd-demo-title" }, title),
+    h("h2", { className: "nd-demo-title" }, title),
     h(
       "div",
       { className: "nd-props-scroll" },
