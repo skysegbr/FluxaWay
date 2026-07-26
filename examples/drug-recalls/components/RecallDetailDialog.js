@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Dialog } from "/dist/nexa-components-overlay.js";
+import { h } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Dialog } from "/dist/fluxaway-components-overlay.js";
 import { formatFdaDate } from "./format.js";
 
 export function RecallDetailDialog({ recall, onClose }) {

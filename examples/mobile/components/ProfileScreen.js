@@ -1,5 +1,5 @@
-import { h, useNetworkStatus, useOrientation } from "/dist/nexa.js";
-import { Alert, Card } from "/dist/nexa-components-core.js";
+import { h, useNetworkStatus, useOrientation } from "/dist/fluxaway.js";
+import { Alert, Card } from "/dist/fluxaway-components-core.js";
 
 export function ProfileScreen() {
   const online      = useNetworkStatus();

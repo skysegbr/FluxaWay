@@ -1,6 +1,6 @@
 // Flash's scene strip: switch, rename, reorder, add, duplicate and delete.
 
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 
 function SceneName({ scene, onRename }) {
   const [draft, setDraft] = useState(scene.name);

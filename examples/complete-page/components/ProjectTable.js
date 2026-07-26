@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Button, Chip } from "/dist/nexa-components-core.js";
-import { Table } from "/dist/nexa-components-data.js";
+import { h } from "/dist/fluxaway.js";
+import { Button, Chip } from "/dist/fluxaway-components-core.js";
+import { Table } from "/dist/fluxaway-components-data.js";
 
 const STATUS_LABEL = { active: "Active", review: "Under review", paused: "Paused" };
 

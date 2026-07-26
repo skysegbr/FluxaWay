@@ -1,9 +1,9 @@
-import { h, useTheme } from "/dist/nexa.js";
-import { ThemeToggle } from "/dist/nexa-components-theme.js";
+import { h, useTheme } from "/dist/fluxaway.js";
+import { ThemeToggle } from "/dist/fluxaway-components-theme.js";
 
 export function FormHero() {
   const { theme } = useTheme();
-  const logoSrc = theme === "dark" ? "/assets/nexa-logo-dark-theme.png" : "/assets/nexa-logo-transparent.png";
+  const logoSrc = theme === "dark" ? "/assets/brand/fluxaway-symbol-inverse.svg" : "/assets/brand/fluxaway-symbol.svg";
 
   return h(
     "header",
@@ -12,14 +12,14 @@ export function FormHero() {
     h(
       "span",
       { className: "form-logo" },
-      h("img", { src: logoSrc, alt: "Nexa" }),
+      h("img", { src: logoSrc, alt: "FluxaWay" }),
     ),
     h("p", { className: "form-kicker" }, "Forms"),
     h("h1", null, "Validated contact flow"),
     h(
       "p",
       null,
-      "Nexa form with no build step — controlled fields, per-field errors, loading on submit and serialized output.",
+      "FluxaWay form with no build step — controlled fields, per-field errors, loading on submit and serialized output.",
     ),
   );
 }

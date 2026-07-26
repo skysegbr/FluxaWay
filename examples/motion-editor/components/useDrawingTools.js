@@ -1,7 +1,7 @@
 // Toolbox-owned state kept out of app.js: the root only consumes the props
 // needed by the Toolbox and Stage domains.
 
-import { useState } from "/dist/nexa.js";
+import { useState } from "/dist/fluxaway.js";
 import { FILLS } from "../data.js";
 
 export function useDrawingTools() {

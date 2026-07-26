@@ -1,13 +1,13 @@
-import { h, useTheme, usePalette, useDesign } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
-import { ThemeToggle, PaletteSwitcher, DesignSwitcher } from "/dist/nexa-components-theme.js";
+import { h, useTheme, usePalette, useDesign } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
+import { ThemeToggle, PaletteSwitcher, DesignSwitcher } from "/dist/fluxaway-components-theme.js";
 
 export const THEME_ENTRIES = [
   {
     slug: "theme-toggle",
     name: "ThemeToggle",
     category: "theme",
-    module: "nexa-components-theme.js",
+    module: "fluxaway-components-theme.js",
     summary:
       "The light/dark button. It is standalone — it wraps the useTheme hook, which reads and " +
       "writes localStorage and sets data-theme on <html>. No provider to mount.",
@@ -41,7 +41,7 @@ export const THEME_ENTRIES = [
     slug: "palette-switcher",
     name: "PaletteSwitcher",
     category: "theme",
-    module: "nexa-components-theme.js",
+    module: "fluxaway-components-theme.js",
     summary:
       "A swatch row over the six preset palettes plus a custom color. Independent of the theme — " +
       "each palette ships a light and a dark variant, so the two compose freely.",
@@ -67,7 +67,7 @@ export const THEME_ENTRIES = [
       { name: "className", type: "string", description: "Extra classes for the swatch row." },
     ],
     notes: [
-      "Backed by usePalette(), which also exposes setCustomColor(hex): nexa-ui.css derives the hover/soft/secondary/focus shades from --m-primary with color-mix(), so a single hex is enough.",
+      "Backed by usePalette(), which also exposes setCustomColor(hex): fluxaway-ui.css derives the hover/soft/secondary/focus shades from --m-primary with color-mix(), so a single hex is enough.",
     ],
   },
 
@@ -75,15 +75,15 @@ export const THEME_ENTRIES = [
     slug: "design-switcher",
     name: "DesignSwitcher",
     category: "theme",
-    module: "nexa-components-theme.js",
+    module: "fluxaway-components-theme.js",
     summary:
-      "Swaps the whole visual skin between the native Nexa look and a Bootstrap 5 one. Same " +
+      "Swaps the whole visual skin between the native FluxaWay look and a Bootstrap 5 one. Same " +
       "markup, same components — only the stylesheet in charge changes.",
     demos: [
       {
         id: "design-switcher-basic",
-        title: "Nexa or Bootstrap",
-        note: "Only takes visual effect while dist/nexa-bootstrap.css is loaded — this page loads it.",
+        title: "FluxaWay or Bootstrap",
+        note: "Only takes visual effect while dist/fluxaway-bootstrap.css is loaded — this page loads it.",
         render: () => {
           const { design, designs } = useDesign();
 
@@ -101,7 +101,7 @@ export const THEME_ENTRIES = [
       { name: "className", type: "string", description: "Extra classes for the switcher." },
     ],
     notes: [
-      "nexa-bootstrap.css is scoped entirely under [data-design=\"bootstrap\"], so it is inert until this switcher (or a manual attribute) turns it on — loading it costs nothing visually.",
+      "fluxaway-bootstrap.css is scoped entirely under [data-design=\"bootstrap\"], so it is inert until this switcher (or a manual attribute) turns it on — loading it costs nothing visually.",
       "Composes with useTheme and usePalette: bootstrap skin, dark theme and the rose palette all apply at once.",
     ],
   },

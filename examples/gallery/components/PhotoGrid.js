@@ -1,4 +1,4 @@
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 
 function PhotoCard({ photo, onOpen }) {
   const [loaded, setLoaded] = useState(false);

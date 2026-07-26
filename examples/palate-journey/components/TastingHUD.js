@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function TastingHUD({ courses, index, auto, onAuto, controllerRef }) {
   const current = courses[index];

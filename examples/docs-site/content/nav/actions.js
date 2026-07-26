@@ -1,6 +1,6 @@
-import { h, useState } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
-import { FAB, SpeedDial, SwipeableListItem } from "/dist/nexa-components-nav.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
+import { FAB, SpeedDial, SwipeableListItem } from "/dist/fluxaway-components-nav.js";
 
 // The floating / gesture-driven half of the nav category.
 export const ACTION_ENTRIES = [
@@ -8,7 +8,7 @@ export const ACTION_ENTRIES = [
     slug: "fab",
     name: "FAB",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary: "The floating action button for a screen's single primary action.",
     demos: [
       {
@@ -44,7 +44,7 @@ export const ACTION_ENTRIES = [
     slug: "speed-dial",
     name: "SpeedDial",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "A trigger that fans out a row of actions. It owns its open state and closes on outside " +
       "click or after an item is picked.",
@@ -98,7 +98,7 @@ export const ACTION_ENTRIES = [
     slug: "swipeable-list-item",
     name: "SwipeableListItem",
     category: "nav",
-    module: "nexa-components-nav.js",
+    module: "fluxaway-components-nav.js",
     summary:
       "A row that reveals actions when dragged left — the iOS mail gesture. Drag it with a mouse " +
       "or a finger; releasing past 40% of the action width snaps it open.",
@@ -127,7 +127,7 @@ export const ACTION_ENTRIES = [
                   { label: "Delete", icon: h("i", { className: "bi bi-trash" }), onClick: () => setLog("Delete") },
                 ],
               },
-              h("div", { style: { padding: "0.75rem 1rem" } }, "Ship the 0.18.0 release notes"),
+              h("div", { style: { padding: "0.75rem 1rem" } }, "Ship the 0.19.0 release notes"),
             ),
             log ? h(Badge, null, `Ran: ${log}`) : null,
           );

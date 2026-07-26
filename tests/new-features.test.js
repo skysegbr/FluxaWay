@@ -24,7 +24,7 @@ import {
   useVirtualList,
   useRouter,
   useSwipe,
-} from "../dist/nexa.js";
+} from "../dist/fluxaway.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 function sleep(ms) {

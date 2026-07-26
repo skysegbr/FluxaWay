@@ -4,7 +4,7 @@
 // arrows to move the layer, and the keyframe/delete actions. Rows
 // top→bottom paint front→back on the stage.
 
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 import { isLayerContainer } from "./layerTypes.js";
 import { OUTLINE_COLORS } from "../data.js";
 

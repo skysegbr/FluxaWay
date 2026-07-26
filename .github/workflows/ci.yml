@@ -15,11 +15,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: Run static validation
-        run: python3 scripts/validate_nexa.py
+        run: python3 scripts/validate_fluxaway.py
       - name: Check category CSS files are up to date
         run: python3 scripts/split_css.py --check
       - name: Check minified dist files are up to date
         run: python3 scripts/minify.py --check
+      - name: Check Nexa compatibility aliases are up to date
+        run: python3 scripts/sync_legacy_aliases.py --check
 
   browser-tests:
     name: Browser tests (${{ matrix.browser }})

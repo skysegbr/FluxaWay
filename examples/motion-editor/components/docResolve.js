@@ -6,7 +6,7 @@
 // re-walking the symbol library (was O(actors × library)) or the layer tree
 // (was O(layers²)) each frame.
 
-import { useMemo } from "/dist/nexa.js";
+import { useMemo } from "/dist/fluxaway.js";
 import { orderedActors, resolveAllLayerFlags } from "./layerOps.js";
 import { resolveActor, symbolsById } from "./symbolOps.js";
 

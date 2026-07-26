@@ -1,5 +1,5 @@
-import { h, useContext } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
+import { h, useContext } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
 import { AuthContext } from "./AuthContext.js";
 
 export function AuthMenu({ onSignIn }) {

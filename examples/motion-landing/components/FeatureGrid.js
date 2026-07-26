@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { useTimeline, stagger } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { useTimeline, stagger } from "/dist/fluxaway-motion.js";
 import { FEATURES } from "../data.js";
 import { useInViewTimeline } from "./useInViewTimeline.js";
 

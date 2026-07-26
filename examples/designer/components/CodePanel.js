@@ -1,4 +1,4 @@
-import { h, useState } from '/dist/nexa.js';
+import { h, useState } from '/dist/fluxaway.js';
 import { generateCode, generateItemCode, generateCSSCode } from '../codegen.js';
 
 export function CodePanel({ items, selectedId }) {

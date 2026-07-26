@@ -1,11 +1,11 @@
 // The inspector: edits the selected keyframe's time, tween fields, easing
 // and motion guide. An emptied field un-keys that property on this keyframe
-// (the property then tweens straight through it), mirroring nexa-motion's
+// (the property then tweens straight through it), mirroring fluxaway-motion's
 // per-property keyframe model. With several keyframes selected it offers
 // the bulk actions; with one, the full editor.
 
-import { h } from "/dist/nexa.js";
-import { easings } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { easings } from "/dist/fluxaway-motion.js";
 import { KEYFRAME_FIELDS } from "../data.js";
 
 // The easing curve, drawn from the REAL easing function the runtime will

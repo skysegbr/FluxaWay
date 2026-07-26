@@ -1,4 +1,4 @@
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 import { AddButton }   from "./components/AddButton.js";
 import { BasicBrand }  from "./components/BasicBrand.js";
 import { BasicTopbar } from "./components/BasicTopbar.js";

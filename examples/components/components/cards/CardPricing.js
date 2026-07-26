@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Card, Button } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { Card, Button } from "/dist/fluxaway-components-core.js";
 import { PRICING_ITEMS } from "../../data.js";
 
 export function CardPricing() {

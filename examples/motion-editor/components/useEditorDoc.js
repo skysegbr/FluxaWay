@@ -3,7 +3,7 @@
 // release. Selection entries are { track, id } — the keyframe's `_id` —
 // so undo/redo reordering arrays never re-aims them at another diamond.
 
-import { useHistory, useRef, useState } from "/dist/nexa.js";
+import { useHistory, useRef, useState } from "/dist/fluxaway.js";
 import { snapToFrame } from "./editorUtils.js";
 import { normalizeMotionDocument } from "./documentSchema.js";
 import { syncActiveScene } from "./sceneOps.js";

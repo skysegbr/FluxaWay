@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { useTimeline, stagger } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { useTimeline, stagger } from "/dist/fluxaway-motion.js";
 
 const LINKS = [
   ["Manifesto", "#manifesto"],
@@ -29,7 +29,7 @@ export function Header() {
       { className: "ml-header-inner" },
       h(
         "a",
-        { className: "ml-brand", href: "#top", ref: tl.track("brand"), ariaLabel: "Nexa Motion — home" },
+        { className: "ml-brand", href: "#top", ref: tl.track("brand"), ariaLabel: "FluxaWay Motion — home" },
         h("span", { className: "ml-brand-mark" }, "N"),
         h("span", null, "NEXA / MOTION"),
       ),

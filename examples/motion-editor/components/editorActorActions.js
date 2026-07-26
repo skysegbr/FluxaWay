@@ -1,6 +1,6 @@
 // Actor/layer mutation facade for useEditorDoc. Keeping these related
 // transactions together prevents the root document hook from becoming the
-// monolith warned about in the Nexa AI spec.
+// monolith warned about in the FluxaWay AI spec.
 
 import {
   addActorDoc,

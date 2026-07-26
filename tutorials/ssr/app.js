@@ -3,7 +3,7 @@
 // hydrate, with the raw server HTML on display), bottom = caption. The
 // recording driver advances steps via window.__setStep(n).
 
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 
 // ── steps ────────────────────────────────────────────────────────────────────
 
@@ -14,7 +14,7 @@ const STEPS = [
   {
     title: "1. renderToString",
     code: `import { renderToString, hydrate }
-  from "/dist/nexa-server.js";
+  from "/dist/fluxaway-server.js";
 
 // "server side": no DOM involved at all
 const html = renderToString(App);
@@ -30,12 +30,12 @@ const html = renderToString(App);
     title: "2. useHead — real SEO",
     code: `function App() {
   useHead({
-    title: "Nexa — SSR + hydrate",
+    title: "FluxaWay — SSR + hydrate",
     meta: [
       { name: "description",
         content: "Server-side rendering demo." },
       { property: "og:title",
-        content: "Nexa SSR demo" },
+        content: "FluxaWay SSR demo" },
     ],
   });
   // ...
@@ -43,7 +43,7 @@ const html = renderToString(App);
 
 // after renderToString(App):
 const head = renderHeadToString();
-// <title>Nexa — SSR + hydrate</title>
+// <title>FluxaWay — SSR + hydrate</title>
 // <meta name="description" content="...">`,
     caption: "useHead declares the page's title and meta tags from inside the component. renderToString collects the calls; renderHeadToString() then returns the <head> markup the server sends — per-route SEO from the same component. On the right: the actual markup.",
   },
@@ -92,7 +92,7 @@ h(Button, {
 }, "Reset")
 
 // server HTML first paint -> living app`,
-    caption: "After hydration the page is a normal Nexa app: state, clicks, re-renders. Users saw meaningful HTML on first paint — and no Node was involved; any backend can send that string.",
+    caption: "After hydration the page is a normal FluxaWay app: state, clicks, re-renders. Users saw meaningful HTML on first paint — and no Node was involved; any backend can send that string.",
   },
   { // 5 — recap card (overlay)
     title: "", code: "", caption: "",
@@ -139,7 +139,7 @@ function App() {
 
   return h("div", { className: "tut-root" },
     step === 0 && h("div", { className: "tut-overlay" },
-      h("h1", null, "Server-side rendering with ", h("em", null, "Nexa")),
+      h("h1", null, "Server-side rendering with ", h("em", null, "FluxaWay")),
       h("p", null, "renderToString + hydrate — real HTML first, living app second"),
     ),
     step === STEPS.length - 1 && h("div", { className: "tut-overlay" },
@@ -155,7 +155,7 @@ function App() {
       h("p", null, "github.com/skysegbr/Nexa — examples/ssr · docs/AI_SPEC.md §6"),
     ),
     h("header", { className: "tut-header" },
-      h("div", { className: "tut-brand" }, h("em", null, "Nexa"), " · SSR tutorial"),
+      h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · SSR tutorial"),
       h("div", { className: "tut-stepno" }, step > 0 && step < STEPS.length - 1 ? `step ${step} of ${STEPS.length - 2}` : ""),
     ),
     h("main", { className: "tut-main" },

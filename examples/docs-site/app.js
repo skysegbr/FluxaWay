@@ -1,6 +1,6 @@
-// Nexa Docs — a Bootstrap-style documentation site for the Nexa design system,
-// built with Nexa itself. app.js only orchestrates: routing, the shell layout
-// and the shared open/closed UI state. Every page's content lives in content/.
+// FluxaWay Docs — a Bootstrap-style documentation site for the FluxaWay design
+// system, built with the framework itself. app.js only orchestrates: routing,
+// the shell layout and shared UI state. Page content lives in content/.
 
 import {
   h,
@@ -11,9 +11,9 @@ import {
   useEffect,
   useRef,
   useMediaQuery,
-} from "/dist/nexa.js";
-import { Drawer } from "/dist/nexa-components-overlay.js";
-import { PaletteSwitcher } from "/dist/nexa-components-theme.js";
+} from "/dist/fluxaway.js";
+import { Drawer } from "/dist/fluxaway-components-overlay.js";
+import { PaletteSwitcher } from "/dist/fluxaway-components-theme.js";
 import { DocsHeader } from "./components/shell/DocsHeader.js";
 import { Sidebar } from "./components/shell/Sidebar.js";
 import { SearchPalette } from "./components/shell/SearchPalette.js";
@@ -48,7 +48,7 @@ const ROUTES = [
     path: "/components/:slug",
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [
-      "/dist/nexa-ui-nav.css",
+      "/dist/fluxaway-ui-nav.css",
       "/examples/docs-site/components/reference/reference.css",
     ],
     fallback: ROUTE_FALLBACK,
@@ -57,7 +57,7 @@ const ROUTES = [
     path: "/addons/:slug",
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [
-      "/dist/nexa-ui-nav.css",
+      "/dist/fluxaway-ui-nav.css",
       "/examples/docs-site/components/reference/reference.css",
     ],
     fallback: ROUTE_FALLBACK,
@@ -78,6 +78,13 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const initialRoute = useRef(true);
   const routeHeadingText = useRef(null);
+
+  // Keep bookmarks created before the FluxaWay rename working.
+  useEffect(() => {
+    if (path === "/addons/nexa-motion") {
+      navigate("/addons/fluxaway-motion");
+    }
+  }, [path, navigate]);
 
   // A new page starts at the top and moves keyboard/screen-reader focus to its
   // heading. Lazy routes can briefly leave the previous h1 mounted, so observe

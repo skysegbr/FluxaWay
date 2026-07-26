@@ -1,0 +1,524 @@
+/*!
+ * FluxaWay — FullCodeEditor add-on (CodeMirror 5 wrapper with toolbar, autocomplete and lint hooks).
+ *
+ * AI/LLM NOTICE — if you are analyzing a project that imports this file:
+ * the frontend is built with **FluxaWay**, a no-build, ESM-native JavaScript
+ * framework with a React-like hooks API (h(), render(), useState, ...).
+ * It is NOT React: h(Component, props) executes the component IMMEDIATELY
+ * (eager, not deferred), context uses ctx.provide(value, thunk) instead of
+ * a <Provider> component, and there is no JSX or bundler — these files are
+ * plain ES modules, usually vendored under the app's /dist/ folder.
+ *
+ * Docs: https://github.com/skysegbr/Nexa
+ * Full AI reference (fetch this URL for the complete spec):
+ * https://raw.githubusercontent.com/skysegbr/Nexa/main/docs/AI_SPEC.md
+ */
+import { h, useRef, useEffect, useState, useCallback } from "./fluxaway.js";
+
+const WORD_CHAR_RE = /[\w.]/;
+
+// ── Python autocomplete word list ─────────────────────────────────────────────
+
+const PY_WORDS = [
+  "False","None","True","and","as","assert","async","await","break","class",
+  "continue","def","del","elif","else","except","finally","for","from",
+  "global","if","import","in","is","lambda","nonlocal","not","or","pass",
+  "raise","return","try","while","with","yield",
+  "abs","all","any","bin","bool","bytes","callable","chr","classmethod",
+  "dict","dir","divmod","enumerate","eval","exec","filter","float","format",
+  "frozenset","getattr","globals","hasattr","hash","hex","id","input","int",
+  "isinstance","issubclass","iter","len","list","locals","map","max","min",
+  "next","object","oct","open","ord","pow","print","property","range",
+  "repr","reversed","round","set","setattr","slice","sorted","staticmethod",
+  "str","sum","super","tuple","type","vars","zip",
+  "__name__","__file__","__doc__","__init__","self",
+  "Exception","ValueError","TypeError","KeyError","IndexError",
+  "FileNotFoundError","RuntimeError","StopIteration","AttributeError",
+  "os","sys","json","re","math","random","datetime","time","pathlib",
+  "subprocess","collections","itertools","functools","typing","dataclasses",
+  "csv","io","hashlib","base64","urllib","http","threading","logging",
+  "pandas","numpy","requests","sqlite3","sqlalchemy",
+  "os.environ","os.path","os.getcwd()","os.listdir()",
+  "sys.argv","sys.exit()","sys.stdout",
+  "json.loads()","json.dumps()","json.load()","json.dump()",
+  "Path()","print()","len()","range()","enumerate()","zip()",
+  ".append(",".extend(",".items(",".keys(",".values(",
+  ".strip()","split()","join()","replace()","format()",
+  "if __name__ == \"__main__\":","def __init__(self):",
+  "with open() as f:","raise ValueError()","PIPELINE_INPUT",
+];
+
+// Keyword lists for the generic autocomplete (merged with words already in
+// the buffer via the anyword-hint addon, when the host page loads it).
+const KEYWORDS_BY_LANGUAGE = {
+  python: PY_WORDS,
+  javascript: [
+    "async","await","break","case","catch","class","const","continue",
+    "debugger","default","delete","do","else","export","extends","finally",
+    "for","function","if","import","in","instanceof","let","new","of",
+    "return","static","super","switch","this","throw","try","typeof","var",
+    "void","while","with","yield","true","false","null","undefined",
+    "console.log()","console.error()","JSON.parse()","JSON.stringify()",
+    "document","window","Promise","Array","Object","String","Number","Math",
+    "Map","Set","setTimeout()","setInterval()","fetch()","addEventListener",
+    "querySelector()","getElementById()","=>",
+  ],
+  shell: [
+    "if","then","else","elif","fi","for","in","do","done","while","until",
+    "case","esac","function","echo","exit","return","local","export","read",
+    "set","shift","source","cd","ls","rm","cp","mv","mkdir","grep","sed",
+    "awk","cat","chmod","curl","find","xargs","test",
+  ],
+  sql: [
+    "SELECT","FROM","WHERE","INSERT","INTO","VALUES","UPDATE","SET","DELETE",
+    "CREATE","TABLE","ALTER","DROP","INDEX","VIEW","JOIN","LEFT","RIGHT",
+    "INNER","OUTER","ON","AS","AND","OR","NOT","NULL","IS","IN","LIKE",
+    "BETWEEN","ORDER","BY","GROUP","HAVING","LIMIT","OFFSET","DISTINCT",
+    "COUNT","SUM","AVG","MIN","MAX","PRIMARY","KEY","FOREIGN","REFERENCES",
+    "UNION","EXISTS","CASE","WHEN","THEN","ELSE","END",
+  ],
+  go: [
+    "break","case","chan","const","continue","default","defer","else",
+    "fallthrough","for","func","go","goto","if","import","interface","map",
+    "package","range","return","select","struct","switch","type","var",
+    "nil","true","false","error","string","int","int64","float64","bool",
+    "byte","rune","make()","len()","cap()","append()","fmt.Println()",
+  ],
+  rust: [
+    "as","async","await","break","const","continue","crate","dyn","else",
+    "enum","extern","fn","for","if","impl","in","let","loop","match","mod",
+    "move","mut","pub","ref","return","self","static","struct","super",
+    "trait","type","unsafe","use","where","while","true","false",
+    "String","Vec","Option","Some","None","Result","Ok","Err","println!()",
+  ],
+  css: [
+    "display","position","width","height","margin","padding","border",
+    "background","color","font-size","font-family","font-weight","flex",
+    "grid","align-items","justify-content","gap","overflow","z-index",
+    "opacity","transform","transition","animation","border-radius",
+    "box-shadow","cursor","text-align","line-height","white-space",
+  ],
+  yaml: ["true","false","null","name","version","services","image","ports",
+    "volumes","environment","depends_on","build","steps","runs-on","uses"],
+  clike: [
+    "abstract","boolean","break","case","catch","char","class","const",
+    "continue","default","do","double","else","enum","extends","final",
+    "finally","float","for","if","implements","import","instanceof","int",
+    "interface","long","new","null","package","private","protected","public",
+    "return","short","static","super","switch","this","throw","throws","try",
+    "void","volatile","while","true","false","namespace","using","include",
+    "struct","template","typename","virtual","override","sizeof","nullptr",
+    "String","System.out.println()","std::cout","std::string","std::vector",
+  ],
+};
+
+// The mode string may be a MIME ("text/x-c++src") — group aliases.
+const KEYWORD_ALIASES = {
+  htmlmixed: "javascript", xml: null, markdown: null,
+  "application/json": "javascript",
+  "text/x-kotlin": "clike", "text/x-java": "clike",
+  "text/x-csrc": "clike", "text/x-c++src": "clike", "text/x-csharp": "clike",
+  dockerfile: "shell", cython: "python",
+};
+
+function keywordsFor(language) {
+  if (KEYWORDS_BY_LANGUAGE[language]) return KEYWORDS_BY_LANGUAGE[language];
+  const alias = KEYWORD_ALIASES[language];
+  return alias ? KEYWORDS_BY_LANGUAGE[alias] : [];
+}
+
+// ── BOILERPLATE_CATEGORIES (mirrors editor.js) ────────────────────────────────
+
+export const BOILERPLATE_CATEGORIES = [
+  { id: "python",       label: "Python",     sections: [
+    { title: "Flow Control",        items: ["py_if","py_if_else","py_if_elif_else","py_ternary","py_match"] },
+    { title: "Loops",              items: ["py_for","py_for_list","py_for_enumerate","py_for_dict","py_while","py_while_break"] },
+    { title: "Functions",          items: ["py_def","py_def_args","py_lambda","py_generator","py_decorator"] },
+    { title: "Classes",            items: ["py_class","py_class_inheritance","py_dataclass"] },
+    { title: "Collections",        items: ["py_list_comp","py_list_ops","py_dict_ops","py_set_ops","py_tuple_unpack"] },
+    { title: "Exceptions",         items: ["py_try_except","py_with"] },
+    { title: "Strings & Utils",    items: ["py_string_ops","py_regex","py_datetime","py_pathlib","py_json","py_env_vars"] },
+    { title: "Async",              items: ["py_async_def","py_async_gather","py_aiohttp"] },
+    { title: "Typing",             items: ["py_type_hints","py_typevar"] },
+    { title: "Stdlib",             items: ["py_counter","py_itertools","py_functools","py_enum","py_argparse","py_logging","py_sorted_key","py_zip"] },
+    { title: "Patterns",           items: ["py_main","py_property","py_static_class","py_contextmanager","py_slots","py_abc","py_walrus"] },
+  ]},
+  { id: "cython",       label: "Cython",     items: ["cy_hello","cy_typed_func","cy_fibonacci","cy_prime_sieve","cy_typed_array","cy_memoryview","cy_matrix","cy_cdef_class","cy_prange","cy_benchmark","cy_csv_stats"] },
+  { id: "golang",       label: "Go",         items: ["go_hello","go_fibonacci","go_benchmark","go_goroutines","go_json","go_csv","go_sort","go_strings","go_regex"] },
+  { id: "rust",         label: "Rust",       items: ["rust_hello","rust_fibonacci","rust_benchmark","rust_vectors","rust_hashmap","rust_pipeline_input","rust_files"] },
+  { id: "kotlin",       label: "Kotlin",     items: ["kt_hello","kt_fibonacci","kt_benchmark","kt_lists","kt_maps","kt_pipeline_input","kt_files"] },
+  { id: "input_output", label: "I/O",        items: ["read_input","print_output","json_input","pipeline_files"] },
+  { id: "files",        label: "Files",      items: ["read_file","write_file","csv_read"] },
+  { id: "http",         label: "HTTP",       items: ["http_get","http_post"] },
+  { id: "db",           label: "DB",         items: ["sqlite_query","postgres_query","mysql_query","mongo_query","redis_get","sqlalchemy_query"] },
+  { id: "data_science", label: "Data Sci",  items: ["ds_pandas_eda","ds_train_test_split","ds_linear_regression","ds_kmeans"] },
+  { id: "reports",      label: "Reports",    items: ["reportlab_pdf","openpyxl_excel","plotly_line","plotly_bar","plotly_pie","pandas_to_html"] },
+  { id: "cloud",        label: "Cloud",      items: ["s3_upload","s3_download","gcs_upload","azure_blob_upload"] },
+  { id: "messaging",    label: "Messages",   items: ["kafka_produce","kafka_consume","rmq_publish","rmq_consume"] },
+  { id: "email",        label: "E-mail",     items: ["email_smtp_simples","email_smtp_html","email_smtp_anexo"] },
+  { id: "ai_openai",    label: "OpenAI",     items: ["ai_openai_chat","ai_openai_stream","ai_openai_function","ai_openai_vision","ai_openai_embedding"] },
+  { id: "auth",         label: "Auth",       items: ["jwt_generate","jwt_validate","bcrypt_hash","aes_encrypt"] },
+  { id: "devops",       label: "DevOps",     items: ["docker_list","docker_run","ssh_command","sftp_upload"] },
+  { id: "utils",        label: "Utils",      items: ["try_except","subprocess_run","timer"] },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function jc(...c) { return c.filter(Boolean).join(" "); }
+
+function getSnippetCode(key, allSnippets) {
+  for (const obj of Object.values(allSnippets)) {
+    if (obj && typeof obj === "object" && key in obj) return obj[key];
+  }
+  return null;
+}
+
+// ── FullCodeEditor component ──────────────────────────────────────────────────
+//
+// Props:
+//   value            string       Current code value
+//   onChange         (string)→void
+//   language         string       CodeMirror mode name or MIME (see DEFAULT_LANGUAGES)
+//   onLanguageChange (lang)→void
+//   languages        [{value,label}]  Options for the toolbar language select
+//                    (defaults to DEFAULT_LANGUAGES; the current `language` is
+//                    always selectable even when missing from the list)
+//   snippets         object       { BOILERPLATES, CYTHON_BOILERPLATES, ... }
+//   onCheckSyntax    async (code, lang)→{ ok, diagnostics[] }
+//   onLint           async (code, lang)→[{ line, col, message, severity }]
+//                    1-based positions; needs the addon/lint scripts loaded —
+//                    renders inline squiggles + gutter markers as you type
+//   showToolbar      boolean      (default true)
+//   showSnippets     boolean      (default true)
+//   height           number       editor height in px (default 320)
+
+// Values are CodeMirror mode names/MIMEs — the host page must load the
+// matching mode scripts (assets/codemirror/mode/…) for highlighting to apply;
+// unknown modes fall back to plain text rendering.
+export const DEFAULT_LANGUAGES = [
+  { value: "python",        label: "Python"     },
+  { value: "cython",        label: "Cython"     },
+  { value: "javascript",    label: "JavaScript" },
+  { value: "application/json", label: "JSON"    },
+  { value: "css",           label: "CSS"        },
+  { value: "htmlmixed",     label: "HTML"       },
+  { value: "xml",           label: "XML"        },
+  { value: "markdown",      label: "Markdown"   },
+  { value: "go",            label: "Go"         },
+  { value: "rust",          label: "Rust"       },
+  { value: "shell",         label: "Shell"      },
+  { value: "yaml",          label: "YAML"       },
+  { value: "sql",           label: "SQL"        },
+  { value: "dockerfile",    label: "Dockerfile" },
+  { value: "text/x-java",   label: "Java"       },
+  { value: "text/x-kotlin", label: "Kotlin"     },
+  { value: "text/x-csrc",   label: "C"          },
+  { value: "text/x-c++src", label: "C++"        },
+  { value: "text/x-csharp", label: "C#"         },
+  { value: "text/plain",    label: "Plain text" },
+];
+
+export function FullCodeEditor({
+  value = "",
+  onChange,
+  language = "python",
+  onLanguageChange,
+  languages = DEFAULT_LANGUAGES,
+  snippets = {},
+  onCheckSyntax,
+  onLint,
+  showToolbar = true,
+  showSnippets = true,
+  height = 320,
+  className = "",
+  style,
+} = {}) {
+  const editorWrapRef = useRef(null);
+  const cmRef         = useRef(null);
+  // Refs so the CM init effect (runs once) always sees the current values.
+  const languageRef   = useRef(language);
+  languageRef.current = language;
+  const onLintRef     = useRef(onLint);
+  onLintRef.current   = onLint;
+  const [fontSize,     setFontSize]     = useState(14);
+  const [snippetOpen,  setSnippetOpen]  = useState(true);
+  const [activeTab,    setActiveTab]    = useState(language);
+  const [searchQuery,  setSearchQuery]  = useState("");
+  const [diagnostics,  setDiagnostics]  = useState(null);  // { kind:"ok"|"error"|"pending", msg }
+  const [checking,     setChecking]     = useState(false);
+  const hasCM = typeof window !== "undefined" && typeof window.CodeMirror !== "undefined";
+
+  // ── Initialize CodeMirror ─────────────────────────────────────────────────
+
+  useEffect(() => {
+    const el = editorWrapRef.current;
+    if (!el || !hasCM) return;
+    const CM = window.CodeMirror;
+
+    // Autocomplete for ANY language: words already in the buffer (via the
+    // anyword-hint addon when loaded) merged with the language's keywords.
+    const genericHint = (editor) => {
+      const cur = editor.getCursor(), line = editor.getLine(cur.line);
+      let start = cur.ch;
+      while (start > 0 && WORD_CHAR_RE.test(line.charAt(start - 1))) start--;
+      const token = line.slice(start, cur.ch);
+      if (token.length < 2) return null;
+      const lower = token.toLowerCase();
+
+      const seen = new Set([token]);
+      const list = [];
+      const push = (word) => {
+        if (!seen.has(word) && word.toLowerCase().startsWith(lower)) {
+          seen.add(word);
+          list.push(word);
+        }
+      };
+      try {
+        const any = CM.hint?.anyword?.(editor, { word: /[\w$.]+/ });
+        for (const word of any?.list ?? []) push(word);
+      } catch { /* anyword addon not loaded */ }
+      for (const word of keywordsFor(languageRef.current)) push(word);
+
+      if (!list.length) return null;
+      return { list: list.slice(0, 30), from: CM.Pos(cur.line, start), to: CM.Pos(cur.line, cur.ch) };
+    };
+
+    let cm;
+    try {
+      cm = CM(el, {
+        value:             value ?? "",
+        mode:              language,
+        theme:             "material-darker",
+        lineNumbers:       true,
+        indentUnit:        4,
+        tabSize:           4,
+        indentWithTabs:    false,
+        lineWrapping:      true,
+        matchBrackets:     true,
+        autoCloseBrackets: true,
+        hintOptions:       { hint: genericHint, completeSingle: false },
+        extraKeys: {
+          Tab:          (cm) => cm.somethingSelected() ? cm.indentSelection("add") : cm.replaceSelection("    ", "end"),
+          "Shift-Tab":  (cm) => cm.indentSelection("subtract"),
+          "Ctrl-/":     (cm) => cm.toggleComment?.(),
+          "Cmd-/":      (cm) => cm.toggleComment?.(),
+          "Ctrl-Space": (cm) => cm.showHint?.(),
+          "F11":        (cm) => cm.setOption("fullScreen", !cm.getOption("fullScreen")),
+          Escape:       (cm) => { if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false); },
+        },
+      });
+    } catch (err) {
+      console.error("[FullCodeEditor] CM init error:", err);
+      return;
+    }
+    cm.setSize("100%", height);
+
+    // Inline diagnostics via the lint addon (when the host page loads it):
+    // onLint(code, language) resolves to [{ line, col, message, severity }]
+    // with 1-based positions; results render as squiggles + gutter markers.
+    if (onLintRef.current && "lint" in CM.defaults) {
+      cm.setOption("gutters", ["CodeMirror-linenumbers", "CodeMirror-lint-markers"]);
+      cm.setOption("lint", {
+        async: true,
+        delay: 600,
+        getAnnotations: (code, updateLinting, _options, editor) => {
+          Promise.resolve(onLintRef.current?.(code, languageRef.current))
+            .then((diags) => {
+              updateLinting(editor, (diags ?? []).map((d) => ({
+                from: CM.Pos(Math.max(0, (d.line ?? 1) - 1), Math.max(0, (d.col ?? 1) - 1)),
+                to:   CM.Pos(Math.max(0, (d.line ?? 1) - 1), Math.max(0, d.col ?? 1)),
+                message: d.message ?? "",
+                severity: d.severity === "warning" ? "warning" : "error",
+              })));
+            })
+            .catch(() => updateLinting(editor, []));
+        },
+      });
+    }
+
+    // Refresh after dialog open animation (200ms) to fix layout inside animated containers
+    setTimeout(() => { cmRef.current?.refresh(); }, 220);
+    cm.on("change", () => onChange?.(cm.getValue()));
+    cm.on("inputRead", (editor, change) => {
+      if (change.origin !== "+input" && change.origin !== "+delete") return;
+      const cur = editor.getCursor(), line = editor.getLine(cur.line);
+      let s = cur.ch;
+      while (s > 0 && WORD_CHAR_RE.test(line.charAt(s - 1))) s--;
+      if (line.slice(s, cur.ch).length >= 2 && !editor.state.completionActive) editor.showHint?.({ completeSingle: false });
+    });
+    cmRef.current = cm;
+    return () => { cm.getWrapperElement().remove(); cmRef.current = null; };
+  }, []);
+
+  // Sync external value changes (skip if equal to avoid cursor jump)
+  useEffect(() => {
+    const cm = cmRef.current;
+    if (cm && cm.getValue() !== value) cm.setValue(value ?? "");
+  }, [value]);
+
+  // Sync language mode (and re-lint under the new language's rules)
+  useEffect(() => {
+    cmRef.current?.setOption("mode", language);
+    cmRef.current?.performLint?.();
+    setActiveTab(language.replace("golang", "golang").replace("kotlin", "kotlin"));
+  }, [language]);
+
+  // Sync font size
+  useEffect(() => {
+    if (!cmRef.current) return;
+    cmRef.current.getWrapperElement().style.fontSize = fontSize + "px";
+    cmRef.current.refresh();
+  }, [fontSize]);
+
+  // ── Toolbar actions ───────────────────────────────────────────────────────
+
+  const cm = () => cmRef.current;
+
+  const tbUndo   = () => { cm()?.undo(); cm()?.focus(); };
+  const tbRedo   = () => { cm()?.redo(); cm()?.focus(); };
+  const tbIndent = () => { const c = cm(); if (!c) return; for (let i = 0; i < c.lineCount(); i++) c.indentLine(i, "smart"); c.focus(); };
+  const tbToggleComment = () => { cm()?.toggleComment?.(); cm()?.focus(); };
+  const tbSearch = () => { cm()?.execCommand?.("find"); };
+  const tbFull   = () => { const c = cm(); c?.setOption("fullScreen", !c.getOption("fullScreen")); };
+  const tbClear  = () => { if (!cm()?.getValue().trim() || confirm("Clear the editor?")) { cm()?.setValue(""); cm()?.focus(); } };
+  const tbCheckSyntax = useCallback(async () => {
+    if (!onCheckSyntax || checking) return;
+    setChecking(true);
+    setDiagnostics({ kind: "pending", msg: "Checking…" });
+    try {
+      const result = await onCheckSyntax(cm()?.getValue() ?? "", language);
+      setDiagnostics(result.ok
+        ? { kind: "ok",    msg: "No errors found." }
+        : { kind: "error", msg: result.diagnostics?.[0]?.message ?? "Error found." });
+    } catch { setDiagnostics({ kind: "error", msg: "Failed to check." }); }
+    finally   { setChecking(false); }
+  }, [onCheckSyntax, checking, language]);
+
+  // ── Snippet insert ────────────────────────────────────────────────────────
+
+  const insertSnippet = useCallback((key) => {
+    const code = getSnippetCode(key, snippets);
+    if (!code || !cm()) return;
+    const currentVal = cm().getValue();
+    if (!currentVal.trim()) { cm().setValue(code.trim()); }
+    else { const cur = cm().getCursor(); cm().replaceRange("\n" + code.trim(), cur); }
+    cm().focus();
+  }, [snippets]);
+
+  // ── Snippet list for active tab ───────────────────────────────────────────
+
+  const activeCat = BOILERPLATE_CATEGORIES.find(c => c.id === activeTab) ?? BOILERPLATE_CATEGORIES[0];
+  const allItems  = activeCat.sections
+    ? activeCat.sections.flatMap(s => s.items.map(k => ({ key: k, section: s.title })))
+    : (activeCat.items ?? []).map(k => ({ key: k, section: null }));
+
+  const filteredItems = searchQuery.trim()
+    ? BOILERPLATE_CATEGORIES.flatMap(cat =>
+        (cat.sections ? cat.sections.flatMap(s => s.items) : cat.items ?? [])
+          .filter(k => k.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map(k => ({ key: k, section: cat.label }))
+      )
+    : allItems;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  // The current language may not be in the list (custom mode, or a caller
+  // with its own extension map) — append it as a raw option so the select
+  // never renders blank.
+  const langOptions = languages.some(l => l.value === language)
+    ? languages
+    : [...languages, { value: language, label: language }];
+
+  return h("div", { className: jc("nce-wrap", className), style },
+
+    showToolbar && h("div", { className: "nce-toolbar" },
+      h("select", {
+        className: "nce-lang-select",
+        title:     "Language",
+        value:     language,
+        onChange:  (e) => { onLanguageChange?.(e.target.value); },
+      }, langOptions.map(l => h("option", { key: l.value, value: l.value }, l.label))),
+
+      h("span", { className: "nce-sep" }),
+
+      h("button", { type: "button", className: "nce-btn", title: "Undo",           onClick: tbUndo           }, h("i", { className: "bi bi-arrow-counterclockwise" })),
+      h("button", { type: "button", className: "nce-btn", title: "Redo",           onClick: tbRedo           }, h("i", { className: "bi bi-arrow-clockwise"         })),
+      h("button", { type: "button", className: "nce-btn", title: "Auto-indent",    onClick: tbIndent         }, h("i", { className: "bi bi-text-indent-left"        })),
+      h("button", { type: "button", className: "nce-btn", title: "Comment line",   onClick: tbToggleComment  }, h("i", { className: "bi bi-chat-left-text"          })),
+      h("button", { type: "button", className: "nce-btn", title: "Search",         onClick: tbSearch         }, h("i", { className: "bi bi-search"                 })),
+      onCheckSyntax && h("button", { type: "button", className: "nce-btn", title: "Check syntax", onClick: tbCheckSyntax, disabled: checking },
+        h("i", { className: "bi bi-bug" }),
+      ),
+
+      h("span", { className: "nce-sep" }),
+
+      h("button", { type: "button", className: "nce-btn", title: "Increase font",  onClick: () => setFontSize(s => Math.min(s + 1, 24)) }, h("i", { className: "bi bi-zoom-in"    })),
+      h("button", { type: "button", className: "nce-btn", title: "Decrease font",  onClick: () => setFontSize(s => Math.max(s - 1,  9)) }, h("i", { className: "bi bi-zoom-out"   })),
+      h("button", { type: "button", className: "nce-btn", title: "Full screen",    onClick: tbFull           }, h("i", { className: "bi bi-fullscreen"              })),
+      h("button", { type: "button", className: "nce-btn", title: "Clear",          onClick: tbClear          }, h("i", { className: "bi bi-trash"                  })),
+
+      showSnippets && h("span", { className: "nce-sep" }),
+      showSnippets && h("button", {
+        type: "button", className: jc("nce-btn", snippetOpen && "nce-btn-active"),
+        title: snippetOpen ? "Close snippets" : "Open snippets",
+        onClick: () => setSnippetOpen(o => !o),
+      }, h("i", { className: "bi bi-code-square" })),
+    ),
+
+    h("div", { className: "nce-body" },
+
+      // Editor area — height driven by CodeMirror setSize
+      h("div", { className: "nce-editor-area" },
+        !hasCM && h("p", { className: "nce-no-cm" }, "CodeMirror not found — load it before using FullCodeEditor."),
+        h("div", { ref: editorWrapRef }),
+      ),
+
+      // Snippet browser
+      showSnippets && snippetOpen && h("div", { className: "nce-snippets" },
+        h("div", { className: "nce-snippets-search" },
+          h("i", { className: "bi bi-search nce-snippets-search-icon" }),
+          h("input", {
+            type:        "text",
+            className:   "nce-snippets-input",
+            placeholder: "Search snippet…",
+            value:       searchQuery,
+            onInput:     (e) => setSearchQuery(e.target.value),
+          }),
+        ),
+
+        !searchQuery && h("div", { className: "nce-snippets-tabs" },
+          BOILERPLATE_CATEGORIES.map(cat =>
+            h("button", {
+              key:       cat.id,
+              type:      "button",
+              className: jc("nce-snippets-tab", activeTab === cat.id && "nce-snippets-tab-active"),
+              onClick:   () => setActiveTab(cat.id),
+            }, cat.label),
+          ),
+        ),
+
+        h("div", { className: "nce-snippets-list" },
+          filteredItems.map(({ key, section }, i) =>
+            h("button", {
+              key:       key + i,
+              type:      "button",
+              className: "nce-snippet-btn",
+              title:     key,
+              onClick:   () => insertSnippet(key),
+            },
+              section && h("span", { className: "nce-snippet-cat" }, section),
+              h("span", { className: "nce-snippet-key" }, key),
+            ),
+          ),
+          filteredItems.length === 0 && h("p", { className: "nce-snippets-empty" }, "No results."),
+        ),
+      ),
+    ),
+
+    diagnostics && h("div", { className: jc("nce-diagnostics", `nce-diag-${diagnostics.kind}`) },
+      h("i", { className: jc("bi", diagnostics.kind === "ok" ? "bi-check-circle" : diagnostics.kind === "pending" ? "bi-hourglass-split" : "bi-exclamation-triangle") }),
+      " ", diagnostics.msg,
+      h("button", { type: "button", className: "nce-diag-close", onClick: () => setDiagnostics(null) }, "×"),
+    ),
+  );
+}

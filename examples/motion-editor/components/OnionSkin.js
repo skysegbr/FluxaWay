@@ -9,8 +9,8 @@
 // the controller owns element.style.opacity for tracks that tween it, and
 // the two must compose instead of fighting.
 
-import { h, useEffect, useMemo, useRef, useState } from "/dist/nexa.js";
-import { createTimeline } from "/dist/nexa-motion.js";
+import { h, useEffect, useMemo, useRef, useState } from "/dist/fluxaway.js";
+import { createTimeline } from "/dist/fluxaway-motion.js";
 import { DEFAULT_FPS } from "./editorUtils.js";
 import { ActorArtwork } from "./ActorArtwork.js";
 import { isVectorKind } from "./vectorGeometry.js";

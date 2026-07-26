@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { useTimeline } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { useTimeline } from "/dist/fluxaway-motion.js";
 import { useInViewTimeline } from "./useInViewTimeline.js";
 
 function KineticMark() {
@@ -47,7 +47,7 @@ export function ClosingCta() {
       { className: "ml-closing-copy", ref: tl.track("copy") },
       h("p", { className: "ml-kicker" }, "READY TO PLAY"),
       h("h2", null, "The browser is the stage."),
-      h("p", null, "Nexa delivers the structure. Nexa Motion puts everything in motion."),
+      h("p", null, "FluxaWay delivers the structure. FluxaWay Motion puts everything in motion."),
     ),
     h(
       "a",

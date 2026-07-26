@@ -2,7 +2,7 @@
 // audited for accessibility: BottomSheet, Dropdown, ContextMenu, Combobox,
 // Tooltip, Tabs/TabPanel, Dialog, Drawer.
 
-import { h, render, useState } from "../dist/nexa.js";
+import { h, render, useState } from "../dist/fluxaway.js";
 import {
   BottomSheet,
   Dropdown,
@@ -14,7 +14,7 @@ import {
   Dialog,
   Drawer,
   Button,
-} from "../dist/nexa-components.js";
+} from "../dist/fluxaway-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 function keydown(target, key) {

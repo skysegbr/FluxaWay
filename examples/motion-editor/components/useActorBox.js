@@ -3,7 +3,7 @@
 // release — the owner routes the commit by `mode`, "move" or a corner
 // ("nw", "ne", "sw", "se").
 
-import { useState } from "/dist/nexa.js";
+import { useState } from "/dist/fluxaway.js";
 import { capturePointer } from "./editorUtils.js";
 
 const MIN_SIZE = 12;

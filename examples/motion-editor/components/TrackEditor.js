@@ -6,7 +6,7 @@
 // its diamond. "✎ edit track code" opens just THIS actor's keyframe
 // array as code; apply replaces the track in one undo step.
 
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 import { frameOf } from "./editorUtils.js";
 import { formatKeyframe, parseTrackCode } from "./codeParse.js";
 

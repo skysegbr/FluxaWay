@@ -3,7 +3,7 @@
 // (both loading paths are undoable; they go through the same history as any
 // edit).
 
-import { h, useLocalStorage, useRef, useState } from "/dist/nexa.js";
+import { h, useLocalStorage, useRef, useState } from "/dist/fluxaway.js";
 import { serializeMotionDocument } from "./documentSchema.js";
 
 export function ProjectBar({ doc, onLoad, onNew }) {
@@ -38,7 +38,7 @@ export function ProjectBar({ doc, onLoad, onNew }) {
         if (typeof parsed !== "object" || !parsed || typeof parsed.duration !== "number" || !parsed.tracks) {
           throw new Error("not a motion document");
         }
-        setName(file.name.replace(new RegExp("\\.nexa-motion\\.json$|\\.json$"), ""));
+        setName(file.name.replace(new RegExp("\\.fluxaway-motion\\.json$|\\.json$"), ""));
         onLoad(parsed);
       } catch (error) {
         console.error("motion-editor: could not import this file.", error);

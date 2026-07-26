@@ -1,7 +1,7 @@
-import { h, useState, useToast, useHistory } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
-import { TextField } from "/dist/nexa-components-forms.js";
-import { ToastStack } from "/dist/nexa-components-overlay.js";
+import { h, useState, useToast, useHistory } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
+import { TextField } from "/dist/fluxaway-components-forms.js";
+import { ToastStack } from "/dist/fluxaway-components-overlay.js";
 
 // Queue and stack state: notifications and undo/redo.
 export const QUEUE_HOOK_ENTRIES = [
@@ -9,7 +9,7 @@ export const QUEUE_HOOK_ENTRIES = [
     slug: "use-toast",
     name: "useToast",
     category: "hooks-data",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { toasts, toast, dismiss } = useToast()",
     summary:
       "Holds the notification queue. It renders nothing on its own — pair it with the ToastStack " +
@@ -60,7 +60,7 @@ export const QUEUE_HOOK_ENTRIES = [
     slug: "use-history",
     name: "useHistory",
     category: "hooks-data",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { state, set, undo, redo, canUndo, canRedo } = useHistory(initial, { limit })",
     summary: "State with an undo/redo stack — the backbone of any editor. Bounded by limit.",
     demos: [
@@ -100,7 +100,7 @@ export const QUEUE_HOOK_ENTRIES = [
     slug: "use-web-socket",
     name: "useWebSocket",
     category: "hooks-data",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { status, lastMessage, send } = useWebSocket(url)",
     summary:
       "A WebSocket connection with automatic reconnection, exposed as render state. Objects passed " +

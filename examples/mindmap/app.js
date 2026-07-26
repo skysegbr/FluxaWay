@@ -1,4 +1,4 @@
-import { h, render } from "/dist/nexa.js";
+import { h, render } from "/dist/fluxaway.js";
 import { useMindmap } from "./components/useMindmap.js";
 import { MindmapToolbar } from "./components/MindmapToolbar.js";
 import { MindmapCanvas } from "./components/MindmapCanvas.js";

@@ -4,8 +4,8 @@
 
 import {
   h, render, useState, useMemo, useToast,
-} from "/dist/nexa.js";
-import { ToastStack } from "/dist/nexa-components-overlay.js";
+} from "/dist/fluxaway.js";
+import { ToastStack } from "/dist/fluxaway-components-overlay.js";
 
 import { ToastCtx }       from "./components/ToastCtx.js";
 import { TopBar }         from "./components/TopBar.js";
@@ -45,7 +45,7 @@ function App() {
     setPage("acompanhar");
   }
 
-  // ToastCtx.provide(value, renderFn) — padrão Nexa correto para contexto (§7).
+  // ToastCtx.provide(value, renderFn) — padrão FluxaWay correto para contexto (§7).
   // Os filhos são construídos DENTRO do thunk, garantindo que já estão
   // no topo da pilha de contexto quando executam.
   return ToastCtx.provide(toast, () =>

@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
 
 export function FileTreeFrame({ data }) {
   return h(

@@ -6,9 +6,9 @@ export const FRAMES = [
     x: 0, y: 0, w: 1040, h: 640, rotate: 0,
     data: {
       kind: "cover",
-      eyebrow: "Nexa Atlas",
+      eyebrow: "FluxaWay Atlas",
       heading: "A no-build JS framework, mapped frame by frame",
-      body: "Every territory in this map is a piece of Nexa — h(), hooks, components and the visual add-ons — all running straight in the browser, without a bundler.",
+      body: "Every territory in this map is a piece of FluxaWay — h(), hooks, components and the visual add-ons — all running straight in the browser, without a bundler.",
       hint: "Use ← → or click the map to explore",
       meta: ["ESM native", "Zero bundler", "Hook-based API"],
     },
@@ -21,11 +21,11 @@ export const FRAMES = [
       eyebrow: "Territory I · Foundation",
       icon: "bi-cloud",
       heading: "The browser is the build environment",
-      body: "Nexa arrives as three ESM files ready to import. One <script type=\"module\"> and the application is up — no Vite, Babel or npm install.",
+      body: "FluxaWay arrives as three ESM files ready to import. One <script type=\"module\"> and the application is up — no Vite, Babel or npm install.",
       items: [
-        "dist/nexa.js — core (h, render, hooks, context)",
-        "dist/nexa-components.js — 61 UI components",
-        "dist/nexa-ui.css — tokens and design system",
+        "dist/fluxaway.js — core (h, render, hooks, context)",
+        "dist/fluxaway-components.js — 61 UI components",
+        "dist/fluxaway-ui.css — tokens and design system",
       ],
     },
   },
@@ -83,7 +83,7 @@ export const FRAMES = [
     data: {
       kind: "hooks",
       eyebrow: "Territory IV · The Hook Archipelago",
-      heading: "32 hooks exported by dist/nexa.js",
+      heading: "32 hooks exported by dist/fluxaway.js",
       caption: "From basic state to WebSocket with auto-reconnect — without a single line of compilation.",
       words: [
         { text: "useState", size: "xl" }, { text: "useEffect", size: "xl" },
@@ -123,7 +123,7 @@ export const FRAMES = [
       kind: "tokens",
       eyebrow: "Territory VI · The Token Reef",
       heading: "Colors and spacing live in CSS variables",
-      caption: "All under --m-*, inherited from dist/nexa-ui.css — override in :root or by local scope.",
+      caption: "All under --m-*, inherited from dist/fluxaway-ui.css — override in :root or by local scope.",
       swatches: [
         { name: "primary", varName: "--m-primary" },
         { name: "secondary", varName: "--m-secondary" },
@@ -175,16 +175,16 @@ export const FRAMES = [
     data: {
       kind: "code",
       eyebrow: "Territory IX · The Cartographer's Board",
-      heading: "An entire Nexa app fits on one board",
+      heading: "An entire FluxaWay app fits on one board",
       body: "No build step between this code and the browser — the module runs as-is.",
-      code: `import { h, render, useState } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
+      code: `import { h, render, useState } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return h("section", { className: "m-page" },
-    h("h1", null, "Nexa"),
+    h("h1", null, "FluxaWay"),
     h(Button, {
       variant: "contained",
       onClick: () => setCount((v) => v + 1),
@@ -229,7 +229,7 @@ render(App, document.getElementById("app"));`,
         },
         {
           title: "To expand",
-          items: ["61 ready-made components in nexa-components.js", "Canvas, Zoom and editor as add-ons", "All on the same --m-* tokens"],
+          items: ["61 ready-made components in fluxaway-components.js", "Canvas, Zoom and editor as add-ons", "All on the same --m-* tokens"],
         },
       ],
     },
@@ -242,9 +242,9 @@ render(App, document.getElementById("app"));`,
       eyebrow: "End of the map, start of the expedition",
       heading: "The horizon is just one <script type=\"module\"> away",
       body: "Point to the local dist/ files or pin a CDN version tag — and start drawing your own territory.",
-      code: `<link rel="stylesheet" href="/dist/nexa-ui.css">
+      code: `<link rel="stylesheet" href="/dist/fluxaway-ui.css">
 <script type="module" src="./app.js"></script>`,
-      cdn: "cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.js",
+      cdn: "cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js",
     },
   },
 ];

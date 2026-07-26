@@ -3,7 +3,7 @@
 // road runs both ways: ✎ edit turns the pane into a textarea, ✓ apply
 // parses the code back into the document (one undoable step).
 
-import { h, useMemo, useState } from "/dist/nexa.js";
+import { h, useMemo, useState } from "/dist/fluxaway.js";
 import { formatKeyframe, parseTimelineCode } from "./codeParse.js";
 import { publishedTrackEntries } from "./layerTypes.js";
 import { runtimeTracks } from "./frameOps.js";

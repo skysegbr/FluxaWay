@@ -1,12 +1,12 @@
-import { h, Fragment } from "/dist/nexa.js";
-import { Button, IconButton } from "/dist/nexa-components-core.js";
+import { h, Fragment } from "/dist/fluxaway.js";
+import { Button, IconButton } from "/dist/fluxaway-components-core.js";
 
 export const BUTTON_ENTRIES = [
   {
     slug: "button",
     name: "Button",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary:
       "The standard action trigger. Five variants, an optional leading icon and an accent " +
       "modifier that follows the active palette.",
@@ -109,7 +109,7 @@ export const BUTTON_ENTRIES = [
     slug: "icon-button",
     name: "IconButton",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "A round, icon-only button. The label prop is its accessible name and is required.",
     demos: [
       {

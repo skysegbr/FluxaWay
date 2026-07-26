@@ -2,7 +2,7 @@
 // step, right = the real examples/basic app running in an iframe, bottom =
 // caption. The recording driver advances steps via window.__setStep(n).
 
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 
 // ── steps ────────────────────────────────────────────────────────────────────
 
@@ -15,7 +15,7 @@ const STEPS = [
     code: `<!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/dist/nexa-ui.css" />
+    <link rel="stylesheet" href="/dist/fluxaway-ui.css" />
   </head>
   <body>
     <div id="app"></div>
@@ -26,7 +26,7 @@ const STEPS = [
   },
   {
     title: "2. Components are plain functions",
-    code: `import { h, render, useState } from "/dist/nexa.js";
+    code: `import { h, render, useState } from "/dist/fluxaway.js";
 // each component lives in its own file:
 // components/AddButton.js, components/ClickCount.js, ...
 
@@ -56,17 +56,17 @@ export function AddButton({ setCount }) {
     onClick: () => setCount((v) => v + 1),
   }, "Add");
 }`,
-    caption: "State lives in the parent; children receive it through props. Clicking Add calls setCount and Nexa re-renders the tree — watch the counter go up.",
+    caption: "State lives in the parent; children receive it through props. Clicking Add calls setCount and FluxaWay re-renders the tree — watch the counter go up.",
   },
   {
     title: "4. Theming with useTheme",
-    code: `import { h, useTheme } from "/dist/nexa.js";
-import { ThemeToggle } from "/dist/nexa-components.js";
+    code: `import { h, useTheme } from "/dist/fluxaway.js";
+import { ThemeToggle } from "/dist/fluxaway-components.js";
 
 const { theme } = useTheme();
 const logoSrc = theme === "dark"
-  ? "/assets/nexa-logo-dark-theme.png"
-  : "/assets/nexa-logo-transparent.png";
+  ? "/assets/brand/fluxaway-symbol-inverse.svg"
+  : "/assets/brand/fluxaway-symbol.svg";
 
 // in the topbar:
 h(ThemeToggle, null)`,
@@ -117,7 +117,7 @@ function App() {
 
   return h("div", { className: "tut-root" },
     step === 0 && h("div", { className: "tut-overlay" },
-      h("h1", null, "Your first ", h("em", null, "Nexa"), " app"),
+      h("h1", null, "Your first ", h("em", null, "FluxaWay"), " app"),
       h("p", null, "The basic example — a counter with components, state and theming"),
     ),
     step === STEPS.length - 1 && h("div", { className: "tut-overlay" },
@@ -132,7 +132,7 @@ function App() {
       h("p", null, "github.com/skysegbr/Nexa — examples/basic"),
     ),
     h("header", { className: "tut-header" },
-      h("div", { className: "tut-brand" }, h("em", null, "Nexa"), " · basic example tutorial"),
+      h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · basic example tutorial"),
       h("div", { className: "tut-stepno" }, step > 0 && step < STEPS.length - 1 ? `step ${step} of ${STEPS.length - 2}` : ""),
     ),
     h("main", { className: "tut-main" },

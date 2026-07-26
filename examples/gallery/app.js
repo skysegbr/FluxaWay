@@ -1,4 +1,4 @@
-import { h, render, useState, useCallback } from "/dist/nexa.js";
+import { h, render, useState, useCallback } from "/dist/fluxaway.js";
 import { PHOTOS } from "./data.js";
 import { CategoryFilter } from "./components/CategoryFilter.js";
 import { PhotoGrid } from "./components/PhotoGrid.js";

@@ -16,7 +16,7 @@ import {
   useHead,
   usePresence,
   useState,
-} from "../dist/nexa.js";
+} from "../dist/fluxaway.js";
 import { assert, assertEqual, flush, mountPoint, test } from "./runner.js";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -584,7 +584,7 @@ test("review: provider change blocks memo skip so context snapshots stay fresh",
   function Consumer() {
     const [show, set] = useState(false);
     reveal = () => set(true);
-    // Reading the context only in the revealed branch is safe in Nexa:
+    // Reading the context only in the revealed branch is safe in FluxaWay:
     // useContext consumes no hook cursor.
     const value = show ? useContext(Ctx) : "hidden";
     return h("b", null, String(value));

@@ -1,17 +1,17 @@
 {
-  "name": "nexa",
-  "version": "0.18.0",
-  "description": "Next-generation frontend framework in plain JavaScript, with no build step.",
+  "name": "fluxaway",
+  "version": "0.19.0",
+  "description": "The no-build UI framework. Code flows. Your way.",
   "private": true,
-  "//": "NOT an npm package and never will be — Nexa has a strict no-Node policy (see 'No Node, By Design' in README.md). This file exists only so editors and TypeScript resolve the module type and type declarations. Distribution is vendored dist/ files or the jsDelivr CDN.",
+  "//": "NOT an npm package and never will be — FluxaWay has a strict no-Node policy (see 'No Node, By Design' in README.md). This file exists only so editors and TypeScript resolve the module type and type declarations. Distribution is vendored dist/ files or the jsDelivr CDN.",
   "type": "module",
-  "main": "dist/nexa.js",
-  "types": "dist/nexa.d.ts",
-  "style": "dist/nexa-ui.css",
+  "main": "dist/fluxaway.js",
+  "types": "dist/fluxaway.d.ts",
+  "style": "dist/fluxaway-ui.css",
   "exports": {
-    ".": "./dist/nexa.js",
-    "./components": "./dist/nexa-components.js",
-    "./ui.css": "./dist/nexa-ui.css"
+    ".": "./dist/fluxaway.js",
+    "./components": "./dist/fluxaway-components.js",
+    "./ui.css": "./dist/fluxaway-ui.css"
   },
   "files": [
     "dist",
@@ -19,7 +19,7 @@
     "examples"
   ],
   "keywords": [
-    "nexa",
+    "fluxaway",
     "frontend",
     "javascript",
     "no-build",

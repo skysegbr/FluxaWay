@@ -7,16 +7,16 @@ import {
   useMediaQuery,
   useIntersectionObserver,
   useHead,
-} from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
-import { TextField } from "/dist/nexa-components-forms.js";
+} from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
+import { TextField } from "/dist/fluxaway-components-forms.js";
 
 export const UI_HOOK_ENTRIES = [
   {
     slug: "use-debounce",
     name: "useDebounce",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const debounced = useDebounce(value, delay)",
     summary:
       "Returns a copy of a value that only catches up after the input goes quiet for delay ms — " +
@@ -52,7 +52,7 @@ export const UI_HOOK_ENTRIES = [
     slug: "use-throttle",
     name: "useThrottle",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const throttled = useThrottle(fn, delay)",
     summary:
       "Wraps a function so it fires at most once per delay ms. Note the difference from " +
@@ -98,7 +98,7 @@ export const UI_HOOK_ENTRIES = [
     slug: "use-media-query",
     name: "useMediaQuery",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: 'const matches = useMediaQuery("(max-width: 768px)")',
     summary:
       "A CSS media query as reactive state. Use it when a breakpoint has to change behavior, not " +
@@ -132,7 +132,7 @@ export const UI_HOOK_ENTRIES = [
     slug: "use-intersection-observer",
     name: "useIntersectionObserver",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const entry = useIntersectionObserver(ref, { threshold, root, rootMargin, once })",
     summary:
       "Reports whether an element is in view — the primitive behind lazy images, reveal-on-scroll " +
@@ -180,7 +180,7 @@ export const UI_HOOK_ENTRIES = [
     slug: "use-head",
     name: "useHead",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "useHead({ title, meta })",
     summary:
       "Sets the document title and meta tags from inside a component. Every page of this site calls " +

@@ -1,4 +1,4 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { CardMedia } from "./CardMedia.js";
 import { CardGlow } from "./CardGlow.js";
 import { CardFloat } from "./CardFloat.js";

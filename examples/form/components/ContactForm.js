@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Alert, Badge, Button, Card, Chip } from "/dist/nexa-components-core.js";
-import { Checkbox, Select, Textarea, TextField } from "/dist/nexa-components-forms.js";
+import { h } from "/dist/fluxaway.js";
+import { Alert, Badge, Button, Card, Chip } from "/dist/fluxaway-components-core.js";
+import { Checkbox, Select, Textarea, TextField } from "/dist/fluxaway-components-forms.js";
 import { ROLE_OPTIONS } from "../data.js";
 
 export function ContactForm({ form }) {
@@ -25,7 +25,7 @@ export function ContactForm({ form }) {
       ),
       h(Select,   { id: "role",  label: "Role", options: ROLE_OPTIONS, required: true, ...form.field("role", { type: "select" }) }),
       h(Textarea, { id: "notes", label: "Project notes", help: "Describe what you want to build.", rows: 5, required: true, ...form.field("notes", { type: "textarea" }) }),
-      h(Checkbox, { id: "newsletter", label: "Receive Nexa updates", ...form.field("newsletter", { type: "checkbox" }) }),
+      h(Checkbox, { id: "newsletter", label: "Receive FluxaWay updates", ...form.field("newsletter", { type: "checkbox" }) }),
       h(
         "div",
         { className: "m-actions" },

@@ -1,12 +1,12 @@
-import { h, Fragment, useState } from "/dist/nexa.js";
-import { Select, Checkbox, Radio, RadioGroup, Switch } from "/dist/nexa-components-forms.js";
+import { h, Fragment, useState } from "/dist/fluxaway.js";
+import { Select, Checkbox, Radio, RadioGroup, Switch } from "/dist/fluxaway-components-forms.js";
 
 export const CHOICE_ENTRIES = [
   {
     slug: "select",
     name: "Select",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A native <select> with the standard label/help/error wrapper.",
     demos: [
       {
@@ -47,7 +47,7 @@ export const CHOICE_ENTRIES = [
     slug: "checkbox",
     name: "Checkbox",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A single boolean choice with its label wired to the input.",
     demos: [
       {
@@ -83,7 +83,7 @@ export const CHOICE_ENTRIES = [
     slug: "radio",
     name: "Radio",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary:
       "A single radio input. For a set of mutually exclusive options prefer RadioGroup, which " +
       "handles the shared name and keyboard semantics for you.",
@@ -126,7 +126,7 @@ export const CHOICE_ENTRIES = [
     slug: "radio-group",
     name: "RadioGroup",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A labelled set of radios rendered from an options array, stacked or inline.",
     demos: [
       {
@@ -170,7 +170,7 @@ export const CHOICE_ENTRIES = [
     slug: "switch",
     name: "Switch",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A toggle for settings that apply immediately, with no save step.",
     demos: [
       {

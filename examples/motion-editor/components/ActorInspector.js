@@ -4,7 +4,7 @@
 // deletion. Number edits commit through updateActor's no-op guard, so
 // blur re-fires never pollute the history.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { FILLS } from "../data.js";
 import { TrackEditor } from "./TrackEditor.js";
 import { isVectorKind } from "./vectorGeometry.js";

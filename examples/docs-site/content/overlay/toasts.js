@@ -1,13 +1,13 @@
-import { h, useState, useToast } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Toast, ToastStack } from "/dist/nexa-components-overlay.js";
+import { h, useState, useToast } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Toast, ToastStack } from "/dist/fluxaway-components-overlay.js";
 
 export const TOAST_ENTRIES = [
   {
     slug: "toast",
     name: "Toast",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "A single transient notification. Usually you want the useToast hook plus ToastStack; " +
       "reach for Toast directly for a persistent inline banner you control.",
@@ -61,7 +61,7 @@ export const TOAST_ENTRIES = [
     slug: "toast-stack",
     name: "ToastStack",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "The queue renderer. useToast holds the queue and hands you toast.success/error/warning/info; " +
       "ToastStack draws it. The hook renders nothing on its own — mount the stack once, near the root.",
@@ -103,7 +103,7 @@ export const TOAST_ENTRIES = [
       { name: "onClose", type: "(id) => void", description: "Wire to toast.dismiss(id)." },
     ],
     notes: [
-      "useToast is a core hook (/dist/nexa.js), not a component: const { toasts, toast } = useToast().",
+      "useToast is a core hook (/dist/fluxaway.js), not a component: const { toasts, toast } = useToast().",
       "Mount exactly one ToastStack per app, high in the tree — the stack is fixed-positioned, so a second one would overlap the first.",
     ],
   },

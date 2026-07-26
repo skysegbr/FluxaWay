@@ -1,5 +1,5 @@
-import { h, useEffect } from "/dist/nexa.js";
-import { stagger, useTimeline } from "/dist/nexa-motion.js";
+import { h, useEffect } from "/dist/fluxaway.js";
+import { stagger, useTimeline } from "/dist/fluxaway-motion.js";
 import { FlavorFX } from "./FlavorFX.js";
 
 export function DishFrame({ course, active, courseIndex }) {

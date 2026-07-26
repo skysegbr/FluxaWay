@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { EmptyState } from "/dist/nexa-components-core.js";
+import { h } from "/dist/fluxaway.js";
+import { EmptyState } from "/dist/fluxaway-components-core.js";
 import { CLASSIFICATION_COLORS } from "../data.js";
 
 const RADIUS = 15.5;

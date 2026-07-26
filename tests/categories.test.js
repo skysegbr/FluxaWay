@@ -1,19 +1,35 @@
-// Category split of nexa-components.js (core/forms/overlay/data/nav/theme):
+// Category split of fluxaway-components.js (core/forms/overlay/data/nav/theme):
 // the barrel must re-export every category export unchanged, the categories
 // must not overlap, and components imported straight from a category module
 // must render — so apps can import only the categories they use.
 
-import { h, render } from "../dist/nexa.js";
-import * as barrel from "../dist/nexa-components.js";
-import * as core from "../dist/nexa-components-core.js";
-import * as forms from "../dist/nexa-components-forms.js";
-import * as overlay from "../dist/nexa-components-overlay.js";
-import * as data from "../dist/nexa-components-data.js";
-import * as nav from "../dist/nexa-components-nav.js";
-import * as theme from "../dist/nexa-components-theme.js";
+import * as runtime from "../dist/fluxaway.js";
+import * as barrel from "../dist/fluxaway-components.js";
+import * as core from "../dist/fluxaway-components-core.js";
+import * as forms from "../dist/fluxaway-components-forms.js";
+import * as overlay from "../dist/fluxaway-components-overlay.js";
+import * as data from "../dist/fluxaway-components-data.js";
+import * as nav from "../dist/fluxaway-components-nav.js";
+import * as theme from "../dist/fluxaway-components-theme.js";
+import * as legacyCore from "../dist/nexa.js";
+import * as legacyBarrel from "../dist/nexa-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 const categories = { core, forms, overlay, data, nav, theme };
+const { h, render } = runtime;
+
+test("compatibility: Nexa aliases expose the canonical FluxaWay modules", () => {
+  for (const key of Object.keys(runtime)) {
+    assert(key in legacyCore, `legacy core is missing ${key}`);
+    assert(legacyCore[key] === runtime[key], `legacy core.${key} is not canonical`);
+  }
+  assertEqual(Object.keys(legacyCore).length, Object.keys(runtime).length);
+  for (const key of Object.keys(barrel)) {
+    assert(key in legacyBarrel, `legacy barrel is missing ${key}`);
+    assert(legacyBarrel[key] === barrel[key], `legacy barrel.${key} is not canonical`);
+  }
+  assertEqual(Object.keys(legacyBarrel).length, Object.keys(barrel).length);
+});
 
 test("categories: the barrel re-exports every category export as the same reference", () => {
   for (const [name, mod] of Object.entries(categories)) {

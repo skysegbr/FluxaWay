@@ -1,5 +1,5 @@
-import { h, useContext } from "/dist/nexa.js";
-import { Alert, EmptyState, Spinner } from "/dist/nexa-components-core.js";
+import { h, useContext } from "/dist/fluxaway.js";
+import { Alert, EmptyState, Spinner } from "/dist/fluxaway-components-core.js";
 import { CatalogContext } from "./CatalogContext.js";
 import { ProductCard } from "./ProductCard.js";
 

@@ -1,4 +1,4 @@
-// Example: running Nexa from the MINIFIED build.
+// Example: running FluxaWay from the MINIFIED build.
 //
 // Everything here imports from the *.min.js bundles produced by
 // `python scripts/minify.py` instead of the readable
@@ -10,9 +10,9 @@
 // (see docs/AI_SPEC.md §12/§14). A single inline app.js like this is only
 // meant as a throwaway showcase.
 
-import { h, render, useState, useRoutes, useRouter, useHead } from "/dist/nexa.min.js";
-import { Button, Card, Badge } from "/dist/nexa-components-core.min.js";
-import { ThemeToggle } from "/dist/nexa-components-theme.min.js";
+import { h, render, useState, useRoutes, useRouter, useHead } from "/dist/fluxaway.min.js";
+import { Button, Card, Badge } from "/dist/fluxaway-components-core.min.js";
+import { ThemeToggle } from "/dist/fluxaway-components-theme.min.js";
 
 function Nav() {
   const { path } = useRouter();
@@ -28,7 +28,7 @@ function Nav() {
 function Home() {
   // Per-route document metadata: each page declares its own title, so the
   // browser tab follows the navigation (watch it while clicking the nav).
-  useHead({ title: "Home — Nexa minified" });
+  useHead({ title: "Home — FluxaWay minified" });
   return h(
     Card,
     null,
@@ -37,16 +37,16 @@ function Home() {
       "p",
       { className: "m-body" },
       "This page imports ",
-      h("code", null, "/dist/nexa.min.js"),
+      h("code", null, "/dist/fluxaway.min.js"),
       " and ",
-      h("code", null, "/dist/nexa-components-core.min.js"),
+      h("code", null, "/dist/fluxaway-components-core.min.js"),
       ". Same API, ~25% smaller uncompressed.",
     ),
   );
 }
 
 function Counter() {
-  useHead({ title: "Counter — Nexa minified" });
+  useHead({ title: "Counter — FluxaWay minified" });
   const [n, setN] = useState(0);
   return h(
     Card,
@@ -61,12 +61,12 @@ function Counter() {
 }
 
 function About() {
-  useHead({ title: "About — Nexa minified" });
+  useHead({ title: "About — FluxaWay minified" });
   return h(
     Card,
     null,
     h("h2", { className: "m-title-md" }, "About"),
-    h("p", { className: "m-body" }, "Nexa is a no-build, ESM-native frontend framework. This demo runs its minified bundles directly in the browser."),
+    h("p", { className: "m-body" }, "FluxaWay is a no-build, ESM-native frontend framework. This demo runs its minified bundles directly in the browser."),
   );
 }
 
@@ -84,7 +84,7 @@ function App() {
     "section",
     { className: "m-page m-stack mn-page" },
     h("header", { className: "mn-header" },
-      h("h1", { className: "m-title-xl" }, "⬡ Nexa · minified"),
+      h("h1", { className: "m-title-xl" }, "⬡ FluxaWay · minified"),
       h(ThemeToggle, null),
     ),
     h(Nav),

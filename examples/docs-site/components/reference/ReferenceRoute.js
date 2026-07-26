@@ -1,5 +1,5 @@
-import { h, useEffect, useState } from "/dist/nexa.js";
-import { Alert, Spinner } from "/dist/nexa-components-core.js";
+import { h, useEffect, useState } from "/dist/fluxaway.js";
+import { Alert, Spinner } from "/dist/fluxaway-components-core.js";
 import { metaFor } from "../../content/catalog.js";
 import { loadEntry } from "../../content/entryLoader.js";
 import { ReferencePage } from "./ReferencePage.js";

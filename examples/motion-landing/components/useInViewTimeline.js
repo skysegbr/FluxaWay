@@ -1,8 +1,8 @@
-// Starts a parked nexa-motion timeline the first time its section enters the
+// Starts a parked fluxaway-motion timeline the first time its section enters the
 // viewport. The observer plumbing — reattach when the target changes,
 // disconnect after the first hit — is the core useIntersectionObserver's job.
 
-import { useEffect, useRef, useIntersectionObserver } from "/dist/nexa.js";
+import { useEffect, useRef, useIntersectionObserver } from "/dist/fluxaway.js";
 
 export function useInViewTimeline(timeline, threshold = 0.22) {
   const sectionRef = useRef(null);

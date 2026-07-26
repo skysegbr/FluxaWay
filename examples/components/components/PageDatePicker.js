@@ -1,5 +1,5 @@
-import { h, useState } from "/dist/nexa.js";
-import { DatePicker } from "/dist/nexa-components-forms.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { DatePicker } from "/dist/fluxaway-components-forms.js";
 
 export function PageDatePicker() {
   const [date, setDate] = useState(null);

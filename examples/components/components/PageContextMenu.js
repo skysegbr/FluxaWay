@@ -1,6 +1,6 @@
-import { h, useState, useContextMenu } from "/dist/nexa.js";
-import { Alert } from "/dist/nexa-components-core.js";
-import { ContextMenu } from "/dist/nexa-components-overlay.js";
+import { h, useState, useContextMenu } from "/dist/fluxaway.js";
+import { Alert } from "/dist/fluxaway-components-core.js";
+import { ContextMenu } from "/dist/fluxaway-components-overlay.js";
 
 export function PageContextMenu() {
   const { menu, openMenu, closeMenu } = useContextMenu();

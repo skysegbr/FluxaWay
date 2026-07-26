@@ -1,7 +1,7 @@
-# Nexa — AI QA Runbook
+# FluxaWay — AI QA Runbook
 
-> For an **AI assistant running QA on Nexa** (not generating app code — that's
-> [AI_SPEC.md](./AI_SPEC.md)). Read §0 before running anything: Nexa's QA is
+> For an **AI assistant running QA on FluxaWay** (not generating app code — that's
+> [AI_SPEC.md](./AI_SPEC.md)). Read §0 before running anything: FluxaWay's QA is
 > Python + a real browser, never Node, and a wrong runtime makes every result
 > meaningless.
 >
@@ -23,11 +23,11 @@ Get these wrong and your results are noise.
 
 ### 0.1 No Node. Ever.
 
-Nexa is **no-build, zero-dependency, browser ESM**. There is no npm package, no
+FluxaWay is **no-build, zero-dependency, browser ESM**. There is no npm package, no
 `node_modules`, no bundler in the dev/test loop.
 
 - **Never** run `node <file>.js`, `node --check`, `npm test`, `npm install`,
-  `npx <anything>` against Nexa code. The modules import absolute `/dist/...`
+  `npx <anything>` against FluxaWay code. The modules import absolute `/dist/...`
   specifiers and touch `document`/`window`; Node cannot resolve or run them.
 - A Node failure proves **nothing** about the code. Do not "fix" code to satisfy
   Node, and do not install Node to "check" anything.
@@ -37,7 +37,7 @@ Nexa is **no-build, zero-dependency, browser ESM**. There is no npm package, no
 
 Two runtimes are usually in play:
 
-- **Static / sync tooling** (`validate_nexa.py`, `minify.py`, `split_css.py`) —
+- **Static / sync tooling** (`validate_fluxaway.py`, `minify.py`, `split_css.py`) —
   any Python 3.10+. Use the repo's default `python`.
 - **Anything that drives a browser** (`run_browser_tests.py`, `bundle.py
   --smoke`, `benchmark_examples.py`) — needs the Python that has **playwright**
@@ -63,11 +63,11 @@ URL it prints. The browser console is the source of truth, not any Node output.
 ### 0.4 Where things live
 
 ```
-scripts/validate_nexa.py       static gate (imports, assets, guards, sync)
+scripts/validate_fluxaway.py       static gate (imports, assets, guards, sync)
 scripts/run_browser_tests.py    the ~300-test engine/component/add-on suite
 scripts/check_docs_site.py       docs-site lazy/mobile/add-on browser smoke
 scripts/minify.py               regenerate/verify dist/*.min.*
-scripts/split_css.py            regenerate/verify dist/nexa-ui-<cat>.css
+scripts/split_css.py            regenerate/verify dist/fluxaway-ui-<cat>.css
 scripts/bundle.py               optional production bundler (+ --smoke)
 scripts/benchmark_examples.py   payload/timing benchmark for examples
 server.py                       dev server for manual QA
@@ -81,36 +81,40 @@ examples/                       22 example apps to smoke visually
 ## 1. QA gates, fast → slow
 
 Run in this order; stop and report if a **blocking** gate fails (later gates
-assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.4.
+assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.6.
 
 | # | Gate | Command | Pass signal | Blocking |
 |---|---|---|---|---|
-| 1.1 | Static validation | `python scripts/validate_nexa.py` | `Nexa static validation passed.` (exit 0) | yes |
+| 1.1 | Static validation | `python scripts/validate_fluxaway.py` | `FluxaWay static validation passed.` (exit 0) | yes |
 | 1.2 | Category CSS in sync | `python scripts/split_css.py --check` | `All 7 category CSS files are up to date.` | yes |
 | 1.3 | Minified files in sync | `python scripts/minify.py --check` | `All N minified outputs are up to date.` | yes |
-| 1.4 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
-| 1.5 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
-| 1.6 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
-| 1.7 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
+| 1.4 | Legacy aliases in sync | `python scripts/sync_legacy_aliases.py --check` | all Nexa compatibility aliases are up to date | yes |
+| 1.5 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
+| 1.6 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
+| 1.7 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
+| 1.8 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
 
 **1.1 Static validation** catches: unresolved local imports, missing HTML/JS
 assets, unbalanced brackets, the 250-line monolith guard, `package.json`↔
 `CHANGELOG` version sync, and that every example loading the per-category CSS
 loads every category it actually uses (a missing category = silent unstyled
-render). Any output other than `Nexa static validation passed.` lists concrete
+render). Any output other than `FluxaWay static validation passed.` lists concrete
 `path: message` issues — fix or report each.
 
 **1.2 / 1.3 sync gates** fail when someone edited a source file
-(`dist/nexa-ui.css`, a `dist/*.js`) but didn't regenerate its derived outputs.
+(`dist/fluxaway-ui.css`, a `dist/*.js`) but didn't regenerate its derived outputs.
 The fix is to run the generator without `--check` (`python scripts/split_css.py`
 then `python scripts/minify.py`) and commit the result — **do not** hand-edit a
-`.min.*` or `nexa-ui-<cat>.css` file (they're generated; edit the source).
+`.min.*` or `fluxaway-ui-<cat>.css` file (they're generated; edit the source).
 
-**1.4 must pass on all three engines** (chromium, firefox, webkit) — Nexa
+**1.4** proves every deprecated Nexa filename forwards to its canonical
+FluxaWay artifact. Regenerate aliases only after CSS splitting and minification.
+
+**1.5 must pass on all three engines** (chromium, firefox, webkit) — FluxaWay
 targets each. A test that passes on chromium but fails on webkit is a real bug,
 not flake; report the engine.
 
-**1.5** protects the documentation app itself: home payload stays lazy,
+**1.6** protects the documentation app itself: home payload stays lazy,
 category CSS and CodeMirror load on demand, search navigates, all four add-on
 pages render, the catalog matches its 98 descriptors, route changes focus the
 new heading, the sidebar reveals its active page, and mobile navigation/TOC
@@ -118,9 +122,9 @@ lock, restore and move focus without overflow.
 
 ---
 
-## 2. The automated suite (§1.4) in detail
+## 2. The automated suite (§1.5) in detail
 
-`tests/index.html` imports `dist/nexa.js` and asserts against the real DOM — no
+`tests/index.html` imports `dist/fluxaway.js` and asserts against the real DOM — no
 test framework, no build. `tests/run.js` imports every `*.test.js` and exposes
 the outcome on `window.__nexaTestResults`, which `run_browser_tests.py` reads.
 
@@ -136,8 +140,8 @@ Coverage (~300 tests across 13 files):
 | `categories.test.js` | barrel ↔ category-module export parity |
 | `ssr.test.js` | `renderToString`, `hydrate`, head, escaping, text-node quirks |
 | `a11y.test.js` | keyboard nav, focus trap/restore, ARIA (Dialog, Drawer, Combobox, Tabs…) |
-| `addons.test.js` | PipelineCanvas (`nexa-canvas`), ZoomStage (`nexa-zoom`) |
-| `motion.test.js` / `motion-editor.test.js` | `nexa-motion` runtime + the visual editor |
+| `addons.test.js` | PipelineCanvas (`fluxaway-canvas`), ZoomStage (`fluxaway-zoom`) |
+| `motion.test.js` / `motion-editor.test.js` | `fluxaway-motion` runtime + the visual editor |
 | `security.test.js` | `safeUrl()` scheme guard (client + SSR) |
 
 Running:
@@ -166,7 +170,7 @@ These are AI-executable with playwright — you don't need a human to "look".
 Discover the apps: `ls examples/`. Prioritize the broad ones and the add-on
 demos: `docs-site`, `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
 `nexa-architecture`/`nexa-atlas` (ZoomStage), `star-atlas` (ZoomStage
-`freeZoom`), `nexa-motion`/`motion-editor` (motion), `designer`, `mindmap`,
+`freeZoom`), `fluxaway-motion`/`motion-editor` (motion), `designer`, `mindmap`,
 `gallery`.
 
 ### 3.1 Per-example checklist
@@ -178,8 +182,8 @@ Serve once (`python server.py`), then for each example load
       Any uncaught error or failed import is a fail.
 - [ ] **No unstyled components** — nothing renders as raw browser default
       (see 3.2 for the rigorous check). Watch especially examples that use the
-      **per-category CSS** (their `index.html` links `nexa-ui-<cat>.css`, not
-      `nexa-ui.css`).
+      **per-category CSS** (their `index.html` links `fluxaway-ui-<cat>.css`, not
+      `fluxaway-ui.css`).
 - [ ] **Primary interactions work** — click the main buttons, open a dialog/
       drawer/menu, submit a form, paginate a table, toggle tabs.
 - [ ] **Theme + palette** — toggle dark mode and switch palette (where the app
@@ -207,14 +211,14 @@ styles. In one `page.evaluate`:
 1. Freeze animations: inject `*{animation:none!important;transition:none!important}`.
 2. Snapshot: for every `document.body.querySelectorAll('*')`, record the full
    `getComputedStyle` as `prop:value;…`.
-3. Insert `<link href="/dist/nexa-ui.css">` **at the position of the first
-   `nexa-ui-<cat>` link** (before the app's `styles.css`, preserving cascade
+3. Insert `<link href="/dist/fluxaway-ui.css">` **at the position of the first
+   `fluxaway-ui-<cat>` link** (before the app's `styles.css`, preserving cascade
    order), await its `onload`, then remove the category links.
 4. Snapshot again; diff element-by-element.
 
 Zero diffs = the subset is complete. Any diff points at the exact element +
 property; if it's a real missing rule, the category set is wrong (also caught
-statically by `validate_nexa.py`). **Pitfall:** appending the monolith at the
+statically by `validate_fluxaway.py`). **Pitfall:** appending the monolith at the
 *end* of `<head>` (after `styles.css`) flips the cascade and yields false
 diffs — insert it where the category links were.
 
@@ -224,7 +228,7 @@ diffs — insert it where the category links were.
   thumbnail/next flies the camera; keyboard (arrows) advances; no error on the
   last→first wrap. `star-atlas` covers `freeZoom` (wheel zoom, drag pan,
   `fitAll`/`reset`).
-- **nexa-motion** (`nexa-motion`, `motion-landing`): the intro timeline plays;
+- **fluxaway-motion** (`fluxaway-motion`, `motion-landing`): the intro timeline plays;
   `motion-editor` — drag a keyframe, scrub the ruler, undo/redo (Ctrl+Z), export
   code pane updates.
 - **PipelineCanvas** and **FullCodeEditor**: no example app covers these — smoke
@@ -247,7 +251,7 @@ this proves the full round-trip in a browser.
   `data:` are neutralized on client and in `renderToString`.
 - **SSR escaping**: all text/attribute values HTML-escaped (no injection);
   `innerHTML` and `safeUrl`-cleared values behave. In `ssr.test.js`.
-- **No-build integrity** (supply-chain — Nexa's core promise): `dist/*.js` must
+- **No-build integrity** (supply-chain — FluxaWay's core promise): `dist/*.js` must
   import nothing external and contain no `eval`/`new Function`/`document.write`.
   Quick audit:
   ```bash
@@ -266,11 +270,11 @@ this proves the full round-trip in a browser.
 
 Before signing off a branch or release:
 
-1. Gates 1.1–1.5 green on **all three** engines.
+1. Gates 1.1–1.6 green on **all three** engines.
 2. `python scripts/split_css.py --check` and `python scripts/minify.py --check`
    green (derived files committed, not stale).
 3. If `package.json` version changed, `CHANGELOG.md` has a matching
-   `## [x.y.z]` heading (validate_nexa.py enforces this).
+   `## [x.y.z]` heading (validate_fluxaway.py enforces this).
 4. §3 per-example checklist clean on the priority examples; category-CSS
    examples pass §3.2.
 5. (Optional) `python3 scripts/benchmark_examples.py` — payload/timing hasn't
@@ -286,7 +290,7 @@ Report so a human can act without re-deriving anything. Per finding:
 
 ```
 [SEVERITY] <area> — <one-line summary>
-  Gate/step : 1.4 browser suite (webkit)   |  3.1 examples/storefront  | ...
+  Gate/step : 1.5 browser suite (webkit)   |  3.1 examples/storefront  | ...
   Command   : python3 scripts/run_browser_tests.py --browser webkit
   Expected  : 300/300 passed (webkit)
   Actual    : 299/300 — ✗ Combobox: Escape returns focus to trigger
@@ -312,15 +316,17 @@ show the real output; if a run is still in progress, say so.
 
 ```bash
 # gates (fast → slow)
-python  scripts/validate_nexa.py
+python  scripts/validate_fluxaway.py
 python  scripts/split_css.py --check
 python  scripts/minify.py --check
+python  scripts/sync_legacy_aliases.py --check
 python3 scripts/run_browser_tests.py --browser chromium      # then firefox, webkit
 python3 scripts/check_docs_site.py --browser chromium        # then firefox, webkit
 
 # regenerate derived files after editing a source (then re-run --check)
-python  scripts/split_css.py        # dist/nexa-ui.css → nexa-ui-<cat>.css
+python  scripts/split_css.py        # dist/fluxaway-ui.css → fluxaway-ui-<cat>.css
 python  scripts/minify.py           # dist/*.js|*.css → *.min.*
+python  scripts/sync_legacy_aliases.py
 
 # manual + optional
 python  server.py                   # dev server for browser QA

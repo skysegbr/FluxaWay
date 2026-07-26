@@ -1,5 +1,5 @@
-import { h, useEffect, useRef } from "/dist/nexa.js";
-import { useTimeline } from "/dist/nexa-motion.js";
+import { h, useEffect, useRef } from "/dist/fluxaway.js";
+import { useTimeline } from "/dist/fluxaway-motion.js";
 
 const HERO_ART = new URL("../assets/kinetic-hero.png", import.meta.url).href;
 

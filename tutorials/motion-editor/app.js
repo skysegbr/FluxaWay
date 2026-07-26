@@ -3,7 +3,7 @@
 // an object, key it at the playhead, transform, play, ship the code),
 // bottom = caption. The recording driver advances via window.__setStep(n).
 
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 
 const EDITOR = "/examples/motion-editor/index.html";
 
@@ -64,7 +64,7 @@ const STEPS = [
 // spans = tweens between poses
 // ∞ loop · spd · onion skin
 // f37 · 24 fps · 1.50s`,
-    caption: "Rewind and play: the editor's preview IS the real nexa-motion runtime — the square glides to its f37 pose, then rotates into the final one, looping.",
+    caption: "Rewind and play: the editor's preview IS the real fluxaway-motion runtime — the square glides to its f37 pose, then rotates into the final one, looping.",
   },
   {
     title: "5. Ship the code",
@@ -136,13 +136,13 @@ function App() {
         h("li", null, "draw a shape → it's an actor with a layer + starter keyframe"),
         h("li", null, "scrub the playhead, drag the object → auto-key, like Flash"),
         h("li", null, "Free Transform keys rotate/scale at the playhead too"),
-        h("li", null, "play: the preview is the real nexa-motion runtime"),
+        h("li", null, "play: the preview is the real fluxaway-motion runtime"),
         h("li", null, "Behavior lists the object's keyframes; Export is live code"),
       ),
       h("p", null, "github.com/skysegbr/Nexa — examples/motion-editor"),
     ),
     h("header", { className: "tut-header" },
-      h("div", { className: "tut-brand" }, h("em", null, "Nexa"), " · Motion Editor tutorial"),
+      h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · Motion Editor tutorial"),
       h("div", { className: "tut-stepno" }, step > 0 && step < STEPS.length - 1 ? `step ${step} of ${STEPS.length - 2}` : ""),
     ),
     h("main", { className: "tut-main" },

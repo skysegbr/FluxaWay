@@ -1,6 +1,6 @@
 # Motion Editor
 
-A Flash-8-style visual editor for [nexa-motion](../../dist/nexa-motion.js) timelines. Everything you build exports as ready-to-paste `useTimeline()` code — the preview IS the real runtime, seeked and played.
+A Flash-8-style visual editor for [fluxaway-motion](../../dist/fluxaway-motion.js) timelines. Everything you build exports as ready-to-paste `useTimeline()` code — the preview IS the real runtime, seeked and played.
 
 Run `python server.py` at the repo root and open `http://localhost:8000/examples/motion-editor/`.
 
@@ -48,10 +48,10 @@ The scene strip above the stage switches, renames, reorders, creates, duplicates
 - **Mask and guide layers**: draw any supported artwork on a `◩ Mask` row to clip its nested layers; mask geometry follows its real animation track. `⌖ Guide` artwork remains visible as an outline while authoring but its tracks are omitted from exported `useTimeline()` code.
 - **Library**: with an actor selected, *☆ convert to symbol* creates a real linked symbol. Every placed instance shares its artwork, so editing the fill/text through one instance updates all of them; removing a symbol safely detaches its instances as independent artwork.
 - **MovieClip editing**: choose *◆ edit symbol* in the Actor inspector or ✎ in the Library to enter the symbol's own stage and timeline. The breadcrumb shows `Scene › Symbol › Nested symbol`; *← back* commits the current MovieClip context. Instances play internal timelines slaved to the parent playhead, with cycle-safe nesting.
-- **Projects** save/load in localStorage from the header; *stage* picks the stage color. The Export pane always holds the current `useTimeline()` code — copy and paste it into any Nexa app.
+- **Projects** save/load in localStorage from the header; *stage* picks the stage color. The Export pane always holds the current `useTimeline()` code — copy and paste it into any FluxaWay app.
 
 Project files carry a versioned editor schema. Legacy JSON is normalized on import, and session-only keyframe IDs are never written to saved/downloaded files.
 
 ## Road to the Flash authoring model
 
-The runtime stays browser-native and small; Flash-like authoring belongs here in the editor. Schema v8 now adds explicit frame, content-keyframe and blank-keyframe operations to independent layers, nested folders, animated masks, guides, scenes and MovieClips. Blank exposures compile to ordinary discrete visibility steps only at preview/export time, so authoring complexity stays out of `nexa-motion.js`.
+The runtime stays browser-native and small; Flash-like authoring belongs here in the editor. Schema v8 now adds explicit frame, content-keyframe and blank-keyframe operations to independent layers, nested folders, animated masks, guides, scenes and MovieClips. Blank exposures compile to ordinary discrete visibility steps only at preview/export time, so authoring complexity stays out of `fluxaway-motion.js`.

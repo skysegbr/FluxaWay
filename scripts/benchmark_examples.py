@@ -93,7 +93,7 @@ def bench_page(browser, url: str) -> dict:
         "css": bucket(lambda u: u.split("?")[0].endswith(".css")),
         "all": bucket(lambda u: True),
         "components_js": bucket(
-            lambda u: "nexa-components" in u and u.split("?")[0].endswith(".js")),
+            lambda u: "fluxaway-components" in u and u.split("?")[0].endswith(".js")),
         "timing": timing,
         "errors": errors,
         "js_files": sorted(r["url"].split("/dist/")[-1] for r in resources

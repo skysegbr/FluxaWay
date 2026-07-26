@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record the nexa-motion video tutorial.
+"""Record the fluxaway-motion video tutorial.
 
 Serves the repo root (the player embeds /examples/nexa-motion/ and, for the
 final step, /examples/motion-editor/ in an iframe), drives the live examples

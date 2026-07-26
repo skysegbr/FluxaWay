@@ -1,4 +1,4 @@
-# Nexa Burger Shop — FastAPI backend
+# FluxaWay Burger Shop — FastAPI backend
 
 Same ordering flow as [`examples/burger-shop`](../burger-shop) (menu,
 cart/checkout, order tracking, admin panel with product CRUD + image
@@ -22,7 +22,7 @@ http://localhost:8000/
 ```
 
 `app/main.py` mounts the monorepo's own `dist/` at `/dist`, so the frontend
-imports `/dist/nexa.js` and `/dist/nexa-components.js` directly — no CDN,
+imports `/dist/fluxaway.js` and `/dist/fluxaway-components.js` directly — no CDN,
 no copy of the framework living inside the example.
 
 ```text

@@ -5,7 +5,7 @@
 // lanes live inside one horizontally scrollable strip whose inner width
 // is the zoom factor.
 
-import { h, useEffect, useRef, useState } from "/dist/nexa.js";
+import { h, useEffect, useRef, useState } from "/dist/fluxaway.js";
 import { snapToFrame, DEFAULT_FPS } from "./editorUtils.js";
 import { LayerLabels } from "./LayerLabels.js";
 import { visibleLayers } from "./layerOps.js";

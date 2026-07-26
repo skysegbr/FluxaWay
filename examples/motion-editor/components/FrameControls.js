@@ -1,7 +1,7 @@
 // Flash's frame commands, kept beside the transport with their familiar
 // function-key shortcuts.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 const COMMANDS = [
   ["▯ frame", "Insert frame (F5)", "insertFrame"],

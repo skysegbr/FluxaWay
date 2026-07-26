@@ -1,6 +1,6 @@
-import { h, useState, useTranslation, useContextMenu } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
-import { ContextMenu } from "/dist/nexa-components-overlay.js";
+import { h, useState, useTranslation, useContextMenu } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
+import { ContextMenu } from "/dist/fluxaway-components-overlay.js";
 
 // Smaller UI helpers: i18n and the context-menu state holder.
 export const MISC_HOOK_ENTRIES = [
@@ -8,7 +8,7 @@ export const MISC_HOOK_ENTRIES = [
     slug: "use-translation",
     name: "useTranslation",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { t } = useTranslation(dict)",
     summary: "Minimal i18n: a dictionary and a t() that interpolates {named} placeholders.",
     demos: [
@@ -53,7 +53,7 @@ export const MISC_HOOK_ENTRIES = [
     slug: "use-context-menu",
     name: "useContextMenu",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { menu, openMenu, closeMenu } = useContextMenu()",
     summary: "Holds the open flag and pointer coordinates for the ContextMenu component.",
     demos: [

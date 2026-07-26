@@ -1,6 +1,6 @@
-import { h } from "/dist/nexa.js";
-import { Divider } from "/dist/nexa-components-core.js";
-import { Breadcrumb as BreadcrumbComponent } from "/dist/nexa-components-nav.js";
+import { h } from "/dist/fluxaway.js";
+import { Divider } from "/dist/fluxaway-components-core.js";
+import { Breadcrumb as BreadcrumbComponent } from "/dist/fluxaway-components-nav.js";
 
 export function Breadcrumb() {
   return h(
@@ -20,8 +20,8 @@ export function Breadcrumb() {
         items: [
           { label: "Home", href: "#" },
           { label: "Projects", href: "#" },
-          { label: "Nexa", href: "#" },
-          { label: "nexa-ui.css" },
+          { label: "FluxaWay", href: "#" },
+          { label: "fluxaway-ui.css" },
         ],
       }),
 

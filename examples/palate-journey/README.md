@@ -1,8 +1,8 @@
 # Palate Journey
 
-An editorial ten-course tasting experience built with Nexa, `nexa-zoom` and `nexa-motion`.
+An editorial ten-course tasting experience built with FluxaWay, `fluxaway-zoom` and `fluxaway-motion`.
 
-Run the Nexa server from the repository root:
+Run the FluxaWay server from the repository root:
 
 ```bash
 python server.py

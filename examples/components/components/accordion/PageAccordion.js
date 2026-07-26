@@ -1,14 +1,14 @@
-import { h, useState } from "/dist/nexa.js";
-import { Accordion } from "/dist/nexa-components-data.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Accordion } from "/dist/fluxaway-components-data.js";
 
 const FAQ_ITEMS = [
   {
     key: "what",
-    title: "What is Nexa?",
+    title: "What is FluxaWay?",
     children: h(
       "p",
       null,
-      "Nexa is a no-build, ESM-native JavaScript frontend framework with a React-like hooks API. It runs directly in the browser — no bundler, transpiler, or npm install required.",
+      "FluxaWay is a no-build, ESM-native JavaScript frontend framework with a React-like hooks API. It runs directly in the browser — no bundler, transpiler, or npm install required.",
     ),
   },
   {
@@ -26,7 +26,7 @@ const FAQ_ITEMS = [
     children: h(
       "p",
       null,
-      "Yes — Nexa ships useState, useEffect, useRef, useMemo, useCallback, useReducer, useContext, and many more. The API is intentionally close to React's so it feels familiar.",
+      "Yes — FluxaWay ships useState, useEffect, useRef, useMemo, useCallback, useReducer, useContext, and many more. The API is intentionally close to React's so it feels familiar.",
     ),
   },
   {
@@ -35,10 +35,10 @@ const FAQ_ITEMS = [
     children: h(
       "p",
       null,
-      "Nexa ships ",
-      h("code", null, "dist/nexa.d.ts"),
+      "FluxaWay ships ",
+      h("code", null, "dist/fluxaway.d.ts"),
       " and ",
-      h("code", null, "dist/nexa-components.d.ts"),
+      h("code", null, "dist/fluxaway-components.d.ts"),
       " covering all 39 core exports and all 41 UI components. Use it in any project that loads the files via ",
       h("code", null, '<script type="module">'),
       " or via a CDN.",

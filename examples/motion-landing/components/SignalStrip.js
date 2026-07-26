@@ -9,8 +9,8 @@
 // this drives createTimeline by hand (AI_SPEC §10) and rebuilds if the
 // measured width ever shifts (font swap, browser zoom).
 
-import { h, useEffect, useRef } from "/dist/nexa.js";
-import { createTimeline } from "/dist/nexa-motion.js";
+import { h, useEffect, useRef } from "/dist/fluxaway.js";
+import { createTimeline } from "/dist/fluxaway-motion.js";
 import { SIGNALS } from "../data.js";
 
 const items = [...SIGNALS, ...SIGNALS, ...SIGNALS];

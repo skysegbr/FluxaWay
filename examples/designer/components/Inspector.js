@@ -1,4 +1,4 @@
-import { h, useState } from '/dist/nexa.js';
+import { h, useState } from '/dist/fluxaway.js';
 import { CATALOG } from '../data.js';
 import { CSS_GROUPS, StyleGroup } from './StyleEditors.js';
 

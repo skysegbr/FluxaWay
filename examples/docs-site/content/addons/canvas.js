@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { PipelineCanvas } from "/dist/nexa-canvas.js";
+import { h } from "/dist/fluxaway.js";
+import { PipelineCanvas } from "/dist/fluxaway-canvas.js";
 
 const NODES = [
   { id: 1, label: "Extract", x: 40, y: 40, status: "success" },
@@ -19,7 +19,7 @@ export const ADDON_ENTRIES = [
     name: "PipelineCanvas",
     slug: "pipeline-canvas",
     category: "addons",
-    module: "nexa-canvas.js",
+    module: "fluxaway-canvas.js",
     summary:
       "An SVG node and pipeline editor with drag, connections, pan, zoom, mini-map and undo/redo.",
     demos: [
@@ -47,9 +47,9 @@ return h(PipelineCanvas, {
       { name: "controllerRef", type: "Ref", description: "Exposes zoom, fit and undo controls." },
     ],
     resources: [
-      { label: "PipelineCanvas source", href: "/dist/nexa-canvas.js" },
+      { label: "PipelineCanvas source", href: "/dist/fluxaway-canvas.js" },
       { label: "Canvas API in the README", href: "https://github.com/skysegbr/Nexa#pipelinecanvas" },
     ],
-    notes: ["Load /dist/nexa-canvas.css next to the module."],
+    notes: ["Load /dist/fluxaway-canvas.css next to the module."],
   },
 ];

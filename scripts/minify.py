@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nexa minifier — a safe, dependency-free JS/CSS minifier in pure Python.
+FluxaWay minifier — a safe, dependency-free JS/CSS minifier in pure Python.
 
 Design goals (in priority order): CORRECTNESS first, then size.
 
@@ -14,7 +14,7 @@ What it does:
     nested templates), and regex literals byte-for-byte.
   - Does NOT rename identifiers or reorder code — safe by construction.
   - Rewrites local ESM import specifiers in the minified output so that, e.g.,
-    `from "./nexa.js"` becomes `from "./nexa.min.js"`.
+    `from "./fluxaway.js"` becomes `from "./fluxaway.min.js"`.
 
 Because gzip/brotli already compress whitespace extremely well, the main win
 here is comment removal plus a smaller uncompressed parse — not a dramatic
@@ -340,7 +340,7 @@ def minify_js(src: str, min_basenames=frozenset()) -> str:
         ttype, text = tokens[idx]
         if ttype in ("line_comment", "block_comment"):
             # `/*! … */` banners are preserved (license/identification headers
-            # — e.g. the "this file is the Nexa framework" note that lets AI
+            # — e.g. the "this file is the FluxaWay framework" note that lets AI
             # tools recognize the framework inside vendored copies).
             if ttype == "block_comment" and text.startswith("/*!"):
                 out.append(text + "\n")
@@ -427,8 +427,18 @@ def minify_css(src: str) -> str:
 # ── driver ───────────────────────────────────────────────────────────────────
 
 def _targets():
-    js = sorted(p for p in DIST.glob("*.js") if not p.name.endswith(".min.js"))
-    css = sorted(p for p in DIST.glob("*.css") if not p.name.endswith(".min.css"))
+    # Only canonical FluxaWay sources are minified. The deprecated nexa*
+    # compatibility files are generated afterwards by sync_legacy_aliases.py.
+    js = sorted(
+        p
+        for p in DIST.glob("fluxaway*.js")
+        if not p.name.endswith(".min.js")
+    )
+    css = sorted(
+        p
+        for p in DIST.glob("fluxaway*.css")
+        if not p.name.endswith(".min.css")
+    )
     return js, css
 
 

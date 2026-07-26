@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { ThemeToggle, PaletteSwitcher } from "/dist/nexa-components-theme.js";
+import { h } from "/dist/fluxaway.js";
+import { ThemeToggle, PaletteSwitcher } from "/dist/fluxaway-components-theme.js";
 import { NAV_LINKS } from "../../data.js";
 
 export function DocsHeader({ path, onOpenSearch, onToggleMenu, menuOpen, mobile }) {
@@ -21,9 +21,21 @@ export function DocsHeader({ path, onOpenSearch, onToggleMenu, menuOpen, mobile 
 
     h(
       "a",
-      { className: "nd-header-brand", href: "#/" },
-      h("img", { src: "/assets/nexa-logo-transparent.png", alt: "", width: 28, height: 28 }),
-      h("span", null, "Nexa"),
+      { className: "nd-header-brand", href: "#/", ariaLabel: "FluxaWay home" },
+      h("img", {
+        className: "nd-header-logo nd-header-logo-light",
+        src: "/assets/brand/fluxaway-logo.svg",
+        alt: "",
+        width: 139,
+        height: 32,
+      }),
+      h("img", {
+        className: "nd-header-logo nd-header-logo-dark",
+        src: "/assets/brand/fluxaway-logo-dark.svg",
+        alt: "",
+        width: 139,
+        height: 32,
+      }),
     ),
 
     h(

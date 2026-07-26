@@ -65,7 +65,7 @@ export const SEARCH_COMMANDS = [
     id: entry.slug,
     label: entry.name,
     section: categoryFor(entry.category)?.title ?? "Reference",
-    hint: entry.module?.replace("nexa-components-", "").replace(".js", "") ?? "add-on",
+    hint: entry.module?.replace("fluxaway-components-", "").replace(".js", "") ?? "add-on",
     keywords: [entry.slug, entry.name, entry.category],
     path: pathFor(entry),
   })),

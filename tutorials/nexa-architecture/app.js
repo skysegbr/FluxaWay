@@ -3,7 +3,7 @@
 // running in an iframe, bottom = caption. The recording driver advances
 // steps via window.__setStep(n).
 
-import { h, render, useState } from "/dist/nexa.js";
+import { h, render, useState } from "/dist/fluxaway.js";
 
 // ── steps ────────────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ export const ARCHITECTURE_FRAMES = [
   },
   {
     title: "2. The stage",
-    code: `import { ZoomStage } from "/dist/nexa-zoom.js";
+    code: `import { ZoomStage } from "/dist/fluxaway-zoom.js";
 
 const [index, setIndex] = useState(0);
 const controllerRef = useRef(null);
@@ -44,7 +44,7 @@ h(ZoomStage, {
   duration: 820,       // camera glide, in ms
   padding: 0.13,       // margin around the framed frame
 })`,
-    caption: "ZoomStage is a controlled component: the app owns the index. Every frame is regular Nexa vdom, mounted all the time — only the camera is imperative.",
+    caption: "ZoomStage is a controlled component: the app owns the index. Every frame is regular FluxaWay vdom, mounted all the time — only the camera is imperative.",
   },
   {
     title: "3. Navigating",
@@ -124,13 +124,13 @@ function App() {
   return h("div", { className: "tut-root" },
     step === 0 && h("div", { className: "tut-overlay" },
       h("h1", null, "Zooming presentations with ", h("em", null, "ZoomStage")),
-      h("p", null, "The nexa-architecture example — 11 frames, one camera, no slides"),
+      h("p", null, "The FluxaWay architecture example — 11 frames, one camera, no slides"),
     ),
     step === STEPS.length - 1 && h("div", { className: "tut-overlay" },
       h("h1", null, h("em", null, "ZoomStage"), " — recap"),
       h("ul", null,
         h("li", null, "frames are plain objects on one world canvas"),
-        h("li", null, "content is live Nexa vdom — always mounted"),
+        h("li", null, "content is live FluxaWay vdom — always mounted"),
         h("li", null, "controlled by index + onIndexChange"),
         h("li", null, "controllerRef: next / prev / goTo(id)"),
         h("li", null, "the camera is the only imperative part"),
@@ -138,7 +138,7 @@ function App() {
       h("p", null, "github.com/skysegbr/Nexa — examples/nexa-architecture"),
     ),
     h("header", { className: "tut-header" },
-      h("div", { className: "tut-brand" }, h("em", null, "Nexa"), " · ZoomStage tutorial"),
+      h("div", { className: "tut-brand" }, h("em", null, "FluxaWay"), " · ZoomStage tutorial"),
       h("div", { className: "tut-stepno" }, step > 0 && step < STEPS.length - 1 ? `step ${step} of ${STEPS.length - 2}` : ""),
     ),
     h("main", { className: "tut-main" },
@@ -147,7 +147,7 @@ function App() {
         h("pre", null, ...highlight(s.code)),
       ),
       h("div", { className: "tut-demo" },
-        h("iframe", { className: "tut-frame", src: "/examples/nexa-architecture/index.html", title: "nexa-architecture example" }),
+        h("iframe", { className: "tut-frame", src: "/examples/nexa-architecture/index.html", title: "FluxaWay architecture example" }),
       ),
     ),
     h("footer", { className: "tut-caption" }, s.caption),

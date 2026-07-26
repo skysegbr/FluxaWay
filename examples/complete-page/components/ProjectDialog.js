@@ -1,7 +1,7 @@
-import { h } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Checkbox, Select, Textarea, TextField } from "/dist/nexa-components-forms.js";
-import { Dialog } from "/dist/nexa-components-overlay.js";
+import { h } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Checkbox, Select, Textarea, TextField } from "/dist/fluxaway-components-forms.js";
+import { Dialog } from "/dist/fluxaway-components-overlay.js";
 import { STATUS_OPTIONS } from "../data.js";
 
 export function ProjectDialog({ project, open, onClose, onSave }) {

@@ -2,7 +2,7 @@
 // controls, zoom, loop, playback speed (preview-only), named labels and
 // the document duration.
 
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 import { TransportReadout } from "./TransportReadout.js";
 
 const ZOOMS = [1, 2, 3, 4, 6, 8];

@@ -1,18 +1,18 @@
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 import {
   Combobox,
   DatePicker,
   TimePicker,
   FileDropZone,
   CodeEditor,
-} from "/dist/nexa-components-forms.js";
+} from "/dist/fluxaway-components-forms.js";
 
 export const ADVANCED_ENTRIES = [
   {
     slug: "combobox",
     name: "Combobox",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A searchable select: a trigger button, a filter box and a keyboard-driven list.",
     demos: [
       {
@@ -69,7 +69,7 @@ export const ADVANCED_ENTRIES = [
     slug: "date-picker",
     name: "DatePicker",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A trigger button with a one-month calendar popover. Values are ISO \"YYYY-MM-DD\" strings.",
     demos: [
       {
@@ -108,7 +108,7 @@ export const ADVANCED_ENTRIES = [
     slug: "time-picker",
     name: "TimePicker",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "The clock counterpart of DatePicker: a list of slots between min and max, every step minutes.",
     demos: [
       {
@@ -142,7 +142,7 @@ export const ADVANCED_ENTRIES = [
     slug: "file-drop-zone",
     name: "FileDropZone",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary: "A drag-and-drop upload target that also opens the file browser on click.",
     demos: [
       {
@@ -177,7 +177,7 @@ export const ADVANCED_ENTRIES = [
     slug: "code-editor",
     name: "CodeEditor",
     category: "forms",
-    module: "nexa-components-forms.js",
+    module: "fluxaway-components-forms.js",
     summary:
       "A thin wrapper over a code editor that is already on the page — CodeMirror 5 or Monaco, " +
       "whichever it finds on window. It renders an empty box if neither is loaded.",
@@ -187,7 +187,7 @@ export const ADVANCED_ENTRIES = [
         title: "Editing JavaScript",
         stack: true,
         render: () => {
-          const [code, setCode] = useState('const greet = (name) => `Hi ${name}`;\n\ngreet("Nexa");');
+          const [code, setCode] = useState('const greet = (name) => `Hi ${name}`;\n\ngreet("FluxaWay");');
 
           return h(CodeEditor, {
             value: code,
@@ -212,7 +212,7 @@ export const ADVANCED_ENTRIES = [
     ],
     notes: [
       "This page loads the vendored CodeMirror from /assets/codemirror — nothing is fetched from a CDN, and the editor is opt-in per page.",
-      "For a full IDE-style editor with a toolbar, language switcher and snippet browser, use the FullCodeEditor add-on (/dist/nexa-editor.js) instead.",
+      "For a full IDE-style editor with a toolbar, language switcher and snippet browser, use the FullCodeEditor add-on (/dist/fluxaway-editor.js) instead.",
     ],
   },
 ];

@@ -1,7 +1,7 @@
 // Layer-aware stage paint. Normal and guide actors remain ordinary tracked
 // DOM nodes; mask actors become animated SVG clipPath geometry.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { ActorContent } from "./MovieClipArtwork.js";
 import { stageActorStyle } from "./actorGeometry.js";
 import { isPaintLayer, maskForLayer } from "./layerTypes.js";

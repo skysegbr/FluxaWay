@@ -22,7 +22,7 @@ export function capturePointer(event) {
   } catch {}
 }
 
-// The tween translation nexa-motion is currently applying to an element —
+// The tween translation fluxaway-motion is currently applying to an element —
 // read back from the inline transform the controller writes (translate3d is
 // always its first part, and rotate/scale around the center never move the
 // translation). Needed by auto-key: keyframes record base-relative

@@ -1,5 +1,5 @@
-import { h, render, useEffect, useRef, useState } from "/dist/nexa.js";
-import { ZoomStage } from "/dist/nexa-zoom.js";
+import { h, render, useEffect, useRef, useState } from "/dist/fluxaway.js";
+import { ZoomStage } from "/dist/fluxaway-zoom.js";
 import { COURSES, TABLE_GEOMETRY } from "./data.js";
 import { DishFrame } from "./components/DishFrame.js";
 import { TastingHUD } from "./components/TastingHUD.js";

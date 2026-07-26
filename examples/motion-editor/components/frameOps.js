@@ -1,6 +1,6 @@
 // Flash-style frame authoring. The editor persists blank keyframes as
 // `blank: true`; runtimeTracks compiles that authoring marker to ordinary
-// discrete visibility steps understood by nexa-motion.
+// discrete visibility steps understood by fluxaway-motion.
 
 import { freshKeyframeId } from "./docOps.js";
 import { layerActorIds } from "./layerOps.js";

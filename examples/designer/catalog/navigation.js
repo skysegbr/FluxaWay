@@ -34,7 +34,7 @@ export const NAVIGATION_ENTRIES = [
     category: 'Navigation',
     wide: true,
     defaultProps: {
-      brand: 'Nexa App',
+      brand: 'FluxaWay App',
       items: [
         { label: 'Home', href: '#', active: true },
         { label: 'Projects', href: '#' },

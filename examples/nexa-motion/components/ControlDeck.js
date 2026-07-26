@@ -1,9 +1,9 @@
 // The player deck: scrubber, the Flash quartet (play/stop/gotoAndPlay/
 // gotoAndStop via scene buttons), reverse and speed. It polls the playhead
 // on its own small interval — state lives HERE, so only the deck re-renders
-// while the movie plays (Nexa's targeted subtree re-rendering at work).
+// while the movie plays (FluxaWay's targeted subtree re-rendering at work).
 
-import { h, useEffect, useState } from "/dist/nexa.js";
+import { h, useEffect, useState } from "/dist/fluxaway.js";
 
 const SPEEDS = [0.5, 1, 2];
 

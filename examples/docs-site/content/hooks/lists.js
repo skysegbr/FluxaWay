@@ -1,6 +1,6 @@
-import { h, useState, usePresence, useVirtualList, useTranslation, useContextMenu } from "/dist/nexa.js";
-import { Badge, Button } from "/dist/nexa-components-core.js";
-import { ContextMenu } from "/dist/nexa-components-overlay.js";
+import { h, useState, usePresence, useVirtualList, useTranslation, useContextMenu } from "/dist/fluxaway.js";
+import { Badge, Button } from "/dist/fluxaway-components-core.js";
+import { ContextMenu } from "/dist/fluxaway-components-overlay.js";
 
 const ROWS = Array.from({ length: 5000 }, (_, i) => ({ id: i, label: `Row ${i + 1}` }));
 
@@ -9,10 +9,10 @@ export const LIST_HOOK_ENTRIES = [
     slug: "use-presence",
     name: "usePresence",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { mounted, exiting } = usePresence(open, { duration })",
     summary:
-      "Keeps an element mounted while its exit animation plays. Nexa removes a DOM node the instant " +
+      "Keeps an element mounted while its exit animation plays. FluxaWay removes a DOM node the instant " +
       "its vnode disappears, so without this a CSS exit transition never gets to run.",
     demos: [
       {
@@ -47,7 +47,7 @@ export const LIST_HOOK_ENTRIES = [
           const [items, setItems] = useState([
             { id: 1, label: "Ship the release notes" },
             { id: 2, label: "Review the changelog" },
-            { id: 3, label: "Tag 0.18.0" },
+            { id: 3, label: "Tag 0.19.0" },
           ]);
           const rows = usePresence(items, { duration: 300, getKey: (item) => item.id });
 
@@ -115,7 +115,7 @@ export const LIST_HOOK_ENTRIES = [
     slug: "use-virtual-list",
     name: "useVirtualList",
     category: "hooks-ui",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { containerRef, virtualItems, totalHeight } = useVirtualList(items, { itemHeight })",
     summary:
       "Renders only the rows in view, so a 5,000-row list costs the DOM about a dozen nodes. Every " +

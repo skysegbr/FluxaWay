@@ -3,7 +3,7 @@
 // keyframes themselves as draggable dots. The lane only reports the time
 // DELTA of a drag — the document applies it to the whole selection.
 
-import { h, useRef } from "/dist/nexa.js";
+import { h, useRef } from "/dist/fluxaway.js";
 import { capturePointer } from "./editorUtils.js";
 
 export function TrackLane({

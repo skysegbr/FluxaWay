@@ -1,4 +1,4 @@
-import { createContext, useCallback, useMemo, useState } from "/dist/nexa.js";
+import { createContext, useCallback, useMemo, useState } from "/dist/fluxaway.js";
 
 export const AuthContext = createContext({
   user: null,

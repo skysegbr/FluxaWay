@@ -8,12 +8,12 @@ timings are the median).
 ## components-split (2026-07-16)
 
 `components-split-before.json` / `components-split-after.json` measure the
-split of `dist/nexa-components.js` into six category modules
-(`nexa-components-{core,forms,overlay,data,nav,theme}.js` + internal
-`nexa-components-util.js`), with every example migrated from barrel imports
+split of `dist/fluxaway-components.js` into six category modules
+(`fluxaway-components-{core,forms,overlay,data,nav,theme}.js` + internal
+`fluxaway-components-util.js`), with every example migrated from barrel imports
 to category imports.
 
-Result across the 17 examples that use nexa-components: **components payload
+Result across the 17 examples that use fluxaway-components: **components payload
 −45% (1 856 KB → 1 015 KB)**, total JS −20%. Pages that use a narrow slice
 (basic, core, ssr, zoom-stage, nexa-deck) dropped ~86–90%; pages that use
 every category (complete-page, the components gallery) pay +2.8% for the

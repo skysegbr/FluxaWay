@@ -11,8 +11,8 @@ from .database import create_db_and_tables
 from .seed import seed
 from .routers import produtos, pedidos
 
-# Repo root — three levels up from app/main.py (app/ -> burger-shop-fastapi/ -> examples/ -> Nexa/).
-# Mounted read-only so the frontend can import "/dist/nexa.js" straight from
+# Repo root — three levels up from app/main.py (app/ -> burger-shop-fastapi/ -> examples/ -> FluxaWay/).
+# Mounted read-only so the frontend can import "/dist/fluxaway.js" straight from
 # the monorepo's build output, same as every other examples/* page.
 NEXA_DIST = Path(__file__).resolve().parents[3] / "dist"
 

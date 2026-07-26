@@ -1,9 +1,9 @@
-// Minimal browser-based test runner for the Nexa engine.
+// Minimal browser-based test runner for the FluxaWay engine.
 //
 // No dependencies, no build step — open tests/index.html (served from the
-// repo root) and read the results, same as any other Nexa example.
+// repo root) and read the results, same as any other FluxaWay example.
 
-import { unmount } from "../dist/nexa.js";
+import { unmount } from "../dist/fluxaway.js";
 
 const tests = [];
 let activeContainers = [];
@@ -97,7 +97,7 @@ function renderResults(target, results) {
   target.appendChild(list);
 
   const log = failed ? console.error : console.log;
-  log(`Nexa engine tests: ${passed}/${results.length} passed`);
+  log(`FluxaWay engine tests: ${passed}/${results.length} passed`);
 
   for (const result of results.filter((result) => result.status === "fail")) {
     console.error(`✗ ${result.name}`, result.error);

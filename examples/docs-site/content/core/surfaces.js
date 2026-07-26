@@ -1,12 +1,12 @@
-import { h, Fragment } from "/dist/nexa.js";
-import { Card, Divider, Skeleton, EmptyState, Button } from "/dist/nexa-components-core.js";
+import { h, Fragment } from "/dist/fluxaway.js";
+import { Card, Divider, Skeleton, EmptyState, Button } from "/dist/fluxaway-components-core.js";
 
 export const SURFACE_ENTRIES = [
   {
     slug: "card",
     name: "Card",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary:
       "The base surface. Renders an <article> with the m-card class, plus a family of CSS-only " +
       "modifiers for media, glow, pricing and expanding cards.",
@@ -55,7 +55,7 @@ export const SURFACE_ENTRIES = [
     slug: "divider",
     name: "Divider",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "A horizontal rule, or an inline vertical separator with role=\"separator\".",
     demos: [
       {
@@ -93,7 +93,7 @@ export const SURFACE_ENTRIES = [
     slug: "skeleton",
     name: "Skeleton",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "A shimmering placeholder for content that has not arrived yet.",
     demos: [
       {
@@ -132,7 +132,7 @@ export const SURFACE_ENTRIES = [
     slug: "empty-state",
     name: "EmptyState",
     category: "core",
-    module: "nexa-components-core.js",
+    module: "fluxaway-components-core.js",
     summary: "The placeholder for an empty list, an unmatched filter or a first-run screen.",
     demos: [
       {

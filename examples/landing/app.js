@@ -1,4 +1,4 @@
-import { h, render } from "/dist/nexa.js";
+import { h, render } from "/dist/fluxaway.js";
 import { NAV_LINKS, FEATURES, TESTIMONIALS, PLANS, FOOTER_COLUMNS } from "./data.js";
 import { Header } from "./components/Header.js";
 import { Hero } from "./components/Hero.js";

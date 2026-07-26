@@ -9,7 +9,7 @@
 // on a docs page comes from our own content modules, but building it as vdom
 // keeps it impossible for a snippet to inject markup.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 const KEYWORDS =
   "const|let|var|function|return|if|else|for|while|of|in|new|import|from|export|" +

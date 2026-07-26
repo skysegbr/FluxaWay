@@ -4,7 +4,7 @@
 // named stars. Decorative — the active name is announced by ZoomStage's
 // aria-live region and shown in the InfoPanel.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function Constellation({ data }) {
   const { w, h: height, stars, lines } = data;

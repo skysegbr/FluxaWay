@@ -2,7 +2,7 @@
 // toolbar): selection, rectangle, ellipse and text tools, plus the fill
 // swatch applied to newly created actors.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { TOOLS, FILLS } from "../data.js";
 import { isVectorKind } from "./vectorGeometry.js";
 

@@ -1,4 +1,4 @@
-// Static data for the nexa-motion demo. The timeline itself lives in
+// Static data for the fluxaway-motion demo. The timeline itself lives in
 // app.js — keyframes are behavior, not data.
 
 export const TITLE_LETTERS = ["M", "O", "T", "I", "O", "N"];

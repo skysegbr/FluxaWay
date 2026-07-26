@@ -1,6 +1,6 @@
-import { h, useState } from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
-import { Table, DataTable, Pagination } from "/dist/nexa-components-data.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
+import { Table, DataTable, Pagination } from "/dist/fluxaway-components-data.js";
 
 const COLUMNS = [
   { key: "name", header: "Name" },
@@ -26,7 +26,7 @@ export const TABLE_ENTRIES = [
     slug: "table",
     name: "Table",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "A styled data table with optional client-side sorting and a built-in empty state. Sorting " +
       "state is internal — reach for DataTable when you also need pagination.",
@@ -82,7 +82,7 @@ export const TABLE_ENTRIES = [
     slug: "data-table",
     name: "DataTable",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "Table plus Pagination: it sorts the full row set, then renders only the current page. Pass " +
       "all the rows — it does the slicing.",
@@ -115,7 +115,7 @@ export const TABLE_ENTRIES = [
     slug: "pagination",
     name: "Pagination",
     category: "data",
-    module: "nexa-components-data.js",
+    module: "fluxaway-components-data.js",
     summary:
       "The standalone page rail: previous/next plus a windowed set of page numbers with ellipses. " +
       "Fully controlled.",

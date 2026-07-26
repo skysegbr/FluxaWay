@@ -1,13 +1,13 @@
-# Forms in Nexa
+# Forms in FluxaWay
 
-Nexa ships a built-in form hook — `useForm` — that manages field values, validation errors,
+FluxaWay ships a built-in form hook — `useForm` — that manages field values, validation errors,
 touched state, and submission lifecycle with no dependencies.
 
 ---
 
 ## Concept
 
-A controlled form in Nexa follows this pattern:
+A controlled form in FluxaWay follows this pattern:
 
 1. Declare initial values and a validation function.
 2. Call `useForm` once at the top of your component.
@@ -23,7 +23,7 @@ Every field helper returned by `field()` provides `value`, `error`, `onBlur`,
 ## useForm
 
 ```js
-import { useForm } from "/dist/nexa.js";
+import { useForm } from "/dist/fluxaway.js";
 
 const form = useForm({
   initialValues,     // object — required
@@ -37,7 +37,7 @@ const form = useForm({
 CDN import:
 
 ```js
-import { useForm } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/nexa.js";
+import { useForm } from "https://cdn.jsdelivr.net/gh/skysegbr/Nexa@main/dist/fluxaway.js";
 ```
 
 ### Returned object
@@ -119,7 +119,7 @@ async onSubmit(values, helpers) {
 ### TextField
 
 ```js
-import { TextField } from "/dist/nexa-components.js";
+import { TextField } from "/dist/fluxaway-components.js";
 
 h(TextField, {
   id: "name",
@@ -231,10 +231,10 @@ helpers.reset({ ...values, notes: "" });
 ## Complete example
 
 ```js
-import { h, render, useForm } from "/dist/nexa.js";
+import { h, render, useForm } from "/dist/fluxaway.js";
 import {
   Button, Checkbox, Select, Textarea, TextField, Toast,
-} from "/dist/nexa-components.js";
+} from "/dist/fluxaway-components.js";
 
 const initialValues = { name: "", email: "", role: "", notes: "", newsletter: true };
 const roleOptions   = [

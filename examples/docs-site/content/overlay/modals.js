@@ -1,13 +1,13 @@
-import { h, useState } from "/dist/nexa.js";
-import { Button } from "/dist/nexa-components-core.js";
-import { Dialog, Drawer, BottomSheet } from "/dist/nexa-components-overlay.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+import { Dialog, Drawer, BottomSheet } from "/dist/fluxaway-components-overlay.js";
 
 export const MODAL_ENTRIES = [
   {
     slug: "dialog",
     name: "Dialog",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary:
       "A modal window. It is fully controlled — you hold the open flag — and it traps focus, " +
       "closes on Escape and on a backdrop click.",
@@ -99,7 +99,7 @@ export const MODAL_ENTRIES = [
     slug: "drawer",
     name: "Drawer",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary: "A panel that slides in from an edge — filters, details, a side form.",
     demos: [
       {
@@ -142,7 +142,7 @@ export const MODAL_ENTRIES = [
     slug: "bottom-sheet",
     name: "BottomSheet",
     category: "overlay",
-    module: "nexa-components-overlay.js",
+    module: "fluxaway-components-overlay.js",
     summary: "The mobile-native pattern: a sheet that rises from the bottom edge of the screen.",
     demos: [
       {

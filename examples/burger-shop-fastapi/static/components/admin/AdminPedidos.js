@@ -1,8 +1,8 @@
 import {
   h, useState, useEffect, useContext, useFetch,
-} from "/dist/nexa.js";
-import { Button, Spinner } from "/dist/nexa-components-core.js";
-import { Select } from "/dist/nexa-components-forms.js";
+} from "/dist/fluxaway.js";
+import { Button, Spinner } from "/dist/fluxaway-components-core.js";
+import { Select } from "/dist/fluxaway-components-forms.js";
 import { ToastCtx } from "../ToastCtx.js";
 import { EmptyMessage } from "../EmptyMessage.js";
 import { StatusBadge } from "../StatusBadge.js";

@@ -11,21 +11,21 @@
 // server would place in the document <head> (shown below the body string).
 //
 // renderToString + renderHeadToString + hydrate come from the server entry
-// (dist/nexa-server.js); h + useState + useHead from the core.
+// (dist/fluxaway-server.js); h + useState + useHead from the core.
 // See docs/AI_SPEC.md §6.
 
-import { h, useState, useHead } from "/dist/nexa.js";
-import { renderToString, renderHeadToString, hydrate } from "/dist/nexa-server.js";
-import { Card, Button, Badge } from "/dist/nexa-components-core.js";
+import { h, useState, useHead } from "/dist/fluxaway.js";
+import { renderToString, renderHeadToString, hydrate } from "/dist/fluxaway-server.js";
+import { Card, Button, Badge } from "/dist/fluxaway-components-core.js";
 
 function App() {
   const [n, setN] = useState(3);
 
   useHead({
-    title: "Nexa — SSR + hydrate",
+    title: "FluxaWay — SSR + hydrate",
     meta: [
       { name: "description", content: "Server-side rendering demo: renderToString + useHead + hydrate." },
-      { property: "og:title", content: "Nexa SSR demo" },
+      { property: "og:title", content: "FluxaWay SSR demo" },
     ],
   });
 

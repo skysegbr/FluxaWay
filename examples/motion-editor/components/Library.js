@@ -1,7 +1,7 @@
 // The Library panel: linked artwork definitions stored with the document.
 // Clicking places an instance; its own box/timeline stay independent.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { isVectorKind } from "./vectorGeometry.js";
 
 function swatchStyle(item) {

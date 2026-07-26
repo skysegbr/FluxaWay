@@ -1,4 +1,4 @@
-import { h, useState } from "/dist/nexa.js";
+import { h, useState } from "/dist/fluxaway.js";
 
 export function Header({ navLinks }) {
   const [open, setOpen] = useState(false);

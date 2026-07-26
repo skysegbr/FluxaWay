@@ -1,8 +1,8 @@
-# Nexa — QA Test-Scenario Catalog
+# FluxaWay — QA Test-Scenario Catalog
 
 > Companion to [AI_QA.md](./AI_QA.md) (the *process*). This is the *what to
 > test*: a comprehensive, ID'd scenario catalog for an AI (or human) exercising
-> every part of Nexa. Read AI_QA.md §0 first — **no Node, HTTP + browser, pick
+> every part of FluxaWay. Read AI_QA.md §0 first — **no Node, HTTP + browser, pick
 > the Python with playwright.**
 >
 > The suite in `tests/` already automates a large share of these; this catalog
@@ -166,7 +166,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-THM-02 | Multiple `useTheme` in sync | all instances update via `nexa:themechange` event | browser |
 | SC-THM-03 | `usePalette` set/custom | `data-palette`; `setCustomColor(hex)` writes `--m-primary`, derives shades; invalid hex ignored | browser |
 | SC-THM-04 | `usePalette` invalid name | `setPalette('x')` no-op | suite |
-| SC-THM-05 | `useDesign` bootstrap | `data-design="bootstrap"` only skins when `nexa-bootstrap.css` loaded; composes with theme/palette | visual |
+| SC-THM-05 | `useDesign` bootstrap | `data-design="bootstrap"` only skins when `fluxaway-bootstrap.css` loaded; composes with theme/palette | visual |
 
 ## §7. Hooks — utility & mobile — `SC-UTL`
 
@@ -306,9 +306,9 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-ZOOM-03 | Keyboard (arrows/space) | advances/retreats | browser |
 | SC-ZOOM-04 | Wrap last→first | no error, wraps | suite (addons) |
 | SC-ZOOM-05 | `controllerRef` API | imperative goto works | suite (addons) |
-| SC-ZOOM-06 | Live content in a frame | interactive Nexa UI inside a frame still works | browser |
+| SC-ZOOM-06 | Live content in a frame | interactive FluxaWay UI inside a frame still works | browser |
 
-### nexa-motion (`SC-MOTION`) — examples: nexa-motion, motion-landing, motion-editor
+### fluxaway-motion (`SC-MOTION`) — examples: fluxaway-motion, motion-landing, motion-editor
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
 | SC-MOTION-01 | `createTimeline`/`useTimeline` play | tweens transform/opacity over time | suite (motion) |
@@ -346,7 +346,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-CSS-03 | Dark mode | `data-theme=dark` recolors tokens; contrast OK | visual |
 | SC-CSS-04 | Palettes (6 + custom) | each preset light+dark; custom color derives shades | visual |
 | SC-CSS-05 | Bootstrap skin | `data-design=bootstrap` + bootstrap.css restyles; inert without it | visual |
-| SC-CSS-06 | Category CSS = monolith | base+all categories renders byte-identical to `nexa-ui.css` (AI_QA.md §3.2) | visual |
+| SC-CSS-06 | Category CSS = monolith | base+all categories renders byte-identical to `fluxaway-ui.css` (AI_QA.md §3.2) | visual |
 | SC-CSS-07 | Category subset completeness | each example loads exactly the categories it uses (no unstyled) | static (validate) |
 | SC-CSS-08 | Mobile shell classes | app-bar/bottom-nav offsets; safe-area insets | visual |
 
@@ -376,14 +376,15 @@ Apply the relevant baseline to every component, then its specific rows.
 
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
-| SC-BUILD-01 | `validate_nexa.py` | passes on clean tree; flags each injected defect (unresolved import, missing asset, monolith >250 lines, version desync, missing example CSS category) | static |
+| SC-BUILD-01 | `validate_fluxaway.py` | passes on clean tree; flags each injected defect (unresolved import, missing asset, monolith >250 lines, version desync, missing example CSS category) | static |
 | SC-BUILD-02 | `minify.py --check` | green when synced; fails + names stale file when a source changed without regen | static |
 | SC-BUILD-03 | `minify.py` correctness | minified JS behaves identically (suite passes on `.min` too); `/*!` banners preserved; import specifiers rewritten to `.min` | suite/static |
 | SC-BUILD-04 | `split_css.py --check` / `--list` | check green when synced; `--list` maps every section; unmapped section = hard error | static |
-| SC-BUILD-05 | `split_css.py` losslessness | base+categories reconstruct `nexa-ui.css` byte-for-byte | static |
-| SC-BUILD-06 | `bundle.py` python engine | one JS + one CSS; `@import` inlined; assets copied/rewritten; app renders | browser (smoke) |
-| SC-BUILD-07 | `bundle.py --setup-esbuild` + esbuild engine | builds esbuild from Go source (no Node/npm); tree-shaken output renders | browser (smoke) |
-| SC-BUILD-08 | `bundle.py --smoke` | headless render, no page errors, no local 404 | browser |
+| SC-BUILD-05 | `split_css.py` losslessness | base+categories reconstruct `fluxaway-ui.css` byte-for-byte | static |
+| SC-BUILD-06 | `sync_legacy_aliases.py --check` | all Nexa compatibility aliases forward to the canonical FluxaWay artifact and are current | static/suite |
+| SC-BUILD-07 | `bundle.py` python engine | one JS + one CSS; `@import` inlined; assets copied/rewritten; app renders | browser (smoke) |
+| SC-BUILD-08 | `bundle.py --setup-esbuild` + esbuild engine | builds esbuild from Go source (no Node/npm); tree-shaken output renders | browser (smoke) |
+| SC-BUILD-09 | `bundle.py --smoke` | headless render, no page errors, no local 404 | browser |
 | SC-BUILD-09 | `server.py` HMR | edit a `.js/.css/.html` → SSE reload event → browser reloads | browser |
 | SC-BUILD-10 | CI parity | `.github/workflows/ci.yml` runs validate + split-check + minify-check + suite×3 | static |
 
@@ -401,7 +402,7 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-05 | mobile | app-bar/bottom-nav/bottom-sheet, swipe, safe-area | browser (touch) |
 | SC-APP-06 | ssr | hydration round-trip (SC-SSR-09) | browser |
 | SC-APP-07 | nexa-architecture / nexa-atlas | ZoomStage nav (SC-ZOOM) | browser |
-| SC-APP-08 | nexa-motion / motion-editor | motion + editor (SC-MOTION) | browser |
+| SC-APP-08 | fluxaway-motion / motion-editor | motion + editor (SC-MOTION) | browser |
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
 | SC-APP-11 | gallery / landing / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; console clean | visual |

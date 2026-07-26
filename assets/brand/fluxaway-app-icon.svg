@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">FluxaWay app icon</title>
+  <rect width="256" height="256" rx="52" fill="#0f172a" />
+  <g
+    fill="none"
+    stroke="#fff"
+    stroke-width="29"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    transform="translate(12 45) scale(.92)"
+  >
+    <path d="M35 147V35Q35 24 46 24H112M38 84H96" />
+    <path d="M96 84 123 145 160 40 193 145 224 29" />
+  </g>
+</svg>

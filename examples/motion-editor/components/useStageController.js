@@ -5,8 +5,8 @@
 // exact interaction the editor is built around; the preview catches up on
 // release, when the gesture commits.
 
-import { useEffect, useRef, useState } from "/dist/nexa.js";
-import { createTimeline } from "/dist/nexa-motion.js";
+import { useEffect, useRef, useState } from "/dist/fluxaway.js";
+import { createTimeline } from "/dist/fluxaway-motion.js";
 import { runtimeTracks } from "./frameOps.js";
 
 function buildController(doc) {

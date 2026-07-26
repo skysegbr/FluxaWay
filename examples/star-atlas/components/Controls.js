@@ -2,7 +2,7 @@
 // tour, and a row of dots (click to jump). Everything drives the ZoomStage
 // through its controllerRef.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 export function Controls({ index, total, playing, controllerRef, onToggleTour }) {
   const go = (fn) => () => controllerRef.current && fn(controllerRef.current);

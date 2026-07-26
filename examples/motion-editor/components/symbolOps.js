@@ -1,7 +1,7 @@
 // Pure Flash-style symbol operations. A symbol owns reusable artwork
 // (kind/paint/text); an actor owns its instance identity, box and timeline.
 // Keeping this in the editor avoids adding authoring concepts to the small
-// nexa-motion runtime.
+// fluxaway-motion runtime.
 
 import { applyScene, syncActiveScene } from "./sceneOps.js";
 import { movieClipTimelineFromArtwork, syncEditingSymbol } from "./symbolTimelineOps.js";

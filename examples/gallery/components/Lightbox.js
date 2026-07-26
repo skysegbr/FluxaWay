@@ -1,4 +1,4 @@
-import { h, useEffect, useRef } from "/dist/nexa.js";
+import { h, useEffect, useRef } from "/dist/fluxaway.js";
 
 const SWIPE_THRESHOLD = 40;
 

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 180" role="img" aria-labelledby="title">
+  <title id="title">FluxaWay for dark backgrounds</title>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path
+      d="M35 147V35Q35 24 46 24H112M38 84H96"
+      stroke="#fff"
+      stroke-width="34"
+    />
+    <path
+      d="M96 84 123 145 160 40 193 145 224 29"
+      stroke="#14b8a6"
+      stroke-width="34"
+    />
+  </g>
+
+  <g
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="13"
+    transform="translate(278 41)"
+  >
+    <g stroke="#fff">
+      <path d="M8 91V9H57M8 48H49" />
+      <path d="M78 9V91" />
+      <path d="M101 37V67C101 83 111 92 125 92S149 83 149 67V37" />
+      <path d="m169 38 42 53m0-53-42 53" />
+      <path d="M268 91V59C268 45 259 37 246 37s-23 11-23 27 10 28 24 28c12 0 21-8 21-20" />
+    </g>
+    <g stroke="#14b8a6" transform="translate(291)">
+      <path d="m0 10 16 81 23-56 23 56 18-81" />
+      <path d="M128 91V59C128 45 119 37 106 37S83 48 83 64s10 28 24 28c12 0 21-8 21-20" />
+      <path d="m148 38 21 43 22-43m-22 43c-1 17-7 25-20 25" />
+    </g>
+  </g>
+</svg>

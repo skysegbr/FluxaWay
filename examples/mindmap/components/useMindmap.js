@@ -1,4 +1,4 @@
-import { useCallback, useState } from "/dist/nexa.js";
+import { useCallback, useState } from "/dist/fluxaway.js";
 import { BRANCH_COLORS, INITIAL_NODES } from "../data.js";
 
 const CHILD_OFFSET_X = 280;

@@ -7,15 +7,15 @@ import {
   useNetworkStatus,
   useOrientation,
   useVibrate,
-} from "/dist/nexa.js";
-import { Badge } from "/dist/nexa-components-core.js";
+} from "/dist/fluxaway.js";
+import { Badge } from "/dist/fluxaway-components-core.js";
 
 export const DEVICE_HOOK_ENTRIES = [
   {
     slug: "use-swipe",
     name: "useSwipe",
     category: "hooks-device",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "useSwipe(ref, { onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold })",
     summary:
       "Directional swipe gestures on an element. It attaches to the node behind a ref and calls " +
@@ -63,7 +63,7 @@ export const DEVICE_HOOK_ENTRIES = [
     slug: "use-long-press",
     name: "useLongPress",
     category: "hooks-device",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "useLongPress(ref, { onLongPress, delay })",
     summary: "Fires after the pointer is held down on an element for delay ms without moving away.",
     demos: [
@@ -97,7 +97,7 @@ export const DEVICE_HOOK_ENTRIES = [
     slug: "use-network-status",
     name: "useNetworkStatus",
     category: "hooks-device",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const online = useNetworkStatus()",
     summary:
       "Whether the browser thinks it is online, kept current through the online/offline window " +
@@ -130,7 +130,7 @@ export const DEVICE_HOOK_ENTRIES = [
     slug: "use-orientation",
     name: "useOrientation",
     category: "hooks-device",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const orientation = useOrientation()",
     summary:
       'Screen orientation as a string — "portrait" or "landscape" — updated on orientationchange ' +
@@ -160,7 +160,7 @@ export const DEVICE_HOOK_ENTRIES = [
     slug: "use-vibrate",
     name: "useVibrate",
     category: "hooks-device",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const vibrate = useVibrate()",
     summary:
       "Returns the vibrate function itself, ready to call with a duration or a pattern. It is a " +

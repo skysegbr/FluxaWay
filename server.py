@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nexa dev server with live reload.
+FluxaWay dev server with live reload.
 
 Usage:
   python server.py                    # port 8000, localhost only
@@ -11,7 +11,7 @@ Usage:
 
 Serves the current directory via HTTP and sends an SSE event to all
 connected browsers whenever a .js/.css/.html/.json file changes.
-The browser client (dist/nexa-hmr.js) listens for that event and reloads the page.
+The browser client (dist/fluxaway-hmr.js) listens for that event and reloads the page.
 
 Binds to 127.0.0.1 by default so the served directory (including dotfiles
 and Git metadata) is never exposed to the local network by accident.
@@ -37,7 +37,7 @@ def _find_free_port(start: int) -> int:
         port += 1
     raise OSError("No free port found")
 
-_parser = argparse.ArgumentParser(description="Nexa dev server with live reload.")
+_parser = argparse.ArgumentParser(description="FluxaWay dev server with live reload.")
 _parser.add_argument("port", nargs="?", type=int, default=None,
                      help="port to listen on (default: first free port from 8000)")
 _parser.add_argument("--host", default="127.0.0.1",
@@ -81,7 +81,7 @@ def _watch():
                 continue
             prev = mtimes.get(f)
             if prev is not None and prev != mtime:
-                print(f"[Nexa HMR] changed: {f}", flush=True)
+                print(f"[FluxaWay HMR] changed: {f}", flush=True)
                 _broadcast(f)
             mtimes[f] = mtime
         time.sleep(POLL_INTERVAL)
@@ -145,13 +145,13 @@ class _Server(http.server.ThreadingHTTPServer):
 if __name__ == "__main__":
     threading.Thread(target=_watch, daemon=True).start()
     with _Server((HOST, PORT), _Handler) as httpd:
-        print(f"[Nexa HMR] http://localhost:{PORT}", flush=True)
+        print(f"[FluxaWay HMR] http://localhost:{PORT}", flush=True)
         if HOST not in ("127.0.0.1", "localhost"):
-            print(f"[Nexa HMR] WARNING: bound to {HOST} — the whole directory "
+            print(f"[FluxaWay HMR] WARNING: bound to {HOST} — the whole directory "
                   "is reachable from the network", flush=True)
-        print("[Nexa HMR] add to your HTML (dev only):", flush=True)
-        print('[Nexa HMR]   <script src="/dist/nexa-hmr.js"></script>', flush=True)
+        print("[FluxaWay HMR] add to your HTML (dev only):", flush=True)
+        print('[FluxaWay HMR]   <script src="/dist/fluxaway-hmr.js"></script>', flush=True)
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\n[Nexa HMR] server stopped", flush=True)
+            print("\n[FluxaWay HMR] server stopped", flush=True)

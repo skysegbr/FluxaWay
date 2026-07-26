@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { ThemeToggle } from "/dist/nexa-components-theme.js";
+import { h } from "/dist/fluxaway.js";
+import { ThemeToggle } from "/dist/fluxaway-components-theme.js";
 
 export function DashboardToolbar() {
   return h(

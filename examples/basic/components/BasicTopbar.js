@@ -1,9 +1,9 @@
-import { h, useTheme } from "/dist/nexa.js";
-import { ThemeToggle } from "/dist/nexa-components-theme.js";
+import { h, useTheme } from "/dist/fluxaway.js";
+import { ThemeToggle } from "/dist/fluxaway-components-theme.js";
 
 export function BasicTopbar() {
   const { theme } = useTheme();
-  const logoSrc = theme === "dark" ? "/assets/nexa-logo-dark-theme.png" : "/assets/nexa-logo-transparent.png";
+  const logoSrc = theme === "dark" ? "/assets/brand/fluxaway-symbol-inverse.svg" : "/assets/brand/fluxaway-symbol.svg";
 
   return h(
     "header",
@@ -12,7 +12,7 @@ export function BasicTopbar() {
       "span",
       { className: "basic-topbar-brand" },
       h("img", { src: logoSrc, alt: "", width: 24, height: 24 }),
-      "Nexa",
+      "FluxaWay",
     ),
     h(ThemeToggle, null),
   );

@@ -1,4 +1,4 @@
-import { loadCSS } from "/dist/nexa.js";
+import { loadCSS } from "/dist/fluxaway.js";
 import { ENTRY_META } from "./catalogData.js";
 
 const LOADERS = {
@@ -40,17 +40,17 @@ const LOADERS = {
 const BY_SLUG = new Map(ENTRY_META.map((entry) => [entry.slug, entry]));
 const scriptPromises = new Map();
 const SOURCE_STYLES = {
-  "forms/text": "/dist/nexa-ui-forms.css",
-  "forms/choice": "/dist/nexa-ui-forms.css",
-  "forms/range": "/dist/nexa-ui-forms.css",
-  "forms/advanced": "/dist/nexa-ui-forms.css",
-  "data/tables": "/dist/nexa-ui-data.css",
-  "data/panels": "/dist/nexa-ui-data.css",
-  "hooks/state": "/dist/nexa-ui-forms.css",
-  "hooks/memoization": "/dist/nexa-ui-forms.css",
-  "hooks/data": "/dist/nexa-ui-forms.css",
-  "hooks/queues": "/dist/nexa-ui-forms.css",
-  "hooks/ui": "/dist/nexa-ui-forms.css",
+  "forms/text": "/dist/fluxaway-ui-forms.css",
+  "forms/choice": "/dist/fluxaway-ui-forms.css",
+  "forms/range": "/dist/fluxaway-ui-forms.css",
+  "forms/advanced": "/dist/fluxaway-ui-forms.css",
+  "data/tables": "/dist/fluxaway-ui-data.css",
+  "data/panels": "/dist/fluxaway-ui-data.css",
+  "hooks/state": "/dist/fluxaway-ui-forms.css",
+  "hooks/memoization": "/dist/fluxaway-ui-forms.css",
+  "hooks/data": "/dist/fluxaway-ui-forms.css",
+  "hooks/queues": "/dist/fluxaway-ui-forms.css",
+  "hooks/ui": "/dist/fluxaway-ui-forms.css",
 };
 
 function loadScript(src) {
@@ -83,9 +83,9 @@ async function loadEntryAssets(meta) {
   const { slug, source } = meta;
   const styles = [];
   if (SOURCE_STYLES[source]) styles.push(SOURCE_STYLES[source]);
-  if (slug === "pipeline-canvas") styles.push("/dist/nexa-canvas.css");
-  if (slug === "zoom-stage") styles.push("/dist/nexa-zoom.css");
-  if (slug === "full-code-editor") styles.push("/dist/nexa-editor.css");
+  if (slug === "pipeline-canvas") styles.push("/dist/fluxaway-canvas.css");
+  if (slug === "zoom-stage") styles.push("/dist/fluxaway-zoom.css");
+  if (slug === "full-code-editor") styles.push("/dist/fluxaway-editor.css");
 
   const needsCodeMirror = slug === "code-editor" || slug === "full-code-editor";
   if (needsCodeMirror) styles.push("/assets/codemirror/codemirror.min.css");

@@ -4,7 +4,7 @@
 // "movie clip" (its own looping timeline), and SKIP INTRO does what every
 // 2003 visitor wished for.
 
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 import { PulsingRing } from "./PulsingRing.js";
 
 // Deterministic pseudo-random starfield — no assets, just divs.

@@ -1,5 +1,5 @@
-import { h } from "/dist/nexa.js";
-import { Stat, StatGrid } from "/dist/nexa-components-data.js";
+import { h } from "/dist/fluxaway.js";
+import { Stat, StatGrid } from "/dist/fluxaway-components-data.js";
 import { KPI_STATS } from "../../data.js";
 
 export function StatsDemo() {

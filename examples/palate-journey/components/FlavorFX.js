@@ -1,5 +1,5 @@
-import { h, useEffect } from "/dist/nexa.js";
-import { useTimeline } from "/dist/nexa-motion.js";
+import { h, useEffect } from "/dist/fluxaway.js";
+import { useTimeline } from "/dist/fluxaway-motion.js";
 
 function Visual({ kind, tl }) {
   if (kind === "aperitivo") return h("div", { className: "pj-fx-bubbles", ref: tl.track("float") }, h("i"), h("i"), h("i"), h("i"));

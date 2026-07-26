@@ -1,7 +1,7 @@
-import { h } from "/dist/nexa.js";
+import { h } from "/dist/fluxaway.js";
 
 // A handful of fake "conversion" points, plotted as a smooth-looking line —
-// drawn with raw h("svg", ...) / h("path", ...) to lean on Nexa's SVG support.
+// drawn with raw h("svg", ...) / h("path", ...) to lean on FluxaWay's SVG support.
 const POINTS = [
   [0, 92],
   [53, 80],

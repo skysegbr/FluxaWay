@@ -1,6 +1,6 @@
-import { h, useState } from "/dist/nexa.js";
-import { Alert } from "/dist/nexa-components-core.js";
-import { Combobox } from "/dist/nexa-components-forms.js";
+import { h, useState } from "/dist/fluxaway.js";
+import { Alert } from "/dist/fluxaway-components-core.js";
+import { Combobox } from "/dist/fluxaway-components-forms.js";
 import { PIPELINES } from "../data.js";
 
 export function PageCombobox() {

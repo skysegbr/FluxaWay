@@ -1,14 +1,14 @@
-import { h, useState, useForm, useFetch, useLocalStorage, useToast, useHistory } from "/dist/nexa.js";
-import { Alert, Badge, Button, Spinner } from "/dist/nexa-components-core.js";
-import { TextField, Textarea } from "/dist/nexa-components-forms.js";
-import { ToastStack } from "/dist/nexa-components-overlay.js";
+import { h, useState, useForm, useFetch, useLocalStorage, useToast, useHistory } from "/dist/fluxaway.js";
+import { Alert, Badge, Button, Spinner } from "/dist/fluxaway-components-core.js";
+import { TextField, Textarea } from "/dist/fluxaway-components-forms.js";
+import { ToastStack } from "/dist/fluxaway-components-overlay.js";
 
 export const DATA_HOOK_ENTRIES = [
   {
     slug: "use-form",
     name: "useForm",
     category: "hooks-data",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { values, errors, field, handleSubmit } = useForm({ initialValues, validate, onSubmit })",
     summary:
       "The whole form in one hook: values, per-field errors, touched/dirty tracking, submit state. " +
@@ -85,7 +85,7 @@ export const DATA_HOOK_ENTRIES = [
     slug: "use-fetch",
     name: "useFetch",
     category: "hooks-data",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const { data, loading, error, refetch } = useFetch(url, options?)",
     summary:
       "Declarative GET-and-parse. It tracks loading and error state, aborts on unmount, and skips " +
@@ -111,7 +111,7 @@ export const DATA_HOOK_ENTRIES = [
             ),
             loading ? h(Spinner, { label: "Loading" }) : null,
             error ? h(Alert, { variant: "danger" }, String(error.message ?? error)) : null,
-            data ? h(Badge, null, `nexa v${data.version}`) : null,
+            data ? h(Badge, null, `FluxaWay v${data.version}`) : null,
           );
         },
       },
@@ -140,7 +140,7 @@ export const DATA_HOOK_ENTRIES = [
     slug: "use-local-storage",
     name: "useLocalStorage",
     category: "hooks-data",
-    module: "nexa.js",
+    module: "fluxaway.js",
     signature: "const [value, setValue] = useLocalStorage(key, initialValue)",
     summary: "useState that persists. Same API, but the value survives a reload.",
     demos: [

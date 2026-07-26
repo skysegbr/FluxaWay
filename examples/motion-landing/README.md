@@ -1,6 +1,6 @@
-# Nexa Motion — Landing Page
+# FluxaWay Motion — Landing Page
 
-An animated product landing page for the `nexa-motion` add-on, built on the
+An animated product landing page for the `fluxaway-motion` add-on, built on the
 add-on itself: the hero plays a real `useTimeline` intro (replayable from the
 "Replay timeline" button), the capability strip scrolls on a looping tween,
 and each section below the fold starts its own timeline as it enters the

@@ -1,7 +1,7 @@
-// A production-shaped landing page animated by Nexa's browser-native
-// component model and nexa-motion timelines. No JSX, bundler or build step.
+// A production-shaped landing page animated by FluxaWay's browser-native
+// component model and fluxaway-motion timelines. No JSX, bundler or build step.
 
-import { h, render } from "/dist/nexa.js";
+import { h, render } from "/dist/fluxaway.js";
 import { Header } from "./components/Header.js";
 import { Hero } from "./components/Hero.js";
 import { SignalStrip } from "./components/SignalStrip.js";

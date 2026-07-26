@@ -2,8 +2,8 @@
 // independent of the master movie — exactly how a Flash MovieClip kept
 // animating whatever the parent timeline was doing.
 
-import { h } from "/dist/nexa.js";
-import { useTimeline } from "/dist/nexa-motion.js";
+import { h } from "/dist/fluxaway.js";
+import { useTimeline } from "/dist/fluxaway-motion.js";
 
 export function PulsingRing() {
   const clip = useTimeline({
