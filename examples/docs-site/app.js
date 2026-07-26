@@ -30,8 +30,8 @@ const ROUTES = [
     path: "/",
     lazy: () => import("./components/HomePage.js"),
     css: [
-      "/examples/docs-site/components/HomePage.css",
-      "/examples/docs-site/components/reference/CodeBlock.css",
+      "./components/HomePage.css",
+      "./components/reference/CodeBlock.css",
     ],
     fallback: ROUTE_FALLBACK,
   },
@@ -39,8 +39,8 @@ const ROUTES = [
     path: "/getting-started",
     lazy: () => import("./components/GuidePage.js"),
     css: [
-      "/examples/docs-site/components/GuidePage.css",
-      "/examples/docs-site/components/reference/reference.css",
+      "./components/GuidePage.css",
+      "./components/reference/reference.css",
     ],
     fallback: ROUTE_FALLBACK,
   },
@@ -49,7 +49,7 @@ const ROUTES = [
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [
       "/dist/fluxaway-ui-nav.css",
-      "/examples/docs-site/components/reference/reference.css",
+      "./components/reference/reference.css",
     ],
     fallback: ROUTE_FALLBACK,
   },
@@ -58,14 +58,14 @@ const ROUTES = [
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [
       "/dist/fluxaway-ui-nav.css",
-      "/examples/docs-site/components/reference/reference.css",
+      "./components/reference/reference.css",
     ],
     fallback: ROUTE_FALLBACK,
   },
   {
     path: "*",
     lazy: () => import("./components/NotFoundPage.js"),
-    css: "/examples/docs-site/components/reference/ReferencePage.css",
+    css: "./components/reference/ReferencePage.css",
     fallback: ROUTE_FALLBACK,
   },
 ];

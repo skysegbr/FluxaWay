@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- **The docs-site could only be served from `/examples/docs-site/`.** Its five
+  route `css:` declarations used absolute `/examples/docs-site/...` hrefs, so
+  hosting the app anywhere else — a domain root, a subfolder — silently 404'd
+  every route stylesheet and rendered the pages unstyled. They are now relative
+  to the document, which resolves correctly both in the repo and at a site root.
 - **The docs-site listed the motion add-on under its hook name.** Add-ons read
   `ZoomStage`, `PipelineCanvas`, `FullCodeEditor` and `useTimeline`, so scanning
   the sidebar for "Motion" found nothing even though the page was at
