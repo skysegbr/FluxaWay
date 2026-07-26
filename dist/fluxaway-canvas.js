@@ -66,6 +66,8 @@ class PipelineCanvasController {
     this._panning = null;
     this._conn    = null;
     this._selConn = null;   // selected connection key "fromId|toId"
+    this._fitFrame = null;
+    this._destroyed = false;
 
     this._nodeEls = new Map();   // id (string) → { g, bg, header, hfill, dot, label, body }
     this._connEls = new Map();   // key → { path, hit }  (visible path + invisible hit-area)
@@ -146,8 +148,11 @@ class PipelineCanvasController {
   }
 
   fitView() {
-    if (!this.nodes.length) return;
+    if (this._destroyed || !this.nodes.length) return;
     const rect = this.wrap.getBoundingClientRect();
+    // A detached or not-yet-laid-out wrapper reports a zero viewport. Fitting
+    // against it would set scale to 0, then make the minimap divide by zero.
+    if (rect.width <= 0 || rect.height <= 0) return;
     const xs   = this.nodes.map(n => n.x);
     const ys   = this.nodes.map(n => n.y);
     const x0   = Math.min(...xs), y0 = Math.min(...ys);
@@ -161,6 +166,15 @@ class PipelineCanvasController {
     this.pan.y = (rect.height - (y1 - y0) * s) / 2 - y0 * s;
     this._applyXform();
     this._updateMinimap();
+  }
+
+  _scheduleFitView() {
+    if (this._destroyed) return;
+    if (this._fitFrame !== null) cancelAnimationFrame(this._fitFrame);
+    this._fitFrame = requestAnimationFrame(() => {
+      this._fitFrame = null;
+      if (!this._destroyed) this.fitView();
+    });
   }
 
   zoomStep(factor) {
@@ -222,10 +236,15 @@ class PipelineCanvasController {
     }
     this._syncNodes();
     this._syncConns();
-    requestAnimationFrame(() => this.fitView());
+    this._scheduleFitView();
   }
 
   destroy() {
+    this._destroyed = true;
+    if (this._fitFrame !== null) {
+      cancelAnimationFrame(this._fitFrame);
+      this._fitFrame = null;
+    }
     document.removeEventListener("mousemove", this._mm);
     document.removeEventListener("mouseup",   this._mu);
     document.removeEventListener("keydown",   this._kbd);
@@ -601,7 +620,7 @@ export function PipelineCanvas({
     ctrlRef.current = ctrl;
     if (controllerRef) controllerRef.current = ctrl;
     ctrl.setNodes(nodes);
-    requestAnimationFrame(() => ctrl.fitView());
+    ctrl._scheduleFitView();
     return () => { ctrl.destroy(); if (controllerRef) controllerRef.current = null; };
   }, []);
 
