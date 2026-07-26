@@ -1,4 +1,4 @@
-// Turn a demo's render function back into the snippet shown under it.
+// Turn a reference demo's render function back into the snippet shown under it.
 //
 // Every demo is a real component (`() => h(Button, ...)`), so its own source
 // IS the example — deriving the code from Function.prototype.toString() means

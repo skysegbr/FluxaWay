@@ -1,4 +1,4 @@
-// Minimal syntax highlighter — no dependency, no build, ~1 KB of rules.
+// Minimal reference-domain syntax highlighter — no dependency or build.
 //
 // tokenize() runs ONE combined regex per language and maps each match back to
 // its rule name by finding the first group that matched. Every rule source

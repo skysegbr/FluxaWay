@@ -2,18 +2,77 @@
 // built with Nexa itself. app.js only orchestrates: routing, the shell layout
 // and the shared open/closed UI state. Every page's content lives in content/.
 
-import { h, render, useState, useRouter, useEffect } from "/dist/nexa.js";
-import { DocsHeader } from "./components/DocsHeader.js";
-import { Sidebar } from "./components/Sidebar.js";
-import { SearchPalette } from "./components/SearchPalette.js";
-import { HomePage } from "./components/HomePage.js";
-import { GuidePage } from "./components/GuidePage.js";
-import { ReferencePage } from "./components/ReferencePage.js";
-import { NotFoundPage } from "./components/NotFoundPage.js";
-import { SIDEBAR_GROUPS, entryFor } from "./content/index.js";
+import {
+  h,
+  render,
+  useState,
+  useRouter,
+  useRoutes,
+  useEffect,
+  useMediaQuery,
+} from "/dist/nexa.js";
+import { Drawer } from "/dist/nexa-components-overlay.js";
+import { PaletteSwitcher } from "/dist/nexa-components-theme.js";
+import { DocsHeader } from "./components/shell/DocsHeader.js";
+import { Sidebar } from "./components/shell/Sidebar.js";
+import { SearchPalette } from "./components/shell/SearchPalette.js";
+import { SIDEBAR_GROUPS } from "./content/catalog.js";
+
+const ROUTE_FALLBACK = h(
+  "div",
+  { className: "nd-route-state", ariaLive: "polite" },
+  "Loading documentation…",
+);
+
+const ROUTES = [
+  {
+    path: "/",
+    lazy: () => import("./components/HomePage.js"),
+    css: [
+      "/examples/docs-site/components/HomePage.css",
+      "/examples/docs-site/components/reference/CodeBlock.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
+    path: "/getting-started",
+    lazy: () => import("./components/GuidePage.js"),
+    css: [
+      "/examples/docs-site/components/GuidePage.css",
+      "/examples/docs-site/components/reference/reference.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
+    path: "/components/:slug",
+    lazy: () => import("./components/reference/ReferenceRoute.js"),
+    css: [
+      "/dist/nexa-ui-nav.css",
+      "/examples/docs-site/components/reference/reference.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
+    path: "/addons/:slug",
+    lazy: () => import("./components/reference/ReferenceRoute.js"),
+    css: [
+      "/dist/nexa-ui-nav.css",
+      "/examples/docs-site/components/reference/reference.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
+    path: "*",
+    lazy: () => import("./components/NotFoundPage.js"),
+    css: "/examples/docs-site/components/reference/ReferencePage.css",
+    fallback: ROUTE_FALLBACK,
+  },
+];
 
 function App() {
   const { path, navigate } = useRouter();
+  const page = useRoutes(ROUTES);
+  const mobile = useMediaQuery("(max-width: 900px)");
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -31,24 +90,59 @@ function App() {
   return h(
     "div",
     { className: "nd-app" },
+    h(
+      "a",
+      {
+        className: "nd-skip-link",
+        href: "#docs-content",
+        onClick: (event) => {
+          event.preventDefault();
+          document.getElementById("docs-content")?.focus();
+        },
+      },
+      "Skip to content",
+    ),
 
     h(DocsHeader, {
       path,
+      mobile,
       menuOpen,
       onOpenSearch: () => setSearchOpen(true),
-      onToggleMenu: () => setMenuOpen(!menuOpen),
+      onToggleMenu: () => setMenuOpen((open) => !open),
     }),
 
     h(
       "div",
       { className: "nd-shell" },
-      h(Sidebar, {
-        groups: SIDEBAR_GROUPS,
-        path,
-        open: menuOpen,
-        onNavigate: () => setMenuOpen(false),
-      }),
-      h("main", { className: "nd-main" }, routeTo(path)),
+      mobile
+        ? null
+        : h(Sidebar, {
+            groups: SIDEBAR_GROUPS,
+            path,
+            onNavigate: () => setMenuOpen(false),
+          }),
+      h("main", { id: "docs-content", className: "nd-main", tabIndex: -1 }, page),
+    ),
+
+    h(
+      Drawer,
+      {
+        open: mobile && menuOpen,
+        onClose: () => setMenuOpen(false),
+        side: "left",
+        title: "Documentation",
+      },
+      h(
+        "div",
+        { id: "docs-mobile-navigation", className: "nd-mobile-navigation" },
+        h("div", { className: "nd-mobile-tools" }, h(PaletteSwitcher, null)),
+        h(Sidebar, {
+          groups: SIDEBAR_GROUPS,
+          path,
+          mobile: true,
+          onNavigate: () => setMenuOpen(false),
+        }),
+      ),
     ),
 
     h(SearchPalette, {
@@ -58,18 +152,6 @@ function App() {
       onNavigate: goTo,
     }),
   );
-}
-
-function routeTo(path) {
-  if (path === "/" || path === "") return h(HomePage);
-  if (path === "/getting-started") return h(GuidePage);
-
-  if (path.startsWith("/components/")) {
-    const entry = entryFor(path.slice("/components/".length));
-    if (entry) return h(ReferencePage, { entry });
-  }
-
-  return h(NotFoundPage, { path });
 }
 
 render(App, document.getElementById("app"));

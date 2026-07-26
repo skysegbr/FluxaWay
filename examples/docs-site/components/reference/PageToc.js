@@ -1,10 +1,11 @@
-import { h, useState, useEffect, useThrottle } from "/dist/nexa.js";
+import { h, useState, useEffect, useThrottle, useMediaQuery } from "/dist/nexa.js";
 
 // "On this page" with scroll spy. The headings are plain DOM ids rendered by
 // DemoBlock/PropsTable, so the spy reads them back with getElementById rather
 // than threading refs through every section.
 export function PageToc({ items }) {
   const [active, setActive] = useState(items[0]?.id ?? null);
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const ids = items.map((item) => item.id).join(",");
 
   const onScroll = useThrottle(() => {
@@ -43,10 +44,13 @@ export function PageToc({ items }) {
             {
               className: `nd-toc-link${item.id === active ? " nd-toc-link-active" : ""}`,
               href: `#${item.id}`,
+              ariaCurrent: item.id === active ? "location" : null,
               onClick: (event) => {
                 // A bare "#id" href would replace the router's hash route.
                 event.preventDefault();
-                document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
+                document
+                  .getElementById(item.id)
+                  ?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
                 setActive(item.id);
               },
             },

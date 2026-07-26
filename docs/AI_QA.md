@@ -65,6 +65,7 @@ URL it prints. The browser console is the source of truth, not any Node output.
 ```
 scripts/validate_nexa.py       static gate (imports, assets, guards, sync)
 scripts/run_browser_tests.py    the ~300-test engine/component/add-on suite
+scripts/check_docs_site.py       docs-site lazy/mobile/add-on browser smoke
 scripts/minify.py               regenerate/verify dist/*.min.*
 scripts/split_css.py            regenerate/verify dist/nexa-ui-<cat>.css
 scripts/bundle.py               optional production bundler (+ --smoke)
@@ -88,8 +89,9 @@ assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.4.
 | 1.2 | Category CSS in sync | `python scripts/split_css.py --check` | `All 7 category CSS files are up to date.` | yes |
 | 1.3 | Minified files in sync | `python scripts/minify.py --check` | `All N minified outputs are up to date.` | yes |
 | 1.4 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
-| 1.5 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
-| 1.6 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
+| 1.5 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
+| 1.6 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
+| 1.7 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
 
 **1.1 Static validation** catches: unresolved local imports, missing HTML/JS
 assets, unbalanced brackets, the 250-line monolith guard, `package.json`↔
@@ -107,6 +109,11 @@ then `python scripts/minify.py`) and commit the result — **do not** hand-edit 
 **1.4 must pass on all three engines** (chromium, firefox, webkit) — Nexa
 targets each. A test that passes on chromium but fails on webkit is a real bug,
 not flake; report the engine.
+
+**1.5** protects the documentation app itself: home payload stays lazy,
+category CSS and CodeMirror load on demand, search navigates, all four add-on
+pages render, the catalog matches its 98 descriptors, and the mobile drawer
+locks scroll, closes with Escape and restores focus.
 
 ---
 
@@ -258,7 +265,7 @@ this proves the full round-trip in a browser.
 
 Before signing off a branch or release:
 
-1. Gates 1.1–1.4 green on **all three** engines.
+1. Gates 1.1–1.5 green on **all three** engines.
 2. `python scripts/split_css.py --check` and `python scripts/minify.py --check`
    green (derived files committed, not stale).
 3. If `package.json` version changed, `CHANGELOG.md` has a matching
@@ -308,6 +315,7 @@ python  scripts/validate_nexa.py
 python  scripts/split_css.py --check
 python  scripts/minify.py --check
 python3 scripts/run_browser_tests.py --browser chromium      # then firefox, webkit
+python3 scripts/check_docs_site.py --browser chromium        # then firefox, webkit
 
 # regenerate derived files after editing a source (then re-run --check)
 python  scripts/split_css.py        # dist/nexa-ui.css → nexa-ui-<cat>.css

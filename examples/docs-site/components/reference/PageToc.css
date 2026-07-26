@@ -35,6 +35,11 @@
 
 .nd-toc-link:hover { color: var(--m-text); }
 
+.nd-toc-link:focus-visible {
+  outline: 3px solid var(--m-focus);
+  outline-offset: -1px;
+}
+
 .nd-toc-link-active {
   border-inline-start-color: var(--m-primary);
   color: var(--m-primary);

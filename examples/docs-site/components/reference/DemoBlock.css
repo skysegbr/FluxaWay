@@ -59,3 +59,13 @@
   flex-direction: column;
   align-items: stretch;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .nd-demo-preview *,
+  .nd-demo-preview *::before,
+  .nd-demo-preview *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

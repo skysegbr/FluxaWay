@@ -1,7 +1,7 @@
 import { h, useHead } from "/dist/nexa.js";
 import { Alert } from "/dist/nexa-components-core.js";
-import { CodeBlock } from "./CodeBlock.js";
-import { PageToc } from "./PageToc.js";
+import { CodeBlock } from "./reference/CodeBlock.js";
+import { PageToc } from "./reference/PageToc.js";
 import { GUIDE_STEPS } from "../data.js";
 
 export function GuidePage() {
@@ -47,3 +47,5 @@ export function GuidePage() {
     h(PageToc, { items: GUIDE_STEPS.map((step) => ({ id: step.id, title: step.title })) }),
   );
 }
+
+export default GuidePage;

@@ -1,7 +1,8 @@
 import { h, useHead } from "/dist/nexa.js";
 import { EmptyState } from "/dist/nexa-components-core.js";
 
-export function NotFoundPage({ path }) {
+export function NotFoundPage({ params }) {
+  const path = params?.["*"] ? `/${params["*"]}` : location.hash.slice(1);
   useHead({ title: "Not found — Nexa Docs" });
 
   return h(
@@ -14,3 +15,5 @@ export function NotFoundPage({ path }) {
     }),
   );
 }
+
+export default NotFoundPage;

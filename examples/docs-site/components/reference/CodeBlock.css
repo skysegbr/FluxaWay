@@ -57,6 +57,11 @@
   tab-size: 2;
 }
 
+.nd-code-pre:focus-visible {
+  outline: 3px solid var(--m-focus);
+  outline-offset: -3px;
+}
+
 /* Token colors — derived from the theme tokens so palettes and dark mode
    carry over instead of hard-coding a second color system. */
 .nd-t-com  { color: var(--m-text-muted); font-style: italic; }

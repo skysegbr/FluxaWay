@@ -11,6 +11,11 @@
   border-radius: var(--m-radius);
 }
 
+.nd-props-scroll:focus-within {
+  outline: 3px solid var(--m-focus);
+  outline-offset: 2px;
+}
+
 .nd-props-table {
   margin: 0;
   min-width: 40rem;

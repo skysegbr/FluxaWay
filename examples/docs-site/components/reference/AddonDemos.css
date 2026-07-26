@@ -1,0 +1,48 @@
+.nd-addon-stage {
+  width: 100%;
+  height: 22rem;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--m-radius);
+}
+
+.nd-addon-motion {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 10rem;
+}
+
+.nd-addon-motion-mark {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--m-radius-xl);
+  background: var(--m-primary);
+  color: white;
+  font-size: var(--m-font-size-2xl);
+  font-weight: 900;
+}
+
+.nd-addon-frame {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--m-primary);
+  border-radius: var(--m-radius-lg);
+  background: var(--m-surface);
+  color: var(--m-text);
+  text-align: center;
+}
+
+.nd-addon-frame h3,
+.nd-addon-frame p {
+  margin: 0;
+}
+
+.nd-addon-editor {
+  width: 100%;
+  min-width: 0;
+}

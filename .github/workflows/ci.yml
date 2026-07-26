@@ -39,3 +39,5 @@ jobs:
           playwright install --with-deps ${{ matrix.browser }}
       - name: Run engine test suite
         run: python3 scripts/run_browser_tests.py --browser ${{ matrix.browser }}
+      - name: Smoke-test docs site
+        run: python3 scripts/check_docs_site.py --browser ${{ matrix.browser }}

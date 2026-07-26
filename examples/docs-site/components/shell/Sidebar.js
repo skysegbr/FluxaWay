@@ -1,10 +1,12 @@
-import { h, useEffect, useRef } from "/dist/nexa.js";
+import { h, useEffect, useRef, useState } from "/dist/nexa.js";
 
 // Hash links, so a plain <a href="#/components/button"> navigates for free —
 // no onClick, and middle-click / open-in-new-tab keep working.
-export function Sidebar({ groups, path, open, onNavigate }) {
+export function Sidebar({ groups, path, onNavigate, id, mobile = false }) {
   const boxRef = useRef(null);
   const activeRef = useRef(null);
+  const activeGroup = groups.find((group) => group.items.some((item) => item.path === path))?.title;
+  const [expanded, setExpanded] = useState(() => new Set(["Introduction", activeGroup]));
 
   // With six categories the list is taller than the viewport, so arriving from
   // the palette (or a deep link) would leave the current page scrolled out of
@@ -27,18 +29,33 @@ export function Sidebar({ groups, path, open, onNavigate }) {
     "nav",
     {
       ref: boxRef,
-      className: `nd-sidebar${open ? " nd-sidebar-open" : ""}`,
+      id,
+      className: `nd-sidebar${mobile ? " nd-sidebar-mobile" : ""}`,
       ariaLabel: "Documentation",
     },
     groups.map((group) =>
       h(
-        "div",
-        { key: group.title, className: "nd-sidebar-group" },
+        "details",
+        {
+          key: group.title,
+          className: "nd-sidebar-group",
+          open: expanded.has(group.title) || group.title === activeGroup,
+          onToggle: (event) => {
+            const isOpen = event.currentTarget.open;
+            setExpanded((current) => {
+              const next = new Set(current);
+              if (isOpen) next.add(group.title);
+              else next.delete(group.title);
+              return next;
+            });
+          },
+        },
         h(
-          "h2",
+          "summary",
           { className: "nd-sidebar-heading" },
           group.icon ? h("i", { className: `bi ${group.icon}`, ariaHidden: "true" }) : null,
-          group.title,
+          h("span", null, group.title),
+          h("i", { className: "bi bi-chevron-down nd-sidebar-caret", ariaHidden: "true" }),
         ),
         h(
           "ul",
