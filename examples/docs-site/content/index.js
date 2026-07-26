@@ -11,6 +11,16 @@ import { TEXT_ENTRIES } from "./forms/text.js";
 import { CHOICE_ENTRIES } from "./forms/choice.js";
 import { RANGE_ENTRIES } from "./forms/range.js";
 import { ADVANCED_ENTRIES } from "./forms/advanced.js";
+import { MODAL_ENTRIES } from "./overlay/modals.js";
+import { MENU_ENTRIES } from "./overlay/menus.js";
+import { ANCHORED_ENTRIES } from "./overlay/anchored.js";
+import { TOAST_ENTRIES } from "./overlay/toasts.js";
+import { TABLE_ENTRIES } from "./data/tables.js";
+import { PANEL_ENTRIES } from "./data/panels.js";
+import { TAB_ENTRIES } from "./nav/tabs.js";
+import { SHELL_ENTRIES } from "./nav/shell.js";
+import { ACTION_ENTRIES } from "./nav/actions.js";
+import { THEME_ENTRIES } from "./theme/switchers.js";
 
 export const ENTRIES = [
   ...BUTTON_ENTRIES,
@@ -21,11 +31,25 @@ export const ENTRIES = [
   ...CHOICE_ENTRIES,
   ...RANGE_ENTRIES,
   ...ADVANCED_ENTRIES,
+  ...MODAL_ENTRIES,
+  ...MENU_ENTRIES,
+  ...ANCHORED_ENTRIES,
+  ...TOAST_ENTRIES,
+  ...TABLE_ENTRIES,
+  ...PANEL_ENTRIES,
+  ...TAB_ENTRIES,
+  ...SHELL_ENTRIES,
+  ...ACTION_ENTRIES,
+  ...THEME_ENTRIES,
 ];
 
 export const CATEGORIES = [
   { key: "core", title: "Core", icon: "bi-box-seam" },
   { key: "forms", title: "Forms", icon: "bi-input-cursor-text" },
+  { key: "overlay", title: "Overlay", icon: "bi-layers" },
+  { key: "data", title: "Data", icon: "bi-table" },
+  { key: "nav", title: "Navigation", icon: "bi-signpost-split" },
+  { key: "theme", title: "Theme", icon: "bi-palette" },
 ];
 
 const BY_SLUG = new Map(ENTRIES.map((entry) => [entry.slug, entry]));
