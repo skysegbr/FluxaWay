@@ -41,10 +41,10 @@ IMPORT_RE = re.compile(
 # Directories that must exist under examples/
 REQUIRED_EXAMPLES: list[str] = [
     "basic",
-    "core",
     "form",
-    "intro",
     "complete-page",
+    "components",
+    "storefront",
 ]
 
 # Warn when an example component file exceeds this many lines.

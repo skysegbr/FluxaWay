@@ -298,7 +298,7 @@ Apply the relevant baseline to every component, then its specific rows.
 
 ## §12. Add-ons — `SC-ADDON`
 
-### ZoomStage (`SC-ZOOM`) — examples: nexa-deck, zoom-stage, nexa-architecture, nexa-atlas
+### ZoomStage (`SC-ZOOM`) — examples: nexa-architecture, nexa-atlas, star-atlas
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
 | SC-ZOOM-01 | Frames render on canvas | all frames present, positioned | browser |
@@ -390,21 +390,21 @@ Apply the relevant baseline to every component, then its specific rows.
 ## §17. Example apps — `SC-APP`
 
 Run the §3.1 per-example checklist against **every** dir in `examples/`
-(~32). Priority + notable per-app scenarios:
+(21). Priority + notable per-app scenarios:
 
 | ID | Example | Notable scenarios | Verify |
 |---|---|---|---|
-| SC-APP-01 | task-manager | CRUD tasks, filter, persistence, drag/reorder | browser |
+| SC-APP-01 | burger-shop-fastapi | CRUD over a real backend, cart/checkout, order polling, admin | browser (needs FastAPI running) |
 | SC-APP-02 | complete-page / components | full component gallery renders; every component styled (monolith CSS) | visual |
 | SC-APP-03 | storefront | product grid, cart, forms, overlays | browser |
 | SC-APP-04 | form | validation, field types, submit states | browser |
 | SC-APP-05 | mobile | app-bar/bottom-nav/bottom-sheet, swipe, safe-area | browser (touch) |
 | SC-APP-06 | ssr | hydration round-trip (SC-SSR-09) | browser |
-| SC-APP-07 | nexa-deck / zoom-stage | ZoomStage nav (SC-ZOOM) | browser |
+| SC-APP-07 | nexa-architecture / nexa-atlas | ZoomStage nav (SC-ZOOM) | browser |
 | SC-APP-08 | nexa-motion / motion-editor | motion + editor (SC-MOTION) | browser |
-| SC-APP-09 | mindmap | PipelineCanvas (SC-CANVAS) | browser |
-| SC-APP-10 | designer | FullCodeEditor + live preview | browser |
-| SC-APP-11 | charts / gallery / landing / synth-panel / transit-map / star-atlas / space(craft)/journey | domain-specific render + interaction; console clean | visual |
+| SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
+| SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
+| SC-APP-11 | gallery / landing / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; console clean | visual |
 | SC-APP-12 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
 
 ## §18. Cross-browser & performance — `SC-XB`

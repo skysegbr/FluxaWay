@@ -71,7 +71,7 @@ scripts/bundle.py               optional production bundler (+ --smoke)
 scripts/benchmark_examples.py   payload/timing benchmark for examples
 server.py                       dev server for manual QA
 tests/                          the browser suite (run.js registers *.test.js)
-examples/                       32 example apps to smoke visually
+examples/                       21 example apps to smoke visually
 .github/workflows/ci.yml        the canonical gate order CI enforces
 ```
 
@@ -156,9 +156,9 @@ example apps *render correctly* (styled, no console errors, interactions work).
 These are AI-executable with playwright — you don't need a human to "look".
 
 Discover the apps: `ls examples/`. Prioritize the broad ones and the add-on
-demos: `task-manager`, `complete-page`, `components`, `storefront`, `form`,
-`mobile`, `ssr`, `nexa-deck`/`zoom-stage` (ZoomStage), `nexa-motion`/
-`motion-editor` (motion), `mindmap` (canvas), `designer` (editor), `charts`,
+demos: `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
+`nexa-architecture`/`nexa-atlas` (ZoomStage), `star-atlas` (ZoomStage
+`freeZoom`), `nexa-motion`/`motion-editor` (motion), `designer`, `mindmap`,
 `gallery`.
 
 ### 3.1 Per-example checklist
@@ -212,15 +212,16 @@ diffs — insert it where the category links were.
 
 ### 3.3 Add-on smoke
 
-- **ZoomStage** (`nexa-deck`, `zoom-stage`): frames render; clicking a
+- **ZoomStage** (`nexa-architecture`, `nexa-atlas`): frames render; clicking a
   thumbnail/next flies the camera; keyboard (arrows) advances; no error on the
-  last→first wrap.
+  last→first wrap. `star-atlas` covers `freeZoom` (wheel zoom, drag pan,
+  `fitAll`/`reset`).
 - **nexa-motion** (`nexa-motion`, `motion-landing`): the intro timeline plays;
   `motion-editor` — drag a keyframe, scrub the ruler, undo/redo (Ctrl+Z), export
   code pane updates.
-- **PipelineCanvas** (`mindmap`): drag a node, draw a connection, pan/zoom.
-- **FullCodeEditor** (`designer`): type in the editor, highlighting + line
-  numbers work.
+- **PipelineCanvas** and **FullCodeEditor**: no example app covers these — smoke
+  them from `tests/` only (`mindmap` is hand-rolled SVG and `designer` uses the
+  `CodeEditor` form component, neither exercises the add-ons).
 
 ### 3.4 SSR round-trip (`examples/ssr`)
 

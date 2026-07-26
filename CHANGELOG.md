@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+- **Examples pruned 32 → 21.** The gallery had grown redundant rather than
+  non-compliant (`validate_nexa.py` passed on all 32 and every one followed the
+  §12 domain-componentized layout), so the cut targeted duplicates: `synth-panel`
+  / `transit-map` / `spacecraft` were structural clones of each other (same
+  `app.js`, same `Controls.js`/`InfoCard.js`, only the SVG art differed — `star-atlas`
+  remains as the `freeZoom` reference); `space-journey` cloned `palate-journey`;
+  `burger-shop` duplicated `burger-shop-fastapi`'s frontend byte-for-byte
+  (13 files) with only the backend differing; `intro` duplicated `basic`
+  (`basic` kept — `tutorials/basic` embeds it); `nexa-deck` and `zoom-stage`
+  overlapped `nexa-architecture`/`nexa-atlas`, which take over as the ZoomStage
+  references; `core` and `charts` were covered by the surviving apps; and
+  `task-manager` duplicated the CRUD story while opening on a connection error
+  without its backend. ZoomStage examples go 10 → 3, and the tracked
+  `examples/` tree drops from 15.9 MB to 11.8 MB.
+
+### Fixed
+- **Docs claimed example coverage that never existed**: AI_SPEC §10 and AI_QA
+  §3.3 pointed at `examples/mindmap` as the **PipelineCanvas** reference and
+  `examples/designer` as the **FullCodeEditor** reference — mindmap is
+  hand-rolled SVG and designer uses the `CodeEditor` form component; neither
+  add-on has ever had an example app. Both docs now say so explicitly.
+- `scripts/run_priority_flows.py` ZoomStage flows rewritten against
+  `nexa-architecture` and `nexa-atlas` (13/13 flows pass); the two stdlib API
+  servers it used to boot are gone, with `--fastapi-url` remaining for the
+  burger-shop backend flow. `validate_nexa.py`'s `REQUIRED_EXAMPLES`,
+  `run_example_qa.py`'s backend list, `bundle.py`'s usage example and the
+  README bundle figures (`complete-page`: 229 KB / 15 requests → 29 KB / 1,
+  re-measured) updated to match.
+
 ## [0.17.0] - 2026-07-25
 
 ### Added
