@@ -20,6 +20,8 @@ jobs:
         run: python3 scripts/split_css.py --check
       - name: Check minified dist files are up to date
         run: python3 scripts/minify.py --check
+      - name: Check tutorial recorders target live selectors
+        run: python3 scripts/check_tutorial_selectors.py
 
   browser-tests:
     name: Browser tests (${{ matrix.browser }})
