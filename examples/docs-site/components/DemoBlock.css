@@ -1,0 +1,61 @@
+.nd-demo {
+  margin-block: var(--m-space-10);
+  scroll-margin-top: 5.5rem;
+}
+
+.nd-demo-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--m-space-4);
+  flex-wrap: wrap;
+}
+
+.nd-demo-title {
+  margin: 0;
+  font-size: var(--m-font-size-xl);
+}
+
+.nd-demo-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m-space-2);
+  padding: var(--m-space-1) var(--m-space-2);
+  border: 0;
+  border-radius: var(--m-radius-sm);
+  background: none;
+  color: var(--m-text-muted);
+  font: inherit;
+  font-size: var(--m-font-size-sm);
+  cursor: pointer;
+}
+
+.nd-demo-toggle:hover { color: var(--m-primary); }
+
+.nd-demo-toggle:focus-visible {
+  outline: 2px solid var(--m-focus);
+  outline-offset: 2px;
+}
+
+.nd-demo-note {
+  margin: var(--m-space-2) 0 0;
+  color: var(--m-text-muted);
+}
+
+.nd-demo-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--m-space-3);
+  margin-block: var(--m-space-4) var(--m-space-3);
+  padding: var(--m-space-6);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+}
+
+/* Some components (Switch, Slider) read better stacked than inline. */
+.nd-demo-preview-stack {
+  flex-direction: column;
+  align-items: stretch;
+}

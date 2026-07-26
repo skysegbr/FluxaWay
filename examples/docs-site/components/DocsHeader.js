@@ -1,0 +1,60 @@
+import { h } from "/dist/nexa.js";
+import { ThemeToggle, PaletteSwitcher } from "/dist/nexa-components-theme.js";
+import { NAV_LINKS } from "../data.js";
+
+export function DocsHeader({ path, onOpenSearch, onToggleMenu, menuOpen }) {
+  return h(
+    "header",
+    { className: "nd-header" },
+    h(
+      "button",
+      {
+        type: "button",
+        className: "nd-header-burger",
+        ariaLabel: "Toggle navigation",
+        ariaExpanded: menuOpen ? "true" : "false",
+        onClick: onToggleMenu,
+      },
+      h("i", { className: "bi bi-list", ariaHidden: "true" }),
+    ),
+
+    h(
+      "a",
+      { className: "nd-header-brand", href: "#/" },
+      h("img", { src: "/assets/nexa-logo-transparent.png", alt: "", width: 28, height: 28 }),
+      h("span", null, "Nexa"),
+    ),
+
+    h(
+      "nav",
+      { className: "nd-header-nav", ariaLabel: "Sections" },
+      NAV_LINKS.map((link) =>
+        h(
+          "a",
+          {
+            key: link.href,
+            className: `nd-header-link${path.startsWith(link.match ?? link.href.slice(1)) ? " nd-header-link-active" : ""}`,
+            href: link.href,
+            ...(link.external ? { target: "_blank", rel: "noreferrer" } : {}),
+          },
+          link.label,
+        ),
+      ),
+    ),
+
+    h(
+      "button",
+      { type: "button", className: "nd-header-search", onClick: onOpenSearch },
+      h("i", { className: "bi bi-search", ariaHidden: "true" }),
+      h("span", { className: "nd-header-search-label" }, "Search"),
+      h("kbd", { className: "nd-header-kbd" }, "Ctrl K"),
+    ),
+
+    h(
+      "div",
+      { className: "nd-header-tools" },
+      h(PaletteSwitcher, null),
+      h(ThemeToggle, null),
+    ),
+  );
+}

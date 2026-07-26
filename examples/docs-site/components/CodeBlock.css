@@ -1,0 +1,71 @@
+.nd-code {
+  margin: 0;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface-muted);
+  overflow: hidden;
+}
+
+.nd-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-3);
+  padding: var(--m-space-2) var(--m-space-3);
+  border-bottom: 1px solid var(--m-border);
+  background: var(--m-surface-raised);
+}
+
+.nd-code-lang {
+  font-size: var(--m-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--m-text-muted);
+}
+
+.nd-code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m-space-2);
+  padding: var(--m-space-1) var(--m-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--m-radius-sm);
+  background: none;
+  color: var(--m-text-muted);
+  font: inherit;
+  font-size: var(--m-font-size-xs);
+  cursor: pointer;
+  transition: background var(--m-transition-fast), color var(--m-transition-fast);
+}
+
+.nd-code-copy:hover {
+  background: var(--m-surface);
+  color: var(--m-text);
+}
+
+.nd-code-copy:focus-visible {
+  outline: 2px solid var(--m-focus);
+  outline-offset: 1px;
+}
+
+.nd-code-pre {
+  margin: 0;
+  padding: var(--m-space-4);
+  overflow-x: auto;
+  font-size: var(--m-font-size-sm);
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+/* Token colors — derived from the theme tokens so palettes and dark mode
+   carry over instead of hard-coding a second color system. */
+.nd-t-com  { color: var(--m-text-muted); font-style: italic; }
+.nd-t-str  { color: var(--m-success); }
+.nd-t-num  { color: var(--m-warning); }
+.nd-t-key  { color: var(--m-secondary); font-weight: 600; }
+.nd-t-fn   { color: var(--m-info); }
+.nd-t-prop { color: var(--m-primary); }
+.nd-t-tag  { color: var(--m-secondary); }
+.nd-t-attr { color: var(--m-primary); }
+.nd-t-sel  { color: var(--m-info); }
+.nd-t-punc { color: var(--m-text-muted); }

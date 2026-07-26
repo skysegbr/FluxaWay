@@ -71,7 +71,7 @@ scripts/bundle.py               optional production bundler (+ --smoke)
 scripts/benchmark_examples.py   payload/timing benchmark for examples
 server.py                       dev server for manual QA
 tests/                          the browser suite (run.js registers *.test.js)
-examples/                       21 example apps to smoke visually
+examples/                       22 example apps to smoke visually
 .github/workflows/ci.yml        the canonical gate order CI enforces
 ```
 
@@ -156,7 +156,7 @@ example apps *render correctly* (styled, no console errors, interactions work).
 These are AI-executable with playwright — you don't need a human to "look".
 
 Discover the apps: `ls examples/`. Prioritize the broad ones and the add-on
-demos: `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
+demos: `docs-site`, `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
 `nexa-architecture`/`nexa-atlas` (ZoomStage), `star-atlas` (ZoomStage
 `freeZoom`), `nexa-motion`/`motion-editor` (motion), `designer`, `mindmap`,
 `gallery`.
