@@ -89,7 +89,9 @@ def main():
         editor.locator(".me-btn:has-text('play')").click()
         time.sleep(3.4)
 
-        key = editor.locator(".me-row").first.locator(".me-key").nth(1)
+        # Timeline rows are `.me-row-lane` — the editor gained layer lanes, and
+        # the old bare `.me-row` selector has matched nothing since.
+        key = editor.locator(".me-row-lane").first.locator(".me-key").nth(1)
         box = key.bounding_box()
         ruler = editor.locator(".me-ruler").bounding_box()
         page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)

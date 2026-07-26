@@ -88,10 +88,11 @@ assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.6.
 | 1.1 | Static validation | `python scripts/validate_fluxaway.py` | `FluxaWay static validation passed.` (exit 0) | yes |
 | 1.2 | Category CSS in sync | `python scripts/split_css.py --check` | `All 7 category CSS files are up to date.` | yes |
 | 1.3 | Minified files in sync | `python scripts/minify.py --check` | `All N minified outputs are up to date.` | yes |
-| 1.4 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
-| 1.5 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
-| 1.6 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
-| 1.7 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
+| 1.4 | Tutorial recorders in sync | `python scripts/check_tutorial_selectors.py` | `Tutorial selectors OK — N token(s)...` | yes |
+| 1.5 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
+| 1.6 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
+| 1.7 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
+| 1.8 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
 
 **1.1 Static validation** catches: unresolved local imports, missing HTML/JS
 assets, unbalanced brackets, the 250-line monolith guard, `package.json`↔
