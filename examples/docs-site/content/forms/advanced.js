@@ -187,7 +187,7 @@ export const ADVANCED_ENTRIES = [
         title: "Editing JavaScript",
         stack: true,
         render: () => {
-          const [code, setCode] = useState('const greet = (name) => `Hi ${name}`;\n\ngreet("Nexa");');
+          const [code, setCode] = useState('const greet = (name) => `Hi ${name}`;\n\ngreet("FluxaWay");');
 
           return h(CodeEditor, {
             value: code,

@@ -114,7 +114,7 @@ export const THEMING_HOOK_ENTRIES = [
     module: "nexa.js",
     signature: "const { design, designs, setDesign } = useDesign()",
     summary:
-      "Swaps the visual skin between the native Nexa look and a Bootstrap 5 one, by setting " +
+      "Swaps the visual skin between the native FluxaWay look and a Bootstrap 5 one, by setting " +
       "data-design on <html>.",
     demos: [
       {

@@ -12,7 +12,7 @@ import { categoryFor, neighborsFor } from "../../content/catalog.js";
 // never a new page component.
 export function ReferencePage({ entry }) {
   useHead({
-    title: `${entry.name} — Nexa Docs`,
+    title: `${entry.name} — FluxaWay Docs`,
     meta: [{ name: "description", content: entry.summary }],
   });
 

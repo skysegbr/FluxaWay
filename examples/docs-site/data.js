@@ -63,7 +63,7 @@ export const HOME_CARDS = [
   {
     icon: "bi-braces",
     title: "Hooks you already know",
-    body: "useState, useEffect, useMemo, useForm, useRouter — a React-shaped API with Nexa's own eager rendering.",
+    body: "useState, useEffect, useMemo, useForm, useRouter — a React-shaped API with FluxaWay's own eager rendering.",
   },
   {
     icon: "bi-palette",

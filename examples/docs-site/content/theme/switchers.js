@@ -77,12 +77,12 @@ export const THEME_ENTRIES = [
     category: "theme",
     module: "nexa-components-theme.js",
     summary:
-      "Swaps the whole visual skin between the native Nexa look and a Bootstrap 5 one. Same " +
+      "Swaps the whole visual skin between the native FluxaWay look and a Bootstrap 5 one. Same " +
       "markup, same components — only the stylesheet in charge changes.",
     demos: [
       {
         id: "design-switcher-basic",
-        title: "Nexa or Bootstrap",
+        title: "FluxaWay or Bootstrap",
         note: "Only takes visual effect while dist/nexa-bootstrap.css is loaded — this page loads it.",
         render: () => {
           const { design, designs } = useDesign();

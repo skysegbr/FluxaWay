@@ -3,7 +3,7 @@ import { EmptyState } from "/dist/nexa-components-core.js";
 
 export function NotFoundPage({ params }) {
   const path = params?.["*"] ? `/${params["*"]}` : location.hash.slice(1);
-  useHead({ title: "Not found — Nexa Docs" });
+  useHead({ title: "Not found — FluxaWay Docs" });
 
   return h(
     "div",

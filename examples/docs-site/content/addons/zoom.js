@@ -28,7 +28,7 @@ function ZoomPreview() {
       content: h(
         "section",
         { className: "nd-addon-frame" },
-        h("h3", null, "Normal Nexa content"),
+        h("h3", null, "Normal FluxaWay content"),
         h("p", null, "One canvas, an animated camera."),
       ),
     },
@@ -48,7 +48,7 @@ export const ADDON_ENTRIES = [
     category: "addons",
     module: "nexa-zoom.js",
     summary:
-      "A Prezi-style presentation canvas whose camera flies between normal Nexa content frames.",
+      "A Prezi-style presentation canvas whose camera flies between normal FluxaWay content frames.",
     demos: [
       {
         id: "zoom-preview",

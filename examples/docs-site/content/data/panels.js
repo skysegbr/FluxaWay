@@ -150,7 +150,7 @@ export const PANEL_ENTRIES = [
           h(Accordion, {
             defaultOpen: "faq-1",
             items: [
-              { key: "faq-1", title: "What is Nexa?", children: h("p", null, "A no-build, ESM-native framework.") },
+              { key: "faq-1", title: "What is FluxaWay?", children: h("p", null, "A no-build, ESM-native framework.") },
               { key: "faq-2", title: "Does it need a bundler?", children: h("p", null, "No. Plain ES modules over HTTP.") },
               { key: "faq-3", title: "A disabled panel", children: h("p", null, "Never seen."), disabled: true },
             ],

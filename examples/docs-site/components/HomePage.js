@@ -5,11 +5,11 @@ import { ADDON_LINKS, HOME_CARDS, QUICK_START } from "../data.js";
 
 export function HomePage() {
   useHead({
-    title: "Nexa Docs — components that run straight in the browser",
+    title: "FluxaWay Docs — code flows directly to the browser",
     meta: [
       {
         name: "description",
-        content: "Documentation for Nexa: a no-build, ESM-native JavaScript UI framework.",
+        content: "FluxaWay is the no-build, ESM-native JavaScript UI framework.",
       },
     ],
   });
@@ -20,13 +20,13 @@ export function HomePage() {
     h(
       "section",
       { className: "nd-hero" },
-      h("p", { className: "nd-hero-kicker" }, "No build · No npm · No bundler"),
-      h("h1", { className: "nd-hero-title" }, "The design system that runs from a ", h("code", null, "<script type=\"module\">")),
+      h("p", { className: "nd-hero-kicker" }, "The no-build UI framework"),
+      h("h1", { className: "nd-hero-title" }, "Code flows. Your way."),
       h(
         "p",
         { className: "nd-hero-lead" },
-        "Around 60 components, a hooks API and four add-ons — served as plain ES modules. ",
-        "Save the file, hit refresh. That is the whole toolchain.",
+        "FluxaWay is the direct path from idea to interface. State flows into rendering, ",
+        "components flow into applications, and plain JavaScript flows directly into the browser.",
       ),
       h(
         "div",
@@ -59,7 +59,7 @@ export function HomePage() {
       h(
         "p",
         { className: "nd-home-card-body" },
-        "Presentations, timeline animation, node pipelines and full code editing use dedicated Nexa modules.",
+        "Presentations, timeline animation, node pipelines and full code editing use dedicated FluxaWay modules.",
       ),
       h(
         "div",

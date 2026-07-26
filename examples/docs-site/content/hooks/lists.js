@@ -12,7 +12,7 @@ export const LIST_HOOK_ENTRIES = [
     module: "nexa.js",
     signature: "const { mounted, exiting } = usePresence(open, { duration })",
     summary:
-      "Keeps an element mounted while its exit animation plays. Nexa removes a DOM node the instant " +
+      "Keeps an element mounted while its exit animation plays. FluxaWay removes a DOM node the instant " +
       "its vnode disappears, so without this a CSS exit transition never gets to run.",
     demos: [
       {

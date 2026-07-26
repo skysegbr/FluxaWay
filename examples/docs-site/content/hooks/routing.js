@@ -144,7 +144,7 @@ function UserLayout({ params, outlet }) {
     ],
     returns: [{ name: "element", type: "VNode | null", description: "The resolved route element." }],
     notes: [
-      "A lazy route only helps if the page module is not ALSO statically imported somewhere — Nexa is no-build ESM, so any static import chain reachable from app.js is fetched at startup regardless.",
+      "A lazy route only helps if the page module is not ALSO statically imported somewhere — FluxaWay is no-build ESM, so any static import chain reachable from app.js is fetched at startup regardless.",
       "useRoutes calls useRouter internally. For navigate in the same component, call useRouter() alongside it — both stay in sync.",
       "matchPath(pattern, path, { end: false }) prefix-matches and returns the remainder in rest; a trailing '*' captures the rest into params['*'].",
     ],

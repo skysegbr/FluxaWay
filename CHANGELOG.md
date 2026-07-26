@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **The docs-site now presents the approved FluxaWay identity.** Its public
+  copy, metadata, favicon, manifest and social cards use the new brand while
+  the existing `/dist/nexa*.js` compatibility paths remain unchanged. The
+  header switches between dedicated light- and dark-theme logo variants,
+  including the saved/system theme on first render, and the browser smoke now
+  protects that behavior alongside the existing desktop and mobile checks.
+
 ## [0.18.0] - 2026-07-26
 
 ### Added

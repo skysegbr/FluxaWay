@@ -41,6 +41,7 @@ def run(browser_type, base: str) -> list[str]:
     passed: list[str] = []
 
     desktop = browser_type.launch().new_page(viewport={"width": 1440, "height": 900})
+    desktop.add_init_script("localStorage.setItem('nexa-theme', 'light')")
     errors: list[str] = []
     failed_responses: list[str] = []
     requests: list[str] = []
@@ -56,12 +57,47 @@ def run(browser_type, base: str) -> list[str]:
 
     desktop.goto(base, wait_until="load")
     desktop.wait_for_selector("h1")
-    expect(desktop.locator("h1").inner_text().startswith("The design system"), "home did not render")
+    expect(desktop.locator("h1").inner_text() == "Code flows. Your way.", "home did not render")
+    expect(desktop.title().startswith("FluxaWay Docs"), "FluxaWay document title is missing")
+    expect(
+        desktop.locator('link[rel="manifest"][href="/assets/brand/site.webmanifest"]').count() == 1,
+        "FluxaWay web manifest is missing",
+    )
     expect(desktop.evaluate("document.documentElement.scrollWidth <= innerWidth"), "desktop overflow")
     expect(not any("/content/core/" in url for url in requests), "home eagerly loaded reference content")
     expect(not any("codemirror.min.js" in url for url in requests), "home eagerly loaded CodeMirror")
     expect(not any("/dist/nexa-ui.css" in url for url in requests), "home loaded monolithic UI CSS")
     passed.append("home renders without eager reference payload")
+
+    expect(
+        desktop.locator(".nd-header-logo-light").evaluate(
+            "(logo) => getComputedStyle(logo).display !== 'none'"
+        ),
+        "light theme did not show the light-background logo",
+    )
+    expect(
+        desktop.locator(".nd-header-logo-dark").evaluate(
+            "(logo) => getComputedStyle(logo).display === 'none'"
+        ),
+        "light theme showed the dark-background logo",
+    )
+    desktop.locator('[aria-label="Switch to dark theme"]').click()
+    desktop.wait_for_function("() => document.documentElement.dataset.theme === 'dark'")
+    expect(
+        desktop.locator(".nd-header-logo-light").evaluate(
+            "(logo) => getComputedStyle(logo).display === 'none'"
+        ),
+        "dark theme showed the light-background logo",
+    )
+    expect(
+        desktop.locator(".nd-header-logo-dark").evaluate(
+            "(logo) => getComputedStyle(logo).display !== 'none'"
+        ),
+        "dark theme did not show the dark-background logo",
+    )
+    desktop.locator('[aria-label="Switch to light theme"]').click()
+    desktop.wait_for_function("() => document.documentElement.dataset.theme === 'light'")
+    passed.append("FluxaWay logo follows the active light and dark theme")
 
     desktop.locator('.nd-sidebar-link[href="#/getting-started"]').click()
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
@@ -167,6 +203,7 @@ def run(browser_type, base: str) -> list[str]:
     desktop.context.browser.close()
 
     mobile = browser_type.launch().new_page(viewport={"width": 390, "height": 844})
+    mobile.add_init_script("localStorage.setItem('nexa-theme', 'light')")
     mobile_errors: list[str] = []
     mobile.on("pageerror", lambda error: mobile_errors.append(str(error)))
     mobile.on(

@@ -1,6 +1,6 @@
-// Nexa Docs — a Bootstrap-style documentation site for the Nexa design system,
-// built with Nexa itself. app.js only orchestrates: routing, the shell layout
-// and the shared open/closed UI state. Every page's content lives in content/.
+// FluxaWay Docs — a Bootstrap-style documentation site for the FluxaWay design
+// system, built with the framework itself. app.js only orchestrates: routing,
+// the shell layout and shared UI state. Page content lives in content/.
 
 import {
   h,

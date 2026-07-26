@@ -30,9 +30,9 @@ export const IDENTITY_ENTRIES = [
         note: "alt defaults to empty — decorative avatars stay silent for screen readers.",
         render: () =>
           h(Avatar, {
-            src: "/assets/nexa-logo-transparent.png",
-            alt: "Nexa",
-            name: "Nexa",
+            src: "/assets/brand/fluxaway-app-icon.svg",
+            alt: "FluxaWay",
+            name: "FluxaWay",
             size: "lg",
           }),
       },

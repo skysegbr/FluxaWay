@@ -8,8 +8,8 @@ export function GuidePage() {
   const toc = GUIDE_STEPS.map((step) => ({ id: step.id, title: step.title }));
 
   useHead({
-    title: "Getting started — Nexa Docs",
-    meta: [{ name: "description", content: "Run Nexa in the browser in four steps." }],
+    title: "Getting started — FluxaWay Docs",
+    meta: [{ name: "description", content: "Run FluxaWay in the browser in four steps." }],
   });
 
   return h(
@@ -39,7 +39,7 @@ export function GuidePage() {
       h(
         Alert,
         { variant: "info", className: "nd-guide-alert" },
-        "Nexa runs no Node.js anywhere — not for tooling, not for tests. Validate with a browser ",
+        "FluxaWay runs no Node.js anywhere — not for tooling, not for tests. Validate with a browser ",
         "(",
         h("code", null, "python server.py"),
         " plus the console), never with ",
