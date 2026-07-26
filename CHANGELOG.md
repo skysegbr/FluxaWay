@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.20.1] - 2026-07-26
+
+### Fixed
+- **Theme, palette and design events now validate their payload.**
+  `fluxaway:themechange`, `:palettechange` and `:designchange` are plain window
+  CustomEvents used to keep multiple hook instances in sync, and their
+  listeners trusted whatever arrived — the one path that skipped the checks the
+  setters already performed. A `designchange` carrying an arbitrary string
+  reached both the `data-design` attribute and `localStorage`; a
+  `palettechange` carrying a non-hex `customColor` reached the inline
+  `--m-primary`, making the documented "invalid hex strings are ignored"
+  guarantee false for that route; and a `palettechange` with no `detail` threw
+  inside the listener. Each listener now applies its setter's rule, and
+  `setTheme` gained the validation `setPalette`/`setDesign` already had.
+  Cross-instance sync is unchanged — a valid event still propagates.
+
+  This was never remotely exploitable: dispatching a window event requires
+  already running JavaScript on the page. It matters as defense in depth, for
+  pages that host semi-trusted third-party scripts. The behavior predates the
+  v0.20.0 rename; that release only renamed the event strings.
+- **The motion tutorial recorder targeted a dead selector.** Its Motion Editor
+  step looked for `.me-row`, which stopped existing when the editor gained
+  layer lanes (`.me-row-lane`), so recording timed out. Both tutorial videos
+  were re-recorded.
+
+### Added
+- **`scripts/check_tutorial_selectors.py`** — a static gate asserting every
+  selector the tutorial recorders drive still exists in the source. Nothing
+  executed `tutorials/*/record.py`, so a dead selector could survive releases
+  unnoticed. Runs in ~280ms, wired into CI and documented as AI_QA gate 1.4.
+
 ## [0.20.0] - 2026-07-26
 
 ### Removed
