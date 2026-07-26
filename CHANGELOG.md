@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.19.2] - 2026-07-26
+
+### Fixed
+- **PipelineCanvas cancels deferred viewport fitting when it unmounts.** Fast
+  route changes can no longer let a stale animation frame measure a detached
+  zero-size canvas, collapse its scale to zero and write `NaN` geometry into
+  the minimap SVG. `fitView()` also ignores containers that do not yet have a
+  usable layout, and browser coverage protects the teardown race.
+
 ## [0.19.1] - 2026-07-26
 
 ### Changed

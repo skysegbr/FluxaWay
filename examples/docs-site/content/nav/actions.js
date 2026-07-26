@@ -127,7 +127,7 @@ export const ACTION_ENTRIES = [
                   { label: "Delete", icon: h("i", { className: "bi bi-trash" }), onClick: () => setLog("Delete") },
                 ],
               },
-              h("div", { style: { padding: "0.75rem 1rem" } }, "Ship the 0.19.1 release notes"),
+              h("div", { style: { padding: "0.75rem 1rem" } }, "Ship the 0.19.2 release notes"),
             ),
             log ? h(Badge, null, `Ran: ${log}`) : null,
           );

@@ -208,6 +208,40 @@ test("PipelineCanvas: unmount destroys the controller and empties the wrapper", 
   assertEqual(controllerRef.current, null, "expected controllerRef to be cleared on unmount");
 });
 
+test("PipelineCanvas: unmount cancels its pending fit frame", async () => {
+  const container = mountPoint();
+  const controllerRef = { current: null };
+  const pending = new Map();
+  const originalRequest = window.requestAnimationFrame;
+  const originalCancel = window.cancelAnimationFrame;
+  let nextFrame = 1;
+
+  window.requestAnimationFrame = (callback) => {
+    const id = nextFrame++;
+    pending.set(id, callback);
+    return id;
+  };
+  window.cancelAnimationFrame = (id) => pending.delete(id);
+
+  try {
+    render(
+      () => h(PipelineCanvas, { nodes: PIPELINE_NODES, style: CANVAS_SIZE, controllerRef }),
+      container,
+    );
+    await flush();
+    const ctrl = controllerRef.current;
+    assert(ctrl, "sanity: controller mounted");
+    assertEqual(pending.size, 1, "expected one pending mount-time fit");
+
+    unmount(container);
+    assertEqual(pending.size, 0, "destroy should cancel the pending fit");
+    assertEqual(ctrl.scale, 1, "a destroyed controller must not fit a detached wrapper");
+  } finally {
+    window.requestAnimationFrame = originalRequest;
+    window.cancelAnimationFrame = originalCancel;
+  }
+});
+
 // ── ZoomStage ───────────────────────────────────────────────
 
 const ZOOM_FRAMES = [
