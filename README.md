@@ -329,7 +329,7 @@ standalone folder: one JS file, one CSS file (CSS `@import` chains inlined,
 No import waterfall, no `/dist` dependency — copy the folder anywhere:
 
 ```bash
-python scripts/bundle.py examples/task-manager -o build/task-manager --smoke
+python scripts/bundle.py examples/complete-page -o build/complete-page --smoke
 ```
 
 `--smoke` serves the output and loads it headlessly (playwright) to prove it
@@ -340,7 +340,7 @@ still renders. Two engines, picked automatically:
   Measured on the example apps: single request, JS −40% vs unbundled.
 - **esbuild** (a standalone Go binary — still no Node/npm anywhere): real
   tree-shaking and identifier mangling. Measured: single request, **JS −85%**
-  (e.g. task-manager 228 KB in 15 requests → 39 KB in 1). Build it once from
+  (e.g. complete-page 229 KB in 15 requests → 29 KB in 1). Build it once from
   source with the Go toolchain:
 
 ```bash
@@ -414,48 +414,31 @@ python -m http.server 8080
 
 | Example | What it shows |
 |---|---|
-| [examples/intro](./examples/intro) | Minimal screen: `h`, `render`, `useState`, `useEffect`, dark mode |
 | [examples/minified](./examples/minified) | Runs the minified build (`/dist/nexa.min.js`, `nexa-ui.min.css`) with `useRoutes` nested routing — same API as the readable sources |
 | [examples/ssr](./examples/ssr) | Full SSR round-trip in the browser: `renderToString(App)` → inject as server HTML → `hydrate(App, #app)` adopts the DOM and wires up handlers |
-| [examples/basic](./examples/basic) | Counter using `nexa-components.js` and `ThemeToggle` |
-| [examples/core](./examples/core) | Engine playground: `useMemo`, `useCallback`, `useRef`, `dataset`, keyed lists |
+| [examples/basic](./examples/basic) | Start here — minimal screen: `h`, `render`, `useState`, `useEffect`, components from `nexa-components.js` and `ThemeToggle` for dark mode |
 | [examples/form](./examples/form) | Controlled fields, validation, loading submit, reset, `useForm` |
 | [examples/complete-page](./examples/complete-page) | App-shell with sidebar, table, dialog, tabs, and toast |
 | [examples/components](./examples/components) | `Switch`, `Collapse`, `Combobox`, `ContextMenu`, `FileDropZone`, `CodeEditor`, toasts, a `Cards` page showcasing the `m-card-*` variants + `SpeedDial`, `Accordion`, `Slider`/`RangeSlider`, `Menu` with nested submenus, `DataTable`, `DatePicker`, a `Forms & Widgets` page with `RadioGroup`, `NumberInput`, `TimePicker`, `Stat`, `TreeView`, `Popover`, and `CommandPalette`, plus a `UI Primitives` page driving `Avatar`, `Breadcrumb`, `Skeleton`, and `Divider` through the component API |
-| [examples/task-manager](./examples/task-manager) | Full CRUD with Python API, filters, pagination, and drawer editing |
 | [examples/mobile](./examples/mobile) | Mobile shell: `AppBar`, `BottomNav`, `BottomSheet`, `FAB`, swipe, long press |
-| [examples/charts](./examples/charts) | SVG donut chart drawn with raw `h("svg", ...)`, plus `useErrorBoundary` catching a corrupted dataset and recovering |
 | [examples/landing](./examples/landing) | SaaS landing page: sticky nav with mobile menu, SVG hero chart, testimonial carousel, pricing toggle |
 | [examples/gallery](./examples/gallery) | Photo gallery: category filter, masonry grid with lazy-load fade-in, keyboard/swipe lightbox with focus trap |
 | [examples/mindmap](./examples/mindmap) | Draggable mindmap: free-form card positioning, double-click inline editing, SVG bezier connectors that track card size, branch coloring |
 | [examples/drug-recalls](./examples/drug-recalls) | Live dashboard over the openFDA drug recall API: debounced search, classification/status filters, donut + bar charts, sortable table, recall detail dialog |
 | [examples/storefront](./examples/storefront) | Domain-componentized architecture: `catalog/`, `cart/`, `auth/` each own their own `createContext` + state hook, composed once in `app.js`, integrated through `Shell.js`. Products fetched live from fakestoreapi.com |
 | [examples/designer](./examples/designer) | Visual UI builder: drag components from a palette onto a canvas, edit props/styles/states in an inspector, live CSS + code export |
-| [examples/zoom-stage](./examples/zoom-stage) | `ZoomStage` basics: per-kind frame components behind a `FrameContent` dispatcher, toolbar with progress dots, keyboard navigation |
-| [examples/nexa-deck](./examples/nexa-deck) | Full `ZoomStage` presentation about Nexa: five frame kinds, rotated frames, a zoomed-out overview frame, `nexa-components` toolbar |
 | [examples/nexa-atlas](./examples/nexa-atlas) | Atlas-themed `ZoomStage` tour of Nexa: click any background frame to zoom straight to it, plus a live demo frame running real `useState`/`useTheme` mid-presentation |
 | [examples/nexa-architecture](./examples/nexa-architecture) | Modern `ZoomStage` presentation for solution architects: no-build runtime, technical contracts, integration paths, trade-offs, and adoption guidance |
 | [examples/star-atlas](./examples/star-atlas) | Zoomable night sky showcasing `ZoomStage`'s `freeZoom`: scroll/pinch to zoom and drag to roam a starfield of SVG constellations, with a guided tour that flies between them, an auto-play tour, clickable dot rail, and aria-live announcements — all self-contained SVG/CSS, no images |
-| [examples/synth-panel](./examples/synth-panel) | `ZoomStage` `freeZoom` explorer over an SVG synthesizer — roam the panel, double-click a module to dive in, an Overview (`fitAll`) / Recenter (`reset`) / zoom toolbar, a deep-link rail and URL `hashNav`, with transparent region frames layered over the art |
-| [examples/transit-map](./examples/transit-map) | A stylised four-line metro map explored with `ZoomStage` `freeZoom`: pan/zoom the network with flick momentum, jump to districts via the deep-link rail, and Overview/Recenter/zoom controls driving the `controllerRef` |
-| [examples/spacecraft](./examples/spacecraft) | An annotated deep-space probe explored with `ZoomStage` `freeZoom`: fly between labelled subsystems (antenna, solar arrays, bus, propulsion, RTG), double-click to dive, and deep-link each subsystem to the URL hash |
 | [examples/nexa-motion](./examples/nexa-motion) | Flash-style animated intro on `nexa-motion`: preloader, logo flying in with `outBack`, staggered letter cascade, frame scripts, a nested looping movie clip, SKIP INTRO, and a control deck with scrubber, reverse, speed, and `gotoAndPlay` scene jumps |
 | [examples/motion-editor](./examples/motion-editor) | Flash-8-style visual authoring IDE on the real `nexa-motion` runtime: frame-based timeline (fps, dots, tween spans, zoom, labels, loop), auto-key on stage drag, Free Transform (rotate/scale at the playhead), multi-actor layers with folders, animated masks and guide layers, multi-scene movies, linked symbols with nested MovieClip editing, vector Line/Pencil tools, onion skinning with ruler brackets, per-actor Behavior panel and two-way `useTimeline()` code editing, undo/redo, save/load, versioned project schema |
 | [examples/motion-landing](./examples/motion-landing) | Animated product landing page for Nexa Motion, built on the add-on itself: hero timeline, scroll-driven scenes, replayable intro |
 | [examples/palate-journey](./examples/palate-journey) | Ten-course food & drink tasting journey: full-screen course cards with staggered `nexa-motion` timelines, dot-rail navigation and a "serve for me" autopilot |
-| [examples/space-journey](./examples/space-journey) | Guided tour through real NASA/Webb imagery on `nexa-zoom` + `nexa-motion`: mission HUD, per-scene timeline effects and camera glides between frames |
-| [examples/burger-shop](./examples/burger-shop) | Multi-page ordering flow with a dependency-free Python API: menu, cart/checkout, order tracking with polling, admin panel with product CRUD + image upload. `EmptyMessage`/`StatusBadge` show CSS shared by 2+ components becoming its own paired component instead of a floating class |
 | [examples/burger-shop-fastapi](./examples/burger-shop-fastapi) | Same app as burger-shop, backed by a real FastAPI + SQLModel + SQLite app instead of `http.server` — same frontend, `/dist` mounted straight from the monorepo |
 
-The task manager and burger shop examples require their own backend:
+The burger shop example requires its own backend:
 
 ```bash
-python3 examples/task-manager/server.py
-# Open: http://localhost:5050/examples/task-manager/
-
-python3 examples/burger-shop/server.py
-# Open: http://localhost:5051/examples/burger-shop/
-
 cd examples/burger-shop-fastapi && uv run uvicorn app.main:app --port 8000 --reload
 # Open: http://localhost:8000/
 ```
@@ -1234,9 +1217,9 @@ don't need to manage `z-index` for this.
 Once a deck has more than a couple of frame kinds (title, bullets, code, …),
 give each kind its own component under `components/` with a small
 dispatcher for `data.kind`, rather than inlining every frame's rendering in
-`app.js` — see [examples/zoom-stage](./examples/zoom-stage) for the pattern
-(`components/FrameContent.js`) and a full presentation with a toolbar,
-progress dots, and keyboard navigation.
+`app.js` — see [examples/nexa-architecture](./examples/nexa-architecture) for
+the pattern (`components/FrameContent.js`) and a full presentation with a nav
+dock, progress indicator, and keyboard navigation.
 
 ### `FullCodeEditor`
 

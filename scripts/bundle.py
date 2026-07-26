@@ -21,7 +21,7 @@ downloaded from npm:
   python3 scripts/bundle.py --setup-esbuild     # go install → tools/bin/
 
 Usage:
-  python3 scripts/bundle.py examples/task-manager -o build/task-manager
+  python3 scripts/bundle.py examples/complete-page -o build/complete-page
   python3 scripts/bundle.py path/to/app -o out [--root REPO] [--engine X] [--smoke]
 
 Notes / limits (python engine):

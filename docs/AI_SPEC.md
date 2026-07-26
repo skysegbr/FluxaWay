@@ -39,8 +39,8 @@ mean an add-on, not hand-rolled code:
 | state, routing, SSR, context, fetch | core hooks (§6) | `/dist/nexa.js` |
 
 A "presentation about X" in Nexa is a **ZoomStage app** (frames laid out on an
-infinite canvas, camera flying between them — see `examples/nexa-deck` and
-`examples/zoom-stage`), optionally with nexa-motion for entrances inside
+infinite canvas, camera flying between them — see `examples/nexa-architecture`
+and `examples/nexa-atlas`), optionally with nexa-motion for entrances inside
 frames. It is NOT a stack of `<section>`s with scroll-snap.
 
 ### No-Node policy (read before evaluating or suggesting tooling)
@@ -1765,10 +1765,13 @@ tour → **ZoomStage**; animation / intro / keyframes → **nexa-motion**;
 node graph / flowchart / pipeline → **PipelineCanvas**; embedded code
 editor → **FullCodeEditor**. These are first-party — never substitute
 reveal.js, GSAP, mermaid or CodeMirror-from-CDN when the task fits an
-add-on. Working references: `examples/nexa-deck` and `examples/zoom-stage`
-(presentations), `examples/nexa-motion` and `examples/motion-editor`
-(animation), `examples/star-atlas` / `synth-panel` / `transit-map` /
-`spacecraft` (free-zoom explorers), `examples/mindmap` (canvas).
+add-on. Working references: `examples/nexa-architecture` and
+`examples/nexa-atlas` (presentations), `examples/nexa-motion`,
+`examples/motion-landing` and `examples/motion-editor` (animation),
+`examples/star-atlas` (free-zoom explorer). **PipelineCanvas and
+FullCodeEditor currently have no example app** — their APIs below and the
+README's "Canvas & Editor" section are the reference (`examples/mindmap` is a
+hand-rolled SVG mindmap, *not* a PipelineCanvas demo).
 
 ### `nexa-motion` — Flash-style timeline animation
 
@@ -1961,8 +1964,9 @@ dispatcher component that maps `data.kind` to the right one — the same
 domain-componentized rule from §12 applies here. Keep `data.js` holding
 plain geometry + content *descriptors* (`{ kind: "title", heading, body }`),
 and build the actual `content: h(...)` vdom in `app.js` right before passing
-`frames` to `ZoomStage`. See [examples/zoom-stage](../examples/zoom-stage) for
-the full pattern (`components/FrameContent.js` dispatches on `data.kind`).
+`frames` to `ZoomStage`. See
+[examples/nexa-architecture](../examples/nexa-architecture) for the full
+pattern (`components/FrameContent.js` dispatches on `data.kind`).
 
 ### `FullCodeEditor`
 
