@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **The docs-site listed the motion add-on under its hook name.** Add-ons read
+  `ZoomStage`, `PipelineCanvas`, `FullCodeEditor` and `useTimeline`, so scanning
+  the sidebar for "Motion" found nothing even though the page was at
+  `#/addons/fluxaway-motion`. It is now `FluxaWay Motion`, and catalog entries
+  gained optional search aliases so `useTimeline`, `createTimeline`, `stagger`
+  and friends still resolve to it.
+
 ## [0.20.1] - 2026-07-26
 
 ### Fixed

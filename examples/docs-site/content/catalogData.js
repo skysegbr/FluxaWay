@@ -14,12 +14,15 @@ const MODULE_BY_CATEGORY = {
 };
 
 function group(category, source, rows) {
-  return rows.map(([name, slug]) => ({
+  return rows.map(([name, slug, keywords]) => ({
     name,
     slug,
     category,
     source,
     module: MODULE_BY_CATEGORY[category],
+    // Optional search aliases, for entries whose API name differs from their
+    // display name — searching "useTimeline" must still find FluxaWay Motion.
+    ...(keywords ? { keywords } : {}),
   }));
 }
 
@@ -125,7 +128,9 @@ export const ENTRY_META = [
     ["useNetworkStatus", "use-network-status"], ["useOrientation", "use-orientation"],
     ["useVibrate", "use-vibrate"],
   ]),
-  ...group("addons", "addons/motion", [["useTimeline", "fluxaway-motion"]]),
+  ...group("addons", "addons/motion", [
+    ["FluxaWay Motion", "fluxaway-motion", ["useTimeline", "createTimeline", "animation", "timeline", "keyframes", "stagger"]],
+  ]),
   ...group("addons", "addons/zoom", [["ZoomStage", "zoom-stage"]]),
   ...group("addons", "addons/canvas", [["PipelineCanvas", "pipeline-canvas"]]),
   ...group("addons", "addons/editor", [["FullCodeEditor", "full-code-editor"]]),
