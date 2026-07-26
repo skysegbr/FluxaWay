@@ -2388,11 +2388,13 @@ export function useContextMenu() {
 
 // ── useTheme ───────────────────────────────────────────────
 
+const THEMES = ["light", "dark"];
+
 export function useTheme() {
   const getResolved = () => {
     try {
       const stored = localStorage.getItem("fluxaway-theme");
-      if (stored === "dark" || stored === "light") return stored;
+      if (THEMES.includes(stored)) return stored;
     } catch {}
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   };
@@ -2405,9 +2407,13 @@ export function useTheme() {
     try { localStorage.setItem("fluxaway-theme", theme); } catch {}
   }, [theme]);
 
-  // Stay in sync when another useTheme instance changes the theme.
+  // Stay in sync when another useTheme instance changes the theme. The event is
+  // a plain window CustomEvent, so anything on the page can dispatch it —
+  // validate the payload exactly like the setter does instead of trusting it.
   useEffect(() => {
-    const handler = (e) => setThemeState(e.detail);
+    const handler = (e) => {
+      if (THEMES.includes(e.detail)) setThemeState(e.detail);
+    };
     window.addEventListener("fluxaway:themechange", handler);
     return () => window.removeEventListener("fluxaway:themechange", handler);
   }, []);
@@ -2417,7 +2423,10 @@ export function useTheme() {
     window.dispatchEvent(new CustomEvent("fluxaway:themechange", { detail: next }));
   };
 
-  const setTheme = (next) => _apply(next);
+  const setTheme = (next) => {
+    if (!THEMES.includes(next)) return;
+    _apply(next);
+  };
 
   const toggleTheme = () =>
     setThemeState((current) => {
@@ -2480,11 +2489,18 @@ export function usePalette() {
     }
   }, [palette, customColor]);
 
-  // Stay in sync when another usePalette instance changes the palette.
+  // Stay in sync when another usePalette instance changes the palette. The
+  // payload is validated like setPalette/setCustomColor do — an unguarded
+  // `e.detail.palette` both crashed on a detail-less event and let any script
+  // on the page push an arbitrary string into the inline `--m-primary`.
   useEffect(() => {
     const handler = (e) => {
-      setPaletteState(e.detail.palette);
-      setCustomColorState(e.detail.customColor);
+      const detail = e.detail;
+      if (!detail || typeof detail !== "object") return;
+      if (!PALETTES.includes(detail.palette)) return;
+      const nextColor = HEX_COLOR_RE.test(detail.customColor) ? detail.customColor : null;
+      setPaletteState(detail.palette);
+      setCustomColorState(nextColor);
     };
     window.addEventListener("fluxaway:palettechange", handler);
     return () => window.removeEventListener("fluxaway:palettechange", handler);
@@ -2546,9 +2562,13 @@ export function useDesign() {
     try { localStorage.setItem("fluxaway-design", design); } catch {}
   }, [design]);
 
-  // Stay in sync when another useDesign instance changes the design.
+  // Stay in sync when another useDesign instance changes the design. Validated
+  // against the same allowlist setDesign uses — the event is dispatchable by
+  // anything on the page, so it cannot be the one path that skips the check.
   useEffect(() => {
-    const handler = (e) => setDesignState(e.detail);
+    const handler = (e) => {
+      if (DESIGNS.includes(e.detail)) setDesignState(e.detail);
+    };
     window.addEventListener("fluxaway:designchange", handler);
     return () => window.removeEventListener("fluxaway:designchange", handler);
   }, []);
