@@ -1,6 +1,6 @@
 # FluxaWay Brand Story
 
-> Status: approved brand narrative. The visual identity is the next phase.
+> Status: approved brand narrative and visual identity.
 
 ## Why FluxaWay?
 
@@ -69,12 +69,22 @@ patterns, and architecture.
 Prefer an understandable mental model, explicit behavior, and approachable
 language over hidden complexity.
 
-## Visual Identity Direction
+## Visual Identity
 
-The logo and visual system should express movement and choice without suggesting
-speed for its own sake. The identity should feel direct, fluid, and confident,
-with enough simplicity to remain recognizable in documentation, package icons,
-favicons, and monochrome use.
+The FluxaWay symbol fuses a capital **F** and a capital **W** into one continuous
+mark. The stable **F** represents structure. Its middle arm becomes the opening
+stroke of the fluid **W**, representing movement, choice, and the developer's
+path.
 
-The visual identity must preserve the name as **FluxaWay** and reinforce the
-relationship between flow and the developer's chosen path.
+The identity uses controlled rounded geometry to feel direct, fluid, and
+confident without suggesting speed for its own sake. Its silhouette remains
+recognizable in documentation, application icons, favicons, and monochrome use.
+
+The official palette is:
+
+- **Midnight navy:** `#0f172a`
+- **Vivid teal:** `#14b8a6`
+- **White:** `#ffffff`
+
+Production logos, symbols, icons, and usage guidance live in
+[`assets/brand/`](../assets/brand/README.md).
