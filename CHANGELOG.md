@@ -21,9 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   dependency-free ~90-line syntax highlighter (`components/highlight.js`) that
   tokenizes JS/HTML/CSS with one combined regex per language and emits vdom
   spans (never an HTML string), colored from the same `--m-*` tokens as the
-  rest of the system. Covers the **core** and **forms** categories — 29
-  components, each with live demos and a full props table. New priority flow
-  `SC-APP-12` exercises sidebar navigation, the code toggle and the palette.
+  rest of the system. Covers **all six component categories — 61 components**
+  (core, forms, overlay, data, nav, theme), each with live demos and a full
+  props table, with `DesignSwitcher` reskinning the entire site to Bootstrap 5
+  live. New priority flow `SC-APP-12` exercises sidebar navigation, the code
+  toggle and the palette.
 
 ### Removed
 - **Examples pruned 32 → 21.** The gallery had grown redundant rather than

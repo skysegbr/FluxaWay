@@ -46,12 +46,29 @@ body {
   gap: var(--m-space-2);
 }
 
+/* Right-click target for the ContextMenu demo. */
+.nd-contextzone {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 6rem;
+  border: 1px dashed var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface-muted);
+  color: var(--m-text-muted);
+  user-select: none;
+}
+
 .nd-stack {
   display: flex;
   flex-direction: column;
   gap: var(--m-space-3);
   width: 100%;
 }
+
+/* A badge used as a state readout in a demo should hug its text, not stretch
+   to the column width. */
+.nd-stack > .m-badge { align-self: flex-start; }
 
 @media (max-width: 900px) {
   .nd-shell {
