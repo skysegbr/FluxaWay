@@ -421,6 +421,8 @@ python -m http.server 8080
 | [examples/landing](./examples/landing) | SaaS landing page: sticky nav with mobile menu, SVG hero chart, testimonial carousel, pricing toggle |
 | [examples/gallery](./examples/gallery) | Photo gallery: category filter, masonry grid with lazy-load fade-in, keyboard/swipe lightbox with focus trap |
 | [examples/mindmap](./examples/mindmap) | Draggable mindmap: free-form card positioning, double-click inline editing, SVG bezier connectors that track card size, branch coloring |
+| [examples/dashboard](./examples/dashboard) | Complete analytics dashboard using the first-party charts add-on: KPI cards, line/area/bar/donut/scatter/heatmap charts, small multiples, brush-to-zoom, export and accessible table twins |
+| [examples/aurora-ops](./examples/aurora-ops) | Polar research command center: an aurora-themed dashboard combining MetricCard, DashboardGrid, line/donut/heatmap/diverging/dumbbell/small-multiple charts and resource meters |
 | [examples/drug-recalls](./examples/drug-recalls) | Live dashboard over the openFDA drug recall API: debounced search, classification/status filters, donut + bar charts, sortable table, recall detail dialog |
 | [examples/storefront](./examples/storefront) | Domain-componentized architecture: `catalog/`, `cart/`, `auth/` each own their own `createContext` + state hook, composed once in `app.js`, integrated through `Shell.js`. Products fetched live from fakestoreapi.com |
 | [examples/designer](./examples/designer) | Visual UI builder: drag components from a palette onto a canvas, edit props/styles/states in an inspector, live CSS + code export |

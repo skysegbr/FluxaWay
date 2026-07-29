@@ -1,0 +1,9 @@
+.ao-energy .ao-chart-feature {
+  min-height: 27rem;
+}
+
+.ao-energy .ao-chart-compact {
+  background:
+    radial-gradient(circle at 50% 58%, color-mix(in srgb, var(--m-primary) 8%, transparent), transparent 12rem),
+    var(--m-surface);
+}

@@ -1,0 +1,107 @@
+@import "./components/MissionHeader.css";
+@import "./components/MissionMetrics.css";
+@import "./components/EnergyOverview.css";
+@import "./components/HabitatOverview.css";
+@import "./components/CrewScienceOverview.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--m-bg);
+  color: var(--m-text);
+  font-family: var(--m-font);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ao-app {
+  min-height: 100vh;
+  overflow: clip;
+  background: var(--m-bg);
+}
+
+.ao-main {
+  display: grid;
+  gap: var(--m-space-12);
+  padding-top: var(--m-space-10);
+  padding-bottom: var(--m-space-12);
+}
+
+.ao-section {
+  display: grid;
+  gap: var(--m-space-5);
+  scroll-margin-top: var(--m-space-6);
+}
+
+.ao-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--m-space-6);
+}
+
+.ao-section-head h2 {
+  margin: var(--m-space-1) 0 0;
+  font-size: clamp(1.65rem, 3vw, 2.5rem);
+  letter-spacing: -0.04em;
+}
+
+.ao-section-head > p {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+  line-height: 1.6;
+  text-align: right;
+}
+
+.ao-section-index {
+  margin: 0;
+  color: var(--m-primary);
+  font-size: var(--m-font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.ao-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--m-space-2);
+  padding-block: var(--m-space-4);
+  border-top: 1px solid var(--m-border);
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.ao-footer span {
+  color: var(--m-primary);
+}
+
+@media (max-width: 48rem) {
+  .ao-main {
+    gap: var(--m-space-10);
+  }
+
+  .ao-section-head {
+    align-items: start;
+    flex-direction: column;
+    gap: var(--m-space-2);
+  }
+
+  .ao-section-head > p {
+    text-align: left;
+  }
+}

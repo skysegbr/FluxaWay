@@ -1,0 +1,8 @@
+.ao-habitat .m-dash-card:first-child {
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--m-secondary) 7%, var(--m-surface)), var(--m-surface));
+}
+
+.ao-habitat .m-heatmap {
+  --m-chart-grid: color-mix(in srgb, var(--m-border) 70%, transparent);
+}

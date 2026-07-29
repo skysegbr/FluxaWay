@@ -1,0 +1,52 @@
+.ao-metrics {
+  margin: 0;
+}
+
+.ao-metrics .m-metric-row-group {
+  gap: var(--m-space-5);
+}
+
+.ao-metrics .m-metric {
+  min-height: 13rem;
+  padding: var(--m-space-5);
+  border: 1px solid color-mix(in srgb, var(--m-primary) 16%, var(--m-border));
+  border-radius: var(--m-radius-lg);
+  background: color-mix(in srgb, var(--m-surface) 96%, var(--m-bg));
+  box-shadow: var(--m-shadow-1);
+}
+
+.ao-metrics .m-metric-hero {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--m-primary) 13%, var(--m-surface)), var(--m-surface));
+}
+
+.ao-metrics .m-metric-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--m-space-2);
+}
+
+.ao-metrics .m-metric-value {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.ao-metrics .m-metric-spark {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 1.75rem;
+}
+
+.ao-metrics .m-metric-delta {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 48rem) {
+  .ao-metrics .m-metric {
+    min-height: 11.5rem;
+    padding: var(--m-space-4);
+  }
+}

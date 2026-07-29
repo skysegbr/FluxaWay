@@ -1,0 +1,16 @@
+.ao-resource-card {
+  grid-column: 1 / -1;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--m-primary) 8%, var(--m-surface)), var(--m-surface));
+}
+
+.ao-resource-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--m-space-6);
+  padding-block: var(--m-space-3);
+}
+
+.ao-crew .m-small-multiples {
+  margin-top: var(--m-space-2);
+}
