@@ -89,6 +89,7 @@ assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.6.
 | 1.2 | Category CSS in sync | `python scripts/split_css.py --check` | `All 7 category CSS files are up to date.` | yes |
 | 1.3 | Minified files in sync | `python scripts/minify.py --check` | `All N minified outputs are up to date.` | yes |
 | 1.4 | Tutorial recorders in sync | `python scripts/check_tutorial_selectors.py` | `Tutorial selectors OK — N token(s)...` | yes |
+| 1.4b | Chart palettes valid | `python3 scripts/validate_chart_palette.py` (+ `--sequential`, `--diverging`) | `Chart palette validation passed.` (exit 0) | yes |
 | 1.5 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
 | 1.6 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
 | 1.7 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
@@ -101,6 +102,18 @@ loads every category it actually uses (a missing category = silent unstyled
 render). Any output other than `FluxaWay static validation passed.` lists concrete
 `path: message` issues — fix or report each.
 
+**1.4b chart palettes** re-computes the colour guarantees from the tokens in
+`dist/fluxaway-charts.css`, so the comments in that file can never drift from
+the hexes below them. It checks all three ramps: categorical (lightness band,
+chroma floor, colourblind separation between adjacent slots, contrast),
+sequential (monotone lightness, one hue) and diverging (each arm, a neutral
+midpoint, mirrored arms, visible poles). It also asserts every token declared
+in `:root` exists in all three theme scopes exactly once — a token added to
+only some of them silently falls back to its light value under the theme
+toggle. Run it after touching any `--m-chart-*`, `--m-seq-*` or `--m-div-*`
+value; a FAIL means the palette no longer holds a documented guarantee, not
+that a lint rule is unhappy.
+
 **1.2 / 1.3 sync gates** fail when someone edited a source file
 (`dist/fluxaway-ui.css`, a `dist/*.js`) but didn't regenerate its derived outputs.
 The fix is to run the generator without `--check` (`python scripts/split_css.py`
@@ -112,9 +125,9 @@ targets each. A test that passes on chromium but fails on webkit is a real bug,
 not flake; report the engine.
 
 **1.6** protects the documentation app itself: home payload stays lazy,
-category CSS and CodeMirror load on demand, search navigates, all four add-on
-pages render, the catalog matches its 98 descriptors, route changes focus the
-new heading, the sidebar reveals its active page, and mobile navigation/TOC
+category CSS and CodeMirror load on demand, search navigates, all five add-on
+pages render their expected demo counts, the catalog matches its 99
+descriptors, route changes focus the new heading, the sidebar reveals its active page, and mobile navigation/TOC
 lock, restore and move focus without overflow.
 
 ---
@@ -316,6 +329,7 @@ show the real output; if a run is still in progress, say so.
 python  scripts/validate_fluxaway.py
 python  scripts/split_css.py --check
 python  scripts/minify.py --check
+python3 scripts/validate_chart_palette.py                    # + --sequential, --diverging
 python  scripts/sync_legacy_aliases.py --check
 python3 scripts/run_browser_tests.py --browser chromium      # then firefox, webkit
 python3 scripts/check_docs_site.py --browser chromium        # then firefox, webkit
