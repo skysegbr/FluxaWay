@@ -1,24 +1,17 @@
-.dr-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--m-space-4);
-}
+/* The KPI track and the tile internals now come from MetricRow / MetricCard in
+   fluxaway-charts.css. What stays here is app-specific: the card padding and
+   the severity tint on the two class counts. */
 
 .dr-metric {
-  display: grid;
-  gap: var(--m-space-1);
   padding: var(--m-space-4);
 }
 
-.dr-metric strong {
+.dr-metric .m-metric-value {
   font-size: 1.75rem;
-  line-height: 1;
 }
 
-.dr-metric span {
-  color: var(--m-text-muted);
-  font-size: var(--m-font-size-sm);
-}
-
-.dr-metric-danger strong { color: var(--m-danger); }
-.dr-metric-warning strong { color: var(--m-warning); }
+/* Severity, not identity — these tint the number to match the recall-class
+   colors the donut uses. The label spells the meaning out either way, so the
+   number never carries it on color alone. */
+.dr-metric-danger .m-metric-value { color: var(--m-danger); }
+.dr-metric-warning .m-metric-value { color: var(--m-warning); }

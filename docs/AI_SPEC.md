@@ -34,6 +34,7 @@ mean an add-on, not hand-rolled code:
 | presentation, slide deck, slides, pitch, keynote, Prezi-style zoom, guided tour, camera pan between frames | **ZoomStage** | `/dist/fluxaway-zoom.js` + `fluxaway-zoom.css` |
 | animation, intro/splash, timeline, keyframes, tween, easing, staggered entrance, "like Flash", movie clip | **fluxaway-motion** (`useTimeline`) | `/dist/fluxaway-motion.js` |
 | node editor, flowchart, pipeline, graph of connected boxes, diagram with draggable nodes | **PipelineCanvas** | `/dist/fluxaway-canvas.js` + `fluxaway-canvas.css` |
+| chart, graph of data, plot, dashboard, KPI, metric tile, analytics, line/bar/pie/donut, sparkline, time series | **fluxaway-charts** | `/dist/fluxaway-charts.js` + `fluxaway-charts.css` |
 | code editor with syntax highlighting / line numbers | **FullCodeEditor** | `/dist/fluxaway-editor.js` + `fluxaway-editor.css` |
 | buttons, forms, dialogs, tables, tabs — regular app UI | UI components (§9) | `/dist/fluxaway-components-*.js` |
 | state, routing, SSR, context, fetch | core hooks (§6) | `/dist/fluxaway.js` |
@@ -42,6 +43,10 @@ A "presentation about X" in FluxaWay is a **ZoomStage app** (frames laid out on 
 infinite canvas, camera flying between them — see `examples/fluxaway-architecture`
 and `examples/fluxaway-atlas`), optionally with fluxaway-motion for entrances inside
 frames. It is NOT a stack of `<section>`s with scroll-snap.
+
+A "dashboard" or "chart" in FluxaWay is a **fluxaway-charts app** — never a
+CDN copy of Chart.js/D3/Recharts (that would break the zero-dependency rule),
+and never hand-rolled `stroke-dasharray` arc math. See `examples/dashboard`.
 
 ### No-Node policy (read before evaluating or suggesting tooling)
 
@@ -91,6 +96,8 @@ Consequences you must respect when writing code, tooling, or reviews:
 /dist/fluxaway-motion.js       ← timeline ANIMATION add-on: keyframes/tweens/easings, Flash-style (useTimeline)
 /dist/fluxaway-canvas.js       ← node/pipeline DIAGRAM add-on (PipelineCanvasController)
 /dist/fluxaway-canvas.css      ← styles for fluxaway-canvas
+/dist/fluxaway-charts.js       ← CHARTS & DASHBOARD add-on (LineChart, BarChart, DonutChart, MetricCard, ...)
+/dist/fluxaway-charts.css      ← styles + the validated categorical palette tokens (REQUIRED)
 /dist/fluxaway-zoom.js         ← PRESENTATION / slide-deck add-on: zooming camera over frames (ZoomStage)
 /dist/fluxaway-zoom.css        ← styles for fluxaway-zoom
 /dist/fluxaway-editor.js       ← full-featured code editor component
@@ -1781,7 +1788,7 @@ h(CommandPalette, {
 
 ---
 
-## 10. Canvas, Editor & Motion Add-ons
+## 10. Canvas, Charts, Editor & Motion Add-ons
 
 Optional add-ons, each its own `dist/fluxaway-<name>.js` (+ `.css` where noted) —
 **not** part of `fluxaway-components.js`, import them directly. Full prop tables
@@ -1791,13 +1798,15 @@ still knows the API exists and how to call it.
 
 **Routing reminder** (same table as §1): presentation / slide deck / zoom
 tour → **ZoomStage**; animation / intro / keyframes → **fluxaway-motion**;
-node graph / flowchart / pipeline → **PipelineCanvas**; embedded code
-editor → **FullCodeEditor**. These are first-party — never substitute
-reveal.js, GSAP, mermaid or CodeMirror-from-CDN when the task fits an
-add-on. Working references: `examples/fluxaway-architecture` and
+node graph / flowchart / pipeline → **PipelineCanvas**; chart / dashboard /
+KPI → **fluxaway-charts**; embedded code editor → **FullCodeEditor**. These
+are first-party — never substitute reveal.js, GSAP, mermaid, Chart.js, D3 or
+CodeMirror-from-CDN when the task fits an add-on. Working references:
+`examples/fluxaway-architecture` and
 `examples/fluxaway-atlas` (presentations), `examples/fluxaway-motion`,
 `examples/motion-landing` and `examples/motion-editor` (animation),
-`examples/star-atlas` (free-zoom explorer). **PipelineCanvas and
+`examples/star-atlas` (free-zoom explorer), `examples/dashboard` and
+`examples/drug-recalls` (charts). **PipelineCanvas and
 FullCodeEditor currently have no example app** — their APIs below and the
 README's "Canvas & Editor" section are the reference (`examples/mindmap` is a
 hand-rolled SVG mindmap, *not* a PipelineCanvas demo).
@@ -2019,6 +2028,76 @@ import { BOILERPLATES } from "/dist/fluxaway-editor-snippets.js";
 h(FullCodeEditor, { value: code, onChange: setCode, language: "python", snippets: BOILERPLATES })
 ```
 
+### `fluxaway-charts` — charts & dashboards
+
+`dist/fluxaway-charts.js` + **`dist/fluxaway-charts.css` (required — it carries
+the palette tokens)**; types in `dist/fluxaway-charts.d.ts`. Plain SVG through
+the normal vdom, so charts are reactive like any other component. This is the
+only add-on that imports another (`fluxaway-motion`, for the `animate` presets).
+
+Working reference: `examples/dashboard`. `examples/drug-recalls` uses it against
+a live API.
+
+```js
+import {
+  LineChart, AreaChart, BarChart, DonutChart, PieChart, Sparkline,
+  DashboardGrid, ChartCard, MetricRow, MetricCard, Meter,
+} from "/dist/fluxaway-charts.js";
+
+const rows = [{ month: "Jan", visits: 1200, signups: 300 }, /* … */];
+
+h(LineChart, {
+  data: rows,
+  x: "month",                                    // key or (row) => value
+  series: [                                      // or `y: "visits"` for one
+    { key: "visits",  label: "Visits" },
+    { key: "signups", label: "Signups" },
+  ],
+  height: 260,
+  animate: true,
+})
+```
+
+| Component | For |
+|---|---|
+| `LineChart` / `AreaChart` | Trend over time. Crosshair tooltip; arrow keys walk the x-axis |
+| `BarChart` | Magnitude. `stacked` for part-to-whole, `horizontal` for long labels |
+| `DonutChart` / `PieChart` | Part-to-whole at a glance; folds past `maxSlices` (6) into "Other" |
+| `Sparkline` | Trend glyph, no chrome — for tiles and table cells |
+| `DashboardGrid` / `ChartCard` | Auto-fit card grid; `loading` dims instead of flashing a skeleton |
+| `MetricRow` / `MetricCard` | KPI row: value, delta, sparkline. `countUp` animates the number |
+| `Meter` | One ratio against a limit |
+
+Also exported: `scaleLinear`, `scaleBand`, `niceTicks`, `formatCompact`,
+`formatNumber`, `seriesColor`, `CHART_SLOTS` — for building a custom chart on
+the same scales and palette.
+
+**Animation** (`animate`) rides fluxaway-motion: bars scale up from the
+baseline, lines are wiped in by a clip rect, donut arcs pop, all staggered.
+`animate: { duration, stagger, ease, key }` tunes it; changing `key` replays it
+(a "replay" button, or a filter swap). It respects `prefers-reduced-motion`,
+and the resting render is the untransformed chart — animation never changes
+what a mark reports.
+
+**Rules the module enforces — do not work around them:**
+
+- **No dual-axis.** There is deliberately no `yRight`. Two measures of
+  different magnitude are two charts; a second y-scale invents a correlation
+  that is not in the data.
+- **Color follows the entity, not its rank.** Slots come from a series' position
+  by default. If the app *filters* its series list, pin `slot: n` on each series
+  so survivors keep their hue.
+- **Eight slots, never a ninth.** `seriesColor(8)` returns the neutral
+  "Other" token rather than cycling — a generated hue is indistinguishable from
+  an existing one under simulated colorblindness.
+- **Nominal bars take one color.** A single series colors every bar slot 1;
+  shading bars by value re-encodes what the length already shows.
+- **Status colors stay status.** For severity tiers (Class I/II/III, good→
+  critical) pass `sliceColor` / `series[].color` with `--m-danger` /
+  `--m-warning` / `--m-info` — hue means state there, not identity.
+- **Every chart ships a table twin** (`showTable`, on by default), so no value
+  is reachable only by hovering.
+
 ---
 
 ## 11. CSS Design Tokens
@@ -2087,6 +2166,18 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
 --m-transition-fast   /* 120ms ease */
 --m-transition-base   /* 200ms ease */
 --m-transition-slow   /* 400ms ease — hover zoom/glow/expand effects */
+
+/* Chart palette — set by fluxaway-charts.css, NOT fluxaway-ui.css.
+   Eight categorical slots in a FIXED order (slot 1 is the brand teal), plus
+   a neutral for the folded tail. The order is the colorblind-safety
+   mechanism: it was derived and validated, not picked by eye. Re-check any
+   change with `python3 scripts/validate_chart_palette.py`. */
+--m-chart-1 … --m-chart-8  /* categorical series slots, assigned in order */
+--m-chart-other            /* "Other" — the folded tail, never a 9th hue */
+--m-chart-grid             /* hairline gridlines */
+--m-chart-axis             /* axis rules and the crosshair */
+--m-chart-ink              /* axis label text */
+--m-chart-area-opacity     /* area fill wash (0.1 light / 0.16 dark) */
 
 /* Card: glow accent hues (see m-card-glow in §9) */
 --m-card-hue-1        /* 210 — default gradient-border hue 1 */

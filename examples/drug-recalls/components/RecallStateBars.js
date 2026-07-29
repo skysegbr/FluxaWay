@@ -1,35 +1,20 @@
 import { h } from "/dist/fluxaway.js";
-import { EmptyState } from "/dist/fluxaway-components-core.js";
+import { BarChart } from "/dist/fluxaway-charts.js";
 
+// US states are NOMINAL categories — swapping their order changes nothing — so
+// every bar takes the same slot-1 hue. Coloring them by value would re-encode
+// what the bar length already shows. Horizontal, because the labels are names.
 export function RecallStateBars({ byState }) {
-  if (byState.length === 0) {
-    return h("div", { className: "dr-chart-card dr-chart-empty" },
-      h(EmptyState, { title: "No data", description: "No recalls match the current filters." }),
-    );
-  }
-
-  const max = Math.max(...byState.map((s) => s.count));
-
-  return h(
-    "div",
-    { className: "dr-chart-card" },
-    h("p", { className: "dr-chart-title" }, "Top states"),
-    h(
-      "ul",
-      { className: "dr-bars" },
-      byState.map((s) =>
-        h(
-          "li",
-          { key: s.term, className: "dr-bar-row" },
-          h("span", { className: "dr-bar-label" }, s.term),
-          h(
-            "span",
-            { className: "dr-bar-track" },
-            h("span", { className: "dr-bar-fill", style: { width: `${(s.count / max) * 100}%` } }),
-          ),
-          h("span", { className: "dr-bar-value" }, s.count.toLocaleString()),
-        ),
-      ),
-    ),
-  );
+  return h(BarChart, {
+    data: byState,
+    x: "term",
+    y: "count",
+    label: "Top states",
+    horizontal: true,
+    height: Math.max(180, byState.length * 30 + 40),
+    animate: true,
+    xLabel: "State",
+    emptyMessage: "No recalls match the current filters.",
+    ariaLabel: "Recalls by state",
+  });
 }

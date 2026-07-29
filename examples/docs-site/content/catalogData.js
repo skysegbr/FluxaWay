@@ -133,6 +133,11 @@ export const ENTRY_META = [
   ]),
   ...group("addons", "addons/zoom", [["ZoomStage", "zoom-stage"]]),
   ...group("addons", "addons/canvas", [["PipelineCanvas", "pipeline-canvas"]]),
+  ...group("addons", "addons/charts", [
+    ["FluxaWay Charts", "fluxaway-charts", ["chart", "charts", "graph", "plot", "dashboard",
+      "LineChart", "AreaChart", "BarChart", "DonutChart", "PieChart", "Sparkline",
+      "MetricCard", "ChartCard", "DashboardGrid", "Meter", "KPI", "analytics"]],
+  ]),
   ...group("addons", "addons/editor", [["FullCodeEditor", "full-code-editor"]]),
 ];
 

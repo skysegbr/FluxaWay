@@ -33,6 +33,11 @@ Optional modules build on top of that core:
 
 - `dist/fluxaway-canvas.js` + `dist/fluxaway-canvas.css` — `PipelineCanvas`, an
   SVG node editor with drag, pan, zoom, mini-map, and undo/redo.
+- `dist/fluxaway-charts.js` + `dist/fluxaway-charts.css` — charts and dashboard
+  layout: `LineChart`, `AreaChart`, `BarChart`, `DonutChart`, `PieChart`,
+  `Sparkline`, `DashboardGrid`, `ChartCard`, `MetricRow`, `MetricCard`,
+  `Meter`. Plain SVG with a validated colorblind-safe palette; the stylesheet
+  is required because it carries the palette tokens.
 - `dist/fluxaway-zoom.js` + `dist/fluxaway-zoom.css` — `ZoomStage`, a pan/zoom
   presentation canvas with animated camera pan/zoom/rotate between frames,
   optional free zoom/pan exploration (`freeZoom`), swipe/keyboard nav, and
@@ -115,6 +120,8 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-them
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-charts.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-charts.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.js

@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Charts and dashboards: the `fluxaway-charts` add-on.** Charts were the one
+  common app surface FluxaWay had no first-party answer for. The routing table
+  in AI_SPEC §1 covered presentations, animation, diagrams and code editors, but
+  "dashboard" fell through — so every app reinvented SVG arc math, picked its own
+  colors, and nothing stopped an agent from pulling Chart.js off a CDN and
+  breaking the zero-dependency rule. `dist/fluxaway-charts.js` +
+  `dist/fluxaway-charts.css` ship `LineChart`, `AreaChart`, `BarChart` (grouped,
+  stacked, horizontal, negatives), `DonutChart`, `PieChart` and `Sparkline`,
+  plus the dashboard layer — `DashboardGrid`, `ChartCard`, `MetricRow`,
+  `MetricCard` and `Meter` — and the scale/format helpers (`scaleLinear`,
+  `scaleBand`, `niceTicks`, `formatCompact`, `seriesColor`). Plain SVG through
+  the normal vdom, so charts are reactive like any other component.
+- **A validated, colorblind-safe categorical palette.** `--m-chart-1..8` (slot 1
+  is the brand teal) plus `--m-chart-other`. The slot ORDER is a safety
+  mechanism, not a style choice: orderings and steps were enumerated and scored
+  against the computable gates, then validated against the real chart surfaces
+  (`#ffffff` light, `#1e293b` dark). Both modes clear adjacent CVD ΔE 8.8
+  (target 8), normal-vision ΔE 20.1 (floor 15), and 3:1 contrast on **every**
+  slot. A ninth series folds into "Other" rather than cycling, because a
+  generated hue is indistinguishable from an existing one under simulated
+  colorblindness.
+- **`scripts/validate_chart_palette.py`** — pure-stdlib checker (OKLCH bands,
+  chroma floor, Machado-2009 CVD simulation, WCAG contrast) that reads the
+  tokens straight out of the stylesheet, so the documented guarantees can never
+  drift from the shipped hexes. Run it after touching any `--m-chart-*` value.
+- **Chart animation built on fluxaway-motion.** `animate` wipes lines in via a
+  clip rect, grows bars from the baseline and pops donut arcs, staggered;
+  `MetricCard`'s `countUp` rides the same ticker. `animate.key` replays it.
+  It honours `prefers-reduced-motion`, and the resting render is the
+  untransformed chart — animation never changes what a mark reports. This makes
+  charts the only add-on that depends on another add-on.
+- **`examples/dashboard`** — a full analytics dashboard: KPI row, filter row
+  scoping every chart, refetch that holds the previous render instead of
+  flashing a skeleton, and a replay control.
+
+### Changed
+- **`examples/drug-recalls` now uses the add-on.** Its hand-rolled
+  `stroke-dasharray` donut and `<div>` bar chart (plus ~90 lines of app-local
+  chart CSS) are gone, replaced by `DonutChart` and a horizontal `BarChart`
+  inside `ChartCard`s. The classification donut keeps its status colors through
+  the new `sliceColor` prop — recall classes are a severity scale, so hue means
+  state there, not identity. The charts gained a value axis, per-mark tooltips,
+  keyboard focus and a table view they never had.
+
 ### Fixed
 - **The docs-site could only be served from `/examples/docs-site/`.** Its five
   route `css:` declarations used absolute `/examples/docs-site/...` hrefs, so
