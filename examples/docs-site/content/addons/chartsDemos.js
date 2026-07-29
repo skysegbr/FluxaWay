@@ -1,7 +1,8 @@
 import { h, loadCSS } from "/dist/fluxaway.js";
 import {
-  BarChart, ChartCard, DashboardGrid, DonutChart, Heatmap, LineChart, MetricCard,
-  MetricRow, Meter, ScatterChart, SmallMultiples,
+  BarChart, ChartCard, DashboardGrid, DonutChart, DumbbellChart, Heatmap,
+  LikertChart, LineChart, MetricCard, MetricRow, Meter, ScatterChart,
+  SmallMultiples,
 } from "/dist/fluxaway-charts.js";
 
 // The add-on's stylesheet carries the palette tokens, so the demos need it
@@ -118,3 +119,44 @@ export function DashboardPreview() {
   );
 }
 
+
+const SURVEY = [
+  { q: "Docs are clear", sd: 4, d: 9, n: 15, a: 42, sa: 30 },
+  { q: "Setup was easy", sd: 12, d: 22, n: 18, a: 30, sa: 18 },
+  { q: "Errors are helpful", sd: 20, d: 28, n: 22, a: 20, sa: 10 },
+];
+const SURVEY_SCALE = [
+  { key: "sd", label: "Strongly disagree" },
+  { key: "d", label: "Disagree" },
+  { key: "n", label: "Neutral" },
+  { key: "a", label: "Agree" },
+  { key: "sa", label: "Strongly agree" },
+];
+
+export function DivergingPreview() {
+  const variance = [
+    { team: "Platform", delta: 18 }, { team: "Growth", delta: -12 },
+    { team: "Payments", delta: 4 }, { team: "Mobile", delta: -25 },
+    { team: "Data", delta: 31 },
+  ];
+  return h(BarChart, {
+    data: variance, x: "team", y: "delta", horizontal: true,
+    diverging: true, height: 220, format: (n) => `${n > 0 ? "+" : ""}${n}%`,
+  });
+}
+
+export function LikertPreview() {
+  return h(LikertChart, { data: SURVEY, x: "q", series: SURVEY_SCALE, neutralIndex: 2 });
+}
+
+export function DumbbellPreview() {
+  const pages = [
+    { page: "Home", before: 2.8, after: 1.2 },
+    { page: "Search", before: 4.1, after: 2.6 },
+    { page: "Checkout", before: 3.2, after: 3.4 },
+  ];
+  return h(DumbbellChart, {
+    data: pages, x: "page", from: "before", to: "after",
+    fromLabel: "Before", toLabel: "After", format: (n) => `${Number(n).toFixed(1)}s`,
+  });
+}

@@ -77,6 +77,31 @@ You can override them in your app:
 }
 ```
 
+### Chart tokens
+
+The charts add-on ships its own palette in `dist/fluxaway-charts.css`, kept out
+of `fluxaway-ui.css` so a page that draws no charts pays nothing for them:
+
+```css
+--m-chart-1 … --m-chart-8   /* categorical: WHICH series (fixed order) */
+--m-chart-other             /* the folded tail — never a 9th hue */
+--m-chart-muted             /* de-emphasised series */
+--m-seq-1 … --m-seq-7       /* sequential: HOW MUCH (one hue) */
+```
+
+These are not free to edit. The categorical **order** is what keeps adjacent
+series distinguishable under simulated colourblindness, and the sequential ramp
+has to stay monotone in lightness. Both are re-checked by:
+
+```bash
+python3 scripts/validate_chart_palette.py               # categorical
+python3 scripts/validate_chart_palette.py --sequential  # magnitude ramp
+```
+
+If you re-skin the palette for your brand, change the hexes and run that — it
+reads the tokens straight out of the stylesheet, so it tells you whether your
+values still hold the guarantees the comments claim.
+
 ## Main Classes
 
 Layout:

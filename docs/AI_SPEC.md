@@ -2066,14 +2066,17 @@ h(LineChart, {
 | `Heatmap` | Magnitude across a grid, on the SEQUENTIAL ramp (one hue) |
 | `ScatterChart` | Two continuous measures. Nearest-point hover; caps at 3 coloured groups |
 | `SmallMultiples` | One facet per series on a SHARED scale — the way out of "too many series" |
+| `LikertChart` | Ordered-scale share (agree/disagree, sentiment) as a diverging stacked bar |
+| `DumbbellChart` | Before → after per item; the connector IS the change |
 | `Sparkline` | Trend glyph, no chrome — for tiles and table cells |
 | `DashboardGrid` / `ChartCard` | Auto-fit card grid; `loading` dims instead of flashing a skeleton |
 | `MetricRow` / `MetricCard` | KPI row: value, delta, sparkline. `countUp` animates the number |
 | `Meter` | One ratio against a limit |
 
 Also exported: `scaleLinear`, `scaleBand`, `niceTicks`, `formatCompact`,
-`formatNumber`, `seriesColor`, `seqColor`, `CHART_SLOTS`, `SEQ_STEPS`,
-`ALL_PAIRS_SLOTS` — for building a custom chart on the same scales and palette.
+`formatNumber`, `seriesColor`, `seqColor`, `divergingColor`, `CHART_SLOTS`,
+`SEQ_STEPS`, `DIV_STEPS`, `ALL_PAIRS_SLOTS` — for building a custom chart on
+the same scales and palette.
 
 **Export**: `exportCSV(spec, { filename })` and `chartToCSV(spec)` write the
 same rows the table view shows; `exportPNG(svgOrRef, { filename, scale })`
@@ -2115,6 +2118,13 @@ what a mark reports.
   `Heatmap` takes `--m-seq-1..7` (one hue, more-is-darker). A rainbow for
   magnitude has no reading order, and categorical hues on a value scale
   misstate it.
+- **Polarity uses the diverging ramp.** `--m-div-1..7`, two opposite hues
+  meeting at a NEUTRAL GREY middle (`--m-div-4`), for values against a
+  baseline: `BarChart`'s `diverging`, `LikertChart`, `divergingColor()`. The
+  midpoint is grey on purpose and never a hue — it has to read as "nothing".
+  Which pole is "good" is the app's call (`diverging: { invert: true }`),
+  because red means loss in finance and heat on a map. When a colour actually
+  *means* good/bad, that is **status**, not diverging — use the status tokens.
 - **Nominal bars take one color.** A single series colors every bar slot 1;
   shading bars by value re-encodes what the length already shows.
 - **Status colors stay status.** For severity tiers (Class I/II/III, good→
@@ -2203,6 +2213,9 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
 --m-seq-1 … --m-seq-7      /* SEQUENTIAL ramp for magnitude (Heatmap): one hue,
                               seq-1 is always the lowest value; the stylesheet
                               flips which end is pale per theme */
+--m-div-1 … --m-div-7      /* DIVERGING ramp for polarity: cool pole → neutral
+                              grey (--m-div-4) → warm pole. Re-check any change
+                              with `validate_chart_palette.py --diverging` */
 --m-chart-grid             /* hairline gridlines */
 --m-chart-axis             /* axis rules and the crosshair */
 --m-chart-ink              /* axis label text */

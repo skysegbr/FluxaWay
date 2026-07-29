@@ -330,6 +330,26 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-CANVAS-03 | Pan / zoom / minimap | canvas transforms; minimap reflects | browser |
 | SC-CANVAS-04 | `controllerRef` | imperative add/remove nodes | suite |
 
+### fluxaway-charts (`SC-CHART`) — examples: dashboard, drug-recalls
+| ID | Scenario | Expected | Verify |
+|---|---|---|---|
+| SC-CHART-01 | Line/Area render | one path per series; area closes to the baseline; a 1-point series draws a dot | suite (charts) |
+| SC-CHART-02 | Bar grouped/stacked/horizontal | thickness capped at 24px; 2px surface gap; stacked segments sum; negatives grow down from zero | suite (charts) |
+| SC-CHART-03 | Donut/Pie | arc per slice; folds past `maxSlices` into "Other" preserving the total; zero/negative skipped | suite (charts) |
+| SC-CHART-04 | Heatmap | sequential ramp only; missing cells stay blank (never zero); scale key present | suite (charts) |
+| SC-CHART-05 | Scatter | caps coloured groups at `ALL_PAIRS_SLOTS`; tail folds to one legend row; nearest-point hover (no dead-centre aim) | suite (charts) |
+| SC-CHART-06 | SmallMultiples | facets share one y-domain; `shareScale:false` gives each its own | suite (charts) |
+| SC-CHART-07 | Axis honesty | y-domain contains the data (no point above the last tick); x labels thinned without overprinting | suite (charts) |
+| SC-CHART-08 | Colour rules | `slot` survives filtering (no recolor-on-filter); `seriesColor(8)` folds instead of cycling; `emphasis` greys the rest | suite (charts) |
+| SC-CHART-09 | Table twin | every chart ships one; it lists the FULL series even when brushed | suite (charts + a11y) |
+| SC-CHART-10 | Hover & keyboard | crosshair lists every series; marks focusable with aria-label; focus shows what hover shows | suite (charts + a11y) |
+| SC-CHART-11 | Brush/zoom | drag narrows the window; rect visible while dragging; crosshair suppressed; plain click does not collapse; reset restores | suite (charts) |
+| SC-CHART-12 | Animation | `animate` settles to an untransformed mark; `animate.key` replays; honours prefers-reduced-motion | suite (charts) |
+| SC-CHART-13 | Export | CSV escapes separators; PNG inlines computed colours (not black) and falls back to the viewBox when unlaid-out | suite (charts) |
+| SC-CHART-14 | Palette gates | `validate_chart_palette.py` passes categorical + `--sequential`; every `:root` token declared in all theme scopes | static |
+| SC-CHART-15 | SSR | server render carries real geometry, the table twin and MetricCard's value | suite (ssr) |
+| SC-CHART-16 | Cross-browser | brush works where `setPointerCapture` throws (Firefox); rasterised export decodes | suite (3 browsers) |
+
 ### FullCodeEditor (`SC-EDITOR`) — example: designer
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|

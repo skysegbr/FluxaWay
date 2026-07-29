@@ -15,7 +15,26 @@ import {
   Drawer,
   Button,
 } from "../dist/fluxaway-components.js";
+import {
+  LineChart as ChartLine,
+  BarChart as ChartBar,
+  DonutChart as ChartDonut,
+  Heatmap as ChartHeatmap,
+  ScatterChart as ChartScatter,
+  Meter as ChartMeter,
+} from "../dist/fluxaway-charts.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
+
+const A11Y_ROWS = [
+  { m: "Jan", v: 10 },
+  { m: "Feb", v: 20 },
+  { m: "Mar", v: 15 },
+];
+
+const A11Y_GRID = [
+  { day: "Mon", hour: "09", n: 4 },
+  { day: "Mon", hour: "12", n: 9 },
+];
 
 function keydown(target, key) {
   target.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
@@ -401,4 +420,117 @@ test("Dialog: does not steal focus from an element already inside it", async () 
   setTickFn((t) => t + 1);
   await flush();
   assertEqual(document.activeElement, input, "expected focus to stay on the input after re-render");
+});
+
+// ── Charts (fluxaway-charts.js) ─────────────────────────────────────────────
+//
+// A chart's job is to be readable, and colour alone never satisfies that. What
+// is asserted here is the non-visual path: every value reachable without a
+// pointer, marks that take focus and announce themselves, and a keyboard route
+// through the plot.
+
+test("charts: every form ships a table-view twin, so no value is hover-only", async () => {
+  const container = mountPoint();
+  render(() => h("div", null,
+    h(ChartLine, { data: A11Y_ROWS, x: "m", y: "v", label: "Visits" }),
+    h(ChartBar, { data: A11Y_ROWS, x: "m", y: "v" }),
+    h(ChartDonut, { data: A11Y_ROWS, x: "m", y: "v" }),
+    h(ChartHeatmap, { data: A11Y_GRID, x: "hour", y: "day", value: "n" }),
+    h(ChartScatter, { data: A11Y_ROWS, x: "v", y: "v" }),
+  ), container);
+  await flush();
+
+  const tables = container.querySelectorAll("details.m-chart-table");
+  assertEqual(tables.length, 5, "each chart must carry its own table view");
+  for (const table of tables) {
+    assert(table.querySelector("summary"), "the table twin must be reachable via a summary");
+    assert(table.querySelectorAll("tbody tr").length > 0, "the table twin must have rows");
+  }
+});
+
+test("charts: bar marks are focusable and announce category and value", async () => {
+  const container = mountPoint();
+  render(() => h(ChartBar, { data: A11Y_ROWS, x: "m", y: "v" }), container);
+  await flush();
+
+  const bar = container.querySelector("path.m-chart-bar");
+  assertEqual(bar.getAttribute("tabindex"), "0");
+  const label = bar.getAttribute("aria-label");
+  assert(label.includes("Jan"), `the mark must name its category, got ${label}`);
+  assert(label.includes("10"), `the mark must announce its value, got ${label}`);
+
+  // focus must surface the same readout hover does
+  bar.dispatchEvent(new FocusEvent("focus", { bubbles: true }));
+  await flush();
+  assert(container.querySelector(".m-chart-tooltip"), "focus must open the readout");
+});
+
+test("charts: donut arcs and heatmap cells are focusable with their own labels", async () => {
+  const container = mountPoint();
+  render(() => h("div", null,
+    h(ChartDonut, { data: A11Y_ROWS, x: "m", y: "v" }),
+    h(ChartHeatmap, { data: A11Y_GRID, x: "hour", y: "day", value: "n" }),
+  ), container);
+  await flush();
+
+  for (const selector of ["path.m-chart-arc", "rect.m-heat-cell"]) {
+    const mark = container.querySelector(selector);
+    assertEqual(mark.getAttribute("tabindex"), "0", `${selector} must be focusable`);
+    assert(mark.getAttribute("aria-label"), `${selector} must carry an aria-label`);
+  }
+});
+
+test("charts: the line plot is keyboard-navigable across the x-axis", async () => {
+  const container = mountPoint();
+  render(() => h(ChartLine, { data: A11Y_ROWS, x: "m", y: "v" }), container);
+  await flush();
+
+  const svg = container.querySelector("svg.m-chart-svg");
+  assertEqual(svg.getAttribute("tabindex"), "0", "the plot itself must be reachable by Tab");
+
+  keydown(svg, "ArrowRight");
+  await flush();
+  const first = container.querySelector(".m-chart-tooltip-title").textContent;
+  keydown(svg, "ArrowRight");
+  await flush();
+  const second = container.querySelector(".m-chart-tooltip-title").textContent;
+  assert(first !== second, "arrow keys must move the readout along the axis");
+});
+
+test("charts: the tooltip is a live region, so the readout is announced", async () => {
+  const container = mountPoint();
+  render(() => h(ChartBar, { data: A11Y_ROWS, x: "m", y: "v" }), container);
+  await flush();
+
+  container.querySelector("path.m-chart-bar")
+    .dispatchEvent(new FocusEvent("focus", { bubbles: true }));
+  await flush();
+
+  const tooltip = container.querySelector(".m-chart-tooltip");
+  assertEqual(tooltip.getAttribute("role"), "status");
+  assertEqual(tooltip.getAttribute("aria-live"), "polite");
+});
+
+test("charts: the Meter exposes its value through ARIA, not just a filled bar", async () => {
+  const container = mountPoint();
+  render(() => h(ChartMeter, { label: "Seats", value: 30, max: 200 }), container);
+  await flush();
+
+  const meter = container.querySelector('[role="meter"]');
+  assertEqual(meter.getAttribute("aria-valuenow"), "30");
+  assertEqual(meter.getAttribute("aria-valuemin"), "0");
+  assertEqual(meter.getAttribute("aria-valuemax"), "200");
+  assertEqual(meter.getAttribute("aria-label"), "Seats");
+});
+
+test("charts: decorative chrome is hidden from assistive tech", async () => {
+  const container = mountPoint();
+  render(() => h(ChartLine, { data: A11Y_ROWS, x: "m", y: "v" }), container);
+  await flush();
+
+  // Gridlines and axis ticks repeat what the table already says.
+  for (const selector of [".m-chart-grid", ".m-chart-axis-y", ".m-chart-axis-x"]) {
+    const node = container.querySelector(selector);
+    assertEqual(node.getAttribute("aria-hidden"), "true", `${selector} must be aria-hidden`);
+  }
 });

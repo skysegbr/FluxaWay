@@ -139,3 +139,38 @@ export const ACCOUNTS = Array.from({ length: 60 }, (_, i) => {
   const revenue = Math.round(spend * (1.6 + tier * 0.25) + wobble(i, 3) * 900);
   return { account: `Account ${i + 1}`, segment, spend, revenue: Math.max(120, revenue) };
 });
+
+// ── Budget variance per team: a signed value against a baseline ─────────────
+export const VARIANCE = [
+  { team: "Platform", delta: 18 },
+  { team: "Growth", delta: -12 },
+  { team: "Payments", delta: 4 },
+  { team: "Mobile", delta: -25 },
+  { team: "Data", delta: 31 },
+  { team: "Support", delta: -3 },
+];
+
+// ── Survey responses on an ordered scale ───────────────────────────────────
+export const SURVEY = [
+  { question: "Docs are clear", sd: 4, d: 9, n: 15, a: 42, sa: 30 },
+  { question: "Setup was easy", sd: 12, d: 22, n: 18, a: 30, sa: 18 },
+  { question: "I'd recommend it", sd: 3, d: 5, n: 12, a: 35, sa: 45 },
+  { question: "Errors are helpful", sd: 20, d: 28, n: 22, a: 20, sa: 10 },
+];
+
+export const SURVEY_SCALE = [
+  { key: "sd", label: "Strongly disagree" },
+  { key: "d", label: "Disagree" },
+  { key: "n", label: "Neutral" },
+  { key: "a", label: "Agree" },
+  { key: "sa", label: "Strongly agree" },
+];
+
+// ── Page load time before and after the optimisation work ──────────────────
+export const LOAD_TIMES = [
+  { page: "Home", before: 2.8, after: 1.2 },
+  { page: "Search", before: 4.1, after: 2.6 },
+  { page: "Product", before: 3.6, after: 1.9 },
+  { page: "Checkout", before: 3.2, after: 3.4 },
+  { page: "Profile", before: 1.9, after: 0.9 },
+];

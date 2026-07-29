@@ -1,14 +1,14 @@
 import { h, render, useEffect, useMemo, useRef, useState } from "/dist/fluxaway.js";
 import {
-  AreaChart, BarChart, ChartCard, DashboardGrid, DonutChart, Heatmap, LineChart,
-  Meter, ScatterChart, SmallMultiples, exportCSV, exportPNG,
+  ChartCard, DashboardGrid, LikertChart, SmallMultiples,
 } from "/dist/fluxaway-charts.js";
-import { Button } from "/dist/fluxaway-components-core.js";
+import { TrafficCards } from "./components/TrafficCards.js";
+import { MixCards } from "./components/MixCards.js";
+import { OpsCards } from "./components/OpsCards.js";
 import { DashboardFilters } from "./components/DashboardFilters.js";
 import { KpiRow } from "./components/KpiRow.js";
 import {
-  ACCOUNTS, buildRegionSeries, buildSeries, CHANNELS, dayLabel, PLAN_SERIES,
-  REGIONS, sum, TRAFFIC_GRID,
+  buildRegionSeries, buildSeries, CHANNELS, dayLabel, sum, SURVEY, SURVEY_SCALE,
 } from "./data.js";
 
 function App() {
@@ -61,157 +61,26 @@ function App() {
       h(
         DashboardGrid,
         { min: 360 },
-        // Two measures of very different magnitude — visits in the thousands,
-        // signups in the hundreds — so they are TWO charts, never one plot
-        // with two y-scales.
-        h(
-          ChartCard,
-          {
-            title: "Visits",
-            subtitle: "Daily sessions — drag across the plot to zoom in",
-            span: 2,
-            loading: busy,
-            ref: visitsRef,
-            actions: h(
-              "div",
-              { className: "db-card-actions" },
-              h(Button, {
-                variant: "text",
-                onClick: () => exportCSV(
-                  { data: rows, x: "date", y: "visits", label: "Visits", xLabel: "Day" },
-                  { filename: "visits.csv" },
-                ),
-              }, "CSV"),
-              h(Button, {
-                variant: "text",
-                onClick: () => exportPNG(visitsRef.current, { filename: "visits.png" }),
-              }, "PNG"),
-            ),
-          },
-          h(AreaChart, {
-            data: rows,
-            x: "date",
-            y: "visits",
-            label: "Visits",
-            height: 280,
-            animate,
-            brush: true,
-            xTickFormat: dayLabel,
-            xLabel: "Day",
-          }),
-        ),
+        h(TrafficCards, { rows, animate, busy, visitsRef }),
+        h(MixCards, { animate, busy, totalSessions }),
+        h(OpsCards, { animate, busy }),
+      ),
 
-        h(
-          ChartCard,
-          { title: "Signups", subtitle: "Daily — its own scale, deliberately not sharing the revenue axis", loading: busy },
-          h(LineChart, {
-            data: rows,
-            x: "date",
-            series: [{ key: "signups", label: "Signups" }],
-            height: 220,
-            animate,
-            xTickFormat: dayLabel,
-            xLabel: "Day",
-          }),
-        ),
-
-        h(
-          ChartCard,
-          { title: "Revenue", subtitle: "Daily, USD", loading: busy },
-          h(LineChart, {
-            data: rows,
-            x: "date",
-            series: [{ key: "revenue", label: "Revenue", slot: 3 }],
-            height: 220,
-            animate,
-            xTickFormat: dayLabel,
-            xLabel: "Day",
-            format: (n) => `$${Number(n).toLocaleString()}`,
-          }),
-        ),
-
-        h(
-          ChartCard,
-          {
-            title: "Acquisition channels",
-            subtitle: "Nine channels, six slices — the tail folds into “Other”",
-            loading: busy,
-          },
-          h(DonutChart, {
-            data: CHANNELS,
-            x: "channel",
-            y: "sessions",
-            label: "Sessions by channel",
-            height: 230,
-            animate,
-            centerLabel: { value: totalSessions.toLocaleString(), label: "sessions" },
-          }),
-        ),
-
-        h(
-          ChartCard,
-          { title: "Plan mix by region", subtitle: "Stacked — parts of one whole", loading: busy },
-          h(BarChart, {
-            data: REGIONS,
-            x: "region",
-            series: PLAN_SERIES,
-            stacked: true,
-            horizontal: true,
-            height: 240,
-            animate,
-            xLabel: "Region",
-          }),
-        ),
-
-        h(
-          ChartCard,
-          {
-            title: "When people visit",
-            subtitle: "Sessions by weekday and hour — one hue, stronger means more",
-            span: 2,
-            loading: busy,
-          },
-          h(Heatmap, {
-            data: TRAFFIC_GRID,
-            x: "hour",
-            y: "day",
-            value: "sessions",
-            label: "Sessions",
-            showValues: true,
-            xTickFormat: (hh) => `${hh}:00`,
-          }),
-        ),
-
-        h(
-          ChartCard,
-          {
-            title: "Spend vs revenue",
-            subtitle: "Five segments, three colours — a scatter can only carry that many",
-            loading: busy,
-          },
-          h(ScatterChart, {
-            data: ACCOUNTS,
-            x: "spend",
-            y: "revenue",
-            groupBy: "segment",
-            height: 260,
-            xLabel: "Spend",
-            yLabel: "Revenue",
-            format: (n) => `$${Number(n).toLocaleString()}`,
-          }),
-        ),
-
-        h(
-          ChartCard,
-          { title: "Capacity", subtitle: "Against the plan limit", loading: busy },
-          h(
-            "div",
-            { className: "db-meters" },
-            h(Meter, { label: "Seats", value: 168, max: 200 }),
-            h(Meter, { label: "API calls", value: 940_000, max: 1_000_000 }),
-            h(Meter, { label: "Storage (GB)", value: 240, max: 500 }),
-          ),
-        ),
+      h(
+        ChartCard,
+        {
+          title: "What people told us",
+          subtitle: "Centred on the neutral answer, so rows compare by lean rather than by width",
+          loading: busy,
+        },
+        h(LikertChart, {
+          data: SURVEY,
+          x: "question",
+          series: SURVEY_SCALE,
+          neutralIndex: 2,
+          xLabel: "Question",
+          format: (n) => `${n}%`,
+        }),
       ),
 
       h(

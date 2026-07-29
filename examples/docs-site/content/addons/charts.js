@@ -1,6 +1,6 @@
 import {
-  BarPreview, DashboardPreview, DonutPreview, FacetPreview, HeatmapPreview,
-  LinePreview, ScatterPreview,
+  BarPreview, DashboardPreview, DivergingPreview, DonutPreview, DumbbellPreview,
+  FacetPreview, HeatmapPreview, LikertPreview, LinePreview, ScatterPreview,
 } from "./chartsDemos.js";
 
 export const ADDON_ENTRIES = [
@@ -104,6 +104,45 @@ return h(LineChart, {
 });`,
       },
       {
+        id: "charts-diverging",
+        title: "Diverging bars",
+        note: "Values against a baseline take the DIVERGING ramp: two opposite hues meeting at a neutral grey. The midpoint is grey on purpose — it has to read as “nothing”. The legend becomes a scale key, because here colour means distance from zero, not which series.",
+        render: DivergingPreview,
+        code: `return h(BarChart, {
+  data: variance,     // [{ team, delta }]
+  x: "team",
+  y: "delta",
+  horizontal: true,
+  diverging: true,    // { invert: true } flips the poles
+});`,
+      },
+      {
+        id: "charts-likert",
+        title: "Likert / sentiment",
+        note: "An ordered scale as a diverging stacked bar, centred so the neutral response straddles zero. Rows can then be compared by LEAN — scan the baseline — instead of by total width, which is all a plain stacked bar would show.",
+        render: LikertPreview,
+        code: `return h(LikertChart, {
+  data: survey,
+  x: "q",
+  series: scale,      // IN ORDER, most negative first
+  neutralIndex: 2,    // which response is the middle
+});`,
+      },
+      {
+        id: "charts-dumbbell",
+        title: "Dumbbell",
+        note: "Before → after per item. The connector is the mark: two grouped bars would make the reader compute the gap, while this draws it. One hue in two shades, because it is the same measure at two times rather than two series.",
+        render: DumbbellPreview,
+        code: `return h(DumbbellChart, {
+  data: pages,
+  x: "page",
+  from: "before",
+  to: "after",
+  fromLabel: "Before",
+  toLabel: "After",
+});`,
+      },
+      {
         id: "charts-dashboard",
         title: "Dashboard layout",
         note: "MetricRow for the KPI row, DashboardGrid + ChartCard for the charts below it. `up: \"bad\"` flips the delta colors, because a rising error rate is not a win.",
@@ -139,6 +178,8 @@ h(DashboardGrid, { min: 260 },
       { name: "brush", type: "boolean", default: "false", description: "LineChart: drag across the plot to zoom a range; Escape or the reset control restores it." },
       { name: "value", type: "string | (row) => number", description: "Heatmap: the magnitude key. Missing cells stay blank rather than reading as zero." },
       { name: "groupBy", type: "string | (row) => value", description: "ScatterChart: colour points by category, capped at ALL_PAIRS_SLOTS (3)." },
+      { name: "diverging", type: "boolean | { invert }", default: "false", description: "BarChart: colour by polarity against the baseline instead of series identity." },
+      { name: "neutralIndex", type: "number", description: "LikertChart: which response is the middle of the ordered scale." },
       { name: "shareScale", type: "boolean", default: "true", description: "SmallMultiples: one y-scale across facets. Off makes unequal panels look comparable." },
       { name: "format / tickFormat / xTickFormat", type: "(value) => string", description: "Tooltip+table, value axis, and category axis formatters." },
     ],
@@ -151,7 +192,7 @@ h(DashboardGrid, { min: 260 },
       "Load /dist/fluxaway-charts.css next to the module — it carries the palette tokens.",
       "The palette has eight slots in a fixed order; a ninth series folds into “Other” rather than cycling. Re-check any color change with `python3 scripts/validate_chart_palette.py`.",
       "There is deliberately no dual-axis option: two measures of different magnitude are two charts.",
-      "Magnitude uses the one-hue --m-seq-* ramp (Heatmap); identity uses the categorical slots. Never a rainbow for a value scale.",
+      "Three colour jobs, three ramps: --m-chart-* for identity, --m-seq-* for magnitude, --m-div-* for polarity. Using one for another job is the most common charting mistake.",
       "exportCSV() writes the same rows the table view shows; exportPNG() inlines every computed colour first, since a serialised SVG carries no stylesheet.",
     ],
   },

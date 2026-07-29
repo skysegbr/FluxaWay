@@ -32,6 +32,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   computed colour onto the clone before serialising — a detached SVG carries no
   stylesheet, so `var(--m-chart-N)` would otherwise rasterise black.
 - **`yDomain`** on the cartesian charts, so facets can share one scale.
+- **The diverging palette, and the three forms it unlocks.** Charts encode four
+  colour jobs: identity, magnitude, polarity and status. Identity and magnitude
+  shipped; **polarity** — values measured against a baseline — had no ramp, so
+  anything above/below a target had to borrow colours that meant something else.
+  `--m-div-1..7` is two opposite hues meeting at a NEUTRAL GREY middle, derived
+  and validated the same way as the others: each arm monotone in lightness
+  (worst adjacent ΔL 0.123 light / 0.074 dark), arms mirrored within ΔL 0.014,
+  both poles clearing 3:1, and the midpoint the least saturated slot in the
+  ramp. `validate_chart_palette.py --diverging` checks it. The midpoint's own
+  contrast is deliberately low and deliberately ungated: a value sitting on the
+  baseline should recede.
+- **`BarChart`'s `diverging`** colours by distance from the baseline instead of
+  series identity, and swaps the series legend for a scale key — with series
+  names the hues would be mislabelled. `{ invert: true }` flips the poles,
+  because red means loss in finance and heat on a map.
+- **`LikertChart`** — an ordered-scale share as a diverging stacked bar centred
+  on the neutral response, so rows compare by LEAN rather than by total width.
+  The scale spans both poles (otherwise "strongly agree" reads no stronger than
+  "agree"), and the neutral segment uses the visible de-emphasis grey rather
+  than the recessive midpoint token: "Neutral" is an answer someone gave, not an
+  absent value, and a segment nobody can see under-reports it.
+- **`DumbbellChart`** — before → after per item, where the connector *is* the
+  change. Two grouped bars would make the reader compute the gap. One hue in two
+  shades, since it is the same measure at two times.
+- **Charts are now covered by the a11y and SSR suites.** The non-visual path is
+  what a chart lives or dies by: every form ships a table twin, marks take focus
+  and announce themselves, the plot is keyboard-navigable, the tooltip is a live
+  region, and decorative chrome is hidden. SSR asserts the server render carries
+  real geometry and MetricCard's value, since `countUp` runs from an effect that
+  never fires there.
 
 ### Changed
 - `ScatterChart` caps coloured groups at three (`ALL_PAIRS_SLOTS`) and folds the
@@ -41,6 +71,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `tests/index.html` now loads `dist/fluxaway-charts.css`. The PNG-export test
   reads colours back through `getComputedStyle`, which needs the palette tokens
   present exactly as an app would load them.
+
+### Fixed
+- **Brush-to-zoom was dead in Firefox.** `setPointerCapture` throws there for a
+  pointerId it does not consider active, and the call sat before the state
+  update, so the exception killed the interaction before it began. Capture is a
+  convenience — it lets a release outside the plot still commit — so it is now
+  best-effort. Found by running the suite on all three browsers for the first
+  time; charts now pass 3/3.
 
 ## [0.21.0] - 2026-07-29
 

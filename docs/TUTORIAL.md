@@ -744,6 +744,12 @@ FluxaWay is intentionally small but complete for most production use cases.
 
 **CSS framework** — mobile-first grid, spacing, display, and dark mode utilities.
 
+**Charts & dashboards** (`dist/fluxaway-charts.js` + its CSS) — line, area, bar
+(grouped/stacked/horizontal), donut, pie, heatmap, scatter, small multiples and
+sparklines, plus `DashboardGrid`, `ChartCard`, `MetricCard` and `Meter`. Plain
+SVG, no chart library, with a colourblind-validated palette and a table view on
+every chart. See `examples/dashboard`.
+
 **What FluxaWay intentionally omits**
 - JSX — by design. `h()` is the DSL; no compiler or transpiler needed.
 - SSR — FluxaWay targets the browser directly.

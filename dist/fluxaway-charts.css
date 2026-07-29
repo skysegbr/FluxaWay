@@ -78,6 +78,37 @@
   --m-seq-6: #115e59;
   --m-seq-7: #0c3b38;
 
+  /* ── Diverging ramp (polarity) ────────────────────────────────────────────
+   *
+   * TWO hues that read as opposite, with a NEUTRAL GREY midpoint — for values
+   * measured against a baseline: above/below target, gain/loss, agree/disagree.
+   * Cool (blue) at slot 1, warm (red) at slot 7, --m-div-4 is the middle.
+   *
+   * The midpoint is grey on purpose and never a hue: it has to read as
+   * "nothing". It is also the least saturated step in the ramp, so a value at
+   * the baseline recedes instead of competing with real magnitude — which is
+   * why its contrast is deliberately low.
+   *
+   * Two cool poles (blue<->aqua) were rejected: opposite ends must feel
+   * opposite, and the midpoint must not look like one of them.
+   *
+   * Validated (scripts/validate_chart_palette.py --diverging): each arm is
+   * monotone in lightness with worst adjacent ΔL 0.123 light / 0.074 dark,
+   * arms mirror each other within ΔL 0.014, both extremes clear 3:1, and the
+   * midpoint is the least saturated slot.
+   *
+   * NOT a status scale. Which pole is "good" is the app's call — BarChart's
+   * `diverging` takes `positiveIsGood` — because red means loss in finance and
+   * heat on a map.
+   */
+  --m-div-1: #3b82f6;
+  --m-div-2: #93c5fd;
+  --m-div-3: #dbeafe;
+  --m-div-4: #eceff3;
+  --m-div-5: #fee2e2;
+  --m-div-6: #fca5a5;
+  --m-div-7: #ef4444;
+
   /* Chart chrome: recessive by construction. The data is the loud part. */
   --m-chart-grid: #e8edf2;
   --m-chart-axis: #cbd6e0;
@@ -107,6 +138,14 @@
     --m-seq-5: #14b8a6;
     --m-seq-6: #5eead4;
     --m-seq-7: #f0fdfa;
+
+    --m-div-1: #93c5fd;
+    --m-div-2: #60a5fa;
+    --m-div-3: #3b82f6;
+    --m-div-4: #3a4658;
+    --m-div-5: #ef4444;
+    --m-div-6: #f87171;
+    --m-div-7: #fca5a5;
     --m-chart-grid: #273449;
     --m-chart-axis: #334155;
     --m-chart-ink: #94a3b8;
@@ -134,6 +173,14 @@
   --m-seq-5: #14b8a6;
   --m-seq-6: #5eead4;
   --m-seq-7: #f0fdfa;
+
+  --m-div-1: #93c5fd;
+  --m-div-2: #60a5fa;
+  --m-div-3: #3b82f6;
+  --m-div-4: #3a4658;
+  --m-div-5: #ef4444;
+  --m-div-6: #f87171;
+  --m-div-7: #fca5a5;
   --m-chart-grid: #273449;
   --m-chart-axis: #334155;
   --m-chart-ink: #94a3b8;
@@ -160,6 +207,14 @@
   --m-seq-5: #0f766e;
   --m-seq-6: #115e59;
   --m-seq-7: #0c3b38;
+
+  --m-div-1: #3b82f6;
+  --m-div-2: #93c5fd;
+  --m-div-3: #dbeafe;
+  --m-div-4: #eceff3;
+  --m-div-5: #fee2e2;
+  --m-div-6: #fca5a5;
+  --m-div-7: #ef4444;
   --m-chart-grid: #e8edf2;
   --m-chart-axis: #cbd6e0;
   --m-chart-ink: #617080;
@@ -885,4 +940,60 @@
   .m-dash-card {
     border: 1px solid CanvasText;
   }
+}
+
+/* ── Diverging forms ────────────────────────────────────────────────────────── */
+
+/* The scale key for a diverging bar chart: colour means distance from the
+   baseline, so the legend has to show the RAMP, not a list of series names. */
+.m-div-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-2, 8px);
+  margin-top: var(--m-space-3, 12px);
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-div-legend-ramp {
+  display: flex;
+  overflow: hidden;
+  flex: 0 1 12rem;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.m-div-legend-ramp > span {
+  flex: 1;
+}
+
+/* The zero line in a Likert chart is the thing readers scan down to compare
+   lean between rows, so it is a real mark — not a recessive gridline. */
+.m-div-baseline {
+  stroke: var(--m-chart-axis);
+  stroke-width: 1.5;
+  shape-rendering: crispEdges;
+}
+
+/* ── Dumbbell ───────────────────────────────────────────────────────────────── */
+
+.m-dumbbell {
+  cursor: default;
+}
+
+.m-dumbbell:focus-visible {
+  outline: 2px solid var(--m-focus, #9ee8df);
+  outline-offset: 2px;
+}
+
+/* The connector carries the change; the dots are just its ends. */
+.m-dumbbell-bar {
+  stroke: var(--m-chart-muted);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.m-dumbbell:hover .m-dumbbell-bar {
+  stroke: var(--m-chart-axis);
 }

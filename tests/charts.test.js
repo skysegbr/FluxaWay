@@ -10,11 +10,11 @@
 import { h, render } from "../dist/fluxaway.js";
 import {
   LineChart, AreaChart, BarChart, DonutChart, PieChart, Sparkline,
-  Heatmap, ScatterChart, SmallMultiples,
+  Heatmap, ScatterChart, SmallMultiples, LikertChart, DumbbellChart,
   DashboardGrid, ChartCard, MetricCard, MetricRow, Meter,
   scaleLinear, scaleBand, niceTicks, formatCompact, formatNumber,
-  seriesColor, seqColor, chartToCSV, exportPNG,
-  CHART_SLOTS, SEQ_STEPS, ALL_PAIRS_SLOTS,
+  seriesColor, seqColor, divergingColor, chartToCSV, exportPNG,
+  CHART_SLOTS, SEQ_STEPS, ALL_PAIRS_SLOTS, DIV_STEPS,
 } from "../dist/fluxaway-charts.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
@@ -916,4 +916,171 @@ test("exportPNG: falls back to the viewBox when the chart has no laid-out size",
   const bitmap = await createImageBitmap(blob);
   assert(bitmap.width > 1 && bitmap.height > 1,
     `expected the viewBox size, got ${bitmap.width}x${bitmap.height}`);
+});
+
+// ── diverging palette & forms ───────────────────────────────
+
+test("divergingColor: sign picks the arm, magnitude picks the distance", () => {
+  const opts = { domain: [-10, 10] };
+  assertEqual(divergingColor(0, opts), "var(--m-div-4)", "the baseline takes the neutral slot");
+  assertEqual(divergingColor(-10, opts), "var(--m-div-1)", "the negative extreme is the cool pole");
+  assertEqual(divergingColor(10, opts), "var(--m-div-7)", "the positive extreme is the warm pole");
+  // half magnitude lands between the middle and the pole
+  assertEqual(divergingColor(5, opts), "var(--m-div-6)");
+  assertEqual(divergingColor(-5, opts), "var(--m-div-2)");
+  assertEqual(DIV_STEPS, 7);
+});
+
+test("divergingColor: invert swaps the poles, because red is not always 'up'", () => {
+  const opts = { domain: [-10, 10], invert: true };
+  assertEqual(divergingColor(10, opts), "var(--m-div-1)");
+  assertEqual(divergingColor(-10, opts), "var(--m-div-7)");
+  assertEqual(divergingColor(0, opts), "var(--m-div-4)", "the midpoint is unaffected");
+});
+
+test("divergingColor: a junk value falls back to the neutral rather than NaN", () => {
+  assertEqual(divergingColor(undefined, { domain: [-10, 10] }), "var(--m-div-4)");
+});
+
+test("BarChart: diverging colours by polarity and shows a scale key, not a series legend", async () => {
+  const container = mountPoint();
+  const variance = [
+    { team: "A", delta: 30 }, { team: "B", delta: -30 }, { team: "C", delta: 0 },
+  ];
+  render(() => h(BarChart, {
+    data: variance, x: "team", y: "delta", diverging: true, yDomain: [-30, 30],
+  }), container);
+  await flush();
+
+  const fills = [...container.querySelectorAll("path.m-chart-bar")]
+    .map((n) => n.getAttribute("fill"));
+  assertEqual(fills[0], "var(--m-div-7)", "the positive extreme takes the warm pole");
+  assertEqual(fills[1], "var(--m-div-1)", "the negative extreme takes the cool pole");
+  assertEqual(fills[2], "var(--m-div-4)", "a value on the baseline takes the neutral");
+
+  // the legend must describe the SCALE — series names would mislabel the hues
+  assert(container.querySelector(".m-div-legend-ramp"), "a diverging chart needs a scale key");
+  assertEqual(container.querySelectorAll(".m-div-legend-ramp > span").length, DIV_STEPS);
+  assertEqual(container.querySelectorAll(".m-chart-legend").length, 0);
+});
+
+const LIKERT_ROWS = [
+  { q: "Docs are clear", sd: 4, d: 9, n: 15, a: 42, sa: 30 },
+  { q: "Errors are helpful", sd: 20, d: 28, n: 22, a: 20, sa: 10 },
+];
+const LIKERT_SCALE = [
+  { key: "sd", label: "Strongly disagree" },
+  { key: "d", label: "Disagree" },
+  { key: "n", label: "Neutral" },
+  { key: "a", label: "Agree" },
+  { key: "sa", label: "Strongly agree" },
+];
+
+test("LikertChart: the scale spans both poles and the neutral stays visible", async () => {
+  const container = mountPoint();
+  render(() => h(LikertChart, {
+    data: LIKERT_ROWS, x: "q", series: LIKERT_SCALE, neutralIndex: 2,
+  }), container);
+  await flush();
+
+  const fills = [...container.querySelectorAll(".m-chart-legend-key")]
+    .map((n) => n.style.background);
+  // the extremes must reach the saturated poles, or "strongly agree" reads no
+  // stronger than "agree"
+  assertEqual(fills[0], "var(--m-div-1)");
+  assertEqual(fills[fills.length - 1], "var(--m-div-7)");
+  // "Neutral" is an answer people gave, not an absent value — the recessive
+  // midpoint token would under-report it
+  assertEqual(fills[2], "var(--m-chart-muted)");
+});
+
+test("LikertChart: rows are centred on the neutral, so lean is comparable", async () => {
+  const container = mountPoint();
+  render(() => h(LikertChart, {
+    data: LIKERT_ROWS, x: "q", series: LIKERT_SCALE, neutralIndex: 2,
+  }), container);
+  await flush();
+
+  assertEqual(container.querySelectorAll("line.m-div-baseline").length, 1,
+    "the zero line is the mark readers scan — it must be drawn");
+
+  // Row 1 leans positive and row 2 leans negative, so their bars must sit on
+  // opposite sides of the shared baseline.
+  const baseline = Number(container.querySelector("line.m-div-baseline").getAttribute("x1"));
+  const rects = [...container.querySelectorAll("rect.m-chart-bar")];
+  const rowOf = (r) => Number(r.getAttribute("y"));
+  const ys = [...new Set(rects.map(rowOf))].sort((a, b) => a - b);
+
+  const extentRight = (y) => Math.max(...rects.filter((r) => rowOf(r) === y)
+    .map((r) => Number(r.getAttribute("x")) + Number(r.getAttribute("width"))));
+  const extentLeft = (y) => Math.min(...rects.filter((r) => rowOf(r) === y)
+    .map((r) => Number(r.getAttribute("x"))));
+
+  assert(extentRight(ys[0]) - baseline > baseline - extentLeft(ys[0]),
+    "the positive-leaning row must extend further right");
+  assert(baseline - extentLeft(ys[1]) > extentRight(ys[1]) - baseline,
+    "the negative-leaning row must extend further left");
+});
+
+test("LikertChart: every segment is focusable and reports its share", async () => {
+  const container = mountPoint();
+  render(() => h(LikertChart, {
+    data: LIKERT_ROWS, x: "q", series: LIKERT_SCALE, neutralIndex: 2,
+  }), container);
+  await flush();
+
+  const seg = container.querySelector("rect.m-chart-bar");
+  assertEqual(seg.getAttribute("tabindex"), "0");
+  const label = seg.getAttribute("aria-label");
+  assert(label.includes("%"), `the segment must report its share, got ${label}`);
+  assertEqual(container.querySelectorAll("details.m-chart-table").length, 1);
+});
+
+const PAGES = [
+  { page: "Home", before: 2.8, after: 1.2 },
+  { page: "Checkout", before: 3.2, after: 3.4 },
+];
+
+test("DumbbellChart: one connector per item, joining before to after", async () => {
+  const container = mountPoint();
+  render(() => h(DumbbellChart, { data: PAGES, x: "page", from: "before", to: "after" }), container);
+  await flush();
+
+  assertEqual(container.querySelectorAll("g.m-dumbbell").length, 2);
+  assertEqual(container.querySelectorAll("line.m-dumbbell-bar").length, 2);
+  // two dots per item — the ends of the change
+  assertEqual(container.querySelectorAll("g.m-dumbbell circle").length, 4);
+
+  // The connector must actually span the two values: Home fell 2.8 -> 1.2, so
+  // its "after" dot sits left of its "before" dot.
+  const first = container.querySelector("g.m-dumbbell");
+  const [a, b] = [...first.querySelectorAll("circle")].map((c) => Number(c.getAttribute("cx")));
+  assert(b < a, `a decrease must draw right-to-left (${a} -> ${b})`);
+});
+
+test("DumbbellChart: the pair is one hue in two shades, not two series colours", async () => {
+  const container = mountPoint();
+  render(() => h(DumbbellChart, { data: PAGES, x: "page", from: "before", to: "after" }), container);
+  await flush();
+
+  const fills = [...container.querySelector("g.m-dumbbell").querySelectorAll("circle")]
+    .map((c) => c.getAttribute("fill"));
+  // both ends come from the sequential (single-hue) ramp: they are the same
+  // measure at two times, so categorical slots would overstate the difference
+  for (const fill of fills) {
+    assert(fill.startsWith("var(--m-seq-"), `expected one hue in two shades, got ${fill}`);
+  }
+  assert(fills[0] !== fills[1], "the two ends must still be distinguishable");
+});
+
+test("DumbbellChart: the table view carries the computed change", async () => {
+  const container = mountPoint();
+  render(() => h(DumbbellChart, { data: PAGES, x: "page", from: "before", to: "after" }), container);
+  await flush();
+
+  const heads = [...container.querySelectorAll(".m-chart-table thead th")].map((n) => n.textContent);
+  assertEqual(heads[heads.length - 1], "Change");
+  const firstRow = [...container.querySelectorAll(".m-chart-table tbody tr")][0];
+  const cells = [...firstRow.querySelectorAll("td")].map((n) => n.textContent);
+  assertEqual(cells[cells.length - 1], (1.2 - 2.8).toLocaleString());
 });

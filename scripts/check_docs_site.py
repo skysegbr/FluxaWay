@@ -151,7 +151,7 @@ def run(browser_type, base: str) -> list[str]:
         ("/addons/zoom-stage", "ZoomStage", 1),
         ("/addons/pipeline-canvas", "PipelineCanvas", 1),
         ("/addons/full-code-editor", "FullCodeEditor", 1),
-        ("/addons/fluxaway-charts", "FluxaWay Charts", 7),
+        ("/addons/fluxaway-charts", "FluxaWay Charts", 10),
     ):
         open_route(desktop, base, route, heading)
         found = desktop.locator(".nd-demo-preview").count()

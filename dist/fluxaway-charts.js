@@ -90,6 +90,29 @@ export function seqColor(bucket) {
   return `var(--m-seq-${step + 1})`;
 }
 
+/** Steps in the diverging (polarity) ramp — see --m-div-* in the CSS. */
+export const DIV_STEPS = 7;
+
+/**
+ * Diverging token for a value measured against a baseline.
+ *
+ * `--m-div-4` is the neutral middle; below it the cool arm, above it the warm
+ * arm. `invert` swaps which side is warm — finance reads red as loss, a
+ * temperature map reads red as high, and the ramp itself takes no position on
+ * which is which.
+ */
+export function divergingColor(value, { domain = [-1, 1], invert = false } = {}) {
+  const v = finite(value);
+  const [lo, hi] = domain;
+  const mid = Math.floor(DIV_STEPS / 2);          // index of the neutral slot
+  const reach = Math.max(Math.abs(lo), Math.abs(hi)) || 1;
+  // Magnitude drives distance from the middle; sign drives the arm.
+  const steps = Math.min(mid, Math.round((Math.abs(v) / reach) * mid));
+  const warm = invert ? v < 0 : v > 0;
+  const slot = steps === 0 ? mid : mid + (warm ? steps : -steps);
+  return `var(--m-div-${slot + 1})`;
+}
+
 /**
  * How many all-pairs-safe slots the palette has. Scatter, bubble and any form
  * where ANY two marks can end up adjacent must respect this: past it, colors
@@ -842,10 +865,18 @@ export function LineChart({
         onKeyDown,
         onPointerDown: brush
           ? (event) => {
-            // Only a primary-button drag starts a brush; the pointer is
-            // captured so releasing outside the plot still commits.
+            // Only a primary-button drag starts a brush.
             if (event.button !== 0) return;
-            event.currentTarget.setPointerCapture?.(event.pointerId);
+            // Capturing the pointer is a CONVENIENCE — it lets a release
+            // outside the plot still commit. Firefox throws for a pointerId it
+            // does not consider active (synthetic events, some pen/touch
+            // paths), and letting that escape here would kill the whole
+            // interaction before it starts.
+            try {
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+            } catch {
+              // no capture: the drag still works, it just needs to end inside
+            }
             setActive(null);
             const at = localX(event.clientX);
             setDrag({ from: at, to: at });
@@ -1001,6 +1032,7 @@ export function BarChart({
   horizontal = false,
   emphasis,
   yDomain,
+  diverging = false,
   animate = false,
   format = formatNumber,
   tickFormat = formatCompact,
@@ -1093,11 +1125,18 @@ export function BarChart({
       const value = finite(s.accessor(row));
       const tipRows = [{ label: s.label, color: s.color, value }];
       const key = `${ri}-${s.key}`;
+      // With `diverging`, colour carries POLARITY (how far from the baseline,
+      // which side) instead of series identity — the point of the form.
+      const divOptions = diverging === true ? {} : (diverging || {});
+      const fill = diverging
+        ? divergingColor(value, { domain, invert: divOptions.invert })
+        : s.color;
+
       const common = {
         key,
         ref: trackRef(markIndex),
         className: joinClasses("m-chart-bar", horizontal && "m-chart-bar-h"),
-        fill: s.color,
+        fill,
         tabIndex: 0,
         role: "img",
         ariaLabel: `${xTickFormat(categories[ri])}, ${s.label}: ${format(value)}`,
@@ -1200,7 +1239,22 @@ export function BarChart({
         h("g", { className: "m-chart-bars" }, bars),
       ),
     ),
-    showLegend && h(Legend, { series: resolved }),
+    // A diverging chart gets a SCALE key, not a series legend: the colours mean
+    // distance from the baseline, and listing series names would mislabel them.
+    showLegend && (diverging
+      ? h(
+        "div",
+        { className: "m-div-legend" },
+        h("span", { className: "m-div-legend-end" }, tickFormat(domain[0])),
+        h(
+          "span",
+          { className: "m-div-legend-ramp", ariaHidden: "true" },
+          Array.from({ length: DIV_STEPS }, (_, i) =>
+            h("span", { key: i, style: { background: `var(--m-div-${i + 1})` } })),
+        ),
+        h("span", { className: "m-div-legend-end" }, tickFormat(domain[1])),
+      )
+      : h(Legend, { series: resolved })),
     h(Tooltip, { state: active, format }),
     showTable && h(TableView, { data, xGet, series: resolved, xLabel, format, label: tableLabel }),
   );
@@ -1921,6 +1975,410 @@ export function ScatterChart({
       { className: "m-chart-note" },
       `Only the first ${ALL_PAIRS_SLOTS} groups get their own colour here — in a scatter any two dots can sit side by side, and the palette only guarantees separation that far. The rest share “${otherLabel}”; facet with SmallMultiples to tell them apart.`,
     ),
+  );
+}
+
+// ── LikertChart ──────────────────────────────────────────────────────────────
+
+/**
+ * An ordered-scale share — agree/disagree, sentiment, satisfaction — as a
+ * DIVERGING STACKED BAR centred on the neutral response.
+ *
+ * A plain stacked bar would make every row start at the same left edge, so the
+ * eye compares total width instead of "how much of this leans positive". Here
+ * each row is offset so the middle of the neutral segment sits on zero, and
+ * the reader can scan the baseline to compare lean across questions.
+ *
+ * `series` order IS the scale order (most negative first). `neutralIndex`
+ * names the middle response; omit it for an even-length scale with no middle.
+ */
+export function LikertChart({
+  data = [],
+  x,
+  series = [],
+  neutralIndex,
+  label,
+  rowHeight = 38,
+  format = formatNumber,
+  xTickFormat = String,
+  xLabel = "Question",
+  ariaLabel,
+  showLegend = true,
+  showTable = true,
+  tableLabel = "View as table",
+  emptyMessage = "No data to display.",
+  onSegmentClick,
+  className = "",
+  ...props
+} = {}) {
+  const wrapRef = useRef(null);
+  const width = useWidth(wrapRef);
+  const [active, setActive] = useState(null);
+  const xGet = useMemo(() => xAccessor(x), [x]);
+
+  // Map the ordered scale onto the diverging ramp: the middle response takes
+  // the neutral slot, and each side walks outward along its own arm.
+  const resolved = useMemo(() => {
+    const mid = Math.floor(DIV_STEPS / 2);
+    const neutral = Number.isInteger(neutralIndex) ? neutralIndex : -1;
+    // Spread each side across its WHOLE arm rather than walking one step at a
+    // time: with a 5-point scale that would leave the saturated extremes
+    // unused, so "strongly agree" would look no stronger than "agree".
+    const negCount = neutral >= 0 ? neutral : Math.floor(series.length / 2);
+    const posCount = series.length - negCount - (neutral >= 0 ? 1 : 0);
+
+    return series.map((entry, i) => {
+      let slot;
+      if (i === neutral) {
+        slot = mid;
+      } else if (i < negCount) {
+        // distance from the middle, 1 = nearest the neutral
+        const step = negCount - i;
+        slot = Math.max(0, mid - Math.round((step * mid) / Math.max(1, negCount)));
+      } else {
+        const step = i - negCount + (neutral >= 0 ? 0 : 1);
+        slot = Math.min(DIV_STEPS - 1, mid + Math.round((step * mid) / Math.max(1, posCount)));
+      }
+      // The neutral RESPONSE is not the neutral MIDPOINT. --m-div-4 is tuned to
+      // recede, because on a continuous scale the middle means "no value" — but
+      // here "Neutral" is an answer people actually gave, and a segment nobody
+      // can see under-reports it. It takes the visible de-emphasis grey.
+      const token = i === neutral ? "var(--m-chart-muted)" : `var(--m-div-${slot + 1})`;
+
+      return {
+        key: entry.key,
+        label: entry.label ?? entry.key,
+        color: entry.color ?? token,
+        neutral: i === neutral,
+        negative: i < negCount,
+        accessor: typeof entry.key === "function" ? entry.key : (row) => row?.[entry.key],
+      };
+    });
+  }, [series, neutralIndex]);
+
+  if (!data.length || !resolved.length) {
+    return h("div", { ...props, className: joinClasses("m-chart", className) },
+      h(EmptyChart, { height: rowHeight * 3, message: emptyMessage }));
+  }
+
+  // Each row is laid out from its own zero: everything left of the neutral's
+  // midpoint is negative extent, everything right is positive.
+  const rows = data.map((row) => {
+    const values = resolved.map((s) => Math.max(0, finite(s.accessor(row))));
+    const total = values.reduce((sum, v) => sum + v, 0) || 1;
+    let negative = 0;
+    resolved.forEach((s, i) => {
+      if (s.negative) negative += values[i];
+      else if (s.neutral) negative += values[i] / 2;
+    });
+    return { row, values, total, negative };
+  });
+
+  const maxNeg = Math.max(...rows.map((r) => (r.negative / r.total) * 100), 0);
+  const maxPos = Math.max(...rows.map((r) => 100 - (r.negative / r.total) * 100), 0);
+  const reach = Math.max(maxNeg, maxPos) || 50;
+
+  const marginLeft = Math.min(
+    220,
+    Math.max(...data.map((r) => String(xTickFormat(xGet(r))).length)) * CHAR_W + 14,
+  );
+  const plotWidth = Math.max(10, width - marginLeft - 12);
+  const plotHeight = rows.length * rowHeight;
+  const height = plotHeight + AXIS_BAND + 8;
+  const zeroX = plotWidth / 2;
+  const pctToPx = (pct) => (pct / reach) * (plotWidth / 2);
+
+  const showTip = (event, s, value, row, total) => {
+    const node = wrapRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    setActive({
+      title: `${xTickFormat(xGet(row))} — ${s.label}`,
+      rows: [{ label: `${((value / total) * 100).toFixed(0)}%`, color: s.color, value }],
+      x: event.clientX - rect.left,
+      y: Math.max(8, event.clientY - rect.top - 12),
+    });
+  };
+
+  const bars = [];
+  rows.forEach((entry, ri) => {
+    let cursor = -entry.negative;
+    resolved.forEach((s, si) => {
+      const value = entry.values[si];
+      const pct = (value / entry.total) * 100;
+      const startPct = (cursor / entry.total) * 100;
+      cursor += value;
+      if (value <= 0) return;
+
+      const xStart = zeroX + pctToPx(startPct);
+      const barWidth = Math.max(0, pctToPx(pct) - GAP);
+      bars.push(h("rect", {
+        key: `${ri}-${s.key}`,
+        className: "m-chart-bar",
+        x: round(xStart),
+        y: round(ri * rowHeight + (rowHeight - Math.min(BAR_MAX, rowHeight - 10)) / 2),
+        width: round(barWidth),
+        height: Math.min(BAR_MAX, rowHeight - 10),
+        rx: 2,
+        fill: s.color,
+        tabIndex: 0,
+        role: "img",
+        ariaLabel: `${xTickFormat(xGet(entry.row))}, ${s.label}: ${format(value)} (${pct.toFixed(0)}%)`,
+        onPointerEnter: (event) => showTip(event, s, value, entry.row, entry.total),
+        onPointerMove: (event) => showTip(event, s, value, entry.row, entry.total),
+        onPointerLeave: () => setActive(null),
+        onFocus: () => setActive({
+          title: `${xTickFormat(xGet(entry.row))} — ${s.label}`,
+          rows: [{ label: `${pct.toFixed(0)}%`, color: s.color, value }],
+          x: 12,
+          y: 8,
+        }),
+        onBlur: () => setActive(null),
+        onClick: () => onSegmentClick?.(entry.row, s, value),
+      }));
+    });
+  });
+
+  return h(
+    "div",
+    { ...props, className: joinClasses("m-chart", "m-chart-likert", className), ref: wrapRef },
+    h(
+      "svg",
+      {
+        className: "m-chart-svg",
+        width: "100%",
+        height,
+        viewBox: `0 0 ${Math.max(1, width)} ${height}`,
+        role: "group",
+        ariaLabel: ariaLabel ?? `${label ?? "Responses"} — ${rows.length} rows on a diverging scale`,
+      },
+      h(
+        "g",
+        { transform: `translate(${marginLeft}, 4)` },
+        h(
+          "g",
+          { className: "m-chart-axis m-chart-axis-y", ariaHidden: "true" },
+          data.map((row, ri) => h(
+            "text",
+            {
+              key: `q${ri}`,
+              x: -8,
+              y: round(ri * rowHeight + rowHeight / 2),
+              dy: "0.32em",
+              "text-anchor": "end",
+            },
+            xTickFormat(xGet(row)),
+          )),
+        ),
+        h("g", { className: "m-chart-bars" }, bars),
+        // The baseline is the whole point of the form — it is what the reader
+        // scans down to compare lean, so it is drawn above the bars.
+        h("line", {
+          className: "m-div-baseline",
+          x1: round(zeroX), x2: round(zeroX), y1: 0, y2: plotHeight,
+          ariaHidden: "true",
+        }),
+        h(
+          "g",
+          { className: "m-chart-axis m-chart-axis-x", ariaHidden: "true" },
+          [-reach, -reach / 2, 0, reach / 2, reach].map((pct, i) => h(
+            "text",
+            {
+              key: `t${i}`,
+              x: round(zeroX + pctToPx(pct)),
+              y: plotHeight + 18,
+              "text-anchor": "middle",
+            },
+            `${Math.abs(Math.round(pct))}%`,
+          )),
+        ),
+      ),
+    ),
+    showLegend && h(Legend, { series: resolved }),
+    h(Tooltip, { state: active, format }),
+    showTable && h(TableView, { data, xGet, series: resolved, xLabel, format, label: tableLabel }),
+  );
+}
+
+// ── DumbbellChart ────────────────────────────────────────────────────────────
+
+/**
+ * Before → after per item: two dots joined by a bar.
+ *
+ * Two grouped bars per item make the reader compute the gap; a dumbbell draws
+ * it. Per the method this is ONE hue in two shades — the pair is the same
+ * measure at two times, not two different series, so categorical slots would
+ * overstate the difference between them.
+ */
+export function DumbbellChart({
+  data = [],
+  x,
+  from = "from",
+  to = "to",
+  fromLabel = "Before",
+  toLabel = "After",
+  label,
+  rowHeight = 34,
+  format = formatNumber,
+  tickFormat = formatCompact,
+  xTickFormat = String,
+  xLabel = "Item",
+  ariaLabel,
+  showGrid = true,
+  showLegend = true,
+  showTable = true,
+  tableLabel = "View as table",
+  emptyMessage = "No data to display.",
+  onItemClick,
+  className = "",
+  ...props
+} = {}) {
+  const wrapRef = useRef(null);
+  const width = useWidth(wrapRef);
+  const [active, setActive] = useState(null);
+
+  const xGet = useMemo(() => xAccessor(x), [x]);
+  const fromGet = useMemo(() => xAccessor(from), [from]);
+  const toGet = useMemo(() => xAccessor(to), [to]);
+
+  if (!data.length) {
+    return h("div", { ...props, className: joinClasses("m-chart", className) },
+      h(EmptyChart, { height: rowHeight * 3, message: emptyMessage }));
+  }
+
+  const values = data.flatMap((row) => [finite(fromGet(row)), finite(toGet(row))]);
+  const axis = niceAxis(Math.min(0, ...values), Math.max(...values), TICK_COUNT);
+
+  const marginLeft = Math.min(
+    200,
+    Math.max(...data.map((r) => String(xTickFormat(xGet(r))).length)) * CHAR_W + 14,
+  );
+  const plotWidth = Math.max(10, width - marginLeft - 12);
+  const plotHeight = data.length * rowHeight;
+  const height = plotHeight + AXIS_BAND + 8;
+  const scale = scaleLinear({ domain: axis.domain, range: [0, plotWidth] });
+
+  const FROM_COLOR = "var(--m-seq-3)";
+  const TO_COLOR = "var(--m-seq-6)";
+
+  const showTip = (event, row) => {
+    const node = wrapRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    const a = finite(fromGet(row));
+    const b = finite(toGet(row));
+    setActive({
+      title: String(xTickFormat(xGet(row))),
+      rows: [
+        { label: fromLabel, color: FROM_COLOR, value: a },
+        { label: toLabel, color: TO_COLOR, value: b },
+        { label: "Change", color: "var(--m-chart-muted)", value: b - a },
+      ],
+      x: event.clientX - rect.left,
+      y: Math.max(8, event.clientY - rect.top - 12),
+    });
+  };
+
+  return h(
+    "div",
+    { ...props, className: joinClasses("m-chart", "m-chart-dumbbell", className), ref: wrapRef },
+    h(
+      "svg",
+      {
+        className: "m-chart-svg",
+        width: "100%",
+        height,
+        viewBox: `0 0 ${Math.max(1, width)} ${height}`,
+        role: "group",
+        ariaLabel: ariaLabel ?? `${label ?? "Change"} — ${data.length} items, before and after`,
+      },
+      h(
+        "g",
+        { transform: `translate(${marginLeft}, 4)` },
+        showGrid && h(Grid, {
+          ticks: axis.ticks, scale, width: plotWidth, horizontal: false, plotHeight,
+        }),
+        h(
+          "g",
+          { className: "m-chart-axis m-chart-axis-y", ariaHidden: "true" },
+          data.map((row, ri) => h(
+            "text",
+            {
+              key: `i${ri}`,
+              x: -8,
+              y: round(ri * rowHeight + rowHeight / 2),
+              dy: "0.32em",
+              "text-anchor": "end",
+            },
+            xTickFormat(xGet(row)),
+          )),
+        ),
+        h(
+          "g",
+          { className: "m-chart-axis m-chart-axis-x", ariaHidden: "true" },
+          axis.ticks.map((tick) => h(
+            "text",
+            { key: `t${tick}`, x: round(scale(tick)), y: plotHeight + 18, "text-anchor": "middle" },
+            tickFormat(tick),
+          )),
+        ),
+        data.map((row, ri) => {
+          const a = scale(finite(fromGet(row)));
+          const b = scale(finite(toGet(row)));
+          const cy = ri * rowHeight + rowHeight / 2;
+          return h(
+            "g",
+            {
+              key: ri,
+              className: "m-dumbbell",
+              tabIndex: 0,
+              role: "img",
+              ariaLabel: `${xTickFormat(xGet(row))}: ${fromLabel} ${format(fromGet(row))}, ${toLabel} ${format(toGet(row))}`,
+              onPointerEnter: (event) => showTip(event, row),
+              onPointerMove: (event) => showTip(event, row),
+              onPointerLeave: () => setActive(null),
+              onFocus: () => setActive({
+                title: String(xTickFormat(xGet(row))),
+                rows: [
+                  { label: fromLabel, color: FROM_COLOR, value: fromGet(row) },
+                  { label: toLabel, color: TO_COLOR, value: toGet(row) },
+                ],
+                x: 12,
+                y: 8,
+              }),
+              onBlur: () => setActive(null),
+              onClick: () => onItemClick?.(row),
+            },
+            // The connector IS the change — it is the mark, not decoration.
+            h("line", {
+              className: "m-dumbbell-bar",
+              x1: round(a), x2: round(b), y1: round(cy), y2: round(cy),
+            }),
+            h("circle", { className: "m-chart-dot", cx: round(a), cy: round(cy), r: 5, fill: FROM_COLOR }),
+            h("circle", { className: "m-chart-dot", cx: round(b), cy: round(cy), r: 5, fill: TO_COLOR }),
+          );
+        }),
+      ),
+    ),
+    showLegend && h(Legend, {
+      series: [
+        { key: "from", label: fromLabel, color: FROM_COLOR },
+        { key: "to", label: toLabel, color: TO_COLOR },
+      ],
+    }),
+    h(Tooltip, { state: active, format }),
+    showTable && h(TableView, {
+      data,
+      xGet,
+      series: [
+        { key: from, label: fromLabel, accessor: fromGet },
+        { key: to, label: toLabel, accessor: toGet },
+        { key: "__change", label: "Change", accessor: (row) => finite(toGet(row)) - finite(fromGet(row)) },
+      ],
+      xLabel,
+      format,
+      label: tableLabel,
+    }),
   );
 }
 

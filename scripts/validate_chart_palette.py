@@ -55,6 +55,7 @@ CSS = REPO_ROOT / "dist" / "fluxaway-charts.css"
 
 SLOT_COUNT = 8
 SEQ_COUNT = 7
+DIV_COUNT = 7          # 3 per arm + the neutral midpoint
 
 # Thresholds. These mirror the data-viz method the palette was derived under;
 # changing one is changing the guarantee, not tuning a lint rule.
@@ -67,6 +68,8 @@ CONTRAST_MIN = 3.0
 SEQ_MIN_DL = 0.06          # min OKLCH ΔL between adjacent ramp steps
 SEQ_HUE_SPREAD = 40.0      # max OKLCH hue spread for a one-hue ramp (deg)
 ORDINAL_LIGHT_FLOOR = 2.0  # discrete ordered marks must clear this vs surface
+DIV_SYMMETRY = 0.10        # max OKLCH ΔL mismatch between mirrored arm steps
+DIV_EXTREME_CONTRAST = 3.0 # both poles must be visible against the surface
 
 # The chart surface each mode actually renders on — FluxaWay's --m-surface.
 # Contrast and band results are only meaningful against the real surface.
@@ -197,9 +200,11 @@ def read_palette(css_text: str) -> dict[str, list[str]]:
 
     out: dict[str, list[str]] = {}
     seq: dict[str, list[str]] = {}
+    div: dict[str, list[str]] = {}
     for key, body in blocks.items():
         out[key] = slots_of(body, key, "m-chart", SLOT_COUNT)
         seq[key] = slots_of(body, key, "m-seq", SEQ_COUNT)
+        div[key] = slots_of(body, key, "m-div", DIV_COUNT)
 
     # The toggle scope and the media query must agree, or the theme switch and
     # the OS preference would paint different charts.
@@ -214,6 +219,11 @@ def read_palette(css_text: str) -> dict[str, list[str]]:
                 f"the {mode} sequential ramp differs between its two scopes:\n"
                 f"  {seq[mode]}\n  {seq[f'{mode}-restate']}"
             )
+        if div[mode] != div[f"{mode}-restate"]:
+            raise SystemExit(
+                f"the {mode} diverging ramp differs between its two scopes:\n"
+                f"  {div[mode]}\n  {div[f'{mode}-restate']}"
+            )
 
     # Every token declared in :root must be declared in all three theme scopes.
     # Without this, a token added to only some of them silently falls back to
@@ -221,7 +231,7 @@ def read_palette(css_text: str) -> dict[str, list[str]]:
     # duplicated in one block and dropped from another. Names only: the values
     # are meant to differ per mode.
     def names(body: str) -> set[str]:
-        return set(re.findall(r"(--m-(?:chart|seq)-[\w-]+)\s*:", body))
+        return set(re.findall(r"(--m-(?:chart|seq|div)-[\w-]+)\s*:", body))
 
     # Declared once in :root on purpose, because it forwards to a token that is
     # already theme-aware (--m-chart-surface is var(--m-surface)). Redeclaring
@@ -244,6 +254,7 @@ def read_palette(css_text: str) -> dict[str, list[str]]:
     return {
         "light": out["light"], "dark": out["dark"],
         "seq-light": seq["light"], "seq-dark": seq["dark"],
+        "div-light": div["light"], "div-dark": div["dark"],
     }
 
 
@@ -366,6 +377,83 @@ def validate_sequential(ramp: list[str], mode: str) -> tuple[list[tuple[str, str
     return rows, ok
 
 
+def validate_diverging(ramp: list[str], mode: str) -> tuple[list[tuple[str, str, str]], bool]:
+    """
+    Check the two-pole polarity ramp (--m-div-1..7).
+
+    A diverging ramp is two one-hue arms meeting at a neutral. So each arm takes
+    the sequential checks, and three rules govern the whole:
+
+      * the midpoint must be the LEAST saturated slot — it has to read as
+        "nothing", not as a value of its own;
+      * the arms must mirror each other in lightness, or equal magnitudes on
+        opposite sides of the baseline will not look equal;
+      * both extremes must be visible against the surface.
+
+    The midpoint's own contrast is deliberately NOT gated: a value sitting on
+    the baseline is supposed to recede.
+    """
+    rows: list[tuple[str, str, str]] = []
+    ok = True
+    surface = SURFACE[mode]
+
+    mid_index = len(ramp) // 2
+    cool = ramp[:mid_index]
+    mid = ramp[mid_index]
+    warm = ramp[mid_index + 1:]
+
+    # Each arm reads outward from the midpoint, so check it in that direction.
+    for name, arm in (("cool", list(reversed(cool))), ("warm", warm)):
+        Ls = [oklch(c)[0] for c in arm]
+        order = sorted(range(len(Ls)), key=lambda i: Ls[i])
+        monotone = order == list(range(len(Ls))) or order == list(reversed(range(len(Ls))))
+        gaps = [abs(Ls[i + 1] - Ls[i]) for i in range(len(Ls) - 1)]
+        thin = [g for g in gaps if g < SEQ_MIN_DL]
+        hues = [okhue(c) for c in arm]
+        spread = max(hues) - min(hues)
+        if spread > 180:
+            spread = 360 - spread
+
+        arm_ok = monotone and not thin and spread <= SEQ_HUE_SPREAD
+        if not arm_ok:
+            ok = False
+        detail = (f"monotone={monotone}, worst ΔL {min(gaps):.3f} (floor {SEQ_MIN_DL}), "
+                  f"hue spread {spread:.0f}°")
+        rows.append((f"{name} arm", "PASS" if arm_ok else "FAIL", detail))
+
+    mid_chroma = oklch(mid)[1]
+    others = [oklch(c)[1] for c in cool + warm]
+    neutral = all(c > mid_chroma for c in others)
+    if not neutral:
+        ok = False
+    rows.append(("Neutral midpoint", "PASS" if neutral else "FAIL",
+                 f"{mid} C {mid_chroma:.3f} vs arms min C {min(others):.3f}"
+                 + ("" if neutral else " — the midpoint must be the least saturated slot")))
+
+    coolL = [oklch(c)[0] for c in reversed(cool)]
+    warmL = [oklch(c)[0] for c in warm]
+    symmetry = max(abs(a - b) for a, b in zip(coolL, warmL))
+    balanced = symmetry <= DIV_SYMMETRY
+    if not balanced:
+        ok = False
+    rows.append(("Arm symmetry", "PASS" if balanced else "FAIL",
+                 f"worst mirrored ΔL {symmetry:.3f} (max {DIV_SYMMETRY})"))
+
+    extremes = (ramp[0], ramp[-1])
+    worst = min(contrast(c, surface) for c in extremes)
+    visible = worst >= DIV_EXTREME_CONTRAST
+    if not visible:
+        ok = False
+    rows.append(("Pole contrast", "PASS" if visible else "FAIL",
+                 f"worst pole {worst:.2f}:1 (floor {DIV_EXTREME_CONTRAST}:1)"))
+
+    rows.append(("Midpoint contrast", "INFO",
+                 f"{contrast(mid, surface):.2f}:1 — low by design; a value at the "
+                 "baseline should recede"))
+
+    return rows, ok
+
+
 def ladder(palette: list[str]) -> list[tuple[int, float, float]]:
     """Worst adjacent pair for the first N slots — the series-count ladder."""
     out = []
@@ -400,6 +488,8 @@ def main() -> int:
     parser.add_argument("--pairs", choices=("adjacent", "all"), default="adjacent")
     parser.add_argument("--sequential", action="store_true",
                         help="check only the --m-seq-* magnitude ramp")
+    parser.add_argument("--diverging", action="store_true",
+                        help="check only the --m-div-* polarity ramp")
     parser.add_argument("--quiet", action="store_true", help="exit code only")
     args = parser.parse_args()
 
@@ -412,6 +502,22 @@ def main() -> int:
     failed = False
 
     for mode in modes:
+        if args.diverging:
+            ramp = palettes[f"div-{mode}"]
+            rows, ok = validate_diverging(ramp, mode)
+            failed = failed or not ok
+            if not args.quiet:
+                print(f"\n=== {mode} mode — diverging ramp — surface {SURFACE[mode]} ===")
+                for i, hexval in enumerate(ramp, 1):
+                    L, C = oklch(hexval)
+                    marker = "  <- neutral midpoint" if i == len(ramp) // 2 + 1 else ""
+                    print(f"  div {i}  {hexval}   L {L:.3f}  C {C:.3f}  "
+                          f"{contrast(hexval, SURFACE[mode]):.2f}:1{marker}")
+                print()
+                for name, state, detail in rows:
+                    print(f"  {state:7} {name:22} {detail}")
+            continue
+
         if args.sequential:
             ramp = palettes[f"seq-{mode}"]
             rows, ok = validate_sequential(ramp, mode)

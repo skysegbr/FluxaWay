@@ -237,3 +237,75 @@ test("hydrate: a post-hydration update keeps the same root element", async () =>
   assertEqual(container.querySelector("button").textContent, "1");
 });
 
+
+// ── Charts under SSR (fluxaway-charts.js) ──────────────────────────────────
+//
+// Charts measure themselves with ResizeObserver, which does not exist on the
+// server. The point of these is that the server render is still a COMPLETE,
+// readable chart — real geometry from the fallback width, and the table view
+// present — rather than an empty shell waiting for hydration.
+
+import {
+  LineChart as SsrLine,
+  BarChart as SsrBar,
+  DonutChart as SsrDonut,
+  MetricCard as SsrMetric,
+  Sparkline as SsrSparkline,
+} from "../dist/fluxaway-charts.js";
+
+const SSR_ROWS = [
+  { month: "Jan", visits: 1200, signups: 300 },
+  { month: "Feb", visits: 1900, signups: 420 },
+];
+
+test("renderToString: a line chart serializes real geometry, not an empty shell", () => {
+  const html = renderToString(() => h(SsrLine, {
+    data: SSR_ROWS, x: "month",
+    series: [{ key: "visits", label: "Visits" }, { key: "signups", label: "Signups" }],
+  }));
+
+  assert(html.includes("<svg"), "the SVG must be in the server output");
+  // a real path with coordinates — the fallback width still produces geometry
+  assert(html.includes('class="m-chart-line-path"'), "the series path must be rendered");
+  assert(html.includes("M ") && html.includes("L "), "the path must carry actual coordinates");
+  assert(!html.includes("NaN"), "no NaN may reach the server output");
+});
+
+test("renderToString: the table twin is server-rendered, so the data is in the HTML", () => {
+  const html = renderToString(() => h(SsrBar, { data: SSR_ROWS, x: "month", y: "visits" }));
+
+  assert(html.includes("m-chart-table"), "the table view must be part of the server output");
+  // the values themselves, not just the markup around them
+  assert(html.includes("1,200") || html.includes("1200"), "row values must be serialized");
+  assert(html.includes("Jan"), "row categories must be serialized");
+});
+
+test("renderToString: a legend appears for two series and is omitted for one", () => {
+  const two = renderToString(() => h(SsrLine, {
+    data: SSR_ROWS, x: "month",
+    series: [{ key: "visits", label: "Visits" }, { key: "signups", label: "Signups" }],
+  }));
+  const one = renderToString(() => h(SsrLine, { data: SSR_ROWS, x: "month", y: "visits" }));
+
+  assert(two.includes("m-chart-legend"), "two series must ship a legend server-side too");
+  assert(!one.includes("m-chart-legend"), "a single series needs no legend box");
+});
+
+test("renderToString: MetricCard writes its value even though countUp cannot run", () => {
+  // countUp drives the DOM from an effect, which never fires on the server —
+  // the static render must already contain the number.
+  const html = renderToString(() => h(SsrMetric, { label: "Users", value: 12900, countUp: true }));
+  assert(html.includes("13K"), `expected the formatted value in the SSR output, got ${html}`);
+});
+
+test("renderToString: charts with no data serialize their empty state", () => {
+  const html = renderToString(() => h(SsrDonut, { data: [], x: "k", y: "n" }));
+  assert(html.includes("m-chart-empty"), "an empty chart must say so server-side");
+  assert(!html.includes("<svg"), "no plot should be drawn for empty data");
+});
+
+test("renderToString: a sparkline serializes without axes or chrome", () => {
+  const html = renderToString(() => h(SsrSparkline, { values: [1, 4, 2, 8] }));
+  assert(html.includes("m-chart-sparkline"), "the sparkline must render");
+  assert(!html.includes("m-chart-axis"), "a sparkline is a glyph — no axes");
+});

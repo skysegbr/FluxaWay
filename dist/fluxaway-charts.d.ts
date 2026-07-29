@@ -170,6 +170,13 @@ export interface BarChartProps<Row = any> extends ChartCommon<Row> {
   stacked?: boolean;
   /** Bars run left-to-right — the right call for long category names. */
   horizontal?: boolean;
+  /**
+   * Colour by POLARITY (distance from the baseline) instead of series
+   * identity, and swap the series legend for a scale key. For deltas against
+   * a target, gains and losses, above/below zero. `{ invert: true }` flips
+   * which side is warm.
+   */
+  diverging?: boolean | { invert?: boolean };
   onBarClick?: (row: Row, series: ChartSeries<Row>, value: number) => void;
 }
 
@@ -381,6 +388,86 @@ export declare function exportPNG(
   target: Element | { current: Element | null } | null,
   options?: { filename?: string; scale?: number; background?: string },
 ): Promise<Blob | null>;
+
+/** Steps in the diverging (polarity) ramp. Always 7, with slot 4 neutral. */
+export declare const DIV_STEPS: 7;
+
+/**
+ * `var(--m-div-N)` for a value measured against a baseline. Sign picks the arm,
+ * magnitude picks the distance from the neutral middle.
+ *
+ * `invert` swaps the poles: finance reads red as loss, a temperature map reads
+ * red as high, and the ramp itself takes no position on which is which. This is
+ * NOT a status scale — when a colour means good/bad, use the status tokens.
+ */
+export declare function divergingColor(
+  value: number,
+  options?: { domain?: [number, number]; invert?: boolean },
+): string;
+
+export interface LikertChartProps<Row = any> {
+  data?: Row[];
+  /** Question/row key or accessor. */
+  x?: string | ((row: Row) => string | number);
+  /** The scale, IN ORDER, most negative first. */
+  series?: Array<ChartSeries<Row>>;
+  /** Index of the middle response. Omit for an even scale with no middle. */
+  neutralIndex?: number;
+  label?: string;
+  rowHeight?: number;
+  format?: (value: unknown) => string;
+  xTickFormat?: (value: unknown) => string;
+  xLabel?: string;
+  ariaLabel?: string;
+  showLegend?: boolean;
+  showTable?: boolean;
+  tableLabel?: string;
+  emptyMessage?: string;
+  onSegmentClick?: (row: Row, series: ChartSeries<Row>, value: number) => void;
+  className?: string;
+  [prop: string]: unknown;
+}
+
+/**
+ * An ordered-scale share (agree/disagree, sentiment) as a diverging stacked bar
+ * centred on the neutral response, so rows can be compared by LEAN rather than
+ * by total width. The neutral segment uses the visible de-emphasis grey, not
+ * the recessive midpoint token — it is an answer, not an absent value.
+ */
+export declare function LikertChart<Row = any>(props?: LikertChartProps<Row>): VNode;
+
+export interface DumbbellChartProps<Row = any> {
+  data?: Row[];
+  x?: string | ((row: Row) => string | number);
+  /** Starting value key/accessor (default "from"). */
+  from?: string | ((row: Row) => number);
+  /** Ending value key/accessor (default "to"). */
+  to?: string | ((row: Row) => number);
+  fromLabel?: string;
+  toLabel?: string;
+  label?: string;
+  rowHeight?: number;
+  format?: (value: unknown) => string;
+  tickFormat?: (value: number) => string;
+  xTickFormat?: (value: unknown) => string;
+  xLabel?: string;
+  ariaLabel?: string;
+  showGrid?: boolean;
+  showLegend?: boolean;
+  showTable?: boolean;
+  tableLabel?: string;
+  emptyMessage?: string;
+  onItemClick?: (row: Row) => void;
+  className?: string;
+  [prop: string]: unknown;
+}
+
+/**
+ * Before → after per item: two dots joined by a connector that IS the change.
+ * Two grouped bars would make the reader compute the gap instead of seeing it.
+ * The pair is one hue in two shades, since it is the same measure at two times.
+ */
+export declare function DumbbellChart<Row = any>(props?: DumbbellChartProps<Row>): VNode;
 
 export interface DashboardGridProps {
   /** Narrowest a card may get before a column is dropped (default 320). */
