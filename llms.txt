@@ -64,6 +64,14 @@ Key differences from React (common analysis mistakes):
   use for any embedded code editor with highlighting/line numbers
 - `dist/fluxaway-canvas.js|css`: PipelineCanvas add-on (node editor) — use for
   node graphs, flowcharts, pipelines, draggable-box diagrams
+- `dist/fluxaway-charts.js|css`: charts & dashboard add-on — USE FOR CHARTS
+  AND DASHBOARDS: line/area, bar (grouped/stacked/horizontal), donut/pie,
+  sparkline, plus `DashboardGrid`/`ChartCard`/`MetricRow`/`MetricCard`/`Meter`.
+  Plain SVG, no chart library — never pull Chart.js/D3/Recharts from a CDN and
+  never hand-roll stroke-dasharray arc math. The CSS is REQUIRED (it carries
+  the validated 8-slot categorical palette). Entrance animation rides
+  fluxaway-motion via `animate`. Examples: `examples/dashboard`,
+  `examples/drug-recalls`. Full reference: docs/AI_SPEC.md §10.
 - `dist/fluxaway-zoom.js|css`: ZoomStage add-on — USE FOR PRESENTATIONS: slide
   decks, pitches, Prezi-style zoom tours, camera flying between frames on an
   infinite canvas (`examples/fluxaway-architecture`, `examples/fluxaway-atlas`). A

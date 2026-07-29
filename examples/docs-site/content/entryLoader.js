@@ -34,6 +34,7 @@ const LOADERS = {
   "addons/motion": () => import("./addons/motion.js").then((mod) => mod.ADDON_ENTRIES),
   "addons/zoom": () => import("./addons/zoom.js").then((mod) => mod.ADDON_ENTRIES),
   "addons/canvas": () => import("./addons/canvas.js").then((mod) => mod.ADDON_ENTRIES),
+  "addons/charts": () => import("./addons/charts.js").then((mod) => mod.ADDON_ENTRIES),
   "addons/editor": () => import("./addons/editor.js").then((mod) => mod.ADDON_ENTRIES),
 };
 

@@ -1,0 +1,660 @@
+/*!
+ * FluxaWay — styles for the charts & dashboard add-on.
+ * This app's frontend uses the FluxaWay framework (NOT React):
+ * https://github.com/skysegbr/FluxaWay — full AI reference:
+ * https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
+ *
+ * Self-contained by design: the categorical palette tokens live HERE, not in
+ * fluxaway-ui.css, so the add-on stays optional and scripts/split_css.py's
+ * lossless section manifest is untouched. Charts still inherit --m-surface,
+ * --m-text, --m-border and friends from the design system when it is loaded.
+ */
+
+/* ── Categorical palette ────────────────────────────────────────────────────
+ *
+ * Eight hues in a FIXED order, slot 1 anchored to the FluxaWay brand teal.
+ * The ORDER is the colorblind-safety mechanism, not decoration — it was
+ * derived by enumerating orderings and steps against the computable dataviz
+ * gates, then validated against the real chart surfaces (--m-surface:
+ * #ffffff light, #1e293b dark). Re-check with:
+ *
+ *     python3 scripts/validate_chart_palette.py
+ *
+ * Measured (OKLab ΔE ×100, Machado-Oliveira-Fernandes 2009 severity 1.0):
+ *   light — CVD adjacent 8.8 (target 8), normal-vision 20.1 (floor 15),
+ *           every slot >= 3:1 against the surface
+ *   dark  — CVD adjacent 8.8, normal-vision 20.1, every slot >= 3:1
+ *   all-pairs safe depth: the first 3 slots in both modes (scatter/bubble)
+ *
+ * Series-count ladder, worst adjacent pair (CVD / normal-vision):
+ *   <= 6 series -> 15.2 / 28.9 light, 15.4 / 29.6 dark   (comfortable)
+ *      7 series -> 14.4 / 20.1 both modes
+ *      8 series -> 8.8 / 20.1 both modes                 (token ceiling)
+ *
+ * NEVER add a 9th hue or cycle back to slot 1: a generated hue is
+ * indistinguishable from an existing slot under CVD. Past eight series, fold
+ * the tail into --m-chart-other ("Other") or facet into small multiples —
+ * DonutChart's maxSlices does this for you.
+ */
+:root {
+  --m-chart-1: #0f9c8e;   /* teal — the brand slot */
+  --m-chart-2: #ea580c;   /* orange */
+  --m-chart-3: #7c3aed;   /* violet */
+  --m-chart-4: #dc2626;   /* red */
+  --m-chart-5: #1d4ed8;   /* blue */
+  --m-chart-6: #d97706;   /* amber */
+  --m-chart-7: #ec4899;   /* magenta */
+  --m-chart-8: #16a34a;   /* green */
+
+  --m-chart-other: #94a3b8;   /* the folded tail — never a 9th hue */
+
+  /* Chart chrome: recessive by construction. The data is the loud part. */
+  --m-chart-grid: #e8edf2;
+  --m-chart-axis: #cbd6e0;
+  --m-chart-ink: #617080;
+  --m-chart-area-opacity: 0.1;
+  --m-chart-surface: var(--m-surface, #ffffff);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --m-chart-1: #12ab9c;
+    --m-chart-2: #ea580c;
+    --m-chart-3: #8b5cf6;
+    --m-chart-4: #dc2626;
+    --m-chart-5: #3b82f6;
+    --m-chart-6: #d97706;
+    --m-chart-7: #ec4899;
+    --m-chart-8: #16a34a;
+
+    --m-chart-other: #64748b;
+    --m-chart-grid: #273449;
+    --m-chart-axis: #334155;
+    --m-chart-ink: #94a3b8;
+    --m-chart-area-opacity: 0.16;
+  }
+}
+
+[data-theme="dark"] {
+  --m-chart-1: #12ab9c;
+  --m-chart-2: #ea580c;
+  --m-chart-3: #8b5cf6;
+  --m-chart-4: #dc2626;
+  --m-chart-5: #3b82f6;
+  --m-chart-6: #d97706;
+  --m-chart-7: #ec4899;
+  --m-chart-8: #16a34a;
+
+  --m-chart-other: #64748b;
+  --m-chart-grid: #273449;
+  --m-chart-axis: #334155;
+  --m-chart-ink: #94a3b8;
+  --m-chart-area-opacity: 0.16;
+}
+
+[data-theme="light"] {
+  --m-chart-1: #0f9c8e;
+  --m-chart-2: #ea580c;
+  --m-chart-3: #7c3aed;
+  --m-chart-4: #dc2626;
+  --m-chart-5: #1d4ed8;
+  --m-chart-6: #d97706;
+  --m-chart-7: #ec4899;
+  --m-chart-8: #16a34a;
+
+  --m-chart-other: #94a3b8;
+  --m-chart-grid: #e8edf2;
+  --m-chart-axis: #cbd6e0;
+  --m-chart-ink: #617080;
+  --m-chart-area-opacity: 0.1;
+}
+
+/* ── Chart shell ────────────────────────────────────────────────────────────── */
+
+.m-chart {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  font-family: var(--m-font, system-ui, sans-serif);
+}
+
+.m-chart-svg {
+  display: block;
+  overflow: visible;
+  width: 100%;
+}
+
+/* The plot is keyboard-reachable on line/area charts: arrows walk the x-axis. */
+.m-chart-line .m-chart-svg:focus-visible {
+  outline: 2px solid var(--m-focus, #9ee8df);
+  outline-offset: 2px;
+  border-radius: var(--m-radius-sm, 4px);
+}
+
+/* ── Grid & axes — solid hairlines, one step off the surface, never dashed ─── */
+
+.m-chart-grid line {
+  stroke: var(--m-chart-grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.m-chart-axis text {
+  fill: var(--m-chart-ink);
+  font-size: var(--m-font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;   /* ticks align vertically */
+}
+
+/* ── Marks ──────────────────────────────────────────────────────────────────── */
+
+.m-chart-area {
+  opacity: var(--m-chart-area-opacity);
+}
+
+.m-chart-line-path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* Dots and end-markers carry a surface ring so they stay legible where they
+ * cross a line or overlap each other. The ring is part of the hit target. */
+.m-chart-dot {
+  stroke: var(--m-chart-surface);
+  stroke-width: 2;
+}
+
+.m-chart-crosshair {
+  stroke: var(--m-chart-axis);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.m-chart-bar {
+  cursor: default;
+  transition: opacity var(--m-transition-fast, 120ms ease);
+}
+
+.m-chart-bar:hover,
+.m-chart-arc:hover {
+  opacity: 0.82;   /* the hovered mark responds — no border added */
+}
+
+.m-chart-bar:focus-visible,
+.m-chart-arc:focus-visible {
+  outline: 2px solid var(--m-focus, #9ee8df);
+  outline-offset: 2px;
+}
+
+.m-chart-arc {
+  cursor: default;
+  transition: opacity var(--m-transition-fast, 120ms ease);
+}
+
+.m-chart-sparkline {
+  display: block;
+  overflow: visible;
+}
+
+/* ── Entrance animation resting states ──────────────────────────────────────
+ *
+ * fluxaway-motion writes inline transform/opacity while a timeline runs. These
+ * rules only establish the ORIGIN each preset scales from — the resting render
+ * is the untransformed mark, so a chart is complete without any animation
+ * (reduced motion, animate: false, or SSR).
+ */
+.m-chart-bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;   /* grow up from the baseline */
+}
+
+.m-chart-bar-h {
+  transform-origin: 0% 50%;     /* grow rightward from the axis */
+}
+
+.m-chart-wipe {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;     /* wipe the clip rect left to right */
+}
+
+.m-chart-arc {
+  /* view-box, not fill-box: the pop scales around the donut's centre rather
+   * than each arc around its own bounding box. */
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-chart-bar,
+  .m-chart-arc {
+    transition: none;
+  }
+}
+
+/* ── Legend ─────────────────────────────────────────────────────────────────── */
+
+.m-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-2, 8px) var(--m-space-4, 16px);
+  margin: var(--m-space-3, 12px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m-chart-legend-stack {
+  flex-direction: column;
+  gap: var(--m-space-2, 8px);
+  margin: 0;
+  min-width: 0;
+}
+
+.m-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-2, 8px);
+  font-size: var(--m-font-size-sm, 0.875rem);
+  min-width: 0;
+}
+
+/* The legend mirrors the mark: a rect for bars/areas, a short line for lines. */
+.m-chart-legend-key {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.m-chart-legend-key-line {
+  height: 2px;
+  width: 14px;
+  border-radius: 1px;
+}
+
+/* Text wears text tokens — never the series color. Identity comes from the
+ * colored key beside it. */
+.m-chart-legend-label {
+  color: var(--m-text, #18212b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-chart-legend-value {
+  margin-left: auto;
+  color: var(--m-text-muted, #617080);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Tooltip ────────────────────────────────────────────────────────────────── */
+
+.m-chart-tooltip {
+  position: absolute;
+  z-index: var(--m-z-tooltip, 70);
+  transform: translate(-50%, 0);
+  min-width: 7rem;
+  max-width: 16rem;
+  padding: var(--m-space-2, 8px) var(--m-space-3, 12px);
+  border: 1px solid var(--m-border, #cbd6e0);
+  border-radius: var(--m-radius-sm, 4px);
+  background: var(--m-surface, #ffffff);
+  box-shadow: var(--m-shadow-2, 0 8px 24px rgb(15 23 42 / 0.12));
+  pointer-events: none;
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+.m-chart-tooltip-title {
+  margin: 0 0 var(--m-space-1, 4px);
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+.m-chart-tooltip-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m-chart-tooltip-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--m-space-2, 8px);
+}
+
+/* A short stroke, not a filled box: at tooltip density a box is data-weight
+ * ink doing a label's job. */
+.m-chart-tooltip-key {
+  flex: none;
+  align-self: center;
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+/* Values lead, labels follow — the legend's hierarchy inverted, because here
+ * the reader already has the series and wants the number. */
+.m-chart-tooltip-value {
+  color: var(--m-text, #18212b);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-chart-tooltip-label {
+  color: var(--m-text-muted, #617080);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Table view — the twin that keeps every value reachable ─────────────────── */
+
+.m-chart-table {
+  margin-top: var(--m-space-3, 12px);
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+.m-chart-table > summary {
+  cursor: pointer;
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+.m-chart-table > summary:focus-visible {
+  outline: 2px solid var(--m-focus, #9ee8df);
+  outline-offset: 2px;
+  border-radius: var(--m-radius-sm, 4px);
+}
+
+.m-chart-table-scroll {
+  overflow-x: auto;
+  margin-top: var(--m-space-2, 8px);
+}
+
+.m-chart-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.m-chart-table th,
+.m-chart-table td {
+  padding: var(--m-space-1, 4px) var(--m-space-3, 12px) var(--m-space-1, 4px) 0;
+  text-align: left;
+  border-bottom: 1px solid var(--m-border, #cbd6e0);
+  white-space: nowrap;
+}
+
+.m-chart-table td {
+  font-variant-numeric: tabular-nums;   /* a column of numbers must align */
+}
+
+.m-chart-table thead th {
+  color: var(--m-text-muted, #617080);
+  font-weight: 600;
+}
+
+.m-chart-empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--m-border, #cbd6e0);
+  border-radius: var(--m-radius, 8px);
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+/* ── Donut layout ───────────────────────────────────────────────────────────── */
+
+.m-chart-donut-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--m-space-5, 20px);
+}
+
+.m-chart-donut-figure {
+  position: relative;
+  flex: none;
+}
+
+.m-chart-donut-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.m-chart-donut-center strong {
+  display: block;
+  color: var(--m-text, #18212b);
+  font-size: var(--m-font-size-xl, 1.25rem);
+}
+
+.m-chart-donut-center span {
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+.m-chart-donut-body .m-chart-legend-stack {
+  flex: 1 1 8rem;
+}
+
+/* ── Dashboard grid ─────────────────────────────────────────────────────────── */
+
+.m-dash-grid {
+  display: grid;
+  gap: var(--m-dash-gap, var(--m-space-4, 16px));
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--m-dash-min, 320px), 100%), 1fr));
+}
+
+.m-dash-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-3, 12px);
+  min-width: 0;
+  padding: var(--m-space-4, 16px);
+  border: 1px solid var(--m-border, #cbd6e0);
+  border-radius: var(--m-radius, 8px);
+  background: var(--m-surface, #ffffff);
+}
+
+/* Span two columns where the grid has them; falls back to one when it doesn't. */
+@supports (grid-column: span 2) {
+  .m-dash-card-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 40rem) {
+  .m-dash-card-wide {
+    grid-column: auto;
+  }
+}
+
+.m-dash-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--m-space-3, 12px);
+}
+
+.m-dash-card-heading {
+  min-width: 0;
+}
+
+.m-dash-card-title {
+  margin: 0;
+  color: var(--m-text, #18212b);
+  font-size: var(--m-font-size-base, 1rem);
+  font-weight: 600;
+}
+
+.m-dash-card-subtitle {
+  margin: var(--m-space-1, 4px) 0 0;
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+.m-dash-card-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--m-space-2, 8px);
+}
+
+.m-dash-card-body {
+  min-width: 0;
+  transition: opacity var(--m-transition-base, 200ms ease);
+}
+
+/* Refetch keeps the frame: hold the previous render, never flash a skeleton. */
+.m-dash-card-loading {
+  opacity: 0.45;
+}
+
+.m-dash-card-foot {
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+/* ── Metric tile ────────────────────────────────────────────────────────────── */
+
+.m-metric-row-group {
+  display: grid;
+  gap: var(--m-space-4, 16px);
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--m-metric-min, 160px), 100%), 1fr));
+}
+
+.m-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-1, 4px);
+  min-width: 0;
+}
+
+.m-metric-label {
+  margin: 0;
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+.m-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-3, 12px);
+}
+
+/* Proportional figures, not tabular: equal-width digits make a large
+ * standalone number look loose. The same sans as everything else. */
+.m-metric-value {
+  color: var(--m-text, #18212b);
+  font-size: var(--m-font-size-2xl, 1.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.m-metric-hero .m-metric-value {
+  font-size: clamp(2.5rem, 6vw, 3.25rem);
+}
+
+.m-metric-spark {
+  flex: none;
+}
+
+.m-metric-delta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--m-space-1, 4px);
+  margin: 0;
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+/* An arrow accompanies the color, so direction never rides on hue alone. */
+.m-metric-arrow {
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+.m-metric-delta-good {
+  color: var(--m-success, #067647);
+}
+
+.m-metric-delta-bad {
+  color: var(--m-danger, #b42318);
+}
+
+.m-metric-delta-flat {
+  color: var(--m-text-muted, #617080);
+}
+
+.m-metric-delta-label {
+  color: var(--m-text-muted, #617080);
+}
+
+/* ── Meter ──────────────────────────────────────────────────────────────────── */
+
+.m-meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-2, 8px);
+  min-width: 0;
+}
+
+.m-meter-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--m-space-3, 12px);
+  font-size: var(--m-font-size-sm, 0.875rem);
+}
+
+.m-meter-label {
+  color: var(--m-text, #18212b);
+}
+
+.m-meter-value {
+  color: var(--m-text-muted, #617080);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The unfilled track is a lighter step of the fill's own ramp, so the state
+ * reads across the whole bar. */
+.m-meter-track {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--m-primary-soft, #d9f3ef);
+}
+
+.m-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--m-chart-1);
+  transition: width var(--m-transition-base, 200ms ease);
+}
+
+.m-meter-warning {
+  background: var(--m-warning, #b54708);
+}
+
+.m-meter-critical {
+  background: var(--m-danger, #b42318);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-meter-fill,
+  .m-dash-card-body {
+    transition: none;
+  }
+}
+
+/* ── Forced colors / print — hue stops carrying identity ────────────────────── */
+
+@media (forced-colors: active) {
+  .m-chart-bar,
+  .m-chart-arc {
+    forced-color-adjust: none;
+  }
+
+  .m-chart-tooltip,
+  .m-dash-card {
+    border: 1px solid CanvasText;
+  }
+}

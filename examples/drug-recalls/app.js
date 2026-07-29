@@ -1,5 +1,6 @@
 import { Fragment, h, render, useDebounce, useState } from "/dist/fluxaway.js";
 import { Alert, Spinner } from "/dist/fluxaway-components-core.js";
+import { ChartCard, DashboardGrid } from "/dist/fluxaway-charts.js";
 import { useDrugRecalls } from "./components/useDrugRecalls.js";
 import { DashboardToolbar } from "./components/DashboardToolbar.js";
 import { RecallFilters } from "./components/RecallFilters.js";
@@ -45,10 +46,14 @@ function App() {
             null,
             h(RecallMetrics, { total, byClassification, byStatus }),
             h(
-              "div",
-              { className: "dr-charts-grid" },
-              h(RecallClassDonut, { byClassification }),
-              h(RecallStateBars, { byState }),
+              DashboardGrid,
+              { min: 340 },
+              // `loading` holds the previous render at reduced opacity while a
+              // filter change refetches — no skeleton flash, no layout jump.
+              h(ChartCard, { title: "By classification", loading },
+                h(RecallClassDonut, { byClassification })),
+              h(ChartCard, { title: "Top states", loading },
+                h(RecallStateBars, { byState })),
             ),
             h(RecallTable, { recalls: results, onOpen: setSelectedRecall }),
           ),

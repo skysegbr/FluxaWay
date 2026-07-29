@@ -145,15 +145,18 @@ def run(browser_type, base: str) -> list[str]:
     )
     passed.append("route content loads its matching category CSS")
 
-    for route, heading in (
-        ("/addons/fluxaway-motion", "FluxaWay Motion"),
-        ("/addons/zoom-stage", "ZoomStage"),
-        ("/addons/pipeline-canvas", "PipelineCanvas"),
-        ("/addons/full-code-editor", "FullCodeEditor"),
+    # (route, heading, how many live demos that page ships)
+    for route, heading, demos in (
+        ("/addons/fluxaway-motion", "FluxaWay Motion", 1),
+        ("/addons/zoom-stage", "ZoomStage", 1),
+        ("/addons/pipeline-canvas", "PipelineCanvas", 1),
+        ("/addons/full-code-editor", "FullCodeEditor", 1),
+        ("/addons/fluxaway-charts", "FluxaWay Charts", 4),
     ):
         open_route(desktop, base, route, heading)
-        expect(desktop.locator(".nd-demo-preview").count() == 1, f"{route}: live demo missing")
-    passed.append("all four add-on pages render live demos")
+        found = desktop.locator(".nd-demo-preview").count()
+        expect(found == demos, f"{route}: expected {demos} live demo(s), found {found}")
+    passed.append("all five add-on pages render live demos")
 
     desktop.set_viewport_size({"width": 1440, "height": 520})
     open_route(desktop, base, "/addons/zoom-stage", "ZoomStage")
@@ -192,10 +195,10 @@ def run(browser_type, base: str) -> list[str]:
           };
         }"""
     )
-    expect(catalog["count"] == 98, f"expected 98 catalog entries, got {catalog['count']}")
+    expect(catalog["count"] == 99, f"expected 99 catalog entries, got {catalog['count']}")
     expect(catalog["mismatched"] == 0, f"{catalog['mismatched']} catalog modules do not match metadata")
     expect(catalog["unique"] == catalog["count"], "catalog contains duplicate slugs")
-    passed.append("catalog metadata matches all 98 lazy entries")
+    passed.append("catalog metadata matches all 99 lazy entries")
 
     expect(not errors, "browser errors: " + " | ".join(errors))
     expect(not failed_responses, "failed responses: " + " | ".join(failed_responses))
