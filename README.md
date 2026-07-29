@@ -35,9 +35,11 @@ Optional modules build on top of that core:
   SVG node editor with drag, pan, zoom, mini-map, and undo/redo.
 - `dist/fluxaway-charts.js` + `dist/fluxaway-charts.css` — charts and dashboard
   layout: `LineChart`, `AreaChart`, `BarChart`, `DonutChart`, `PieChart`,
-  `Sparkline`, `DashboardGrid`, `ChartCard`, `MetricRow`, `MetricCard`,
-  `Meter`. Plain SVG with a validated colorblind-safe palette; the stylesheet
-  is required because it carries the palette tokens.
+  `Heatmap`, `ScatterChart`, `SmallMultiples`, `Sparkline`, `DashboardGrid`,
+  `ChartCard`, `MetricRow`, `MetricCard`, `Meter`, plus brush-to-zoom and
+  CSV/PNG export. Plain SVG with a validated colorblind-safe palette (and a
+  one-hue sequential ramp for magnitude); the stylesheet is required because it
+  carries the palette tokens.
 - `dist/fluxaway-zoom.js` + `dist/fluxaway-zoom.css` — `ZoomStage`, a pan/zoom
   presentation canvas with animated camera pan/zoom/rotate between frames,
   optional free zoom/pan exploration (`freeZoom`), swipe/keyboard nav, and

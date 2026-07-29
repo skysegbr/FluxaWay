@@ -54,6 +54,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CSS = REPO_ROOT / "dist" / "fluxaway-charts.css"
 
 SLOT_COUNT = 8
+SEQ_COUNT = 7
 
 # Thresholds. These mirror the data-viz method the palette was derived under;
 # changing one is changing the guarantee, not tuning a lint rule.
@@ -63,6 +64,9 @@ CVD_TARGET = 8.0
 CVD_FLOOR = 6.0
 NORMAL_FLOOR = 15.0
 CONTRAST_MIN = 3.0
+SEQ_MIN_DL = 0.06          # min OKLCH ΔL between adjacent ramp steps
+SEQ_HUE_SPREAD = 40.0      # max OKLCH hue spread for a one-hue ramp (deg)
+ORDINAL_LIGHT_FLOOR = 2.0  # discrete ordered marks must clear this vs surface
 
 # The chart surface each mode actually renders on — FluxaWay's --m-surface.
 # Contrast and band results are only meaningful against the real surface.
@@ -134,6 +138,11 @@ def oklch(value: str) -> tuple[float, float]:
     return L, math.hypot(a, b)
 
 
+def okhue(value: str) -> float:
+    _, a, b = oklab_from_linear(linear(value))
+    return math.degrees(math.atan2(b, a)) % 360
+
+
 def simulate(value: str, kind: str) -> tuple[float, float, float]:
     r, g, b = linear(value)
     matrix = MACHADO[kind]
@@ -177,25 +186,65 @@ def read_palette(css_text: str) -> dict[str, list[str]]:
         raise SystemExit("could not find the prefers-color-scheme: dark block")
     blocks["dark-restate"] = media.group(1)
 
+    def slots_of(body: str, key: str, prefix: str, count: int) -> list[str]:
+        found = []
+        for i in range(1, count + 1):
+            hit = re.search(rf"--{prefix}-{i}\s*:\s*(#[0-9a-fA-F]{{6}})", body)
+            if not hit:
+                raise SystemExit(f"--{prefix}-{i} missing from the `{key}` block")
+            found.append(hit.group(1).lower())
+        return found
+
     out: dict[str, list[str]] = {}
+    seq: dict[str, list[str]] = {}
     for key, body in blocks.items():
-        slots = []
-        for i in range(1, SLOT_COUNT + 1):
-            found = re.search(rf"--m-chart-{i}\s*:\s*(#[0-9a-fA-F]{{6}})", body)
-            if not found:
-                raise SystemExit(f"--m-chart-{i} missing from the `{key}` block")
-            slots.append(found.group(1).lower())
-        out[key] = slots
+        out[key] = slots_of(body, key, "m-chart", SLOT_COUNT)
+        seq[key] = slots_of(body, key, "m-seq", SEQ_COUNT)
 
     # The toggle scope and the media query must agree, or the theme switch and
     # the OS preference would paint different charts.
     for mode in ("light", "dark"):
         if out[mode] != out[f"{mode}-restate"]:
             raise SystemExit(
-                f"the {mode} palette differs between its two scopes:\n"
+                f"the {mode} categorical palette differs between its two scopes:\n"
                 f"  {out[mode]}\n  {out[f'{mode}-restate']}"
             )
-    return {"light": out["light"], "dark": out["dark"]}
+        if seq[mode] != seq[f"{mode}-restate"]:
+            raise SystemExit(
+                f"the {mode} sequential ramp differs between its two scopes:\n"
+                f"  {seq[mode]}\n  {seq[f'{mode}-restate']}"
+            )
+
+    # Every token declared in :root must be declared in all three theme scopes.
+    # Without this, a token added to only some of them silently falls back to
+    # the light value under the theme toggle — which is how --m-chart-muted got
+    # duplicated in one block and dropped from another. Names only: the values
+    # are meant to differ per mode.
+    def names(body: str) -> set[str]:
+        return set(re.findall(r"(--m-(?:chart|seq)-[\w-]+)\s*:", body))
+
+    # Declared once in :root on purpose, because it forwards to a token that is
+    # already theme-aware (--m-chart-surface is var(--m-surface)). Redeclaring
+    # it per scope would just restate the same indirection.
+    ROOT_ONLY = {"--m-chart-surface"}
+
+    root_names = names(blocks["light"]) - ROOT_ONLY
+    for key in ("dark", "light-restate", "dark-restate"):
+        missing = root_names - names(blocks[key])
+        if missing:
+            raise SystemExit(
+                f"the `{key}` scope is missing token(s) declared in :root: "
+                f"{sorted(missing)}"
+            )
+        duplicated = [n for n in names(blocks[key])
+                      if len(re.findall(rf"{re.escape(n)}\s*:", blocks[key])) > 1]
+        if duplicated:
+            raise SystemExit(f"the `{key}` scope declares {sorted(duplicated)} more than once")
+
+    return {
+        "light": out["light"], "dark": out["dark"],
+        "seq-light": seq["light"], "seq-dark": seq["dark"],
+    }
 
 
 # ── checks ───────────────────────────────────────────────────────────────────
@@ -262,6 +311,61 @@ def validate(palette: list[str], mode: str, pairs: str) -> tuple[list[tuple[str,
     return rows, ok
 
 
+def validate_sequential(ramp: list[str], mode: str) -> tuple[list[tuple[str, str, str]], bool]:
+    """
+    Check the one-hue magnitude ramp (--m-seq-1..7).
+
+    A sequential ramp is judged on whether it reads AS a ramp: one hue, monotone
+    lightness, and visible gaps between steps. The categorical checks would fail
+    it by design — it spans the lightness band and its pale end drops under the
+    chroma floor — so running them here would be meaningless.
+
+    The 2:1 light-end floor is deliberately NOT a gate. That is an ORDINAL rule,
+    where the palest step is a discrete mark that must stay visible; in a
+    continuous ramp the palest step means "near zero" and is allowed to recede
+    into the surface. The ordinal-safe subset is reported instead.
+    """
+    rows: list[tuple[str, str, str]] = []
+    ok = True
+    surface = SURFACE[mode]
+    Ls = [oklch(c)[0] for c in ramp]
+
+    # Monotone: sorted order must match the input order or its exact reverse.
+    order = sorted(range(len(Ls)), key=lambda i: Ls[i])
+    monotone = order == list(range(len(Ls))) or order == list(reversed(range(len(Ls))))
+    if not monotone:
+        ok = False
+    rows.append(("Lightness monotone", "PASS" if monotone else "FAIL",
+                 "steps read in one direction" if monotone
+                 else f"out of order: {[round(l, 3) for l in Ls]}"))
+
+    gaps = [abs(Ls[i + 1] - Ls[i]) for i in range(len(Ls) - 1)]
+    thin = [(ramp[i], ramp[i + 1], round(g, 3)) for i, g in enumerate(gaps) if g < SEQ_MIN_DL]
+    if thin:
+        ok = False
+    rows.append(("Adjacent ΔL", "FAIL" if thin else "PASS",
+                 f"steps too close: {thin}" if thin
+                 else f"worst gap {min(gaps):.3f} >= {SEQ_MIN_DL}"))
+
+    hues = [okhue(c) for c in ramp]
+    spread = max(hues) - min(hues)
+    if spread > 180:
+        spread = 360 - spread
+    one_hue = spread <= SEQ_HUE_SPREAD
+    if not one_hue:
+        ok = False
+    rows.append(("Single hue", "PASS" if one_hue else "FAIL",
+                 f"hue spread {spread:.0f}°"
+                 + ("" if one_hue else f" — above {SEQ_HUE_SPREAD}°, that is a categorical set")))
+
+    ordinal_safe = [c for c in ramp if contrast(c, surface) >= ORDINAL_LIGHT_FLOOR]
+    rows.append(("Ordinal-safe subset", "INFO",
+                 f"{len(ordinal_safe)}/{len(ramp)} steps clear {ORDINAL_LIGHT_FLOOR}:1 "
+                 f"— use these for discrete ordered marks: {ordinal_safe}"))
+
+    return rows, ok
+
+
 def ladder(palette: list[str]) -> list[tuple[int, float, float]]:
     """Worst adjacent pair for the first N slots — the series-count ladder."""
     out = []
@@ -294,6 +398,8 @@ def main() -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--mode", choices=("light", "dark", "both"), default="both")
     parser.add_argument("--pairs", choices=("adjacent", "all"), default="adjacent")
+    parser.add_argument("--sequential", action="store_true",
+                        help="check only the --m-seq-* magnitude ramp")
     parser.add_argument("--quiet", action="store_true", help="exit code only")
     args = parser.parse_args()
 
@@ -306,6 +412,21 @@ def main() -> int:
     failed = False
 
     for mode in modes:
+        if args.sequential:
+            ramp = palettes[f"seq-{mode}"]
+            rows, ok = validate_sequential(ramp, mode)
+            failed = failed or not ok
+            if not args.quiet:
+                print(f"\n=== {mode} mode — sequential ramp — surface {SURFACE[mode]} ===")
+                for i, hexval in enumerate(ramp, 1):
+                    L, C = oklch(hexval)
+                    print(f"  seq {i}  {hexval}   L {L:.3f}  C {C:.3f}  "
+                          f"{contrast(hexval, SURFACE[mode]):.2f}:1")
+                print()
+                for name, state, detail in rows:
+                    print(f"  {state:7} {name:22} {detail}")
+            continue
+
         palette = palettes[mode]
         rows, ok = validate(palette, mode, args.pairs)
         failed = failed or not ok

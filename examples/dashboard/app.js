@@ -1,11 +1,14 @@
-import { h, render, useEffect, useMemo, useState } from "/dist/fluxaway.js";
+import { h, render, useEffect, useMemo, useRef, useState } from "/dist/fluxaway.js";
 import {
-  AreaChart, BarChart, ChartCard, DashboardGrid, DonutChart, LineChart, Meter,
+  AreaChart, BarChart, ChartCard, DashboardGrid, DonutChart, Heatmap, LineChart,
+  Meter, ScatterChart, SmallMultiples, exportCSV, exportPNG,
 } from "/dist/fluxaway-charts.js";
+import { Button } from "/dist/fluxaway-components-core.js";
 import { DashboardFilters } from "./components/DashboardFilters.js";
 import { KpiRow } from "./components/KpiRow.js";
 import {
-  buildSeries, CHANNELS, dayLabel, PLAN_SERIES, REGIONS, sum,
+  ACCOUNTS, buildRegionSeries, buildSeries, CHANNELS, dayLabel, PLAN_SERIES,
+  REGIONS, sum, TRAFFIC_GRID,
 } from "./data.js";
 
 function App() {
@@ -13,8 +16,12 @@ function App() {
   const [busy, setBusy] = useState(false);
   // Bumping this replays every entrance — see `animate.key` below.
   const [run, setRun] = useState(0);
+  // exportPNG needs the rendered <svg>; the card wrapper is enough — it finds
+  // the chart inside.
+  const visitsRef = useRef(null);
 
   const { rows } = useMemo(() => buildSeries(range), [range]);
+  const regions = useMemo(() => buildRegionSeries(range), [range]);
 
   // Simulated refetch: the charts HOLD their previous render at reduced
   // opacity while it runs (ChartCard's `loading`), instead of flashing a
@@ -59,7 +66,28 @@ function App() {
         // with two y-scales.
         h(
           ChartCard,
-          { title: "Visits", subtitle: "Daily sessions", span: 2, loading: busy },
+          {
+            title: "Visits",
+            subtitle: "Daily sessions — drag across the plot to zoom in",
+            span: 2,
+            loading: busy,
+            ref: visitsRef,
+            actions: h(
+              "div",
+              { className: "db-card-actions" },
+              h(Button, {
+                variant: "text",
+                onClick: () => exportCSV(
+                  { data: rows, x: "date", y: "visits", label: "Visits", xLabel: "Day" },
+                  { filename: "visits.csv" },
+                ),
+              }, "CSV"),
+              h(Button, {
+                variant: "text",
+                onClick: () => exportPNG(visitsRef.current, { filename: "visits.png" }),
+              }, "PNG"),
+            ),
+          },
           h(AreaChart, {
             data: rows,
             x: "date",
@@ -67,6 +95,7 @@ function App() {
             label: "Visits",
             height: 280,
             animate,
+            brush: true,
             xTickFormat: dayLabel,
             xLabel: "Day",
           }),
@@ -136,6 +165,44 @@ function App() {
 
         h(
           ChartCard,
+          {
+            title: "When people visit",
+            subtitle: "Sessions by weekday and hour — one hue, stronger means more",
+            span: 2,
+            loading: busy,
+          },
+          h(Heatmap, {
+            data: TRAFFIC_GRID,
+            x: "hour",
+            y: "day",
+            value: "sessions",
+            label: "Sessions",
+            showValues: true,
+            xTickFormat: (hh) => `${hh}:00`,
+          }),
+        ),
+
+        h(
+          ChartCard,
+          {
+            title: "Spend vs revenue",
+            subtitle: "Five segments, three colours — a scatter can only carry that many",
+            loading: busy,
+          },
+          h(ScatterChart, {
+            data: ACCOUNTS,
+            x: "spend",
+            y: "revenue",
+            groupBy: "segment",
+            height: 260,
+            xLabel: "Spend",
+            yLabel: "Revenue",
+            format: (n) => `$${Number(n).toLocaleString()}`,
+          }),
+        ),
+
+        h(
+          ChartCard,
           { title: "Capacity", subtitle: "Against the plan limit", loading: busy },
           h(
             "div",
@@ -145,6 +212,24 @@ function App() {
             h(Meter, { label: "Storage (GB)", value: 240, max: 500 }),
           ),
         ),
+      ),
+
+      h(
+        ChartCard,
+        {
+          title: "Visits by region",
+          subtitle: "One panel per region on a shared y-scale — the same measure, so the panels really are comparable",
+          loading: busy,
+        },
+        h(SmallMultiples, {
+          data: regions.rows,
+          x: "date",
+          series: regions.series,
+          columns: 4,
+          height: 150,
+          animate,
+          xTickFormat: dayLabel,
+        }),
       ),
 
       h(

@@ -86,3 +86,56 @@ export function trendDelta(rows, key) {
   if (!earlier) return 0;
   return Math.round(((later - earlier) / earlier) * 1000) / 10;
 }
+
+// Visits per REGION over time. Small multiples compare the SAME measure
+// across slices, which is what makes one shared y-scale honest — faceting
+// three different units (sessions, signups, dollars) on one scale would flatten
+// the small ones into a line at zero.
+export function buildRegionSeries(rangeId) {
+  const { rows } = buildSeries(rangeId);
+  const shares = [
+    ["North America", 0.42, 2], ["Europe", 0.31, 5],
+    ["Asia Pacific", 0.18, 8], ["Latin America", 0.09, 11],
+  ];
+  return {
+    rows: rows.map((row, i) => {
+      const out = { date: row.date };
+      for (const [region, share, seed] of shares) {
+        out[region] = Math.round(row.visits * share * (1 + 0.18 * wobble(i, seed)));
+      }
+      return out;
+    }),
+    series: shares.map(([region]) => ({ key: region, label: region })),
+  };
+}
+
+// ── Grid data for the heatmap: sessions by weekday x hour ───────────────────
+export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export const HOURS = ["00", "03", "06", "09", "12", "15", "18", "21"];
+
+export const TRAFFIC_GRID = DAYS.flatMap((day, d) =>
+  HOURS.map((hour, hIndex) => {
+    // Office hours peak on weekdays; weekends flatten out and shift later.
+    const weekend = d >= 5;
+    const peak = weekend ? 6 : 4;                      // index of the busiest hour
+    const spread = weekend ? 3.4 : 2.2;
+    const shape = Math.exp(-(((hIndex - peak) / spread) ** 2));
+    // Midweek runs busier than Monday or Friday, so the grid has vertical
+    // structure to read as well as horizontal.
+    const weekdayLift = [0.86, 1.0, 1.08, 1.02, 0.9, 1, 1][d];
+    const base = (weekend ? 210 : 480) * weekdayLift;
+    return { day, hour, sessions: Math.round(base * shape) + (weekend ? 20 : 40) };
+  }),
+);
+
+// ── Scatter: spend vs revenue per account, grouped by segment ───────────────
+const SEGMENTS = ["SMB", "Mid-market", "Enterprise", "Partner", "Reseller"];
+
+export const ACCOUNTS = Array.from({ length: 60 }, (_, i) => {
+  const segment = SEGMENTS[i % SEGMENTS.length];
+  const tier = SEGMENTS.indexOf(segment);
+  const spend = 400 + ((i * 137) % 2600) + tier * 300;
+  // revenue tracks spend with a repeatable wobble, so the correlation is real
+  const revenue = Math.round(spend * (1.6 + tier * 0.25) + wobble(i, 3) * 900);
+  return { account: `Account ${i + 1}`, segment, spend, revenue: Math.max(120, revenue) };
+});

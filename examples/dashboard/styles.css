@@ -96,3 +96,8 @@
     justify-content: center;
   }
 }
+
+.db-card-actions {
+  display: flex;
+  gap: var(--m-space-1, 4px);
+}

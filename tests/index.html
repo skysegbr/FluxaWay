@@ -6,6 +6,10 @@
     <title>FluxaWay - Engine Tests</title>
     <link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg" />
     <link rel="stylesheet" href="/dist/fluxaway-ui.css" />
+    <!-- charts.test.js asserts on RESOLVED colours (the PNG export reads them
+         back through getComputedStyle), so the add-on's palette tokens have to
+         be loaded here just as an app would load them. -->
+    <link rel="stylesheet" href="/dist/fluxaway-charts.css" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>

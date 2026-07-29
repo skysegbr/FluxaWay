@@ -10,9 +10,11 @@
 import { h, render } from "../dist/fluxaway.js";
 import {
   LineChart, AreaChart, BarChart, DonutChart, PieChart, Sparkline,
+  Heatmap, ScatterChart, SmallMultiples,
   DashboardGrid, ChartCard, MetricCard, MetricRow, Meter,
   scaleLinear, scaleBand, niceTicks, formatCompact, formatNumber,
-  seriesColor, CHART_SLOTS,
+  seriesColor, seqColor, chartToCSV, exportPNG,
+  CHART_SLOTS, SEQ_STEPS, ALL_PAIRS_SLOTS,
 } from "../dist/fluxaway-charts.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
@@ -636,4 +638,282 @@ test("the line wipe clips through the hyphenated clip-path attribute", async () 
   assert(clipped, "the wiped group must carry a clip-path attribute");
   assert(clipped.getAttribute("clip-path").startsWith("url(#"), "clip-path must reference the clipPath element");
   assert(container.querySelector("clipPath rect.m-chart-wipe"), "the wipe rect must exist to be scaled");
+});
+
+// ── sequential ramp & Heatmap ───────────────────────────────
+
+test("seqColor: buckets map onto the ramp and clamp at both ends", () => {
+  assertEqual(seqColor(0), "var(--m-seq-1)");
+  assertEqual(seqColor(SEQ_STEPS - 1), `var(--m-seq-${SEQ_STEPS})`);
+  // Out-of-range buckets clamp rather than producing an undefined token.
+  assertEqual(seqColor(99), `var(--m-seq-${SEQ_STEPS})`);
+  assertEqual(seqColor(-3), "var(--m-seq-1)");
+  assertEqual(seqColor("nope"), "var(--m-seq-1)");
+});
+
+const GRID = [
+  { day: "Mon", hour: "09", n: 5 },
+  { day: "Mon", hour: "12", n: 50 },
+  { day: "Tue", hour: "09", n: 25 },
+  { day: "Tue", hour: "12", n: 100 },
+];
+
+test("Heatmap: one cell per datum, on the sequential ramp not categorical hues", async () => {
+  const container = mountPoint();
+  render(() => h(Heatmap, { data: GRID, x: "hour", y: "day", value: "n" }), container);
+  await flush();
+
+  const cells = [...container.querySelectorAll("rect.m-heat-cell")];
+  assertEqual(cells.length, 4);
+  for (const cell of cells) {
+    assert(cell.getAttribute("fill").startsWith("var(--m-seq-"),
+      `magnitude must use the sequential ramp, got ${cell.getAttribute("fill")}`);
+  }
+  // the largest value lands on a deeper step than the smallest
+  const first = Number(cells[0].getAttribute("fill").match(/\d+/)[0]);
+  const last = Number(cells[3].getAttribute("fill").match(/\d+/)[0]);
+  assert(last > first, "a bigger value must sit further along the ramp");
+});
+
+test("Heatmap: a gap in the grid stays empty instead of reading as zero", async () => {
+  const container = mountPoint();
+  // Mon/15 is absent — three cells, not a 2x2 grid with a zero-valued block.
+  render(() => h(Heatmap, {
+    data: [...GRID.slice(0, 2), { day: "Tue", hour: "09", n: 3 }],
+    x: "hour", y: "day", value: "n",
+  }), container);
+  await flush();
+  assertEqual(container.querySelectorAll("rect.m-heat-cell").length, 3);
+});
+
+test("Heatmap: ships a scale key and a table twin, since colour alone is not readable", async () => {
+  const container = mountPoint();
+  render(() => h(Heatmap, { data: GRID, x: "hour", y: "day", value: "n" }), container);
+  await flush();
+
+  assertEqual(container.querySelectorAll(".m-heat-legend-ramp > span").length, SEQ_STEPS);
+  assertEqual(container.querySelectorAll("details.m-chart-table").length, 1);
+  // every cell is focusable and names its own value
+  const cell = container.querySelector("rect.m-heat-cell");
+  assertEqual(cell.getAttribute("tabindex"), "0");
+  assert(cell.getAttribute("aria-label").includes("Mon"), "the cell must name its row");
+});
+
+// ── ScatterChart ────────────────────────────────────────────
+
+const POINTS = Array.from({ length: 20 }, (_, i) => ({
+  spend: i * 10,
+  revenue: i * 12 + (i % 3) * 5,
+  segment: ["A", "B", "C", "D", "E"][i % 5],
+}));
+
+test("ScatterChart: plots a dot per row with a table twin", async () => {
+  const container = mountPoint();
+  render(() => h(ScatterChart, { data: POINTS, x: "spend", y: "revenue" }), container);
+  await flush();
+
+  assertEqual(container.querySelectorAll("circle.m-chart-point").length, 20);
+  assertEqual(container.querySelectorAll("details.m-chart-table").length, 1);
+});
+
+test("ScatterChart: folds past the all-pairs safe depth instead of inventing hues", async () => {
+  const container = mountPoint();
+  render(() => h(ScatterChart, {
+    data: POINTS, x: "spend", y: "revenue", groupBy: "segment",
+  }), container);
+  await flush();
+
+  const fills = new Set([...container.querySelectorAll("circle.m-chart-point")]
+    .map((n) => n.getAttribute("fill")));
+  // 5 groups, but scatter is an all-pairs form: only 3 get their own slot.
+  assertEqual(fills.size, ALL_PAIRS_SLOTS + 1);
+  assert(fills.has("var(--m-chart-other)"), "the tail must share the neutral token");
+
+  // The folded groups collapse into ONE legend row — several rows sharing a
+  // grey would imply a distinction the colour cannot carry.
+  const labels = [...container.querySelectorAll(".m-chart-legend-label")].map((n) => n.textContent);
+  assertEqual(labels.length, ALL_PAIRS_SLOTS + 1);
+  assert(labels[labels.length - 1].startsWith("Other"), `expected a folded row, got ${labels}`);
+
+  // and the cap is explained rather than silently applied
+  assert(container.querySelector(".m-chart-note"), "the fold must be explained in the chart");
+});
+
+test("ScatterChart: hovering near a point picks it, without needing dead-centre aim", async () => {
+  const container = mountPoint();
+  render(() => h(ScatterChart, { data: POINTS.slice(0, 5), x: "spend", y: "revenue" }), container);
+  await flush();
+
+  const svg = container.querySelector("svg.m-chart-svg");
+  const dot = container.querySelector("circle.m-chart-point");
+  const box = dot.getBoundingClientRect();
+  // aim ~10px away from the centre — a pinpoint hit test would miss this
+  pointer("pointermove", svg, {
+    clientX: box.x + box.width / 2 + 10,
+    clientY: box.y + box.height / 2 + 10,
+  });
+  await flush();
+  assert(container.querySelector(".m-chart-tooltip"),
+    "a near miss must still resolve to the closest point");
+});
+
+// ── emphasis ────────────────────────────────────────────────
+
+test("emphasis: one series keeps its hue and the rest recede to grey", async () => {
+  const container = mountPoint();
+  render(() => h(LineChart, { data: MONTHS, x: "month", series: TWO, emphasis: "signups" }), container);
+  await flush();
+
+  const strokes = [...container.querySelectorAll("path.m-chart-line-path")]
+    .map((n) => n.getAttribute("stroke"));
+  assertEqual(strokes.filter((s) => s === "var(--m-chart-muted)").length, 1);
+  assertEqual(strokes.filter((s) => s === "var(--m-chart-2)").length, 1);
+});
+
+// ── SmallMultiples ──────────────────────────────────────────
+
+test("SmallMultiples: one facet per series, all on ONE shared scale", async () => {
+  const container = mountPoint();
+  // Wildly different magnitudes: auto-scaling each facet would make a 30-ish
+  // series look identical to a 1200-ish one.
+  const wide = [
+    { m: "Jan", big: 1200, small: 20 },
+    { m: "Feb", big: 1900, small: 35 },
+  ];
+  render(() => h(SmallMultiples, {
+    data: wide, x: "m",
+    series: [{ key: "big", label: "Big" }, { key: "small", label: "Small" }],
+  }), container);
+  await flush();
+
+  const facets = [...container.querySelectorAll(".m-facet")];
+  assertEqual(facets.length, 2);
+  const ticks = facets.map((f) =>
+    [...f.querySelectorAll(".m-chart-axis-y text")].map((t) => t.textContent).join("|"));
+  assertEqual(ticks[0], ticks[1], `facets must share a y scale, got ${JSON.stringify(ticks)}`);
+});
+
+test("SmallMultiples: shareScale false lets each facet scale itself", async () => {
+  const container = mountPoint();
+  const wide = [
+    { m: "Jan", big: 1200, small: 20 },
+    { m: "Feb", big: 1900, small: 35 },
+  ];
+  render(() => h(SmallMultiples, {
+    data: wide, x: "m", shareScale: false,
+    series: [{ key: "big", label: "Big" }, { key: "small", label: "Small" }],
+  }), container);
+  await flush();
+
+  const ticks = [...container.querySelectorAll(".m-facet")].map((f) =>
+    [...f.querySelectorAll(".m-chart-axis-y text")].map((t) => t.textContent).join("|"));
+  assert(ticks[0] !== ticks[1], "opting out must actually give each facet its own scale");
+});
+
+// ── brush / zoom ────────────────────────────────────────────
+
+test("brush: a committed selection narrows the plot and offers a way back", async () => {
+  const container = mountPoint();
+  const many = Array.from({ length: 12 }, (_, i) => ({ m: `M${i + 1}`, v: 10 + i }));
+  render(() => h(LineChart, { data: many, x: "m", y: "v", brush: true }), container);
+  await flush();
+
+  const svg = container.querySelector("svg.m-chart-svg");
+  assertEqual(container.querySelectorAll(".m-chart-zoom-reset").length, 0);
+
+  const box = svg.getBoundingClientRect();
+  const y = box.y + box.height / 2;
+  pointer("pointerdown", svg, { clientX: box.x + box.width * 0.35, clientY: y, button: 0 });
+  await flush();
+  pointer("pointermove", svg, { clientX: box.x + box.width * 0.65, clientY: y });
+  await flush();
+  assert(container.querySelector("rect.m-chart-brush"), "the selection must be visible while dragging");
+  assertEqual(container.querySelectorAll(".m-chart-tooltip").length, 0,
+    "a drag owns the pointer — the crosshair must stay out of the way");
+
+  pointer("pointerup", svg, { clientX: box.x + box.width * 0.65, clientY: y });
+  await flush();
+
+  assertEqual(container.querySelectorAll(".m-chart-zoom-reset").length, 1);
+  // the table view still lists the FULL series: zoom is a view, not a filter
+  assertEqual(container.querySelectorAll(".m-chart-table tbody tr").length, 12);
+
+  container.querySelector(".m-chart-zoom-reset").dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  await flush();
+  assertEqual(container.querySelectorAll(".m-chart-zoom-reset").length, 0);
+});
+
+test("brush: a plain click does not collapse the chart to a single point", async () => {
+  const container = mountPoint();
+  const many = Array.from({ length: 12 }, (_, i) => ({ m: `M${i + 1}`, v: 10 + i }));
+  render(() => h(LineChart, { data: many, x: "m", y: "v", brush: true }), container);
+  await flush();
+
+  const svg = container.querySelector("svg.m-chart-svg");
+  const box = svg.getBoundingClientRect();
+  const at = { clientX: box.x + box.width / 2, clientY: box.y + box.height / 2 };
+  pointer("pointerdown", svg, { ...at, button: 0 });
+  pointer("pointerup", svg, at);
+  await flush();
+
+  assertEqual(container.querySelectorAll(".m-chart-zoom-reset").length, 0);
+});
+
+// ── export ──────────────────────────────────────────────────
+
+test("chartToCSV: emits a header row and escapes separators", async () => {
+  const csv = chartToCSV({
+    data: [{ m: "Jan, 2026", v: 10 }, { m: 'He said "hi"', v: 20 }],
+    x: "m", y: "v", label: "Value", xLabel: "Month",
+  });
+  const lines = csv.split("\n");
+  assertEqual(lines[0], "Month,Value");
+  // a comma inside a value must be quoted, not split the column
+  assertEqual(lines[1], '"Jan, 2026",10');
+  assertEqual(lines[2], '"He said ""hi""",20');
+});
+
+test("exportPNG: resolves var() colours into the raster instead of exporting blank", async () => {
+  const container = mountPoint();
+  // The sandbox lives off-screen, so give the chart a real width to lay out in.
+  container.style.width = "480px";
+  render(() => h(Heatmap, { data: GRID, x: "hour", y: "day", value: "n" }), container);
+  await flush();
+
+  const svg = container.querySelector("svg.m-chart-svg");
+  const blob = await exportPNG(svg, { filename: "test.png", scale: 1 });
+  assertEqual(blob.type, "image/png");
+  assert(blob.size > 100, "the PNG must have real content");
+
+  // Decode it back: a serialised SVG carries no stylesheet, so if var() were
+  // not resolved onto the clone the marks would come out black or missing.
+  const bitmap = await createImageBitmap(blob);
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(bitmap, 0, 0);
+  const { data: pixels } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  let coloured = 0;
+  for (let i = 0; i < pixels.length; i += 4) {
+    // a teal ramp step has a green/blue bias over red
+    if (pixels[i + 3] > 0 && pixels[i + 1] > pixels[i] + 8) coloured += 1;
+  }
+  assert(coloured > 50, `expected the ramp colours in the raster, found ${coloured} tinted pixels`);
+});
+
+test("exportPNG: falls back to the viewBox when the chart has no laid-out size", async () => {
+  const container = mountPoint();
+  // width 0 — a chart inside a collapsed or hidden panel. Measuring alone
+  // would yield a 1x1 raster.
+  container.style.width = "0px";
+  render(() => h(Heatmap, { data: GRID, x: "hour", y: "day", value: "n" }), container);
+  await flush();
+
+  const svg = container.querySelector("svg.m-chart-svg");
+  const blob = await exportPNG(svg, { filename: "hidden.png", scale: 1 });
+  const bitmap = await createImageBitmap(blob);
+  assert(bitmap.width > 1 && bitmap.height > 1,
+    `expected the viewBox size, got ${bitmap.width}x${bitmap.height}`);
 });

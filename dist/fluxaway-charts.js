@@ -77,6 +77,27 @@ export function seriesColor(index) {
   return slot < CHART_SLOTS ? `var(--m-chart-${slot + 1})` : "var(--m-chart-other)";
 }
 
+/** Steps in the sequential (magnitude) ramp — see --m-seq-* in the CSS. */
+export const SEQ_STEPS = 7;
+
+/**
+ * Sequential token for a 0-based bucket. `--m-seq-1` is always the LOWEST
+ * magnitude and `--m-seq-7` the highest; the stylesheet flips which end is
+ * pale per theme, so callers never branch on the mode.
+ */
+export function seqColor(bucket) {
+  const step = Math.max(0, Math.min(SEQ_STEPS - 1, Math.floor(finite(bucket))));
+  return `var(--m-seq-${step + 1})`;
+}
+
+/**
+ * How many all-pairs-safe slots the palette has. Scatter, bubble and any form
+ * where ANY two marks can end up adjacent must respect this: past it, colors
+ * that never touch in a bar chart start sitting side by side, and the
+ * validated separation no longer holds. Fold the tail or facet instead.
+ */
+export const ALL_PAIRS_SLOTS = 3;
+
 /** Compact number formatting for stat values and axis ticks: 1284 → "1.3K". */
 export function formatCompact(value) {
   const n = Number(value);
@@ -243,7 +264,7 @@ function usePrefersReducedMotion() {
  * come from the series' position by default, so an app that FILTERS its series
  * list must pin `slot` to keep a survivor's hue stable.
  */
-function normalizeSeries({ series, y, label }) {
+function normalizeSeries({ series, y, label, emphasis }) {
   const list = series?.length
     ? series
     : y
@@ -252,10 +273,15 @@ function normalizeSeries({ series, y, label }) {
 
   return list.map((entry, index) => {
     const slot = Number.isInteger(entry.slot) ? entry.slot - 1 : index;
+    // Emphasis: one series keeps its hue, the rest recede to grey. Often the
+    // honest answer to "make this chart clearer" — when the story is "this one
+    // moved", eight competing hues bury it.
+    const muted = emphasis !== undefined && emphasis !== null && entry.key !== emphasis;
     return {
       key: entry.key,
       label: entry.label ?? entry.key,
-      color: entry.color ?? seriesColor(slot),
+      color: muted ? "var(--m-chart-muted)" : (entry.color ?? seriesColor(slot)),
+      muted,
       accessor: typeof entry.key === "function" ? entry.key : (row) => row?.[entry.key],
     };
   });
@@ -671,7 +697,10 @@ export function LineChart({
   label,
   height = DEFAULT_HEIGHT,
   area = false,
-  curve = "linear",
+  emphasis,
+  yDomain,
+  brush = false,
+  onBrush,
   animate = false,
   format = formatNumber,
   tickFormat = formatCompact,
@@ -692,7 +721,9 @@ export function LineChart({
   const [active, setActive] = useState(null);
   const titleId = useId();
 
-  const resolved = useMemo(() => normalizeSeries({ series, y, label }), [series, y, label]);
+  const resolved = useMemo(
+    () => normalizeSeries({ series, y, label, emphasis }), [series, y, label, emphasis],
+  );
   const xGet = useMemo(() => xAccessor(x), [x]);
   // `width` is deliberately NOT a dep: the marks keep their identity across a
   // resize (only their `d` changes), so re-running the entrance would restart
@@ -703,39 +734,56 @@ export function LineChart({
     deps: [data.length],
   });
 
+  // Brush-to-zoom. `zoom` is the committed [start, end] index window; `drag`
+  // is the in-progress selection in plot pixels. Dragging suppresses the
+  // crosshair, so the two pointer behaviours never fight over pointermove.
+  const [zoom, setZoom] = useState(null);
+  const [drag, setDrag] = useState(null);
+
   if (!data.length || !resolved.length) {
     return h("div", { ...props, className: joinClasses("m-chart", className) },
       h(EmptyChart, { height, message: emptyMessage }));
   }
 
-  const [min, max] = valueExtent(data, resolved);
-  const { domain: yDomain, ticks: yTicks } = niceAxis(min, max, TICK_COUNT);
+  // Everything below plots the ZOOM WINDOW, not the raw data. The window is
+  // clamped to at least two points so a stray click cannot collapse the chart.
+  const rows = zoom ? data.slice(zoom[0], zoom[1] + 1) : data;
+
+  const [min, max] = valueExtent(rows, resolved);
+  // An explicit yDomain keeps facets on one scale (see SmallMultiples) — a
+  // grid of charts each on its own scale invites false comparisons.
+  const auto = niceAxis(min, max, TICK_COUNT);
+  const axisDomain = yDomain ?? auto.domain;
+  const yTicks = yDomain ? niceTicks(yDomain[0], yDomain[1], TICK_COUNT) : auto.ticks;
   const marginLeft = yAxisWidth(yTicks, tickFormat);
   const plotWidth = Math.max(10, width - marginLeft - 12);
   const plotHeight = Math.max(10, height - AXIS_BAND - 8);
 
-  const yScale = scaleLinear({ domain: yDomain, range: [plotHeight, 0] });
-  const xStep = data.length > 1 ? plotWidth / (data.length - 1) : 0;
-  const xAt = (i) => (data.length > 1 ? i * xStep : plotWidth / 2);
-  const categories = data.map(xGet);
+  const yScale = scaleLinear({ domain: axisDomain, range: [plotHeight, 0] });
+  const xStep = rows.length > 1 ? plotWidth / (rows.length - 1) : 0;
+  const xAt = (i) => (rows.length > 1 ? i * xStep : plotWidth / 2);
+  const categories = rows.map(xGet);
 
   const baselineY = yScale(Math.max(0, yScale.domain[0]));
 
-  const pointsFor = (s) => data.map((row, i) => [xAt(i), yScale(finite(s.accessor(row)))]);
+  const pointsFor = (s) => rows.map((row, i) => [xAt(i), yScale(finite(s.accessor(row)))]);
+
+  const localX = (clientX) => {
+    const node = wrapRef.current;
+    if (!node) return 0;
+    return clientX - node.getBoundingClientRect().left - marginLeft;
+  };
 
   const pickIndex = (clientX) => {
-    const node = wrapRef.current;
-    if (!node) return null;
-    const rect = node.getBoundingClientRect();
-    const local = clientX - rect.left - marginLeft;
-    if (data.length === 1) return 0;
-    const i = Math.round(local / (xStep || 1));
-    return Math.max(0, Math.min(data.length - 1, i));
+    if (rows.length === 1) return 0;
+    const i = Math.round(localX(clientX) / (xStep || 1));
+    return Math.max(0, Math.min(rows.length - 1, i));
   };
 
   const showAt = (index) => {
     if (index === null || index === undefined) return;
-    const row = data[index];
+    const row = rows[index];
+    if (!row) return;
     setActive({
       index,
       x: marginLeft + xAt(index),
@@ -745,11 +793,34 @@ export function LineChart({
     });
   };
 
+  // Committing a brush maps window-relative indices back to absolute ones, so
+  // zooming twice narrows the same window instead of jumping.
+  const offset = zoom ? zoom[0] : 0;
+  const applyBrush = (fromPx, toPx) => {
+    const [a, b] = [fromPx, toPx].sort((m, n) => m - n);
+    const lo = Math.max(0, Math.floor(a / (xStep || 1)));
+    const hi = Math.min(rows.length - 1, Math.ceil(b / (xStep || 1)));
+    if (hi - lo < 1) return;
+    const next = [offset + lo, offset + hi];
+    setZoom(next);
+    onBrush?.({ start: next[0], end: next[1], rows: data.slice(next[0], next[1] + 1) });
+  };
+
+  const resetZoom = () => {
+    setZoom(null);
+    onBrush?.(null);
+  };
+
   const onKeyDown = (event) => {
+    if (event.key === "Escape" && zoom) {
+      event.preventDefault();
+      resetZoom();
+      return;
+    }
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
     const current = active?.index ?? 0;
-    const next = Math.max(0, Math.min(data.length - 1, current + (event.key === "ArrowRight" ? 1 : -1)));
+    const next = Math.max(0, Math.min(rows.length - 1, current + (event.key === "ArrowRight" ? 1 : -1)));
     showAt(next);
   };
 
@@ -766,15 +837,43 @@ export function LineChart({
         height,
         viewBox: `0 0 ${Math.max(1, width)} ${height}`,
         role: "img",
-        ariaLabel: ariaLabel ?? `${label ?? "Chart"} — ${resolved.length} series over ${data.length} points`,
+        ariaLabel: ariaLabel ?? `${label ?? "Chart"} — ${resolved.length} series over ${rows.length} points`,
         tabIndex: 0,
         onKeyDown,
-        onPointerMove: (event) => showAt(pickIndex(event.clientX)),
-        onPointerLeave: () => setActive(null),
+        onPointerDown: brush
+          ? (event) => {
+            // Only a primary-button drag starts a brush; the pointer is
+            // captured so releasing outside the plot still commits.
+            if (event.button !== 0) return;
+            event.currentTarget.setPointerCapture?.(event.pointerId);
+            setActive(null);
+            const at = localX(event.clientX);
+            setDrag({ from: at, to: at });
+          }
+          : undefined,
+        onPointerMove: (event) => {
+          if (drag) {
+            setDrag({ from: drag.from, to: localX(event.clientX) });
+            return;   // a drag owns the pointer — no crosshair while selecting
+          }
+          showAt(pickIndex(event.clientX));
+        },
+        onPointerUp: brush
+          ? (event) => {
+            if (!drag) return;
+            const to = localX(event.clientX);
+            setDrag(null);
+            // A click (no travel) is not a selection — let it fall through to
+            // onPointClick rather than collapsing the chart to one point.
+            if (Math.abs(to - drag.from) >= 6) applyBrush(drag.from, to);
+          }
+          : undefined,
+        onPointerLeave: () => { if (!drag) setActive(null); },
         onBlur: () => setActive(null),
         onClick: (event) => {
+          if (drag) return;
           const index = pickIndex(event.clientX);
-          if (index !== null) onPointClick?.(data[index], index);
+          if (index !== null) onPointClick?.(rows[index], offset + index);
         },
       },
       h(
@@ -835,6 +934,14 @@ export function LineChart({
             ),
           );
         }),
+        // The in-progress brush selection.
+        drag && h("rect", {
+          className: "m-chart-brush",
+          x: round(Math.min(drag.from, drag.to)),
+          y: 0,
+          width: round(Math.abs(drag.to - drag.from)),
+          height: plotHeight,
+        }),
         // Crosshair + the active point markers, drawn above every series.
         active && h(
           "g",
@@ -855,8 +962,18 @@ export function LineChart({
         ),
       ),
     ),
+    // The zoom is only discoverable if there is a way back out of it.
+    zoom && h(
+      "div",
+      { className: "m-chart-zoom-note" },
+      h("span", null, `Showing ${rows.length} of ${data.length} points`),
+      h("button", { type: "button", className: "m-chart-zoom-reset", onClick: resetZoom },
+        "Reset zoom"),
+    ),
     showLegend && h(Legend, { series: legendSeries }),
     h(Tooltip, { state: active, format }),
+    // The table view always shows the FULL series: zooming is a view of the
+    // chart, not a filter on the data.
     showTable && h(TableView, { data, xGet, series: resolved, xLabel, format, label: tableLabel }),
   );
 }
@@ -882,6 +999,8 @@ export function BarChart({
   height = DEFAULT_HEIGHT,
   stacked = false,
   horizontal = false,
+  emphasis,
+  yDomain,
   animate = false,
   format = formatNumber,
   tickFormat = formatCompact,
@@ -901,7 +1020,9 @@ export function BarChart({
   const width = useWidth(wrapRef);
   const [active, setActive] = useState(null);
 
-  const resolved = useMemo(() => normalizeSeries({ series, y, label }), [series, y, label]);
+  const resolved = useMemo(
+    () => normalizeSeries({ series, y, label, emphasis }), [series, y, label, emphasis],
+  );
   const xGet = useMemo(() => xAccessor(x), [x]);
   const markCount = data.length * Math.max(1, resolved.length);
   // See the note in LineChart: a resize must not restart the entrance.
@@ -917,7 +1038,10 @@ export function BarChart({
   }
 
   const [min, max] = valueExtent(data, resolved, { stacked });
-  const { domain, ticks: valueTicks } = niceAxis(min, max, TICK_COUNT);
+  const auto = niceAxis(min, max, TICK_COUNT);
+  // An explicit domain keeps facets comparable — see SmallMultiples.
+  const domain = yDomain ?? auto.domain;
+  const valueTicks = yDomain ? niceTicks(yDomain[0], yDomain[1], TICK_COUNT) : auto.ticks;
   const categories = data.map(xGet);
 
   const marginLeft = horizontal
@@ -1331,6 +1455,658 @@ export function Sparkline({
     }),
     showEnd && h("circle", { className: "m-chart-dot", cx: round(last[0]), cy: round(last[1]), r: 3, fill: stroke }),
   );
+}
+
+// ── Heatmap ──────────────────────────────────────────────────────────────────
+
+/**
+ * Magnitude across a grid (day × hour, cohort × week). This is SEQUENTIAL
+ * encoding — one hue, more-is-darker — so it uses the --m-seq-* ramp, never
+ * categorical hues: a rainbow for magnitude has no reading order.
+ *
+ * Values are bucketed into the ramp's steps. A continuous colour scale is
+ * unreadable without a key, so the scale legend and the table twin are both
+ * on by default.
+ */
+export function Heatmap({
+  data = [],
+  x,
+  y,
+  value = "value",
+  label,
+  cellHeight = 30,
+  steps = SEQ_STEPS,
+  format = formatNumber,
+  xTickFormat = String,
+  yTickFormat = String,
+  showValues = false,
+  showLegend = true,
+  showTable = true,
+  tableLabel = "View as table",
+  emptyMessage = "No data to display.",
+  ariaLabel,
+  onCellClick,
+  className = "",
+  ...props
+} = {}) {
+  const wrapRef = useRef(null);
+  const width = useWidth(wrapRef);
+  const [active, setActive] = useState(null);
+
+  const xGet = useMemo(() => xAccessor(x), [x]);
+  const yGet = useMemo(() => xAccessor(y), [y]);
+  const vGet = useMemo(() => (typeof value === "function" ? value : (row) => row?.[value]), [value]);
+
+  // Axis order follows first appearance in the data, so the caller controls it
+  // by ordering the rows — re-sorting a heatmap silently changes its meaning.
+  const { cols, rowsAxis, cells, min, max } = useMemo(() => {
+    const colSeen = [];
+    const rowSeen = [];
+    const map = new Map();
+    let lo = Infinity;
+    let hi = -Infinity;
+
+    for (const row of data) {
+      const cx = String(xGet(row));
+      const cy = String(yGet(row));
+      const v = finite(vGet(row));
+      if (!colSeen.includes(cx)) colSeen.push(cx);
+      if (!rowSeen.includes(cy)) rowSeen.push(cy);
+      map.set(`${cy}|${cx}`, { x: cx, y: cy, value: v, row });
+      lo = Math.min(lo, v);
+      hi = Math.max(hi, v);
+    }
+
+    return {
+      cols: colSeen,
+      rowsAxis: rowSeen,
+      cells: map,
+      min: Number.isFinite(lo) ? lo : 0,
+      max: Number.isFinite(hi) ? hi : 1,
+    };
+  }, [data, xGet, yGet, vGet]);
+
+  if (!data.length || !cols.length) {
+    return h("div", { ...props, className: joinClasses("m-chart", className) },
+      h(EmptyChart, { height: cellHeight * 4, message: emptyMessage }));
+  }
+
+  const bucketCount = Math.max(2, Math.min(SEQ_STEPS, Math.floor(steps)));
+  const span = max - min || 1;
+  const bucketOf = (v) =>
+    Math.max(0, Math.min(bucketCount - 1, Math.floor(((v - min) / span) * bucketCount)));
+
+  const marginLeft = Math.min(
+    180,
+    Math.max(...rowsAxis.map((r) => String(yTickFormat(r)).length)) * CHAR_W + 14,
+  );
+  const plotWidth = Math.max(10, width - marginLeft - 12);
+  const cellW = plotWidth / cols.length;
+  const plotHeight = rowsAxis.length * cellHeight;
+  const height = plotHeight + AXIS_BAND + 8;
+
+  const showTip = (event, cell) => {
+    const node = wrapRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    setActive({
+      title: `${yTickFormat(cell.y)} · ${xTickFormat(cell.x)}`,
+      rows: [{ label: label ?? "Value", color: seqColor(bucketOf(cell.value)), value: cell.value }],
+      x: event.clientX - rect.left,
+      y: Math.max(8, event.clientY - rect.top - 12),
+    });
+  };
+
+  const rects = [];
+  rowsAxis.forEach((ry, r) => {
+    cols.forEach((cx, c) => {
+      const cell = cells.get(`${ry}|${cx}`);
+      if (!cell) return;   // a gap in the grid stays empty, never a zero-valued block
+      const bucket = bucketOf(cell.value);
+      rects.push(h(
+        "g",
+        { key: `${ry}|${cx}` },
+        h("rect", {
+          className: "m-heat-cell",
+          x: round(c * cellW + GAP / 2),
+          y: round(r * cellHeight + GAP / 2),
+          width: round(Math.max(1, cellW - GAP)),
+          height: round(Math.max(1, cellHeight - GAP)),
+          rx: 2,
+          fill: seqColor(bucket),
+          tabIndex: 0,
+          role: "img",
+          ariaLabel: `${yTickFormat(ry)}, ${xTickFormat(cx)}: ${format(cell.value)}`,
+          onPointerEnter: (event) => showTip(event, cell),
+          onPointerMove: (event) => showTip(event, cell),
+          onPointerLeave: () => setActive(null),
+          onFocus: () => setActive({
+            title: `${yTickFormat(ry)} · ${xTickFormat(cx)}`,
+            rows: [{ label: label ?? "Value", color: seqColor(bucket), value: cell.value }],
+            x: 12,
+            y: 8,
+          }),
+          onBlur: () => setActive(null),
+          onClick: () => onCellClick?.(cell.row, cell),
+        }),
+        // In-cell values pick their ink from the BUCKET, not from JS colour
+        // maths: the stylesheet knows which end of the ramp is dark in each
+        // theme, so the label always clears its own fill.
+        showValues && cellW > 34 && h(
+          "text",
+          {
+            className: joinClasses("m-heat-value",
+              bucket >= bucketCount / 2 ? "m-heat-value-deep" : "m-heat-value-pale"),
+            x: round(c * cellW + cellW / 2),
+            y: round(r * cellHeight + cellHeight / 2),
+            dy: "0.32em",
+            "text-anchor": "middle",
+            ariaHidden: "true",
+          },
+          formatCompact(cell.value),
+        ),
+      ));
+    });
+  });
+
+  return h(
+    "div",
+    { ...props, className: joinClasses("m-chart", "m-chart-heatmap", className), ref: wrapRef },
+    h(
+      "svg",
+      {
+        className: "m-chart-svg",
+        width: "100%",
+        height,
+        viewBox: `0 0 ${Math.max(1, width)} ${height}`,
+        role: "group",
+        ariaLabel: ariaLabel ?? `${label ?? "Heatmap"} — ${rowsAxis.length} by ${cols.length} grid`,
+      },
+      h(
+        "g",
+        { transform: `translate(${marginLeft}, 4)` },
+        h(
+          "g",
+          { className: "m-chart-axis m-chart-axis-y", ariaHidden: "true" },
+          rowsAxis.map((ry, r) => h(
+            "text",
+            {
+              key: `r${r}`,
+              x: -8,
+              y: round(r * cellHeight + cellHeight / 2),
+              dy: "0.32em",
+              "text-anchor": "end",
+            },
+            yTickFormat(ry),
+          )),
+        ),
+        h(AxisX, {
+          categories: cols,
+          plotHeight,
+          format: xTickFormat,
+          scale: Object.assign((c) => cols.indexOf(String(c)) * cellW,
+            { range: [0, plotWidth], bandwidth: cellW, step: cellW }),
+        }),
+        h("g", { className: "m-heat-cells" }, rects),
+      ),
+    ),
+    showLegend && h(
+      "div",
+      { className: "m-heat-legend" },
+      h("span", { className: "m-heat-legend-end" }, format(min)),
+      h(
+        "span",
+        { className: "m-heat-legend-ramp", ariaHidden: "true" },
+        Array.from({ length: bucketCount }, (_, i) =>
+          h("span", { key: i, style: { background: seqColor(i) } })),
+      ),
+      h("span", { className: "m-heat-legend-end" }, format(max)),
+    ),
+    h(Tooltip, { state: active, format }),
+    showTable && h(
+      "details",
+      { className: "m-chart-table" },
+      h("summary", null, tableLabel),
+      h(
+        "div",
+        { className: "m-chart-table-scroll" },
+        h(
+          "table",
+          null,
+          h("thead", null, h("tr", null,
+            h("th", { scope: "col" }, ""),
+            cols.map((c) => h("th", { key: c, scope: "col" }, xTickFormat(c))))),
+          h("tbody", null, rowsAxis.map((ry) => h(
+            "tr",
+            { key: ry },
+            h("th", { scope: "row" }, yTickFormat(ry)),
+            cols.map((cx) => {
+              const cell = cells.get(`${ry}|${cx}`);
+              return h("td", { key: cx }, cell ? format(cell.value) : "—");
+            }),
+          ))),
+        ),
+      ),
+    ),
+  );
+}
+
+// ── ScatterChart ─────────────────────────────────────────────────────────────
+
+/**
+ * Relationship between two continuous measures.
+ *
+ * Scatter is an ALL-PAIRS form: any two dots can land next to each other, so
+ * the palette's adjacent-pair guarantee is not enough and the validated safe
+ * depth is only the first three slots. Past `ALL_PAIRS_SLOTS` groups the tail
+ * folds into a neutral "Other" — the alternative would be colours the reader
+ * cannot reliably separate.
+ *
+ * An 8px dot is a pinpoint nobody hits, so hovering uses a nearest-point layer
+ * over the whole plot rather than per-dot hit areas.
+ */
+export function ScatterChart({
+  data = [],
+  x,
+  y,
+  groupBy,
+  label,
+  height = DEFAULT_HEIGHT,
+  radius = 5,
+  format = formatNumber,
+  tickFormat = formatCompact,
+  xTickFormat = formatCompact,
+  xLabel = "x",
+  yLabel = "y",
+  otherLabel = "Other",
+  ariaLabel,
+  showGrid = true,
+  showLegend = true,
+  showTable = true,
+  tableLabel = "View as table",
+  emptyMessage = "No data to display.",
+  onPointClick,
+  className = "",
+  ...props
+} = {}) {
+  const wrapRef = useRef(null);
+  const width = useWidth(wrapRef);
+  const [active, setActive] = useState(null);
+
+  const xGet = useMemo(() => xAccessor(x), [x]);
+  const yGet = useMemo(() => xAccessor(y), [y]);
+  const gGet = useMemo(() => (groupBy ? xAccessor(groupBy) : null), [groupBy]);
+
+  // Groups keep first-appearance order so a colour follows its entity rather
+  // than its rank, exactly as `series` does elsewhere.
+  const groups = useMemo(() => {
+    if (!gGet) return [{ key: "__all", label: label ?? "Points", color: seriesColor(0) }];
+    const seen = [];
+    for (const row of data) {
+      const g = String(gGet(row));
+      if (!seen.includes(g)) seen.push(g);
+    }
+    return seen.map((g, i) => ({
+      key: g,
+      label: g,
+      color: i < ALL_PAIRS_SLOTS ? seriesColor(i) : "var(--m-chart-other)",
+      folded: i >= ALL_PAIRS_SLOTS,
+    }));
+  }, [data, gGet, label]);
+
+  const points = useMemo(() => data.map((row) => ({
+    row,
+    vx: finite(xGet(row)),
+    vy: finite(yGet(row)),
+    group: gGet ? String(gGet(row)) : "__all",
+  })), [data, xGet, yGet, gGet]);
+
+  if (!points.length) {
+    return h("div", { ...props, className: joinClasses("m-chart", className) },
+      h(EmptyChart, { height, message: emptyMessage }));
+  }
+
+  const xs = points.map((p) => p.vx);
+  const ys = points.map((p) => p.vy);
+  const xAxis = niceAxis(Math.min(...xs), Math.max(...xs), TICK_COUNT);
+  const yAxis = niceAxis(Math.min(...ys), Math.max(...ys), TICK_COUNT);
+
+  const marginLeft = yAxisWidth(yAxis.ticks, tickFormat);
+  const plotWidth = Math.max(10, width - marginLeft - 12);
+  const plotHeight = Math.max(10, height - AXIS_BAND - 8);
+
+  const xScale = scaleLinear({ domain: xAxis.domain, range: [0, plotWidth] });
+  const yScale = scaleLinear({ domain: yAxis.domain, range: [plotHeight, 0] });
+
+  const colorOf = (group) => groups.find((g) => g.key === group)?.color ?? seriesColor(0);
+  const placed = points.map((p) => ({ ...p, px: xScale(p.vx), py: yScale(p.vy) }));
+
+  // Nearest-point picking: the pointer only has to be CLOSEST, not dead-centre.
+  const HIT_RADIUS = 28;
+  const pickNearest = (clientX, clientY) => {
+    const node = wrapRef.current;
+    if (!node) return null;
+    const rect = node.getBoundingClientRect();
+    const px = clientX - rect.left - marginLeft;
+    const py = clientY - rect.top - 4;
+    let best = null;
+    let bestDist = HIT_RADIUS;
+    for (const p of placed) {
+      const d = Math.hypot(p.px - px, p.py - py);
+      if (d < bestDist) { bestDist = d; best = p; }
+    }
+    return best;
+  };
+
+  const showPoint = (p, clientX, clientY) => {
+    const node = wrapRef.current;
+    if (!node || !p) { setActive(null); return; }
+    const rect = node.getBoundingClientRect();
+    setActive({
+      point: p,
+      title: gGet ? String(p.group) : (label ?? "Point"),
+      rows: [
+        { label: xLabel, color: colorOf(p.group), value: p.vx },
+        { label: yLabel, color: colorOf(p.group), value: p.vy },
+      ],
+      x: clientX !== undefined ? clientX - rect.left : marginLeft + p.px,
+      y: clientY !== undefined ? Math.max(8, clientY - rect.top - 12) : 8,
+    });
+  };
+
+  const onKeyDown = (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const sorted = [...placed].sort((a, b) => a.vx - b.vx);
+    const at = active?.point ? sorted.indexOf(active.point) : -1;
+    const next = Math.max(0, Math.min(sorted.length - 1, at + (event.key === "ArrowRight" ? 1 : -1)));
+    showPoint(sorted[next]);
+  };
+
+  return h(
+    "div",
+    { ...props, className: joinClasses("m-chart", "m-chart-scatter", className), ref: wrapRef },
+    h(
+      "svg",
+      {
+        className: "m-chart-svg",
+        width: "100%",
+        height,
+        viewBox: `0 0 ${Math.max(1, width)} ${height}`,
+        role: "img",
+        ariaLabel: ariaLabel ?? `${label ?? "Scatter"} — ${points.length} points`,
+        tabIndex: 0,
+        onKeyDown,
+        onPointerMove: (event) => showPoint(pickNearest(event.clientX, event.clientY), event.clientX, event.clientY),
+        onPointerLeave: () => setActive(null),
+        onBlur: () => setActive(null),
+        onClick: (event) => {
+          const p = pickNearest(event.clientX, event.clientY);
+          if (p) onPointClick?.(p.row, p);
+        },
+      },
+      h(
+        "g",
+        { transform: `translate(${marginLeft}, 4)` },
+        showGrid && h(Grid, { ticks: yAxis.ticks, scale: yScale, width: plotWidth }),
+        showGrid && h(Grid, {
+          ticks: xAxis.ticks, scale: xScale, width: plotWidth, horizontal: false, plotHeight,
+        }),
+        h(AxisY, { ticks: yAxis.ticks, scale: yScale, format: tickFormat }),
+        h(
+          "g",
+          { className: "m-chart-axis m-chart-axis-x", ariaHidden: "true" },
+          xAxis.ticks.map((tick) => h(
+            "text",
+            { key: `x${tick}`, x: round(xScale(tick)), y: plotHeight + 18, "text-anchor": "middle" },
+            xTickFormat(tick),
+          )),
+        ),
+        h(
+          "g",
+          { className: "m-chart-dots" },
+          placed.map((p, i) => h("circle", {
+            key: i,
+            className: joinClasses("m-chart-point", active?.point === p && "m-chart-point-active"),
+            cx: round(p.px),
+            cy: round(p.py),
+            r: radius,
+            fill: colorOf(p.group),
+          })),
+        ),
+      ),
+    ),
+    // Folded groups collapse into ONE legend entry. Listing them separately
+    // would show several rows sharing the same grey, which reads as a bug and
+    // implies a distinction the colours cannot carry.
+    showLegend && groups.length > 1 && h(Legend, {
+      series: (() => {
+        const named = groups.filter((g) => !g.folded);
+        const folded = groups.filter((g) => g.folded);
+        if (!folded.length) return named;
+        return [...named, {
+          key: "__other",
+          label: `${otherLabel} (${folded.length})`,
+          color: "var(--m-chart-other)",
+        }];
+      })(),
+    }),
+    h(Tooltip, { state: active, format }),
+    showTable && h(
+      "details",
+      { className: "m-chart-table" },
+      h("summary", null, tableLabel),
+      h(
+        "div",
+        { className: "m-chart-table-scroll" },
+        h(
+          "table",
+          null,
+          h("thead", null, h("tr", null,
+            gGet && h("th", { scope: "col" }, "Group"),
+            h("th", { scope: "col" }, xLabel),
+            h("th", { scope: "col" }, yLabel))),
+          h("tbody", null, points.map((p, i) => h(
+            "tr",
+            { key: i },
+            gGet && h("th", { scope: "row" }, String(p.group)),
+            h("td", null, format(p.vx)),
+            h("td", null, format(p.vy)),
+          ))),
+        ),
+      ),
+    ),
+    groups.some((g) => g.folded) && h(
+      "p",
+      { className: "m-chart-note" },
+      `Only the first ${ALL_PAIRS_SLOTS} groups get their own colour here — in a scatter any two dots can sit side by side, and the palette only guarantees separation that far. The rest share “${otherLabel}”; facet with SmallMultiples to tell them apart.`,
+    ),
+  );
+}
+
+// ── SmallMultiples ───────────────────────────────────────────────────────────
+
+/**
+ * One small chart per series, on a SHARED scale.
+ *
+ * This is the documented way out of "too many series" — never a ninth hue.
+ * `shareScale` is on for a reason: a grid of charts each auto-scaled to its own
+ * data looks comparable and is not, which is the same lie a dual axis tells.
+ *
+ * Facet the SAME MEASURE across slices — visits per region, revenue per plan.
+ * Faceting different units (sessions, signups, dollars) on one scale is the
+ * mirror-image mistake: the shared axis is honest, but it flattens the smaller
+ * measures into a line at zero. Different units are just different charts.
+ */
+export function SmallMultiples({
+  data = [],
+  x,
+  series = [],
+  chart = "line",
+  columns = 3,
+  height = 150,
+  shareScale = true,
+  animate = false,
+  format = formatNumber,
+  tickFormat = formatCompact,
+  xTickFormat = String,
+  emptyMessage = "No data to display.",
+  className = "",
+  ...props
+} = {}) {
+  const resolved = useMemo(() => normalizeSeries({ series }), [series]);
+
+  if (!data.length || !resolved.length) {
+    return h("div", { ...props, className: joinClasses("m-chart", className) },
+      h(EmptyChart, { height, message: emptyMessage }));
+  }
+
+  // One domain across every facet, computed from all series at once.
+  const [min, max] = valueExtent(data, resolved);
+  const shared = shareScale ? niceAxis(min, max, TICK_COUNT).domain : undefined;
+
+  const Chart = chart === "bar" ? BarChart : LineChart;
+  const style = {
+    "--m-facet-columns": String(Math.max(1, Math.floor(columns))),
+    ...(props.style || {}),
+  };
+
+  return h(
+    "div",
+    { ...props, style, className: joinClasses("m-facets", className) },
+    resolved.map((s) => h(
+      "section",
+      { key: s.key, className: "m-facet" },
+      h("h4", { className: "m-facet-title" }, s.label),
+      h(Chart, {
+        data,
+        x,
+        series: [{ key: s.key, label: s.label, color: s.color }],
+        height,
+        yDomain: shared,
+        area: chart === "area",
+        animate,
+        format,
+        tickFormat,
+        xTickFormat,
+        // The facet's own heading names the series, and one table per facet
+        // would bury the page; the caller keeps a single table alongside.
+        showLegend: false,
+        showTable: false,
+      }),
+    )),
+  );
+}
+
+// ── Export ───────────────────────────────────────────────────────────────────
+
+/** Rows + series → CSV text. Quotes anything containing a comma or quote. */
+export function chartToCSV({ data = [], x, series = [], y, label, xLabel = "Category" } = {}) {
+  const resolved = normalizeSeries({ series, y, label });
+  const xGet = xAccessor(x);
+  // Written without regex literals on purpose: scripts/validate_fluxaway.py
+  // balances brackets with a lexer that has no notion of regex, so a pattern
+  // containing a quote reads as an unterminated string.
+  const escape = (cell) => {
+    const text = cell === null || cell === undefined ? "" : String(cell);
+    const needsQuotes = text.includes(",") || text.includes('"') || text.includes("\n");
+    return needsQuotes ? `"${text.split('"').join('""')}"` : text;
+  };
+
+  const head = [xLabel, ...resolved.map((s) => s.label)].map(escape).join(",");
+  const body = data.map((row) =>
+    [xGet(row), ...resolved.map((s) => s.accessor(row))].map(escape).join(","));
+  return [head, ...body].join("\n");
+}
+
+function download(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  // Revoking synchronously can cancel the download in some browsers.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/** Download the chart's data as a .csv — the table view, as a file. */
+export function exportCSV(spec = {}, { filename = "chart.csv" } = {}) {
+  const csv = chartToCSV(spec);
+  download(new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" }), filename);
+  return csv;
+}
+
+/**
+ * Rasterise a rendered chart to PNG.
+ *
+ * The catch this solves: marks are painted with `var(--m-chart-N)`, and a
+ * serialised SVG carries no stylesheet, so a naive export comes out black.
+ * Every painted attribute is therefore read back through getComputedStyle on
+ * the LIVE nodes and written onto the clone as a literal colour.
+ */
+export async function exportPNG(target, {
+  filename = "chart.png",
+  scale = 2,
+  background,
+} = {}) {
+  const node = target?.current ?? target;
+  const svg = node?.tagName?.toLowerCase() === "svg" ? node : node?.querySelector?.("svg");
+  if (!svg) throw new Error("exportPNG: no <svg> found in the target element.");
+
+  // Prefer the laid-out size, but fall back to the viewBox: a chart inside a
+  // hidden panel (or an off-screen container) measures 0 and would otherwise
+  // export as a 1x1 pixel.
+  const rect = svg.getBoundingClientRect();
+  const viewBox = (svg.getAttribute("viewBox") || "").split(/[\s,]+/).map(Number);
+  const boxW = viewBox.length === 4 && viewBox[2] > 0 ? viewBox[2] : 0;
+  const boxH = viewBox.length === 4 && viewBox[3] > 0 ? viewBox[3] : 0;
+  const w = Math.max(1, Math.round(rect.width || boxW || DEFAULT_WIDTH));
+  const hgt = Math.max(1, Math.round(rect.height || boxH || DEFAULT_HEIGHT));
+
+  const clone = svg.cloneNode(true);
+  const live = svg.querySelectorAll("*");
+  const copies = clone.querySelectorAll("*");
+  const PAINT = ["fill", "stroke", "stroke-width", "opacity", "font-size", "font-family", "font-weight"];
+
+  for (let i = 0; i < live.length; i += 1) {
+    const computed = getComputedStyle(live[i]);
+    for (const prop of PAINT) {
+      const resolvedValue = computed.getPropertyValue(prop);
+      if (resolvedValue) copies[i].setAttribute(prop, resolvedValue);
+    }
+  }
+
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("width", String(w));
+  clone.setAttribute("height", String(hgt));
+
+  const svgText = new XMLSerializer().serializeToString(clone);
+  const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+
+  const image = await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("exportPNG: the serialised SVG could not be decoded."));
+    img.src = svgUrl;
+  });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w * scale;
+  canvas.height = hgt * scale;
+  const ctx = canvas.getContext("2d");
+  // A PNG has no page behind it, so a transparent export of dark-mode text is
+  // invisible wherever it is pasted. Default to the chart's own surface.
+  const fill = background
+    ?? (getComputedStyle(svg).getPropertyValue("--m-chart-surface").trim() || "#ffffff");
+  ctx.fillStyle = fill;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (blob) download(blob, filename);
+  return blob;
 }
 
 // ── Dashboard layout ─────────────────────────────────────────────────────────

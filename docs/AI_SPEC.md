@@ -2060,17 +2060,34 @@ h(LineChart, {
 
 | Component | For |
 |---|---|
-| `LineChart` / `AreaChart` | Trend over time. Crosshair tooltip; arrow keys walk the x-axis |
+| `LineChart` / `AreaChart` | Trend over time. Crosshair tooltip; arrow keys walk the x-axis; `brush` to zoom |
 | `BarChart` | Magnitude. `stacked` for part-to-whole, `horizontal` for long labels |
 | `DonutChart` / `PieChart` | Part-to-whole at a glance; folds past `maxSlices` (6) into "Other" |
+| `Heatmap` | Magnitude across a grid, on the SEQUENTIAL ramp (one hue) |
+| `ScatterChart` | Two continuous measures. Nearest-point hover; caps at 3 coloured groups |
+| `SmallMultiples` | One facet per series on a SHARED scale — the way out of "too many series" |
 | `Sparkline` | Trend glyph, no chrome — for tiles and table cells |
 | `DashboardGrid` / `ChartCard` | Auto-fit card grid; `loading` dims instead of flashing a skeleton |
 | `MetricRow` / `MetricCard` | KPI row: value, delta, sparkline. `countUp` animates the number |
 | `Meter` | One ratio against a limit |
 
 Also exported: `scaleLinear`, `scaleBand`, `niceTicks`, `formatCompact`,
-`formatNumber`, `seriesColor`, `CHART_SLOTS` — for building a custom chart on
-the same scales and palette.
+`formatNumber`, `seriesColor`, `seqColor`, `CHART_SLOTS`, `SEQ_STEPS`,
+`ALL_PAIRS_SLOTS` — for building a custom chart on the same scales and palette.
+
+**Export**: `exportCSV(spec, { filename })` and `chartToCSV(spec)` write the
+same rows the table view shows; `exportPNG(svgOrRef, { filename, scale })`
+rasterises a rendered chart. PNG export inlines every computed colour first,
+because a serialised SVG carries no stylesheet and `var(--m-chart-N)` would
+otherwise export black.
+
+**Two more props worth knowing**, both there to keep a chart honest:
+
+- `emphasis: "<series key>"` — one series keeps its hue, the rest go grey. When
+  the story is "this one moved", eight competing hues bury it.
+- `yDomain: [min, max]` — force the value axis. `SmallMultiples` sets it across
+  facets, because a grid of independently scaled charts looks comparable and
+  is not.
 
 **Animation** (`animate`) rides fluxaway-motion: bars scale up from the
 baseline, lines are wiped in by a clip rect, donut arcs pop, all staggered.
@@ -2090,6 +2107,14 @@ what a mark reports.
 - **Eight slots, never a ninth.** `seriesColor(8)` returns the neutral
   "Other" token rather than cycling — a generated hue is indistinguishable from
   an existing one under simulated colorblindness.
+- **Three slots in all-pairs forms.** In a bar or line chart only neighbouring
+  colors touch, but in a **scatter** any two dots can, and the palette is only
+  validated that far (`ALL_PAIRS_SLOTS`). `ScatterChart` folds past it
+  automatically — do not raise the cap; facet instead.
+- **Magnitude uses the sequential ramp, identity uses categorical hues.**
+  `Heatmap` takes `--m-seq-1..7` (one hue, more-is-darker). A rainbow for
+  magnitude has no reading order, and categorical hues on a value scale
+  misstate it.
 - **Nominal bars take one color.** A single series colors every bar slot 1;
   shading bars by value re-encodes what the length already shows.
 - **Status colors stay status.** For severity tiers (Class I/II/III, good→
@@ -2174,6 +2199,10 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
    change with `python3 scripts/validate_chart_palette.py`. */
 --m-chart-1 … --m-chart-8  /* categorical series slots, assigned in order */
 --m-chart-other            /* "Other" — the folded tail, never a 9th hue */
+--m-chart-muted            /* de-emphasised series (the `emphasis` prop) */
+--m-seq-1 … --m-seq-7      /* SEQUENTIAL ramp for magnitude (Heatmap): one hue,
+                              seq-1 is always the lowest value; the stylesheet
+                              flips which end is pale per theme */
 --m-chart-grid             /* hairline gridlines */
 --m-chart-axis             /* axis rules and the crosshair */
 --m-chart-ink              /* axis label text */

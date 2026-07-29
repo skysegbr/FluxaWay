@@ -47,6 +47,36 @@
   --m-chart-8: #16a34a;   /* green */
 
   --m-chart-other: #94a3b8;   /* the folded tail — never a 9th hue */
+  --m-chart-muted: #b6c2d1;   /* de-emphasised series (see `emphasis`) */
+
+  /* ── Sequential ramp (magnitude) ──────────────────────────────────────────
+   *
+   * ONE hue — the brand teal — for encoding "how much". It steps light→dark
+   * on a light surface and inverts in dark mode, so low values always recede
+   * into the background (Heatmap). Categorical hues answer "which series";
+   * a rainbow ramp for magnitude is a different job and is always wrong.
+   *
+   * --m-seq-1 is always the LOWEST magnitude and --m-seq-7 the highest, in
+   * both modes. The anchor flips between them: on the light surface low means
+   * pale and recedes toward white; on the dark surface low means deep and
+   * recedes toward the panel. Encapsulating that here means chart code just
+   * maps value → seq-1..7 and never branches on the theme.
+   *
+   * Validated (see scripts/validate_chart_palette.py --sequential): monotone
+   * lightness, worst adjacent OKLCH ΔL 0.074 (floor 0.06), hue spread 8°.
+   *
+   * Steps 3..7 also clear 2:1 against their surface, so they are the
+   * ORDINAL-safe subset — use those when the marks are discrete ordered
+   * categories (tiers, funnel stages) rather than a continuous scale, since
+   * there the palest step is a mark that must stay visible.
+   */
+  --m-seq-1: #f0fdfa;
+  --m-seq-2: #5eead4;
+  --m-seq-3: #14b8a6;
+  --m-seq-4: #0d9488;
+  --m-seq-5: #0f766e;
+  --m-seq-6: #115e59;
+  --m-seq-7: #0c3b38;
 
   /* Chart chrome: recessive by construction. The data is the loud part. */
   --m-chart-grid: #e8edf2;
@@ -68,6 +98,15 @@
     --m-chart-8: #16a34a;
 
     --m-chart-other: #64748b;
+    --m-chart-muted: #4b5a6e;
+
+    --m-seq-1: #0c3b38;
+    --m-seq-2: #115e59;
+    --m-seq-3: #0f766e;
+    --m-seq-4: #0d9488;
+    --m-seq-5: #14b8a6;
+    --m-seq-6: #5eead4;
+    --m-seq-7: #f0fdfa;
     --m-chart-grid: #273449;
     --m-chart-axis: #334155;
     --m-chart-ink: #94a3b8;
@@ -86,6 +125,15 @@
   --m-chart-8: #16a34a;
 
   --m-chart-other: #64748b;
+  --m-chart-muted: #4b5a6e;
+
+  --m-seq-1: #0c3b38;
+  --m-seq-2: #115e59;
+  --m-seq-3: #0f766e;
+  --m-seq-4: #0d9488;
+  --m-seq-5: #14b8a6;
+  --m-seq-6: #5eead4;
+  --m-seq-7: #f0fdfa;
   --m-chart-grid: #273449;
   --m-chart-axis: #334155;
   --m-chart-ink: #94a3b8;
@@ -103,6 +151,15 @@
   --m-chart-8: #16a34a;
 
   --m-chart-other: #94a3b8;
+  --m-chart-muted: #b6c2d1;
+
+  --m-seq-1: #f0fdfa;
+  --m-seq-2: #5eead4;
+  --m-seq-3: #14b8a6;
+  --m-seq-4: #0d9488;
+  --m-seq-5: #0f766e;
+  --m-seq-6: #115e59;
+  --m-seq-7: #0c3b38;
   --m-chart-grid: #e8edf2;
   --m-chart-axis: #cbd6e0;
   --m-chart-ink: #617080;
@@ -227,6 +284,177 @@
   .m-chart-arc {
     transition: none;
   }
+}
+
+/* ── Brush / zoom ───────────────────────────────────────────────────────────── */
+
+.m-chart-brush {
+  fill: var(--m-primary, #0f766e);
+  fill-opacity: 0.12;
+  stroke: var(--m-primary, #0f766e);
+  stroke-opacity: 0.4;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.m-chart-zoom-note {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-3, 12px);
+  margin-top: var(--m-space-2, 8px);
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+.m-chart-zoom-reset {
+  padding: 2px var(--m-space-2, 8px);
+  border: 1px solid var(--m-border, #cbd6e0);
+  border-radius: var(--m-radius-sm, 4px);
+  background: var(--m-surface, #ffffff);
+  color: var(--m-text, #18212b);
+  font: inherit;
+  font-size: var(--m-font-size-xs, 0.75rem);
+  cursor: pointer;
+}
+
+.m-chart-zoom-reset:hover {
+  background: var(--m-surface-raised, #f1f5f9);
+}
+
+.m-chart-zoom-reset:focus-visible {
+  outline: 2px solid var(--m-focus, #9ee8df);
+  outline-offset: 2px;
+}
+
+/* A brushable plot advertises itself. */
+.m-chart-line .m-chart-svg {
+  touch-action: pan-y;
+}
+
+/* ── Heatmap ────────────────────────────────────────────────────────────────── */
+
+.m-heat-cell {
+  cursor: default;
+  transition: opacity var(--m-transition-fast, 120ms ease);
+}
+
+.m-heat-cell:hover {
+  opacity: 0.78;
+}
+
+.m-heat-cell:focus-visible {
+  outline: 2px solid var(--m-focus, #9ee8df);
+  outline-offset: 1px;
+}
+
+/* An in-cell label is the one place text may sit ON a data colour, so it picks
+ * its ink from which END of the ramp the cell is on. The ramp's anchor flips
+ * per theme, so these two rules flip with it. */
+.m-heat-value {
+  font-size: var(--m-font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.m-heat-value-deep {
+  fill: #ffffff;
+}
+
+.m-heat-value-pale {
+  fill: #18212b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .m-heat-value-deep {
+    fill: #0f172a;
+  }
+
+  :root:not([data-theme="light"]) .m-heat-value-pale {
+    fill: #f1f5f9;
+  }
+}
+
+[data-theme="dark"] .m-heat-value-deep {
+  fill: #0f172a;
+}
+
+[data-theme="dark"] .m-heat-value-pale {
+  fill: #f1f5f9;
+}
+
+[data-theme="light"] .m-heat-value-deep {
+  fill: #ffffff;
+}
+
+[data-theme="light"] .m-heat-value-pale {
+  fill: #18212b;
+}
+
+/* The scale key — a continuous encoding is unreadable without one. */
+.m-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-2, 8px);
+  margin-top: var(--m-space-3, 12px);
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-heat-legend-ramp {
+  display: flex;
+  overflow: hidden;
+  flex: 0 1 12rem;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.m-heat-legend-ramp > span {
+  flex: 1;
+}
+
+/* ── Scatter ────────────────────────────────────────────────────────────────── */
+
+/* Dots carry a surface ring so overlapping points stay countable. */
+.m-chart-point {
+  stroke: var(--m-chart-surface);
+  stroke-width: 2;
+  transition: r var(--m-transition-fast, 120ms ease);
+}
+
+.m-chart-point-active {
+  r: 7;
+}
+
+.m-chart-note {
+  margin: var(--m-space-2, 8px) 0 0;
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-xs, 0.75rem);
+}
+
+/* ── Small multiples ────────────────────────────────────────────────────────── */
+
+.m-facets {
+  display: grid;
+  gap: var(--m-space-4, 16px);
+  grid-template-columns: repeat(var(--m-facet-columns, 3), minmax(0, 1fr));
+}
+
+@media (max-width: 52rem) {
+  .m-facets {
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+}
+
+.m-facet {
+  min-width: 0;
+}
+
+.m-facet-title {
+  margin: 0 0 var(--m-space-1, 4px);
+  color: var(--m-text-muted, #617080);
+  font-size: var(--m-font-size-sm, 0.875rem);
+  font-weight: 600;
 }
 
 /* ── Legend ─────────────────────────────────────────────────────────────────── */

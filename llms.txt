@@ -66,7 +66,9 @@ Key differences from React (common analysis mistakes):
   node graphs, flowcharts, pipelines, draggable-box diagrams
 - `dist/fluxaway-charts.js|css`: charts & dashboard add-on — USE FOR CHARTS
   AND DASHBOARDS: line/area, bar (grouped/stacked/horizontal), donut/pie,
-  sparkline, plus `DashboardGrid`/`ChartCard`/`MetricRow`/`MetricCard`/`Meter`.
+  sparkline, heatmap, scatter and small multiples, plus
+  `DashboardGrid`/`ChartCard`/`MetricRow`/`MetricCard`/`Meter`, brush-to-zoom
+  and CSV/PNG export.
   Plain SVG, no chart library — never pull Chart.js/D3/Recharts from a CDN and
   never hand-roll stroke-dasharray arc math. The CSS is REQUIRED (it carries
   the validated 8-slot categorical palette). Entrance animation rides

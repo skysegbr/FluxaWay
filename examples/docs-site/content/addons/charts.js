@@ -1,79 +1,7 @@
-import { h, loadCSS } from "/dist/fluxaway.js";
 import {
-  BarChart, ChartCard, DashboardGrid, DonutChart, LineChart, MetricCard, MetricRow, Meter,
-} from "/dist/fluxaway-charts.js";
-
-// The add-on's stylesheet carries the categorical palette tokens, so the demos
-// need it loaded before they mean anything. This module is imported lazily by
-// entryLoader, so the CSS arrives with the entry rather than on every page.
-loadCSS("/dist/fluxaway-charts.css");
-
-const MONTHS = [
-  { month: "Jan", visits: 1200, signups: 300 },
-  { month: "Feb", visits: 1900, signups: 420 },
-  { month: "Mar", visits: 1500, signups: 380 },
-  { month: "Apr", visits: 2400, signups: 610 },
-  { month: "May", visits: 2100, signups: 540 },
-  { month: "Jun", visits: 2800, signups: 690 },
-];
-
-const SERIES = [
-  { key: "visits", label: "Visits" },
-  { key: "signups", label: "Signups" },
-];
-
-const CHANNELS = [
-  { channel: "Organic search", sessions: 18420 },
-  { channel: "Direct", sessions: 12180 },
-  { channel: "Paid social", sessions: 7640 },
-  { channel: "Email", sessions: 5210 },
-  { channel: "Referral", sessions: 3180 },
-  { channel: "Affiliates", sessions: 1420 },
-  { channel: "Display", sessions: 980 },
-];
-
-function LinePreview() {
-  return h(LineChart, { data: MONTHS, x: "month", series: SERIES, height: 260, animate: true });
-}
-
-function BarPreview() {
-  return h(BarChart, { data: MONTHS, x: "month", series: SERIES, stacked: true, height: 260, animate: true });
-}
-
-function DonutPreview() {
-  return h(DonutChart, {
-    data: CHANNELS,
-    x: "channel",
-    y: "sessions",
-    height: 230,
-    animate: true,
-    centerLabel: { value: "49K", label: "sessions" },
-  });
-}
-
-function DashboardPreview() {
-  return h(
-    "div",
-    { className: "m-stack" },
-    h(
-      MetricRow,
-      { min: 170 },
-      h(MetricCard, { label: "Visits", value: 61409, delta: 16.6, deltaLabel: "vs last month", trend: MONTHS.map((m) => m.visits), countUp: true }),
-      h(MetricCard, { label: "Signups", value: 2940, delta: 12.1, deltaLabel: "vs last month", trend: MONTHS.map((m) => m.signups), trendColor: "var(--m-chart-2)", countUp: true }),
-      h(MetricCard, { label: "Error rate", value: 2.4, format: (n) => `${n.toFixed(1)}%`, delta: 3.1, up: "bad", deltaLabel: "vs last week" }),
-    ),
-    h(
-      DashboardGrid,
-      { min: 260 },
-      h(ChartCard, { title: "Traffic", subtitle: "Monthly sessions" },
-        h(LineChart, { data: MONTHS, x: "month", y: "visits", label: "Visits", height: 200 })),
-      h(ChartCard, { title: "Capacity" },
-        h("div", { className: "m-stack" },
-          h(Meter, { label: "Seats", value: 168, max: 200 }),
-          h(Meter, { label: "API calls", value: 940000, max: 1000000 }))),
-    ),
-  );
-}
+  BarPreview, DashboardPreview, DonutPreview, FacetPreview, HeatmapPreview,
+  LinePreview, ScatterPreview,
+} from "./chartsDemos.js";
 
 export const ADDON_ENTRIES = [
   {
@@ -135,6 +63,47 @@ return h(LineChart, {
 });`,
       },
       {
+        id: "charts-heatmap",
+        title: "Heatmap",
+        note: "Magnitude on a grid uses the SEQUENTIAL ramp — one hue, stronger means more (it runs light→dark on a light surface and inverts in dark mode, so low values always recede into the background). Categorical hues have no reading order, so they are wrong for a value scale. The key below it is not optional: a continuous encoding is unreadable without one.",
+        render: HeatmapPreview,
+        code: `return h(Heatmap, {
+  data: grid,          // [{ day, hour, sessions }]
+  x: "hour",
+  y: "day",
+  value: "sessions",
+  showValues: true,
+});`,
+      },
+      {
+        id: "charts-scatter",
+        title: "Scatter",
+        note: "Five segments, three colours. A scatter is an all-pairs form — any two dots can touch — and the palette is only validated that far, so the tail folds into “Other” instead of taking hues the reader cannot separate. Hovering picks the nearest point, so you never have to hit an 8px dot dead-centre.",
+        render: ScatterPreview,
+        code: `return h(ScatterChart, {
+  data: accounts,
+  x: "spend",
+  y: "revenue",
+  groupBy: "segment",   // capped at ALL_PAIRS_SLOTS (3)
+  xLabel: "Spend",
+  yLabel: "Revenue",
+});`,
+      },
+      {
+        id: "charts-facets",
+        title: "Small multiples",
+        note: "The way out of “too many series”, instead of a ninth hue. All facets share one y-scale — facet the SAME measure across slices, because different units on a shared scale flatten the small ones into a line at zero.",
+        render: FacetPreview,
+        code: `return h(SmallMultiples, {
+  data: rows,
+  x: "day",
+  series: regions.map((r) => ({ key: r, label: r })),
+  columns: 4,
+  // shareScale is on by default — turning it off makes
+  // unequal panels LOOK comparable when they are not.
+});`,
+      },
+      {
         id: "charts-dashboard",
         title: "Dashboard layout",
         note: "MetricRow for the KPI row, DashboardGrid + ChartCard for the charts below it. `up: \"bad\"` flips the delta colors, because a rising error rate is not a win.",
@@ -166,6 +135,11 @@ h(DashboardGrid, { min: 260 },
       { name: "stacked / horizontal", type: "boolean", default: "false", description: "BarChart layout. Grouped is the multi-series default." },
       { name: "maxSlices", type: "number", default: "6", description: "DonutChart cap; the tail folds into “Other”." },
       { name: "showTable", type: "boolean", default: "true", description: "The table-view twin that keeps every value reachable without hovering." },
+      { name: "emphasis", type: "string", description: "Highlight one series by key and grey the rest — often the honest answer to “make this clearer”." },
+      { name: "brush", type: "boolean", default: "false", description: "LineChart: drag across the plot to zoom a range; Escape or the reset control restores it." },
+      { name: "value", type: "string | (row) => number", description: "Heatmap: the magnitude key. Missing cells stay blank rather than reading as zero." },
+      { name: "groupBy", type: "string | (row) => value", description: "ScatterChart: colour points by category, capped at ALL_PAIRS_SLOTS (3)." },
+      { name: "shareScale", type: "boolean", default: "true", description: "SmallMultiples: one y-scale across facets. Off makes unequal panels look comparable." },
       { name: "format / tickFormat / xTickFormat", type: "(value) => string", description: "Tooltip+table, value axis, and category axis formatters." },
     ],
     resources: [
@@ -177,6 +151,8 @@ h(DashboardGrid, { min: 260 },
       "Load /dist/fluxaway-charts.css next to the module — it carries the palette tokens.",
       "The palette has eight slots in a fixed order; a ninth series folds into “Other” rather than cycling. Re-check any color change with `python3 scripts/validate_chart_palette.py`.",
       "There is deliberately no dual-axis option: two measures of different magnitude are two charts.",
+      "Magnitude uses the one-hue --m-seq-* ramp (Heatmap); identity uses the categorical slots. Never a rainbow for a value scale.",
+      "exportCSV() writes the same rows the table view shows; exportPNG() inlines every computed colour first, since a serialised SVG carries no stylesheet.",
     ],
   },
 ];

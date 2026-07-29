@@ -5,6 +5,43 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Three more chart forms, chosen to match the method rather than the wishlist.**
+  `Heatmap` (magnitude across a grid), `ScatterChart` (two continuous measures)
+  and `SmallMultiples` (one facet per series). RadarChart and GaugeChart were
+  deliberately dropped: a radar's area grows with the *square* of the value and
+  its axis order is arbitrary, which is the same defect that makes dual-axis
+  charts banned here, and `Meter` already covers "one ratio against a limit".
+  In their place are the two forms the method actually recommends — small
+  multiples, and `emphasis`, which highlights one series and greys the rest.
+- **A validated sequential ramp, `--m-seq-1..7`.** Magnitude needs one hue,
+  light→dark; categorical slots answer "which series" and have no reading
+  order, so they are wrong for a value scale. Derived from the brand teal and
+  validated (monotone lightness, worst adjacent OKLCH ΔL 0.074 against a 0.06
+  floor, hue spread 8°). `--m-seq-1` is always the lowest value in both themes;
+  the stylesheet flips which end is pale, so chart code never branches on the
+  theme. `scripts/validate_chart_palette.py --sequential` checks it, and also
+  reports which steps stay ordinal-safe.
+- **Brush-to-zoom on `LineChart`** (`brush`, `onBrush`). Dragging selects a
+  range and the plot narrows to it; Escape or the reset control restores it.
+  The table view keeps listing the full series, because zooming is a view of
+  the chart and not a filter on the data.
+- **`exportCSV` / `chartToCSV` / `exportPNG`.** PNG export inlines every
+  computed colour onto the clone before serialising — a detached SVG carries no
+  stylesheet, so `var(--m-chart-N)` would otherwise rasterise black.
+- **`yDomain`** on the cartesian charts, so facets can share one scale.
+
+### Changed
+- `ScatterChart` caps coloured groups at three (`ALL_PAIRS_SLOTS`) and folds the
+  rest into one neutral "Other" legend row. In bar and line charts only
+  neighbouring colours touch, but in a scatter any two dots can, and the palette
+  is only validated to that depth.
+- `tests/index.html` now loads `dist/fluxaway-charts.css`. The PNG-export test
+  reads colours back through `getComputedStyle`, which needs the palette tokens
+  present exactly as an app would load them.
+
 ## [0.21.0] - 2026-07-29
 
 ### Added
