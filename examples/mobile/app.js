@@ -1,7 +1,7 @@
 import { Fragment, h, render, useCallback, useState } from "/dist/fluxaway.js";
 import { Button, IconButton } from "/dist/fluxaway-components-core.js";
-import { BottomSheet, Drawer, Toast } from "/dist/fluxaway-components-overlay.js";
-import { AppBar, BottomNav, FAB } from "/dist/fluxaway-components-nav.js";
+import { BottomSheet, Toast } from "/dist/fluxaway-components-overlay.js";
+import { BottomNav, FAB, Navbar } from "/dist/fluxaway-components-nav.js";
 import { ThemeToggle } from "/dist/fluxaway-components-theme.js";
 
 import { HomeScreen }     from "./components/HomeScreen.js";
@@ -16,13 +16,6 @@ const TABS = [
   { value: "profile", label: "Profile", icon: "bi-person", description: "Device and account status" },
 ];
 
-const TITLES = {
-  home:     "FluxaWay Mobile",
-  explore:  "Explore",
-  activity: "Activity",
-  profile:  "Profile",
-};
-
 function App() {
   const [tab, setTab]     = useState("home");
   const [menu, setMenu]   = useState(false);
@@ -32,7 +25,10 @@ function App() {
   const openSheet  = useCallback(() => setSheet(true), []);
   const closeSheet = useCallback(() => setSheet(false), []);
 
-  const showToast = useCallback(() => setToast(true), []);
+  const showToast = useCallback(() => {
+    setToast(true);
+    setMenu(false);
+  }, []);
 
   const navigate = (nextTab) => {
     setTab(nextTab);
@@ -42,6 +38,17 @@ function App() {
   const bottomItems = TABS.map((item) => ({
     ...item,
     icon: h("i", { className: `bi ${item.icon}`, ariaHidden: "true" }),
+  }));
+
+  const navbarItems = TABS.map((item) => ({
+    key: item.value,
+    label: item.label,
+    icon: h("i", { className: `bi ${item.icon}`, ariaHidden: "true" }),
+    active: tab === item.value,
+    onClick: (event) => {
+      event.preventDefault();
+      navigate(item.value);
+    },
   }));
 
   const screen =
@@ -54,20 +61,12 @@ function App() {
     "div",
     { className: "m-app mob-app" },
 
-    h(AppBar, {
-      title: TITLES[tab],
-      className: "mob-app-bar",
-      leading: h(
-        IconButton,
-        {
-          label: menu ? "Close navigation" : "Open navigation",
-          className: `mob-menu-trigger${menu ? " m-navbar-open" : ""}`,
-          ariaExpanded: menu ? "true" : "false",
-          ariaControls: "mobile-navigation",
-          onClick: () => setMenu((open) => !open),
-        },
-        h("span", { className: "m-navbar-toggle-icon", ariaHidden: "true" }),
-      ),
+    h(Navbar, {
+      brand: h("strong", { className: "mob-navbar-brand" }, "FluxaWay Mobile"),
+      items: navbarItems,
+      open: menu,
+      onToggle: setMenu,
+      className: "mob-navbar",
       actions: h(
         Fragment,
         null,
@@ -80,8 +79,6 @@ function App() {
       ),
     }),
 
-    h("div", { className: "m-app-bar-offset" }),
-
     h("main", { className: "m-container mob-main" }, screen),
 
     h("div", { className: "m-bottom-nav-offset" }),
@@ -92,62 +89,6 @@ function App() {
       FAB,
       { label: "New action", aboveNav: true, className: "mob-fab", onClick: openSheet },
       h("i", { className: "bi bi-plus-lg", ariaHidden: "true" }),
-    ),
-
-    h(
-      Drawer,
-      {
-        id: "mobile-navigation",
-        open: menu,
-        side: "left",
-        width: "min(86vw, 340px)",
-        title: "FluxaWay Mobile",
-        closeLabel: "Close navigation",
-        className: "mob-drawer",
-        onClose: () => setMenu(false),
-      },
-      h(
-        "div",
-        { className: "mob-drawer-intro" },
-        h("span", { className: "mob-drawer-mark", ariaHidden: "true" }, "FW"),
-        h(
-          "div",
-          null,
-          h("strong", null, "Ready for the road"),
-          h("span", null, "A complete mobile shell, no build step."),
-        ),
-      ),
-      h("p", { className: "mob-drawer-label" }, "Navigate"),
-      h(
-        "nav",
-        { className: "mob-drawer-nav", ariaLabel: "Mobile example" },
-        TABS.map((item) =>
-          h(
-            "button",
-            {
-              key: item.value,
-              type: "button",
-              className: `mob-drawer-link${tab === item.value ? " is-active" : ""}`,
-              ariaCurrent: tab === item.value ? "page" : null,
-              onClick: () => navigate(item.value),
-            },
-            h("i", { className: `bi ${item.icon}`, ariaHidden: "true" }),
-            h(
-              "span",
-              null,
-              h("strong", null, item.label),
-              h("small", null, item.description),
-            ),
-            item.badge ? h("span", { className: "mob-drawer-badge" }, item.badge) : null,
-          ),
-        ),
-      ),
-      h(
-        "div",
-        { className: "mob-drawer-tip" },
-        h("i", { className: "bi bi-lightning-charge", ariaHidden: "true" }),
-        h("span", null, "AppBar, Drawer and BottomNav share the same reactive state."),
-      ),
     ),
 
     h(BottomSheet, { open: sheet, title: "Available actions", onClose: closeSheet },
