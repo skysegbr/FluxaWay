@@ -418,7 +418,7 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-02 | complete-page / components | full component gallery renders; every component styled (monolith CSS) | visual |
 | SC-APP-03 | storefront | product grid, cart, forms, overlays | browser |
 | SC-APP-04 | form | validation, field types, submit states | browser |
-| SC-APP-05 | mobile | app-bar/bottom-nav/bottom-sheet, swipe, safe-area | browser (touch) |
+| SC-APP-05 | mobile | app-bar/drawer/bottom-nav/bottom-sheet, keyboard focus restore, swipe, safe-area | browser (touch) |
 | SC-APP-06 | ssr | hydration round-trip (SC-SSR-09) | browser |
 | SC-APP-07 | fluxaway-architecture / fluxaway-atlas | ZoomStage nav (SC-ZOOM) | browser |
 | SC-APP-08 | fluxaway-motion / motion-editor | motion + editor (SC-MOTION) | browser |

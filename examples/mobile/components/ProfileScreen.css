@@ -1,0 +1,68 @@
+.mob-profile-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--m-space-4);
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--m-primary) 25%, var(--m-border));
+  background:
+    radial-gradient(circle at 95% 10%, color-mix(in srgb, var(--m-primary) 18%, transparent), transparent 10rem),
+    var(--m-surface);
+}
+
+.mob-avatar {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 1.35rem;
+  background: linear-gradient(145deg, var(--m-primary-hover), var(--m-primary));
+  color: white;
+  font-size: var(--m-font-size-xl);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  box-shadow: 0 0.75rem 1.75rem color-mix(in srgb, var(--m-primary) 25%, transparent);
+}
+
+.mob-profile-copy h2 { margin: var(--m-space-1) 0 0; font-size: var(--m-font-size-xl); }
+.mob-profile-copy p { margin: var(--m-space-1) 0 0; color: var(--m-text-muted); font-size: var(--m-font-size-sm); }
+
+.mob-profile-status {
+  grid-column: 1 / -1;
+  width: fit-content;
+  padding: var(--m-space-1) var(--m-space-2);
+  border-radius: 999px;
+  background: var(--m-success-soft);
+  color: var(--m-success);
+  font-size: var(--m-font-size-xs);
+  font-weight: 800;
+}
+
+.mob-device-card {
+  display: grid;
+  height: 100%;
+  min-height: 11rem;
+}
+
+.mob-device-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: var(--m-space-4);
+  border-radius: 0.9rem;
+  background: var(--m-primary-soft);
+  color: var(--m-primary);
+  font-size: 1.15rem;
+}
+
+.mob-device-card small { color: var(--m-text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.mob-device-card strong { margin-top: var(--m-space-1); font-size: var(--m-font-size-xl); }
+.mob-device-card > span:last-child { align-self: end; margin-top: var(--m-space-3); color: var(--m-text-muted); font-size: var(--m-font-size-xs); }
+.mob-profile-alert { border-radius: var(--m-radius-lg); }
+
+@media (min-width: 520px) {
+  .mob-profile-hero { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .mob-profile-status { grid-column: auto; }
+}

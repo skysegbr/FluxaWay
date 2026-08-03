@@ -1,20 +1,20 @@
 // Static data for the mobile demo screens.
 
 export const FEATURES = [
-  { id: 1, title: "Mobile Components", body: "Native AppBar, BottomNav, BottomSheet and FAB." },
-  { id: 2, title: "Responsive Grid",   body: "12-column mobile-first grid, just like Bootstrap 5." },
-  { id: 3, title: "Dark Mode",         body: "Automatic via prefers-color-scheme + manual toggle." },
-  { id: 4, title: "Gesture Hooks",     body: "useSwipe, useLongPress, useVibrate and more." },
-  { id: 5, title: "Safe Areas",        body: "Support for notch and Dynamic Island via env()." },
-  { id: 6, title: "Touch Targets",     body: "Minimum 44px on all interactive elements." },
+  { id: 1, icon: "bi-phone", title: "Mobile shell", body: "AppBar, Drawer, BottomNav, BottomSheet and FAB work together." },
+  { id: 2, icon: "bi-grid-3x3-gap", title: "Responsive grid", body: "Twelve mobile-first columns grow naturally into tablet layouts." },
+  { id: 3, icon: "bi-moon-stars", title: "Dark mode", body: "System preference and the manual toggle share one source of truth." },
+  { id: 4, icon: "bi-hand-index-thumb", title: "Gesture hooks", body: "Swipe, long press, vibration and orientation need no plug-in." },
+  { id: 5, icon: "bi-bounding-box", title: "Safe areas", body: "Notches and Dynamic Island insets are built into the shell tokens." },
+  { id: 6, icon: "bi-universal-access", title: "Touch targets", body: "Interactive controls preserve comfortable 44px hit areas." },
 ];
 
 export const ACTIVITY_ITEMS = [
-  { id: 1, text: "Mobile-first grid implemented",  time: "now" },
-  { id: 2, text: "Automatic dark mode activated",  time: "2min" },
-  { id: 3, text: "AppBar and BottomNav added",      time: "5min" },
-  { id: 4, text: "useSwipe and useLongPress created", time: "10min" },
-  { id: 5, text: "ThemeToggle with localStorage",  time: "15min" },
+  { id: 1, icon: "bi-check2-circle", text: "Mobile navigation connected", detail: "Drawer and bottom tabs share state", time: "now" },
+  { id: 2, icon: "bi-moon-stars", text: "Dark mode synchronized", detail: "Preference stored locally", time: "2m" },
+  { id: 3, icon: "bi-grid", text: "Responsive grid measured", detail: "Four breakpoints are ready", time: "5m" },
+  { id: 4, icon: "bi-hand-index-thumb", text: "Gesture hooks attached", detail: "Swipe and long press are listening", time: "10m" },
+  { id: 5, icon: "bi-shield-check", text: "Safe-area check passed", detail: "Viewport insets applied", time: "15m" },
 ];
 
 export const EXPLORE_FILTERS = ["all", "ui", "hooks", "css", "mobile"];
