@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.6] - 2026-08-03
+
+### Changed
+- The mobile example now uses the complete responsive `Navbar` behavior instead
+  of pairing an AppBar with a side Drawer. The animated hamburger expands links
+  and actions directly below the brand, pushes content down, closes after
+  navigation or notification actions and still supports Escape.
+
 ## [0.22.5] - 2026-08-03
 
 ### Changed
