@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.4] - 2026-08-03
+
+### Fixed
+- Centered the `FW` monogram in the mobile Drawer's intro card. A broader text
+  rule no longer overrides the badge's grid centering in light or dark mode.
+
 ## [0.22.3] - 2026-08-03
 
 ### Added
