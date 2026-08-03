@@ -1,6 +1,7 @@
 import { h } from "/dist/fluxaway.js";
 import { ThemeToggle, PaletteSwitcher } from "/dist/fluxaway-components-theme.js";
-import { NAV_LINKS } from "../../data.js";
+import { EXAMPLE_LINKS, NAV_LINKS } from "../../data.js";
+import { ExamplesMenu } from "./ExamplesMenu.js";
 
 export function DocsHeader({ path, onOpenSearch, onToggleMenu, menuOpen, mobile }) {
   return h(
@@ -53,6 +54,7 @@ export function DocsHeader({ path, onOpenSearch, onToggleMenu, menuOpen, mobile 
           link.label,
         ),
       ),
+      h(ExamplesMenu, { items: EXAMPLE_LINKS }),
     ),
 
     h(

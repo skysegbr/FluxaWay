@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.2] - 2026-08-03
+
+### Added
+- **A keyboard-accessible Examples menu in the docs header.** The former single
+  Components example link now exposes all 20 examples shipped in
+  `build/docs-site/examples`, using real anchors with pointer, Tab, arrow,
+  Home/End and Escape behavior. The scrollable panel stays usable when the full
+  published catalog is taller than the viewport.
+
+### Changed
+- The docs-site browser smoke now locks the exact ordered build manifest,
+  verifies all 20 hrefs and covers menu focus restoration in Chromium, Firefox
+  and WebKit.
+
 ## [0.22.1] - 2026-08-03
 
 ### Added
