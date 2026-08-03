@@ -5,7 +5,31 @@ export const NAV_LINKS = [
   { label: "Docs", href: "#/getting-started", match: "/getting-started" },
   { label: "CSS", href: "#/css/installation", match: "/css" },
   { label: "Components", href: "#/components/button", match: "/components" },
-  { label: "Examples", href: "/examples/components/", external: false, match: "__none__" },
+];
+
+// Public examples copied into build/docs-site/examples. Keep this manifest in
+// sync with the deploy bundle; the docs smoke protects the complete href list.
+export const EXAMPLE_LINKS = [
+  { label: "Basic", href: "/examples/basic/" },
+  { label: "Complete page", href: "/examples/complete-page/" },
+  { label: "Components", href: "/examples/components/" },
+  { label: "Designer", href: "/examples/designer/" },
+  { label: "Drug recalls", href: "/examples/drug-recalls/" },
+  { label: "FluxaWay Architecture", href: "/examples/fluxaway-architecture/" },
+  { label: "FluxaWay Atlas", href: "/examples/fluxaway-atlas/" },
+  { label: "FluxaWay Motion", href: "/examples/fluxaway-motion/" },
+  { label: "Form", href: "/examples/form/" },
+  { label: "Gallery", href: "/examples/gallery/" },
+  { label: "Landing", href: "/examples/landing/" },
+  { label: "Mind map", href: "/examples/mindmap/" },
+  { label: "Minified build", href: "/examples/minified/" },
+  { label: "Mobile", href: "/examples/mobile/" },
+  { label: "Motion Editor", href: "/examples/motion-editor/" },
+  { label: "Motion Landing", href: "/examples/motion-landing/" },
+  { label: "Palate Journey", href: "/examples/palate-journey/" },
+  { label: "SSR", href: "/examples/ssr/" },
+  { label: "Star Atlas", href: "/examples/star-atlas/" },
+  { label: "Storefront", href: "/examples/storefront/" },
 ];
 
 export const QUICK_START = `<!doctype html>

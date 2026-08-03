@@ -2,6 +2,7 @@
    collected here — components never import their own CSS. */
 
 @import url("./components/shell/DocsHeader.css");
+@import url("./components/shell/ExamplesMenu.css");
 @import url("./components/shell/Sidebar.css");
 
 :root {

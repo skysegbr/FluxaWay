@@ -127,9 +127,10 @@ not flake; report the engine.
 **1.6** protects the documentation app itself: home payload stays lazy,
 category CSS and CodeMirror load on demand, search navigates to component and
 CSS references, all eight CSS guides and five add-on pages render their expected
-content, the catalog matches its 107 descriptors, route changes focus the new
-heading, the sidebar reveals its active page, and mobile navigation/TOC lock,
-restore and move focus without overflow.
+content, the header menu matches all 20 examples published in the build, the
+catalog matches its 107 descriptors, route changes focus the new heading, the
+sidebar reveals its active page, and mobile navigation/TOC lock, restore and
+move focus without overflow.
 
 ---
 

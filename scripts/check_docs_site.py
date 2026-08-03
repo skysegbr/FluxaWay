@@ -99,6 +99,47 @@ def run(browser_type, base: str) -> list[str]:
     desktop.wait_for_function("() => document.documentElement.dataset.theme === 'light'")
     passed.append("FluxaWay logo follows the active light and dark theme")
 
+    expected_examples = [
+        "/examples/basic/",
+        "/examples/complete-page/",
+        "/examples/components/",
+        "/examples/designer/",
+        "/examples/drug-recalls/",
+        "/examples/fluxaway-architecture/",
+        "/examples/fluxaway-atlas/",
+        "/examples/fluxaway-motion/",
+        "/examples/form/",
+        "/examples/gallery/",
+        "/examples/landing/",
+        "/examples/mindmap/",
+        "/examples/minified/",
+        "/examples/mobile/",
+        "/examples/motion-editor/",
+        "/examples/motion-landing/",
+        "/examples/palate-journey/",
+        "/examples/ssr/",
+        "/examples/star-atlas/",
+        "/examples/storefront/",
+    ]
+    examples_trigger = desktop.locator(".nd-header-examples-trigger")
+    examples_trigger.click()
+    desktop.wait_for_selector('#docs-examples-menu[role="menu"]')
+    example_links = desktop.locator(".nd-header-example-link")
+    expect(example_links.count() == len(expected_examples), "examples menu has the wrong link count")
+    found_examples = example_links.evaluate_all(
+        "(links) => links.map((link) => link.getAttribute('href'))"
+    )
+    expect(found_examples == expected_examples, "examples menu does not match the build package")
+    desktop.wait_for_function(
+        "() => document.activeElement === document.querySelector('.nd-header-example-link')"
+    )
+    desktop.keyboard.press("End")
+    expect(example_links.last.evaluate("(link) => document.activeElement === link"), "End missed last example")
+    desktop.keyboard.press("Escape")
+    expect(desktop.locator("#docs-examples-menu").count() == 0, "Escape did not close examples")
+    expect(examples_trigger.evaluate("(button) => document.activeElement === button"), "focus not restored")
+    passed.append("examples menu matches all 20 build links and supports keyboard navigation")
+
     desktop.locator('.nd-sidebar-link[href="#/getting-started"]').click()
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
     desktop.wait_for_function(
