@@ -1,7 +1,7 @@
 // Static data for the mobile demo screens.
 
 export const FEATURES = [
-  { id: 1, icon: "bi-phone", title: "Mobile shell", body: "AppBar, Drawer, BottomNav, BottomSheet and FAB work together." },
+  { id: 1, icon: "bi-phone", title: "Mobile shell", body: "Navbar, BottomNav, BottomSheet and FAB work together." },
   { id: 2, icon: "bi-grid-3x3-gap", title: "Responsive grid", body: "Twelve mobile-first columns grow naturally into tablet layouts." },
   { id: 3, icon: "bi-moon-stars", title: "Dark mode", body: "System preference and the manual toggle share one source of truth." },
   { id: 4, icon: "bi-hand-index-thumb", title: "Gesture hooks", body: "Swipe, long press, vibration and orientation need no plug-in." },
@@ -10,7 +10,7 @@ export const FEATURES = [
 ];
 
 export const ACTIVITY_ITEMS = [
-  { id: 1, icon: "bi-check2-circle", text: "Mobile navigation connected", detail: "Drawer and bottom tabs share state", time: "now" },
+  { id: 1, icon: "bi-check2-circle", text: "Mobile navigation connected", detail: "Navbar and bottom tabs share state", time: "now" },
   { id: 2, icon: "bi-moon-stars", text: "Dark mode synchronized", detail: "Preference stored locally", time: "2m" },
   { id: 3, icon: "bi-grid", text: "Responsive grid measured", detail: "Four breakpoints are ready", time: "5m" },
   { id: 4, icon: "bi-hand-index-thumb", text: "Gesture hooks attached", detail: "Swipe and long press are listening", time: "10m" },
