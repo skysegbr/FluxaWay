@@ -139,10 +139,11 @@ body {
   color: white;
   font-weight: 900;
   letter-spacing: -0.06em;
+  line-height: 1;
 }
 
 .mob-drawer-intro strong,
-.mob-drawer-intro span { display: block; }
+.mob-drawer-intro div > span { display: block; }
 
 .mob-drawer-intro div > span {
   margin-top: 3px;
