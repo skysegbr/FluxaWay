@@ -114,7 +114,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.22.0`.
+release tag such as `@v0.22.1`.
 
 Typical HTML entry point:
 

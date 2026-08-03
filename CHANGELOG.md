@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.1] - 2026-08-03
+
+### Added
+- **A complete browsable CSS reference in `examples/docs-site`.** Eight lazy
+  pages now cover installation and split bundles, design tokens/themes/palettes,
+  the responsive 12-column grid, layout/flex patterns, spacing, typography,
+  display utilities and public animations. Each page includes copyable examples,
+  live previews where useful, class tables, sidebar navigation, previous/next
+  links and Ctrl/Cmd+K search integration.
+- **`examples/aurora-ops`**, a responsive polar research command center built
+  from the first-party chart and dashboard components, including line, donut,
+  heatmap, diverging, dumbbell and small-multiple views.
+
+### Changed
+- The shared docs reference renderer now supports stylesheet includes and
+  general-purpose reference tables in addition to JavaScript imports and prop
+  tables.
+- The docs-site browser smoke covers all 107 lazy catalog entries and all eight
+  CSS routes in Chromium, Firefox and WebKit. The AI QA runbook also documents
+  the three chart-palette validation modes.
+
 ## [0.22.0] - 2026-07-29
 
 ### Added
