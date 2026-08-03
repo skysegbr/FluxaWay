@@ -3,6 +3,7 @@
 
 export const NAV_LINKS = [
   { label: "Docs", href: "#/getting-started", match: "/getting-started" },
+  { label: "CSS", href: "#/css/installation", match: "/css" },
   { label: "Components", href: "#/components/button", match: "/components" },
   { label: "Examples", href: "/examples/components/", external: false, match: "__none__" },
 ];

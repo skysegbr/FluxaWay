@@ -5,7 +5,13 @@ import { h } from "/dist/fluxaway.js";
 //
 // The same table serves a component's props, a hook's parameters and a hook's
 // return keys — only the heading and the first column's label change.
-export function PropsTable({ rows, title = "Props", id = "props", nameHeader = "Prop" }) {
+export function PropsTable({
+  rows,
+  title = "Props",
+  id = "props",
+  nameHeader = "Prop",
+  typeHeader = "Type",
+}) {
   if (!rows?.length) return null;
 
   const hasDefaults = rows.some((row) => row.default);
@@ -27,7 +33,7 @@ export function PropsTable({ rows, title = "Props", id = "props", nameHeader = "
             "tr",
             null,
             h("th", null, nameHeader),
-            h("th", null, "Type"),
+            h("th", null, typeHeader),
             hasDefaults ? h("th", null, "Default") : null,
             h("th", null, "Description"),
           ),

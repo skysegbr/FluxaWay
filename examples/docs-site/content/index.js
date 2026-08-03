@@ -1,6 +1,6 @@
 // Compatibility entry for callers that used the original content registry.
 // The catalog contains metadata only; live descriptors load through loadEntry()
-// so importing navigation/search data never fetches all 98 reference pages.
+// so importing navigation/search data never fetches every reference page.
 
 export {
   CATEGORIES,

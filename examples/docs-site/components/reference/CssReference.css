@@ -1,0 +1,65 @@
+.nd-css-token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--m-space-3);
+  width: 100%;
+}
+
+.nd-css-token {
+  display: grid;
+  gap: var(--m-space-2);
+  min-width: 0;
+}
+
+.nd-css-token-swatch {
+  display: block;
+  min-height: 3rem;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+}
+
+.nd-css-grid,
+.nd-css-layout,
+.nd-css-spacing,
+.nd-css-type,
+.nd-css-utility,
+.nd-css-animation {
+  width: 100%;
+}
+
+.nd-css-grid > div > span,
+.nd-css-layout > div,
+.nd-css-spacing > div {
+  display: block;
+  border: 1px solid var(--m-primary);
+  border-radius: var(--m-radius-sm);
+  background: var(--m-primary-soft);
+  color: var(--m-text);
+  text-align: center;
+}
+
+.nd-css-grid > div > span { padding: var(--m-space-4) var(--m-space-2); }
+
+.nd-css-layout > div { padding: var(--m-space-3); }
+
+.nd-css-spacing > div {
+  background-clip: content-box;
+  background-color: var(--m-primary-soft);
+}
+
+.nd-css-spacing code {
+  display: block;
+  padding: var(--m-space-2);
+  white-space: nowrap;
+}
+
+.nd-css-type .m-eyebrow,
+.nd-css-type .m-body { margin: 0; }
+
+.nd-css-utility { min-width: 0; }
+
+.nd-css-animation .m-card { min-width: 8rem; }
+
+@media (max-width: 560px) {
+  .nd-css-spacing { align-items: stretch; }
+}

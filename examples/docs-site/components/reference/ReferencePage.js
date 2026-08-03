@@ -7,9 +7,9 @@ import { PropsTable } from "./PropsTable.js";
 import { PageToc } from "./PageToc.js";
 import { categoryFor, neighborsFor } from "../../content/catalog.js";
 
-// One page renders every reference entry — a component (props) or a hook
-// (signature + parameters + returns). Adding either is a content descriptor,
-// never a new page component.
+// One page renders every reference entry — CSS, component (props), hook
+// (signature + parameters + returns), or add-on. Adding one is a content
+// descriptor, never a new page component.
 export function ReferencePage({ entry }) {
   useHead({
     title: `${entry.name} — FluxaWay Docs`,
@@ -19,14 +19,16 @@ export function ReferencePage({ entry }) {
   // Split in two literals on purpose: as one string this reads as a real
   // `import … from "…"` to validate_fluxaway.py's import scanner, which then tries
   // to resolve the interpolated path and fails the build.
-  const importLine =
-    `import { ${entry.imports ?? entry.name} } from ` + `"/dist/${entry.module}";`;
+  const importLine = entry.stylesheet
+    ? `<link rel="stylesheet" href="/dist/${entry.module}" />`
+    : `import { ${entry.imports ?? entry.name} } from ` + `"/dist/${entry.module}";`;
 
   const toc = [
     ...entry.demos.map((demo) => ({ id: demo.id, title: demo.title })),
     ...(entry.params?.length ? [{ id: "params", title: "Parameters" }] : []),
     ...(entry.returns?.length ? [{ id: "returns", title: "Returns" }] : []),
     ...(entry.props?.length ? [{ id: "props", title: "Props" }] : []),
+    ...(entry.tables?.map((table) => ({ id: table.id, title: table.title })) ?? []),
     ...(entry.resources?.length ? [{ id: "resources", title: "Resources" }] : []),
   ];
   const category = categoryFor(entry.category);
@@ -53,7 +55,11 @@ export function ReferencePage({ entry }) {
       ),
       h("p", { className: "nd-article-lead" }, entry.summary),
       h(PageToc, { variant: "mobile", items: toc }),
-      h(CodeBlock, { code: importLine, label: "Import" }),
+      h(CodeBlock, {
+        code: importLine,
+        lang: entry.stylesheet ? "html" : "js",
+        label: entry.stylesheet ? "Stylesheet" : "Import",
+      }),
       entry.signature
         ? h("figure", { className: "nd-signature" }, h("code", null, entry.signature))
         : null,
@@ -61,6 +67,16 @@ export function ReferencePage({ entry }) {
       h(PropsTable, { id: "params", title: "Parameters", rows: entry.params, nameHeader: "Argument" }),
       h(PropsTable, { id: "returns", title: "Returns", rows: entry.returns, nameHeader: "Key" }),
       h(PropsTable, { id: "props", title: "Props", rows: entry.props }),
+      entry.tables?.map((table) =>
+        h(PropsTable, {
+          key: table.id,
+          id: table.id,
+          title: table.title,
+          rows: table.rows,
+          nameHeader: table.nameHeader ?? "Name",
+          typeHeader: table.typeHeader ?? "Effect",
+        }),
+      ),
       entry.resources?.length
         ? h(
             "section",

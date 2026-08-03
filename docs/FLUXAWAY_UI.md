@@ -4,6 +4,10 @@ FluxaWay UI is a small CSS framework designed to pair with FluxaWay. It borrows 
 from Material Design: theme tokens, surfaces, subtle elevation, buttons, fields,
 chips, lists, and visual states.
 
+The browsable reference, with live examples and class tables, is available in the
+[docs site](https://fluxaway.com/#/css/installation). This file remains the compact
+single-page guide.
+
 It does not require Node or a build step. Just import the CSS in your HTML.
 
 ```html

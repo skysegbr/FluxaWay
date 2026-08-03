@@ -2,6 +2,7 @@ import { loadCSS } from "/dist/fluxaway.js";
 import { ENTRY_META } from "./catalogData.js";
 
 const LOADERS = {
+  "css/guides": () => import("./css/index.js").then((mod) => mod.CSS_ENTRIES),
   "core/buttons": () => import("./core/buttons.js").then((mod) => mod.BUTTON_ENTRIES),
   "core/feedback": () => import("./core/feedback.js").then((mod) => mod.FEEDBACK_ENTRIES),
   "core/surfaces": () => import("./core/surfaces.js").then((mod) => mod.SURFACE_ENTRIES),

@@ -45,6 +45,15 @@ const ROUTES = [
     fallback: ROUTE_FALLBACK,
   },
   {
+    path: "/css/:slug",
+    lazy: () => import("./components/reference/ReferenceRoute.js"),
+    css: [
+      "./components/reference/reference.css",
+      "./components/reference/CssReference.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
     path: "/components/:slug",
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [

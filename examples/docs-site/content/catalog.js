@@ -7,9 +7,9 @@ export { CATEGORIES, ENTRY_META } from "./catalogData.js";
 const BY_SLUG = new Map(ENTRY_META.map((entry) => [entry.slug, entry]));
 
 export function pathFor(entry) {
-  return entry.category === "addons"
-    ? `/addons/${entry.slug}`
-    : `/components/${entry.slug}`;
+  if (entry.category === "addons") return `/addons/${entry.slug}`;
+  if (entry.category === "css") return `/css/${entry.slug}`;
+  return `/components/${entry.slug}`;
 }
 
 export function categoryFor(key) {
