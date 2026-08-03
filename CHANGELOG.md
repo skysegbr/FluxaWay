@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.3] - 2026-08-03
+
+### Added
+- **A complete hamburger navigation flow in `examples/mobile`.** The AppBar now
+  opens the first-party `Drawer`, with shared active state across its descriptive
+  menu and the BottomNav, an activity badge, Escape handling, focus trapping and
+  focus restoration.
+
+### Changed
+- The mobile example has been redesigned as a polished responsive app shell,
+  with a stronger home hierarchy, gesture lab, breakpoint explorer, activity
+  stream, live device profile, Bootstrap icons and mobile-aware action surfaces.
+- The QA runbook now calls out drawer navigation, keyboard focus restoration and
+  touch behavior for the mobile scenario.
+
 ## [0.22.2] - 2026-08-03
 
 ### Added
