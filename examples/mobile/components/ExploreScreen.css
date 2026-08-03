@@ -1,5 +1,47 @@
-.mob-breakpoint-label {
-  font-size: 0.8rem;
-  color: var(--m-primary);
-  font-family: monospace;
+.mob-filter-row {
+  margin-bottom: var(--m-space-5);
+  padding-bottom: var(--m-space-1);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.mob-filter-row::-webkit-scrollbar { display: none; }
+.mob-filter-row .m-chip { flex: 0 0 auto; text-transform: capitalize; }
+
+.mob-grid-alert {
+  border-radius: var(--m-radius-lg);
+  box-shadow: var(--m-shadow-1);
+}
+
+.mob-breakpoint-grid > div { display: flex; }
+
+.mob-breakpoint-card {
+  display: grid;
+  justify-items: start;
+  width: 100%;
+  min-height: 9rem;
+  background: linear-gradient(145deg, var(--m-surface), var(--m-surface-muted));
+}
+
+.mob-breakpoint-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: auto;
+  border-radius: 0.8rem;
+  background: var(--m-primary-soft);
+  color: var(--m-primary);
+}
+
+.mob-breakpoint-label {
+  display: block;
+  margin-top: var(--m-space-4);
+  color: var(--m-primary);
+  font-family: var(--m-font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.mob-breakpoint-card p { margin-top: var(--m-space-1); font-size: var(--m-font-size-xs); }
