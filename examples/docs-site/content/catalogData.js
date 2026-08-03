@@ -5,6 +5,7 @@ const MODULE_BY_CATEGORY = {
   data: "fluxaway-components-data.js",
   nav: "fluxaway-components-nav.js",
   theme: "fluxaway-components-theme.js",
+  css: "fluxaway-ui-base.css",
   "hooks-state": "fluxaway.js",
   "hooks-data": "fluxaway.js",
   "hooks-routing": "fluxaway.js",
@@ -14,12 +15,12 @@ const MODULE_BY_CATEGORY = {
 };
 
 function group(category, source, rows) {
-  return rows.map(([name, slug, keywords]) => ({
+  return rows.map(([name, slug, keywords, module]) => ({
     name,
     slug,
     category,
     source,
-    module: MODULE_BY_CATEGORY[category],
+    module: module ?? MODULE_BY_CATEGORY[category],
     // Optional search aliases, for entries whose API name differs from their
     // display name — searching "useTimeline" must still find FluxaWay Motion.
     ...(keywords ? { keywords } : {}),
@@ -27,6 +28,16 @@ function group(category, source, rows) {
 }
 
 export const ENTRY_META = [
+  ...group("css", "css/guides", [
+    ["Installation & bundles", "installation", ["stylesheet", "cdn", "split css", "bundle"], "fluxaway-ui.css"],
+    ["Tokens, themes & palettes", "tokens-themes", ["custom properties", "dark mode", "colors"]],
+    ["Grid & breakpoints", "grid-breakpoints", ["responsive", "columns", "row"]],
+    ["Layout & flex", "layout-flex", ["container", "stack", "cluster", "split"]],
+    ["Spacing", "spacing", ["margin", "padding", "gap"]],
+    ["Typography", "typography", ["font", "text", "title"]],
+    ["Display & utilities", "display-utilities", ["position", "overflow", "width", "cursor"]],
+    ["Animations", "animations", ["motion", "fade", "pulse", "reduced motion"]],
+  ]),
   ...group("core", "core/buttons", [
     ["Button", "button"], ["IconButton", "icon-button"],
   ]),
@@ -142,6 +153,7 @@ export const ENTRY_META = [
 ];
 
 export const CATEGORIES = [
+  { key: "css", title: "CSS", icon: "bi-filetype-css" },
   { key: "hooks-state", title: "Hooks · State", icon: "bi-braces" },
   { key: "hooks-data", title: "Hooks · Data", icon: "bi-database" },
   { key: "hooks-routing", title: "Hooks · Routing", icon: "bi-signpost" },

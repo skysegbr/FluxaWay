@@ -425,7 +425,7 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
 | SC-APP-11 | gallery / landing / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; console clean | visual |
-| SC-APP-12 | docs-site | lazy home payload, sidebar/drawer nav, desktop/mobile scroll-spy TOC, route/section focus, Ctrl+K palette, copy/code toggle, four add-on pages | browser |
+| SC-APP-12 | docs-site | lazy home payload, sidebar/drawer nav, desktop/mobile scroll-spy TOC, route/section focus, Ctrl+K palette including CSS, eight CSS guides, five add-on pages | browser |
 | SC-APP-13 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
 
 ## §18. Cross-browser & performance — `SC-XB`

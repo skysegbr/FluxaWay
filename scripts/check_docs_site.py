@@ -124,7 +124,16 @@ def run(browser_type, base: str) -> list[str]:
     desktop.keyboard.press("Enter")
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Button'")
     expect(desktop.locator("h1").inner_text() == "Button", "search did not navigate to Button")
-    passed.append("Ctrl/Cmd+K search navigates")
+
+    desktop.keyboard.press("Control+k")
+    desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
+    desktop.keyboard.type("breakpoints")
+    desktop.keyboard.press("Enter")
+    desktop.wait_for_function(
+        "() => document.querySelector('h1')?.textContent === 'Grid & breakpoints'"
+    )
+    expect(desktop.locator("h1").inner_text() == "Grid & breakpoints", "search omitted CSS docs")
+    passed.append("Ctrl/Cmd+K search navigates to component and CSS references")
 
     open_route(desktop, base, "/components/code-editor", "CodeEditor")
     desktop.wait_for_selector(".CodeMirror")
@@ -144,6 +153,29 @@ def run(browser_type, base: str) -> list[str]:
         "data category CSS was not loaded with DataTable",
     )
     passed.append("route content loads its matching category CSS")
+
+    for route, heading in (
+        ("/css/installation", "Installation & bundles"),
+        ("/css/tokens-themes", "Tokens, themes & palettes"),
+        ("/css/grid-breakpoints", "Grid & breakpoints"),
+        ("/css/layout-flex", "Layout & flex"),
+        ("/css/spacing", "Spacing"),
+        ("/css/typography", "Typography"),
+        ("/css/display-utilities", "Display & utilities"),
+        ("/css/animations", "Animations"),
+    ):
+        open_route(desktop, base, route, heading)
+        expect(desktop.locator(".nd-demo").count() > 0, f"{route}: expected documented examples")
+        expect(desktop.locator(".nd-props-table").count() > 0, f"{route}: expected reference tables")
+    expect(
+        desktop.locator('link[href$="/components/reference/CssReference.css"]').count() == 1,
+        "CSS reference presentation stylesheet was not loaded exactly once",
+    )
+    expect(
+        desktop.locator(".nd-code-lang").first.inner_text() == "Stylesheet",
+        "CSS reference did not present its stylesheet include",
+    )
+    passed.append("all eight CSS reference pages render examples and tables")
 
     # (route, heading, how many live demos that page ships)
     for route, heading, demos in (
@@ -195,10 +227,10 @@ def run(browser_type, base: str) -> list[str]:
           };
         }"""
     )
-    expect(catalog["count"] == 99, f"expected 99 catalog entries, got {catalog['count']}")
+    expect(catalog["count"] == 107, f"expected 107 catalog entries, got {catalog['count']}")
     expect(catalog["mismatched"] == 0, f"{catalog['mismatched']} catalog modules do not match metadata")
     expect(catalog["unique"] == catalog["count"], "catalog contains duplicate slugs")
-    passed.append("catalog metadata matches all 99 lazy entries")
+    passed.append("catalog metadata matches all 107 lazy entries")
 
     expect(not errors, "browser errors: " + " | ".join(errors))
     expect(not failed_responses, "failed responses: " + " | ".join(failed_responses))
