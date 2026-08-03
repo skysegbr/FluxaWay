@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.5] - 2026-08-03
+
+### Changed
+- The mobile example now reuses the FluxaWay `Navbar` toggle animation in its
+  AppBar: the three-line hamburger morphs into a close icon with the Drawer
+  state, with matching `aria-expanded` and `aria-controls` attributes.
+
 ## [0.22.4] - 2026-08-03
 
 ### Fixed

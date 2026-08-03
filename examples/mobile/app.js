@@ -60,11 +60,13 @@ function App() {
       leading: h(
         IconButton,
         {
-          label: "Open navigation",
-          className: "mob-menu-trigger",
-          onClick: () => setMenu(true),
+          label: menu ? "Close navigation" : "Open navigation",
+          className: `mob-menu-trigger${menu ? " m-navbar-open" : ""}`,
+          ariaExpanded: menu ? "true" : "false",
+          ariaControls: "mobile-navigation",
+          onClick: () => setMenu((open) => !open),
         },
-        h("i", { className: "bi bi-list", ariaHidden: "true" }),
+        h("span", { className: "m-navbar-toggle-icon", ariaHidden: "true" }),
       ),
       actions: h(
         Fragment,
