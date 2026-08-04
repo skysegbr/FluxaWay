@@ -192,16 +192,50 @@ def run(browser_type, base: str) -> list[str]:
           const { SOURCE_DOCUMENTS } = await import(
             "/examples/docs-site/content/sourceDocuments.js"
           );
+          const { ENTRY_META } = await import(
+            "/examples/docs-site/content/catalogData.js"
+          );
+          const { loadSource } = await import(
+            "/examples/docs-site/content/entryLoader.js"
+          );
           const results = await Promise.all(Object.values(SOURCE_DOCUMENTS).map(async (entry) => ({
             path: entry.path,
             status: (await fetch(entry.path)).status,
           })));
-          return { count: results.length, failed: results.filter((entry) => entry.status !== 200) };
+          const addonSources = [...new Set(
+            ENTRY_META.filter((entry) => entry.category === "addons").map((entry) => entry.source)
+          )];
+          const addonEntries = (await Promise.all(addonSources.map(loadSource))).flat();
+          const resources = addonEntries.flatMap((entry) => entry.resources ?? []);
+          const missingResources = resources.filter((resource) => {
+            if (!resource.href.startsWith("#/source/")) return true;
+            return !SOURCE_DOCUMENTS[resource.href.slice("#/source/".length)];
+          });
+          return {
+            count: results.length,
+            failed: results.filter((entry) => entry.status !== 200),
+            resourceCount: resources.length,
+            missingResources,
+            previewCount: Object.values(SOURCE_DOCUMENTS).filter((entry) => entry.previewPath).length,
+          };
         }"""
     )
-    expect(source_catalog["count"] == 6, "source viewer catalog is incomplete")
+    expect(source_catalog["count"] == 15, "source viewer catalog is incomplete")
     expect(not source_catalog["failed"], f"source viewer files failed: {source_catalog['failed']}")
-    passed.append("CodeEditor renders all six internal source documents")
+    expect(source_catalog["resourceCount"] == 13, "add-on resource catalog is incomplete")
+    expect(
+        not source_catalog["missingResources"],
+        f"resources outside CodeEditor: {source_catalog['missingResources']}",
+    )
+    expect(source_catalog["previewCount"] == 7, "example viewers are missing demo actions")
+
+    open_route(desktop, base, "/source/motion-runtime-example", "Runtime showcase source")
+    desktop.wait_for_selector(".nd-source-editor .CodeMirror")
+    expect(
+        desktop.locator('a[href="/examples/fluxaway-motion/"]').count() == 1,
+        "runtime source viewer does not preserve access to the live demo",
+    )
+    passed.append("CodeEditor renders every resource and preserves live example actions")
 
     desktop.keyboard.press("Control+k")
     desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')

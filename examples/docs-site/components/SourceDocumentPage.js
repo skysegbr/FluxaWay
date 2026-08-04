@@ -74,6 +74,23 @@ export function SourceDocumentPage({ params }) {
     ),
     h("h1", { className: "nd-article-title" }, document.title),
     h("p", { className: "nd-article-lead" }, document.description),
+    document.previewPath
+      ? h(
+          "div",
+          { className: "nd-source-actions" },
+          h(
+            "a",
+            {
+              className: "m-button m-button-outline",
+              href: document.previewPath,
+              target: "_blank",
+              rel: "noreferrer",
+            },
+            h("i", { className: "bi bi-play-circle", ariaHidden: "true" }),
+            document.previewLabel ?? "Open demo",
+          ),
+        )
+      : null,
     h(
       "p",
       { className: "nd-source-path" },

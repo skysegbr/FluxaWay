@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.10] - 2026-08-04
+
+### Changed
+- Every item in the five add-on `Resources` sections now opens through the
+  docs site's read-only FluxaWay `CodeEditor`. This includes all guides,
+  framework sources, README API references and example entry points.
+- The seven example-source viewers preserve a separate action for launching the
+  runnable demo, keeping code inspection and interactive behavior both available.
+- The docs-site browser suite now locks all 13 resource mappings, 15 available
+  source documents and seven live-demo actions across Chromium, Firefox and
+  WebKit.
+
 ## [0.22.9] - 2026-08-04
 
 ### Changed
