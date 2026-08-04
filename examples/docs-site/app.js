@@ -12,8 +12,6 @@ import {
   useRef,
   useMediaQuery,
 } from "/dist/fluxaway.js";
-import { Drawer } from "/dist/fluxaway-components-overlay.js";
-import { PaletteSwitcher } from "/dist/fluxaway-components-theme.js";
 import { DocsHeader } from "./components/shell/DocsHeader.js";
 import { Sidebar } from "./components/shell/Sidebar.js";
 import { SearchPalette } from "./components/shell/SearchPalette.js";
@@ -166,8 +164,19 @@ function App() {
       path,
       mobile,
       menuOpen,
-      onOpenSearch: () => setSearchOpen(true),
-      onToggleMenu: () => setMenuOpen((open) => !open),
+      onOpenSearch: () => {
+        setMenuOpen(false);
+        setSearchOpen(true);
+      },
+      onMenuChange: setMenuOpen,
+      mobileNavigation: mobile
+        ? h(Sidebar, {
+            groups: SIDEBAR_GROUPS,
+            path,
+            mobile: true,
+            onNavigate: () => setMenuOpen(false),
+          })
+        : null,
     }),
 
     h(
@@ -181,27 +190,6 @@ function App() {
             onNavigate: () => setMenuOpen(false),
           }),
       h("main", { id: "docs-content", className: "nd-main", tabIndex: -1 }, page),
-    ),
-
-    h(
-      Drawer,
-      {
-        open: mobile && menuOpen,
-        onClose: () => setMenuOpen(false),
-        side: "left",
-        title: "Documentation",
-      },
-      h(
-        "div",
-        { id: "docs-mobile-navigation", className: "nd-mobile-navigation" },
-        h("div", { className: "nd-mobile-tools" }, h(PaletteSwitcher, null)),
-        h(Sidebar, {
-          groups: SIDEBAR_GROUPS,
-          path,
-          mobile: true,
-          onNavigate: () => setMenuOpen(false),
-        }),
-      ),
     ),
 
     h(SearchPalette, {

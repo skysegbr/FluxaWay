@@ -22,7 +22,7 @@ export const CODE = {
 <link rel="stylesheet" href="/dist/fluxaway-ui-theme.css" />`,
   cdn: `<link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.22.6/dist/fluxaway-ui.min.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.22.7/dist/fluxaway-ui.min.css"
 />`,
   tokenOverride: `:root {
   --m-primary: #3157d5;

@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.7] - 2026-08-04
+
+### Changed
+- The docs site's mobile shell now uses the complete responsive `Navbar`
+  instead of a side Drawer. Its animated hamburger expands search, palette,
+  theme controls and the full documentation tree directly below the brand,
+  pushing page content down without a backdrop or scroll lock.
+- The docs-site browser suite now verifies the inline expansion, Escape close,
+  content displacement and route-driven collapse through the 900px breakpoint.
+
 ## [0.22.6] - 2026-08-03
 
 ### Changed
