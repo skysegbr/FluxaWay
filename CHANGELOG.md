@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.8] - 2026-08-04
+
+### Added
+- **An AI and security guide in the docs site.** The new lazy route explains
+  FluxaWay's reduced supply-chain surface, `safeUrl()` boundary and reviewable
+  browser-native output, then shows how to put `docs/AI_SPEC.md` into an AI
+  assistant's context.
+- A copyable prompt template and complete dashboard prompt now connect product
+  goals, FluxaWay architecture, trust boundaries, accessibility and real-browser
+  validation. The page also includes a review checklist and direct links to the
+  AI spec and QA runbook.
+
+### Changed
+- The docs home, header navigation, sidebar and Ctrl/Cmd+K search now introduce
+  the framework's security and AI-assisted development focus.
+- The docs-site browser suite now verifies the guide, prompt content, checklist
+  and `AI_SPEC` search path in Chromium, Firefox and WebKit.
+
 ## [0.22.7] - 2026-08-04
 
 ### Changed
