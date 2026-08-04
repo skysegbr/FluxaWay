@@ -94,6 +94,16 @@ class _Handler(http.server.SimpleHTTPRequestHandler):
             return
         super().do_GET()
 
+    def end_headers(self):
+        # Dev server: never let the browser cache anything, including modules
+        # pulled in later via dynamic import()/fetch() during SPA navigation —
+        # a plain hard reload only busts cache for the initial page load, not
+        # those lazy fetches, which used to serve stale JS after edits.
+        if self.path.split("?")[0] != "/_hmr":
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.send_header("Pragma", "no-cache")
+        super().end_headers()
+
     def _serve_sse(self):
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
