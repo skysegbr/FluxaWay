@@ -20,18 +20,19 @@ export function HomePage() {
     h(
       "section",
       { className: "nd-hero" },
-      h("p", { className: "nd-hero-kicker" }, "The no-build UI framework"),
+      h("p", { className: "nd-hero-kicker" }, "The secure, AI-ready, no-build UI framework"),
       h("h1", { className: "nd-hero-title" }, "Code flows. Your way."),
       h(
         "p",
         { className: "nd-hero-lead" },
-        "FluxaWay is the direct path from idea to interface. State flows into rendering, ",
-        "components flow into applications, and plain JavaScript flows directly into the browser.",
+        "FluxaWay is the direct path from idea to interface. Plain JavaScript flows directly into the browser, ",
+        "zero runtime dependencies keep the supply chain small, and AI_SPEC guides reliable AI-assisted development.",
       ),
       h(
         "div",
         { className: "nd-hero-actions" },
         h("a", { className: "m-button m-button-contained", href: "#/getting-started" }, "Get started"),
+        h("a", { className: "m-button m-button-outline", href: "#/ai-security" }, "Build with AI"),
         h("a", { className: "m-button m-button-outline", href: "#/components/button" }, "Browse components"),
       ),
     ),

@@ -43,6 +43,15 @@ const ROUTES = [
     fallback: ROUTE_FALLBACK,
   },
   {
+    path: "/ai-security",
+    lazy: () => import("./components/AiGuidePage.js"),
+    css: [
+      "./components/AiGuidePage.css",
+      "./components/reference/reference.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
     path: "/css/:slug",
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [
