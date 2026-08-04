@@ -293,25 +293,33 @@ def run(browser_type, base: str) -> list[str]:
         mobile.locator(".nd-header-search").get_attribute("aria-label") == "Search documentation",
         "mobile search has no accessible name",
     )
-    mobile.locator(".nd-header-burger").click()
-    mobile.wait_for_selector(".m-drawer")
-    expect(mobile.evaluate("getComputedStyle(document.body).overflow") == "hidden", "scroll not locked")
-    mobile.keyboard.press("Escape")
-    mobile.wait_for_timeout(100)
-    expect(mobile.locator(".m-drawer").count() == 0, "Escape did not close the drawer")
+    menu = mobile.locator(".nd-mobile-navbar .m-navbar-toggle")
+    shell_top = mobile.locator(".nd-shell").bounding_box()["y"]
+    menu.click()
+    mobile.wait_for_selector(".nd-mobile-navbar.m-navbar-open")
+    mobile.wait_for_timeout(250)
+    expect(menu.get_attribute("aria-expanded") == "true", "mobile Navbar did not expand")
     expect(
-        "nd-header-burger" in (mobile.evaluate("document.activeElement?.className") or ""),
-        "drawer did not restore focus",
+        mobile.locator(".nd-shell").bounding_box()["y"] > shell_top,
+        "inline Navbar did not push the docs content down",
+    )
+    expect(
+        mobile.evaluate("getComputedStyle(document.body).overflow") != "hidden",
+        "inline Navbar unexpectedly locked page scroll",
+    )
+    mobile.keyboard.press("Escape")
+    mobile.wait_for_function(
+        "() => document.querySelector('.nd-mobile-navbar .m-navbar-toggle')?.getAttribute('aria-expanded') === 'false'"
     )
 
-    mobile.locator(".nd-header-burger").click()
-    mobile.wait_for_selector(".m-drawer")
-    mobile.locator('.m-drawer a[href="#/getting-started"]').click()
+    menu.click()
+    mobile.wait_for_selector(".nd-mobile-navbar.m-navbar-open")
+    mobile.locator('.nd-mobile-navigation a[href="#/getting-started"]').click()
     mobile.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
     mobile.wait_for_function(
         "() => document.activeElement === document.querySelector('#docs-content h1')"
     )
-    expect(mobile.locator(".m-drawer").count() == 0, "route navigation did not close drawer")
+    expect(menu.get_attribute("aria-expanded") == "false", "route navigation did not close Navbar")
 
     mobile.wait_for_selector(".nd-toc-mobile")
     summary = mobile.locator(".nd-toc-mobile summary")
@@ -352,7 +360,7 @@ def run(browser_type, base: str) -> list[str]:
     passed.append("compact TOC works alongside the tablet sidebar")
 
     expect(not mobile_errors, "mobile browser errors: " + " | ".join(mobile_errors))
-    passed.append("mobile header and drawer are accessible")
+    passed.append("mobile inline Navbar is accessible")
     mobile.context.browser.close()
 
     return passed

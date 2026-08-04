@@ -60,6 +60,8 @@ body {
 }
 
 .nd-mobile-tools {
+  display: grid;
+  gap: var(--m-space-4);
   padding-bottom: var(--m-space-4);
   margin-bottom: var(--m-space-4);
   border-bottom: 1px solid var(--m-border);
@@ -109,6 +111,8 @@ body {
 .nd-stack > .m-badge { align-self: flex-start; }
 
 @media (max-width: 900px) {
+  .nd-app { padding-top: 0; }
+
   .nd-shell {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
