@@ -48,7 +48,7 @@ return h(PipelineCanvas, {
     ],
     resources: [
       { label: "PipelineCanvas source", href: "#/source/pipeline-canvas-source" },
-      { label: "Canvas API in the README", href: "https://github.com/skysegbr/FluxaWay#pipelinecanvas" },
+      { label: "Canvas API in the README", href: "#/source/pipeline-canvas-readme" },
     ],
     notes: ["Load /dist/fluxaway-canvas.css next to the module."],
   },

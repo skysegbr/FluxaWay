@@ -21,6 +21,13 @@
   outline-offset: 3px;
 }
 
+.nd-source-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-3);
+  margin-top: var(--m-space-5);
+}
+
 .nd-source-path {
   display: flex;
   align-items: center;

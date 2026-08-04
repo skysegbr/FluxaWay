@@ -62,8 +62,8 @@ return h("div", { ref: timeline.track("mark") }, "FW");`,
       { name: "gotoAndPlay / gotoAndStop", type: "functions", description: "Seek by time or label." },
     ],
     resources: [
-      { label: "Runtime showcase", href: "/examples/fluxaway-motion/" },
-      { label: "Motion editor", href: "/examples/motion-editor/" },
+      { label: "Runtime showcase", href: "#/source/motion-runtime-example" },
+      { label: "Motion editor", href: "#/source/motion-editor-example" },
       { label: "Motion guide", href: "#/source/motion-guide" },
     ],
     notes: [

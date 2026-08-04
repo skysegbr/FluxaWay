@@ -185,8 +185,8 @@ h(DashboardGrid, { min: 260 },
     ],
     resources: [
       { label: "Charts source", href: "#/source/charts-source" },
-      { label: "Dashboard example", href: "/examples/dashboard/" },
-      { label: "Drug recalls example", href: "/examples/drug-recalls/" },
+      { label: "Dashboard example", href: "#/source/dashboard-example" },
+      { label: "Drug recalls example", href: "#/source/drug-recalls-example" },
     ],
     notes: [
       "Load /dist/fluxaway-charts.css next to the module — it carries the palette tokens.",
