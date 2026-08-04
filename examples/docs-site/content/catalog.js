@@ -41,6 +41,7 @@ export const SIDEBAR_GROUPS = [
     items: [
       { label: "Overview", path: "/" },
       { label: "Getting started", path: "/getting-started" },
+      { label: "AI & security", path: "/ai-security" },
     ],
   },
   ...CATEGORIES.map((category) => ({
@@ -60,6 +61,13 @@ export const SEARCH_COMMANDS = [
     section: "Introduction",
     keywords: ["install", "cdn", "no build", "quick start"],
     path: "/getting-started",
+  },
+  {
+    id: "ai-security",
+    label: "AI & security",
+    section: "Introduction",
+    keywords: ["AI_SPEC", "prompt", "AI", "security", "safeUrl", "supply chain"],
+    path: "/ai-security",
   },
   ...ENTRY_META.map((entry) => ({
     id: entry.slug,

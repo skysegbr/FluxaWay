@@ -3,6 +3,7 @@
 
 export const NAV_LINKS = [
   { label: "Docs", href: "#/getting-started", match: "/getting-started" },
+  { label: "AI & security", href: "#/ai-security", match: "/ai-security" },
   { label: "CSS", href: "#/css/installation", match: "/css" },
   { label: "Components", href: "#/components/button", match: "/components" },
 ];
@@ -99,6 +100,11 @@ export const HOME_CARDS = [
     icon: "bi-box-seam",
     title: "Split by category",
     body: "Six JS modules and seven CSS files, so a page ships only the part of the library it renders.",
+  },
+  {
+    icon: "bi-shield-check",
+    title: "Security and AI",
+    body: "Zero runtime dependencies reduce supply-chain risk, while AI_SPEC gives assistants explicit rules for generating reviewable FluxaWay code.",
   },
 ];
 

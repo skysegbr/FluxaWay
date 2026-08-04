@@ -67,6 +67,10 @@ def run(browser_type, base: str) -> list[str]:
     expect(not any("/content/core/" in url for url in requests), "home eagerly loaded reference content")
     expect(not any("codemirror.min.js" in url for url in requests), "home eagerly loaded CodeMirror")
     expect(not any("/dist/fluxaway-ui.css" in url for url in requests), "home loaded monolithic UI CSS")
+    expect(
+        desktop.locator('.nd-hero-actions a[href="#/ai-security"]').count() == 1,
+        "home does not introduce the AI and security guide",
+    )
     passed.append("home renders without eager reference payload")
 
     expect(
@@ -155,6 +159,18 @@ def run(browser_type, base: str) -> list[str]:
     )
     passed.append("scroll spy activates the final section at page end")
 
+    open_route(desktop, base, "/ai-security", "AI & security")
+    expect(desktop.locator('a[href="/docs/AI_SPEC.md"]').count() == 1, "AI_SPEC link is missing")
+    expect(desktop.locator(".nd-ai-security-grid .nd-ai-card").count() == 3, "security pillars are missing")
+    expect(desktop.locator(".nd-ai-workflow li").count() == 4, "prompt workflow is incomplete")
+    expect(desktop.locator(".nd-ai-section .nd-code").count() == 2, "prompt examples are missing")
+    expect(
+        "Read docs/AI_SPEC.md completely" in desktop.locator(".nd-code-pre").first.inner_text(),
+        "prompt template does not require AI_SPEC",
+    )
+    expect(desktop.locator(".nd-ai-checklist li").count() == 6, "AI review checklist is incomplete")
+    passed.append("AI and security guide documents AI_SPEC, prompting and review")
+
     desktop.keyboard.press("Control+k")
     desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
     expect(
@@ -174,7 +190,14 @@ def run(browser_type, base: str) -> list[str]:
         "() => document.querySelector('h1')?.textContent === 'Grid & breakpoints'"
     )
     expect(desktop.locator("h1").inner_text() == "Grid & breakpoints", "search omitted CSS docs")
-    passed.append("Ctrl/Cmd+K search navigates to component and CSS references")
+
+    desktop.keyboard.press("Control+k")
+    desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
+    desktop.keyboard.type("AI_SPEC")
+    desktop.keyboard.press("Enter")
+    desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'AI & security'")
+    expect(desktop.locator("h1").inner_text() == "AI & security", "search omitted AI_SPEC guide")
+    passed.append("Ctrl/Cmd+K search navigates to component, CSS and AI references")
 
     open_route(desktop, base, "/components/code-editor", "CodeEditor")
     desktop.wait_for_selector(".CodeMirror")

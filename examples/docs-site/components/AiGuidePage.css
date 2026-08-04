@@ -1,0 +1,116 @@
+.nd-ai-kicker {
+  margin: 0 0 var(--m-space-3);
+  color: var(--m-primary);
+  font-size: var(--m-font-size-sm);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nd-ai-intro-alert {
+  margin-top: var(--m-space-6);
+}
+
+.nd-ai-section {
+  margin-top: var(--m-space-12);
+  scroll-margin-top: 5.5rem;
+}
+
+.nd-ai-section > h2 {
+  margin: 0 0 var(--m-space-3);
+  font-size: var(--m-font-size-2xl);
+  letter-spacing: -0.015em;
+}
+
+.nd-ai-section > p {
+  max-width: 72ch;
+  color: var(--m-text-muted);
+}
+
+.nd-ai-section code:not(.nd-code code) {
+  padding: 0.1em 0.35em;
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface-soft);
+  color: var(--m-text);
+}
+
+.nd-ai-security-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--m-space-4);
+  margin-top: var(--m-space-6);
+}
+
+.nd-ai-card h3 {
+  margin: var(--m-space-3) 0 var(--m-space-2);
+  font-size: var(--m-font-size-lg);
+}
+
+.nd-ai-card p {
+  margin: 0;
+  color: var(--m-text-muted);
+}
+
+.nd-ai-card-icon {
+  color: var(--m-primary);
+  font-size: 1.6rem;
+}
+
+.nd-ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-3);
+  margin-top: var(--m-space-5);
+}
+
+.nd-ai-workflow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--m-space-4);
+  margin: var(--m-space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nd-ai-workflow li {
+  padding: var(--m-space-5);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-lg);
+  background: var(--m-surface-soft);
+}
+
+.nd-ai-workflow h3 {
+  margin: 0 0 var(--m-space-2);
+  font-size: var(--m-font-size-lg);
+}
+
+.nd-ai-workflow p {
+  margin: 0;
+  color: var(--m-text-muted);
+}
+
+.nd-ai-checklist {
+  display: grid;
+  gap: var(--m-space-3);
+  margin: var(--m-space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nd-ai-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--m-space-3);
+}
+
+.nd-ai-checklist i {
+  margin-top: 0.15em;
+  color: var(--m-success, var(--m-primary));
+}
+
+@media (max-width: 760px) {
+  .nd-ai-security-grid,
+  .nd-ai-workflow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
