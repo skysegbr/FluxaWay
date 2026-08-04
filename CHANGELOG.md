@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.22.9] - 2026-08-04
+
+### Changed
+- Internal docs and JavaScript source links in the docs site now open a shared,
+  read-only FluxaWay `CodeEditor` route instead of navigating to raw files. The
+  viewer covers `AI_SPEC`, the AI QA and Motion guides, plus the Editor, Charts
+  and PipelineCanvas sources.
+- CodeMirror remains lazy, loads once across the source viewer and component
+  reference, adapts to the active FluxaWay theme and keeps long documents inside
+  a responsive scrollable editor.
+- The docs-site browser suite now verifies all six mapped source files, the
+  editor's accessible read-only presentation and shared asset loading in
+  Chromium, Firefox and WebKit.
+
 ## [0.22.8] - 2026-08-04
 
 ### Added
