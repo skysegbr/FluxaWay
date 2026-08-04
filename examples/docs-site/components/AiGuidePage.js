@@ -100,9 +100,7 @@ export function AiGuidePage() {
             "a",
             {
               className: "m-button m-button-contained",
-              href: "/docs/AI_SPEC.md",
-              target: "_blank",
-              rel: "noopener",
+              href: "#/source/ai-spec",
             },
             h("i", { className: "bi bi-file-earmark-text", ariaHidden: "true" }),
             "Open AI_SPEC.md",
@@ -111,9 +109,7 @@ export function AiGuidePage() {
             "a",
             {
               className: "m-button m-button-outline",
-              href: "/docs/AI_QA.md",
-              target: "_blank",
-              rel: "noopener",
+              href: "#/source/ai-qa",
             },
             "Open the AI QA runbook",
           ),

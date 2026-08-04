@@ -52,6 +52,17 @@ const ROUTES = [
     fallback: ROUTE_FALLBACK,
   },
   {
+    path: "/source/:slug",
+    lazy: () => import("./components/SourceDocumentPage.js"),
+    css: [
+      "/dist/fluxaway-ui-forms.css",
+      "/assets/codemirror/codemirror.min.css",
+      "./components/SourceDocumentPage.css",
+      "./components/reference/reference.css",
+    ],
+    fallback: ROUTE_FALLBACK,
+  },
+  {
     path: "/css/:slug",
     lazy: () => import("./components/reference/ReferenceRoute.js"),
     css: [

@@ -1,5 +1,6 @@
 import { loadCSS } from "/dist/fluxaway.js";
 import { ENTRY_META } from "./catalogData.js";
+import { loadCodeMirror } from "./codeEditorAssets.js";
 
 const LOADERS = {
   "css/guides": () => import("./css/index.js").then((mod) => mod.CSS_ENTRIES),
@@ -40,7 +41,6 @@ const LOADERS = {
 };
 
 const BY_SLUG = new Map(ENTRY_META.map((entry) => [entry.slug, entry]));
-const scriptPromises = new Map();
 const SOURCE_STYLES = {
   "forms/text": "/dist/fluxaway-ui-forms.css",
   "forms/choice": "/dist/fluxaway-ui-forms.css",
@@ -55,32 +55,6 @@ const SOURCE_STYLES = {
   "hooks/ui": "/dist/fluxaway-ui-forms.css",
 };
 
-function loadScript(src) {
-  if (globalThis.document === undefined) return Promise.resolve();
-  if (scriptPromises.has(src)) return scriptPromises.get(src);
-
-  const existing = document.querySelector(`script[src="${src}"]`);
-  if (existing?.dataset.loaded === "true") return Promise.resolve();
-
-  const promise = new Promise((resolve, reject) => {
-    const script = existing ?? document.createElement("script");
-    script.addEventListener("load", () => {
-      script.dataset.loaded = "true";
-      resolve();
-    }, { once: true });
-    script.addEventListener("error", () => reject(new Error(`Could not load ${src}`)), {
-      once: true,
-    });
-    if (!existing) {
-      script.src = src;
-      document.head.append(script);
-    }
-  });
-
-  scriptPromises.set(src, promise);
-  return promise;
-}
-
 async function loadEntryAssets(meta) {
   const { slug, source } = meta;
   const styles = [];
@@ -93,7 +67,7 @@ async function loadEntryAssets(meta) {
   if (needsCodeMirror) styles.push("/assets/codemirror/codemirror.min.css");
 
   await Promise.all(styles.map((href) => loadCSS(href)));
-  if (needsCodeMirror) await loadScript("/assets/codemirror/codemirror.min.js");
+  if (needsCodeMirror) await loadCodeMirror();
 }
 
 export async function loadEntry(slug) {

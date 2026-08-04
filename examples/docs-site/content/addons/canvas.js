@@ -47,7 +47,7 @@ return h(PipelineCanvas, {
       { name: "controllerRef", type: "Ref", description: "Exposes zoom, fit and undo controls." },
     ],
     resources: [
-      { label: "PipelineCanvas source", href: "/dist/fluxaway-canvas.js" },
+      { label: "PipelineCanvas source", href: "#/source/pipeline-canvas-source" },
       { label: "Canvas API in the README", href: "https://github.com/skysegbr/FluxaWay#pipelinecanvas" },
     ],
     notes: ["Load /dist/fluxaway-canvas.css next to the module."],

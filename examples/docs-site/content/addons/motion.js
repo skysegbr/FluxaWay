@@ -64,7 +64,7 @@ return h("div", { ref: timeline.track("mark") }, "FW");`,
     resources: [
       { label: "Runtime showcase", href: "/examples/fluxaway-motion/" },
       { label: "Motion editor", href: "/examples/motion-editor/" },
-      { label: "Motion guide", href: "/docs/MOTION.md" },
+      { label: "Motion guide", href: "#/source/motion-guide" },
     ],
     notes: [
       "Animate transform and opacity on reasonably-sized elements; avoid promoting giant canvas nodes.",
