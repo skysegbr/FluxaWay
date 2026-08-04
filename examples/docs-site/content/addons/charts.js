@@ -184,7 +184,7 @@ h(DashboardGrid, { min: 260 },
       { name: "format / tickFormat / xTickFormat", type: "(value) => string", description: "Tooltip+table, value axis, and category axis formatters." },
     ],
     resources: [
-      { label: "Charts source", href: "/dist/fluxaway-charts.js" },
+      { label: "Charts source", href: "#/source/charts-source" },
       { label: "Dashboard example", href: "/examples/dashboard/" },
       { label: "Drug recalls example", href: "/examples/drug-recalls/" },
     ],

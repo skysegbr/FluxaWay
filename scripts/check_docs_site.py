@@ -160,7 +160,8 @@ def run(browser_type, base: str) -> list[str]:
     passed.append("scroll spy activates the final section at page end")
 
     open_route(desktop, base, "/ai-security", "AI & security")
-    expect(desktop.locator('a[href="/docs/AI_SPEC.md"]').count() == 1, "AI_SPEC link is missing")
+    expect(desktop.locator('a[href="#/source/ai-spec"]').count() == 1, "AI_SPEC viewer link is missing")
+    expect(desktop.locator('a[href="#/source/ai-qa"]').count() == 1, "AI QA viewer link is missing")
     expect(desktop.locator(".nd-ai-security-grid .nd-ai-card").count() == 3, "security pillars are missing")
     expect(desktop.locator(".nd-ai-workflow li").count() == 4, "prompt workflow is incomplete")
     expect(desktop.locator(".nd-ai-section .nd-code").count() == 2, "prompt examples are missing")
@@ -170,6 +171,37 @@ def run(browser_type, base: str) -> list[str]:
     )
     expect(desktop.locator(".nd-ai-checklist li").count() == 6, "AI review checklist is incomplete")
     passed.append("AI and security guide documents AI_SPEC, prompting and review")
+
+    desktop.locator('a[href="#/source/ai-spec"]').click()
+    desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'AI Reference Spec'")
+    desktop.wait_for_selector(".nd-source-editor .CodeMirror")
+    expect(
+        "# FluxaWay — AI Reference Spec" in desktop.locator(".CodeMirror-code").inner_text(),
+        "CodeEditor did not load the AI_SPEC contents",
+    )
+    expect(
+        desktop.locator('.nd-source-editor[aria-label="AI Reference Spec, read only"]').count() == 1,
+        "source CodeEditor is missing its read-only accessible name",
+    )
+    expect(
+        desktop.locator('script[src="/assets/codemirror/codemirror.min.js"]').count() == 1,
+        "source viewer did not load CodeMirror exactly once",
+    )
+    source_catalog = desktop.evaluate(
+        """async () => {
+          const { SOURCE_DOCUMENTS } = await import(
+            "/examples/docs-site/content/sourceDocuments.js"
+          );
+          const results = await Promise.all(Object.values(SOURCE_DOCUMENTS).map(async (entry) => ({
+            path: entry.path,
+            status: (await fetch(entry.path)).status,
+          })));
+          return { count: results.length, failed: results.filter((entry) => entry.status !== 200) };
+        }"""
+    )
+    expect(source_catalog["count"] == 6, "source viewer catalog is incomplete")
+    expect(not source_catalog["failed"], f"source viewer files failed: {source_catalog['failed']}")
+    passed.append("CodeEditor renders all six internal source documents")
 
     desktop.keyboard.press("Control+k")
     desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
@@ -209,7 +241,7 @@ def run(browser_type, base: str) -> list[str]:
         desktop.locator('link[href$="/dist/fluxaway-ui-forms.css"]').count() == 1,
         "forms category CSS was not loaded with CodeEditor",
     )
-    passed.append("CodeMirror loads only on its route")
+    passed.append("CodeMirror is shared once across routes that need it")
 
     open_route(desktop, base, "/components/data-table", "DataTable")
     expect(

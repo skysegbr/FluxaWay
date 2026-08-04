@@ -48,7 +48,7 @@ return h(FullCodeEditor, {
       { name: "showSnippets", type: "boolean", default: "true", description: "Shows the snippet browser." },
     ],
     resources: [
-      { label: "FullCodeEditor source", href: "/dist/fluxaway-editor.js" },
+      { label: "FullCodeEditor source", href: "#/source/full-code-editor-source" },
       { label: "Editor API in the README", href: "https://github.com/skysegbr/FluxaWay#fullcodeeditor" },
     ],
     notes: [
