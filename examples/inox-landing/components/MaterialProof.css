@@ -1,0 +1,104 @@
+.il-material {
+  position: relative;
+  min-height: min(920px, 100svh);
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  border-bottom: 1px solid var(--il-line);
+  background: #050708;
+}
+
+.il-material::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 7, 8, 0.12), rgba(5, 7, 8, 0.1) 48%, rgba(5, 7, 8, 0.92) 88%),
+    linear-gradient(0deg, rgba(5, 7, 8, 0.98), transparent 48%);
+  content: "";
+}
+
+.il-material-image {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.il-material-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.1);
+}
+
+.il-shutter {
+  position: absolute;
+  inset-block: 0;
+  width: 51%;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 25%),
+    repeating-linear-gradient(90deg, #171c1f 0, #101417 2px, #181e22 5px);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.72);
+}
+
+.il-shutter-left { left: 0; }
+.il-shutter-right { right: 0; }
+
+.il-material-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: end;
+  padding-bottom: clamp(4rem, 8vw, 7rem);
+}
+
+.il-material-copy { max-width: 720px; }
+
+.il-material-copy > p:last-child {
+  max-width: 55ch;
+  margin: 2rem 0 0;
+  color: var(--il-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.il-material-metrics {
+  margin: 0;
+  border-top: 1px solid var(--il-line-strong);
+}
+
+.il-material-metrics div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--il-line);
+}
+
+.il-material-metrics dt {
+  color: var(--il-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.il-material-metrics dd {
+  margin: 0;
+  color: var(--il-text);
+  font-family: var(--m-font-mono, monospace);
+  font-size: 1rem;
+}
+
+@media (max-width: 780px) {
+  .il-material { min-height: 780px; }
+
+  .il-material::after {
+    background: linear-gradient(0deg, rgba(5, 7, 8, 0.98) 5%, rgba(5, 7, 8, 0.28) 76%, rgba(5, 7, 8, 0.6));
+  }
+
+  .il-material-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .il-material-image img { object-position: 38% center; }
+}

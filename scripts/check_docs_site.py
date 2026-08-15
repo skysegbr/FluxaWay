@@ -139,6 +139,7 @@ def run(browser_type, base: str) -> list[str]:
         "/examples/fluxaway-motion/",
         "/examples/form/",
         "/examples/gallery/",
+        "/examples/inox-landing/",
         "/examples/landing/",
         "/examples/metallic-themes/",
         "/examples/mindmap/",
@@ -168,7 +169,7 @@ def run(browser_type, base: str) -> list[str]:
     desktop.keyboard.press("Escape")
     expect(desktop.locator("#docs-examples-menu").count() == 0, "Escape did not close examples")
     expect(examples_trigger.evaluate("(button) => document.activeElement === button"), "focus not restored")
-    passed.append("examples menu matches all 21 build links and supports keyboard navigation")
+    passed.append("examples menu matches all 22 build links and supports keyboard navigation")
 
     desktop.locator('.nd-sidebar-link[href="#/getting-started"]').click()
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
