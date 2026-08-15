@@ -203,12 +203,12 @@ Minimal page:
 tag and pin the CDN URL to it, for example:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.23.0/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.0/dist/fluxaway.js
 ```
 
 ### Subresource Integrity (SRI) — pin the bytes, not just the tag
 
-Pinning to `@v0.23.0` pins the *URL*, but a git tag can still be moved, so it is
+Pinning to `@v0.24.0` pins the *URL*, but a git tag can still be moved, so it is
 not a cryptographic guarantee of *which bytes* run. For the strongest
 supply-chain posture — the whole reason FluxaWay ships zero dependencies — add an
 `integrity` hash so the browser refuses to execute a file that doesn't match,
@@ -218,13 +218,13 @@ even if the CDN or the tag is ever tampered with. Pair it with
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.23.0/dist/fluxaway-ui.min.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.0/dist/fluxaway-ui.min.css"
   integrity="sha384-…"
   crossorigin="anonymous"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.23.0/dist/fluxaway.min.js"
+  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.0/dist/fluxaway.min.js"
   integrity="sha384-…"
   crossorigin="anonymous"
 ></script>
@@ -238,7 +238,7 @@ local file or straight from the CDN URL:
 python -c "import base64,hashlib,sys;print('sha384-'+base64.b64encode(hashlib.sha384(open(sys.argv[1],'rb').read()).digest()).decode())" dist/fluxaway.min.js
 
 # from the pinned CDN URL (verifies what will actually be served)
-python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.23.0/dist/fluxaway.min.js
+python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.0/dist/fluxaway.min.js
 ```
 
 **ES-module caveat.** `integrity` only covers the file the browser fetches
@@ -382,9 +382,9 @@ location /dist/ {
 is a footgun on an *unversioned* path like `/dist/fluxaway.js` served from your own
 origin: after you update the file, browsers keep the stale copy for a year.
 Immutable caching is safe only when the URL changes whenever the content does —
-a pinned CDN tag (`@v0.23.0`), a bundler output filename, or a versioned path
+a pinned CDN tag (`@v0.24.0`), a bundler output filename, or a versioned path
 such as `/dist/0.19.2/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
-`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.23.0`
+`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.24.0`
 query and bump it on release.
 
 Pair this with [SRI](#subresource-integrity-sri--pin-the-bytes-not-just-the-tag)
@@ -421,12 +421,13 @@ python -m http.server 8080
 | [examples/basic](./examples/basic) | Start here — minimal screen: `h`, `render`, `useState`, `useEffect`, components from `fluxaway-components.js` and `ThemeToggle` for dark mode |
 | [examples/form](./examples/form) | Controlled fields, validation, loading submit, reset, `useForm` |
 | [examples/complete-page](./examples/complete-page) | App-shell with sidebar, table, dialog, tabs, and toast |
-| [examples/docs-site](./examples/docs-site) | Published documentation app built in FluxaWay: 107 descriptor-driven reference pages with a consistent Setup → examples → API → notes flow, component CSS beside its JavaScript import, semantic desktop tables that become labelled mobile cards, live locally scoped design examples, a responsive scroll-spy TOC, Ctrl+K search, all 21 published examples, eight CSS guides, 61 components, 33 hooks, five add-ons and lazy read-only source viewers |
+| [examples/docs-site](./examples/docs-site) | Published documentation app built in FluxaWay: 107 descriptor-driven reference pages with a consistent Setup → examples → API → notes flow, component CSS beside its JavaScript import, semantic desktop tables that become labelled mobile cards, live locally scoped design examples, a responsive scroll-spy TOC, Ctrl+K search, all 22 published examples, eight CSS guides, 61 components, 33 hooks, five add-ons and lazy read-only source viewers |
 | [examples/components](./examples/components) | `Switch`, `Collapse`, `Combobox`, `ContextMenu`, `FileDropZone`, `CodeEditor`, toasts, a `Cards` page showcasing the `m-card-*` variants + `SpeedDial`, `Accordion`, `Slider`/`RangeSlider`, `Menu` with nested submenus, `DataTable`, `DatePicker`, a `Forms & Widgets` page with `RadioGroup`, `NumberInput`, `TimePicker`, `Stat`, `TreeView`, `Popover`, and `CommandPalette`, plus a `UI Primitives` page driving `Avatar`, `Breadcrumb`, `Skeleton`, and `Divider` through the component API |
 | [examples/mobile](./examples/mobile) | Polished mobile shell: animated responsive `Navbar`, `BottomNav`, `BottomSheet`, `FAB`, responsive cards, swipe, long press and live device status |
 | [examples/landing](./examples/landing) | SaaS landing page: sticky nav with mobile menu, SVG hero chart, testimonial carousel, pricing toggle |
 | [examples/gallery](./examples/gallery) | Photo gallery: category filter, masonry grid with lazy-load fade-in, keyboard/swipe lightbox with focus trap |
-| [examples/metallic-themes](./examples/metallic-themes) | Experimental Metallic design laboratory: seven material finishes, light/dark modes, semantic feedback, validation, operational layouts and nine signature button effects |
+| [examples/inox-landing](./examples/inox-landing) | Original Inox product landing page: generated stainless-steel imagery, official conductor Buttons, shutter reveal, inspection scanner, interactive three-state mechanical assembly and linear alloy seal, all driven by `fluxaway-motion` without copying the Motion landing composition |
+| [examples/metallic-themes](./examples/metallic-themes) | Experimental Metallic design laboratory: seven material finishes, light/dark modes, semantic feedback, validation, operational layouts and all nine official Button effects |
 | [examples/mindmap](./examples/mindmap) | Draggable mindmap: free-form card positioning, double-click inline editing, SVG bezier connectors that track card size, branch coloring |
 | [examples/dashboard](./examples/dashboard) | Complete analytics dashboard using the first-party charts add-on: KPI cards, line/area/bar/donut/scatter/heatmap charts, small multiples, brush-to-zoom, export and accessible table twins |
 | [examples/aurora-ops](./examples/aurora-ops) | Polar research command center: an aurora-themed dashboard combining MetricCard, DashboardGrid, line/donut/heatmap/diverging/dumbbell/small-multiple charts and resource meters |
@@ -1058,7 +1059,7 @@ version of FluxaWay.
 | `AvatarGroup` | `avatars`, `max`, `size` — overlapping stack, extras collapse into a `+N` counter |
 | `Badge` | — |
 | `Breadcrumb` | `items` (`{ label, href?, onClick?, icon? }`), `separator` — last item gets `aria-current="page"` |
-| `Button` | `variant` (text · contained · tonal · outline · danger), `icon`, `accent`, `type`, `disabled` — `accent` adds a token-colored leading border; icon-only usage requires `ariaLabel`/`ariaLabelledby` |
+| `Button` | `variant` (text · contained · tonal · outline · danger), `effect` (reflection · edge · split · aperture · charge · corners · pulse · phase · conductor), `icon`, `accent`, `type`, `disabled` — effects are official token-driven interaction signatures; Metallic gives conductor an exact recipe per finish; icon-only usage requires `ariaLabel`/`ariaLabelledby` |
 | `Card` | `padded` — combine with `m-card-media`/`-zoom`, `m-card-reveal`, `m-card-float`, `m-card-glow` (+ `-amber`/`-violet`/`-emerald`), `m-card-expand-group`/`-expand`, or `m-card-pricing` for the CSS-only card variants (see `docs/AI_SPEC.md` §9) |
 | `Checkbox` | `id`, `label`, `checked`, `onChange` |
 | `Chip` | `active` |

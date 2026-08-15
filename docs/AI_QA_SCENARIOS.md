@@ -203,7 +203,7 @@ Apply the relevant baseline to every component, then its specific rows.
 ### §9.1 Core — `SC-C-CORE`
 | ID | Component | Specific scenarios | Verify |
 |---|---|---|---|
-| SC-C-CORE-01 | Button | all 5 variants (text/contained/tonal/danger/outline); `type` submit/reset in a form; loading/disabled; click fires once | browser |
+| SC-C-CORE-01 | Button | all 5 variants (text/contained/tonal/danger/outline); all 9 `effect` values map to official classes and animate on hover/focus; disabled and reduced motion suppress movement; `type` submit/reset; click fires once | browser |
 | SC-C-CORE-02 | IconButton | required `label`→`aria-label`; icon-only a11y name | browser |
 | SC-C-CORE-03 | Card | `padded`; `m-card-hover`; media/reveal/glow/expand/pricing/float variants render + hover reveal | visual |
 | SC-C-CORE-04 | Alert | 4 variants; `title`; dismissible if provided | browser |
@@ -309,7 +309,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-ZOOM-05 | `controllerRef` API | imperative goto works | suite (addons) |
 | SC-ZOOM-06 | Live content in a frame | interactive FluxaWay UI inside a frame still works | browser |
 
-### fluxaway-motion (`SC-MOTION`) — examples: fluxaway-motion, motion-landing, motion-editor
+### fluxaway-motion (`SC-MOTION`) — examples: fluxaway-motion, motion-landing, inox-landing, motion-editor
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
 | SC-MOTION-01 | `createTimeline`/`useTimeline` play | tweens transform/opacity over time | suite (motion) |
@@ -322,6 +322,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-MOTION-08 | Bad track/`onFrame` | throws at construction, not NaN poisoning | suite |
 | SC-MOTION-09 | Motion-editor flows | drag keyframe (25ms snap), ruler scrub, undo/redo, multi-select, copy/paste, guide draw, code export round-trip, scenes/symbols | suite (motion-editor) |
 | SC-MOTION-10 | SSR-safe | no rAF in DOM-less runtime; stays parked | suite |
+| SC-MOTION-11 | Infinite loop closure + stagger duration | every animated property completes its return path; duration includes the last stagger offset; crossing the wrap has no visual jump | browser/visual |
 
 ### PipelineCanvas (`SC-CANVAS`) — example: mindmap
 | ID | Scenario | Expected | Verify |
@@ -413,7 +414,7 @@ Apply the relevant baseline to every component, then its specific rows.
 ## §17. Example apps — `SC-APP`
 
 Run the §3.1 per-example checklist against **every** dir in `examples/`
-(22). Priority + notable per-app scenarios:
+(26). Priority + notable per-app scenarios:
 
 | ID | Example | Notable scenarios | Verify |
 |---|---|---|---|
@@ -427,8 +428,8 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-08 | fluxaway-motion / motion-editor | motion + editor (SC-MOTION) | browser |
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
-| SC-APP-11 | gallery / landing / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; console clean | visual |
-| SC-APP-12 | docs-site | 107 descriptor-driven pages; Setup shows component CSS beside JS; local Cobalt scope does not leak; semantic desktop tables become labelled mobile cards; TOC compacts before squeezing API content; lazy home payload, responsive shell, 21-example menu, scroll spy, route/section focus, Ctrl+K search, AI/security guide, 13 add-on resources, eight CSS guides and five add-on pages | browser |
+| SC-APP-11 | gallery / landing / inox-landing / metallic-themes / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; Inox assembly states; every Inox Next destination keeps its primary frame and following transition inside the desktop viewport; alloy-seal loop closes without a seam; console clean | visual/browser |
+| SC-APP-12 | docs-site | 107 descriptor-driven pages; Setup shows component CSS beside JS; local Cobalt scope does not leak; semantic desktop tables become labelled mobile cards; TOC compacts before squeezing API content; lazy home payload, responsive shell, 22-example menu, scroll spy, route/section focus, Ctrl+K search, AI/security guide, 13 add-on resources, eight CSS guides and five add-on pages | browser |
 | SC-APP-13 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
 
 ## §18. Cross-browser & performance — `SC-XB`

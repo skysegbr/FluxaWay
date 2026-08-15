@@ -21,6 +21,7 @@ export const EXAMPLE_LINKS = [
   { label: "FluxaWay Motion", href: "/examples/fluxaway-motion/" },
   { label: "Form", href: "/examples/form/" },
   { label: "Gallery", href: "/examples/gallery/" },
+  { label: "Inox Landing", href: "/examples/inox-landing/" },
   { label: "Landing", href: "/examples/landing/" },
   { label: "Metallic themes", href: "/examples/metallic-themes/" },
   { label: "Mind map", href: "/examples/mindmap/" },

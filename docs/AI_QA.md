@@ -72,7 +72,7 @@ scripts/bundle.py               optional production bundler (+ --smoke)
 scripts/benchmark_examples.py   payload/timing benchmark for examples
 server.py                       dev server for manual QA
 tests/                          the browser suite (run.js registers *.test.js)
-examples/                       22 example apps to smoke visually
+examples/                       26 example apps to smoke visually
 .github/workflows/ci.yml        the canonical gate order CI enforces
 ```
 
@@ -127,7 +127,7 @@ not flake; report the engine.
 **1.6** protects the documentation app itself: home payload stays lazy,
 category CSS and CodeMirror load on demand, search navigates to component and
 CSS references, all eight CSS guides and five add-on pages render their expected
-content, the header menu matches all 21 examples published in the build, the
+content, the header menu matches all 22 examples published in the build, the
 catalog matches its 107 descriptors, and every component reference presents a
 Setup recipe with base/category CSS beside its JavaScript import. It also locks
 the locally scoped Cobalt Button tutorial, table/header associations and stable
@@ -151,7 +151,7 @@ Coverage (~400 tests across 16 files):
 | `hooks.test.js` | `useState/Effect/Ref/Memo/Callback/Reducer`, error boundary, form, router |
 | `new-features.test.js` / `v02-features.test.js` | later hooks/components (routes, presence, virtual list, i18n, mobile hooks…) |
 | `coverage.test.js` | broad component behavior sweep |
-| `button.test.js` | Button variants, accessibility and Metallic interaction-effect contracts |
+| `button.test.js` | Button variants, accessibility and all nine official interaction-effect contracts |
 | `components-new.test.js` | newer UI components |
 | `categories.test.js` | barrel ↔ category-module export parity |
 | `charts.test.js` | chart scales, marks, palettes, tables, exports and interaction |
@@ -208,6 +208,14 @@ Serve once (`python server.py`), then for each example load
       exposes them); colors update, contrast stays readable.
 - [ ] **Responsive** — at ~375px and ~1280px viewport the layout adapts (no
       horizontal scroll, mobile shell where applicable).
+- [ ] **Section navigation framing** — when a landing page presents Next-style
+      screen-to-screen navigation, click every transition at a supported
+      desktop viewport. The destination heading, primary content and following
+      transition remain visible and proportionally aligned; mobile keeps its
+      natural vertical flow.
+- [ ] **Loop closure** — let every repeating signature animation cross at least
+      one complete wrap. The final state returns to the initial state without a
+      position, opacity, color or stagger seam.
 - [ ] **No 404s** — no request for a local asset returns 404.
 
 Executable skeleton (adapt paths; use the playwright Python):
@@ -246,9 +254,10 @@ diffs — insert it where the category links were.
   thumbnail/next flies the camera; keyboard (arrows) advances; no error on the
   last→first wrap. `star-atlas` covers `freeZoom` (wheel zoom, drag pan,
   `fitAll`/`reset`).
-- **fluxaway-motion** (`fluxaway-motion`, `motion-landing`): the intro timeline plays;
-  `motion-editor` — drag a keyframe, scrub the ruler, undo/redo (Ctrl+Z), export
-  code pane updates.
+- **fluxaway-motion** (`fluxaway-motion`, `motion-landing`, `inox-landing`): the
+  intro timeline plays; infinite tracks close their return path and include the
+  last stagger offset; `motion-editor` — drag a keyframe, scrub the ruler,
+  undo/redo (Ctrl+Z), export code pane updates.
 - **PipelineCanvas** and **FullCodeEditor**: no example app covers these — smoke
   them from `tests/` only (`mindmap` is hand-rolled SVG and `designer` uses the
   `CodeEditor` form component, neither exercises the add-ons).

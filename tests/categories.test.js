@@ -32,7 +32,7 @@ test("categories: the barrel exports nothing beyond the categories' union", () =
   assertEqual(Object.keys(barrel).length, union.size);
 });
 
-test("categories: no component is exported by two categories", () => {
+test("categories: no public symbol is exported by two categories", () => {
   const seen = new Map();
   for (const [name, mod] of Object.entries(categories)) {
     for (const key of Object.keys(mod)) {
@@ -40,7 +40,7 @@ test("categories: no component is exported by two categories", () => {
       seen.set(key, name);
     }
   }
-  assertEqual(seen.size, 61, `expected 61 components, found ${seen.size}`);
+  assertEqual(seen.size, 62, `expected 62 public symbols, found ${seen.size}`);
 });
 
 test("categories: components render when imported directly from their category", async () => {

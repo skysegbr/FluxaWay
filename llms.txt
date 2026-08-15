@@ -69,7 +69,9 @@ browser engines.
 - `dist/fluxaway.js`: core runtime (h, render, hooks, context, router, SSR)
 - `dist/fluxaway-components.js`: UI component library (barrel; re-exports the six
   category modules `dist/fluxaway-components-{core,forms,overlay,data,nav,theme}.js`
-  — import a category directly to load only what you use)
+  — import a category directly to load only what you use). `Button.effect` is
+  the official API for reflection, edge, split, aperture, charge, corners,
+  pulse, phase and conductor; `BUTTON_EFFECTS` exports those canonical names.
 - `dist/fluxaway-ui.css`: design-system stylesheet for the components
 - `dist/fluxaway-editor.js|css`: FullCodeEditor add-on (CodeMirror 5 wrapper) —
   use for any embedded code editor with highlighting/line numbers
@@ -98,7 +100,9 @@ browser engines.
   `play/stop/gotoAndPlay/gotoAndStop`, motion guides (SVG paths + orient),
   color tweens, discrete `set` steps, `stagger()` cascades; elements bind
   via `tl.track(name)` refs. A visual authoring IDE lives in
-  `examples/motion-editor`. Full reference: docs/AI_SPEC.md §10.
+  `examples/motion-editor`. Looped tracks must return every animated property
+  to their starting visual state before wrapping, and explicit duration must
+  include the final stagger offset. Full reference: docs/AI_SPEC.md §10.
 - `dist/fluxaway-bootstrap.css`: optional Bootstrap-compatible design skin,
   activated with `useDesign().setDesign("bootstrap")`.
 - `dist/fluxaway-metallic.js|css`: EXPERIMENTAL metallic design skin with
@@ -106,6 +110,11 @@ browser engines.
   Activate `useDesign().setDesign("metallic")`, then select the finish with
   `useMetalTheme()`. Light/dark remains independent. Evaluate it across real
   page types before treating it as an official FluxaWay brand theme.
+  `examples/inox-landing` is the full-page Inox + fluxaway-motion reference;
+  keep viewport reveals separate from user-controlled interaction timelines.
+  It is also the reference for shared proportional geometry and Next-link
+  destinations whose primary content and following transition remain inside
+  the navigated desktop viewport; verify anchor landings in real browsers.
 - `tests/`: browser test suite (`python3 scripts/run_browser_tests.py`)
 - `scripts/bundle.py`: OPTIONAL production bundler (dev is always no-build) —
   one JS + one CSS standalone folder; pure-Python engine or esbuild built

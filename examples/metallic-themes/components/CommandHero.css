@@ -85,58 +85,6 @@
   padding-inline: var(--m-space-4);
 }
 
-.mt-hero-actions .mt-button-flow {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border-color: color-mix(in srgb, var(--mt-metal) 62%, var(--m-border));
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.08), transparent),
-    color-mix(in srgb, var(--m-surface-soft) 84%, var(--mt-metal));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset;
-  color: var(--m-text);
-}
-
-.mt-button-flow::before {
-  position: absolute;
-  top: -35%;
-  bottom: -35%;
-  left: -82%;
-  z-index: 0;
-  width: 70%;
-  background: linear-gradient(
-    105deg,
-    transparent 14%,
-    color-mix(in srgb, var(--mt-metal) 55%, transparent) 36%,
-    color-mix(in srgb, var(--mt-accent-bright) 76%, transparent) 56%,
-    color-mix(in srgb, white 36%, transparent) 65%,
-    transparent 86%
-  );
-  content: "";
-  pointer-events: none;
-  transform: translateX(0);
-  transition: transform 640ms cubic-bezier(0.22, 0.8, 0.26, 1);
-}
-
-.mt-button-flow-label {
-  position: relative;
-  z-index: 1;
-}
-
-.mt-app .mt-button-flow:hover,
-.mt-app .mt-button-flow:focus-visible {
-  border-color: var(--mt-metal);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.12), transparent),
-    color-mix(in srgb, var(--m-surface-raised) 76%, var(--m-primary-soft));
-  color: var(--m-text);
-}
-
-.mt-button-flow:hover::before,
-.mt-button-flow:focus-visible::before {
-  transform: translateX(275%);
-}
-
 .mt-specimen {
   position: relative;
   display: grid;

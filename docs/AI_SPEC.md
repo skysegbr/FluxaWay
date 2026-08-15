@@ -116,7 +116,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.23.0`.
+release tag such as `@v0.24.0`.
 
 Typical HTML entry point:
 
@@ -260,6 +260,45 @@ which verifies the committed outputs match their sources without rewriting them
 
 After changing anything under `dist/`, re-run `python scripts/minify.py` so the
 committed `*.min.*` don't drift from their sources.
+
+### ✅ Build from shared geometry, then verify the navigated viewport
+
+AI-generated interfaces must look deliberately aligned and proportional, not
+like independently positioned blocks. Establish a shared content shell and a
+small spacing/size system before styling individual sections. Repeated columns,
+cards, controls and section headings must share visible axes; use `clamp()`,
+`min()` / `max()`, `aspect-ratio` and grid/flex relationships for proportions
+instead of accumulating unrelated pixel offsets. Optical exceptions are fine,
+but they must be intentional and local — never compensate for a broken parent
+layout by nudging every child differently.
+
+For a landing page with section-to-section links such as **Next**, reaching the
+target anchor is not enough. The destination must arrive as a composed frame:
+
+- the target heading is fully visible and aligned to the shared shell;
+- the primary visual/content block is optically centered in the available
+  frame and is not clipped by the bottom of the viewport;
+- the following Next control remains visible when the design promises one
+  screen per section;
+- desktop compaction does not leak into mobile, where natural vertical flow is
+  usually the correct behavior.
+
+Treat `100svh` as a vertical **budget**, not a decoration. Account for section
+padding, heading height, gaps, the main panel and the Next control together.
+Prefer reducing internal gaps, panel height and card padding at an appropriate
+desktop breakpoint; do not scale the whole interface down or hide content. If
+the content genuinely cannot fit one viewport, abandon the one-screen promise
+and make the continuation visually explicit.
+
+Validate the result after real anchor navigation in Chromium, Firefox and
+WebKit. Measure the target and important descendants with `getBoundingClientRect()`
+or Playwright `bounding_box()`; for a one-screen frame their visible bottom must
+be `<= window.innerHeight`. A screenshot taken after manually scrolling to a
+convenient position does not prove the Next link lands correctly.
+
+`examples/inox-landing` is the reference: its Material → Assembly → Systems →
+Protocol controls share one component, and its desktop sections are sized so
+the primary content and next transition stay inside the navigated viewport.
 
 ---
 
@@ -680,6 +719,11 @@ const { metalTheme, metalThemes, setMetalTheme } = useMetalTheme();
 // aurum | cobalt | cobalt-aurum | inox | bronze | ferrum | black-inox
 setMetalTheme("inox"); // sets data-metal-theme and persists the selection
 ```
+
+`examples/inox-landing` is the full-page reference for composing the Inox
+finish with `fluxaway-motion`. It deliberately gives reveal motion and a
+user-controlled mechanical sequence separate timelines, so entering the
+viewport never changes the interactive control's declared state.
 
 ### `useContext` / `createContext`
 
@@ -1118,10 +1162,22 @@ h(Button, {
   variant: 'outline',     // 'text' | 'contained' | 'tonal' | 'danger' | 'outline'
   icon: 'close',          // optional leading icon; 'close' is built in, or pass a VNode/text icon
   accent: true,           // optional theme-colored leading border + icon emphasis
+  effect: 'conductor',    // optional official interaction signature (nine choices below)
   type: 'button',         // 'button' | 'submit' | 'reset'
   disabled: false,
   onClick: fn,
 }, 'Clear filters')
+
+// Official Button effects — exported as BUTTON_EFFECTS from the core module:
+// 'reflection' | 'edge' | 'split' | 'aperture' | 'charge' | 'corners' |
+// 'pulse' | 'phase' | 'conductor'
+//
+// Effects own the animated surface while variant still supplies its semantic
+// hierarchy/class. `outline` is the canonical pairing. They use theme tokens in
+// FluxaWay and Bootstrap; Metallic supplies exact finish recipes, including a
+// distinct conductor contour for all seven materials. Hover and focus-visible
+// run the same motion, disabled removes it, and prefers-reduced-motion settles
+// transitions immediately.
 
 // Icon-only Button: ariaLabel or ariaLabelledby is required at runtime.
 h(Button, {
@@ -1854,7 +1910,8 @@ are first-party — never substitute reveal.js, GSAP, mermaid, Chart.js, D3 or
 CodeMirror-from-CDN when the task fits an add-on. Working references:
 `examples/fluxaway-architecture` and
 `examples/fluxaway-atlas` (presentations), `examples/fluxaway-motion`,
-`examples/motion-landing` and `examples/motion-editor` (animation),
+`examples/motion-landing`, `examples/inox-landing` and
+`examples/motion-editor` (animation),
 `examples/star-atlas` (free-zoom explorer), `examples/dashboard` and
 `examples/drug-recalls` (charts). **PipelineCanvas and
 FullCodeEditor currently have no example app** — their APIs below and the
@@ -1933,6 +1990,21 @@ function Intro() {
   (call `destroy()` yourself). `useTimeline` captures its spec on first
   render (like `createLazy` — treat it as static) and autoplays on mount
   unless `autoplay: false`.
+- **A loop must close its own motion.** For every continuously animated
+  property, the last visual state must equal the first visual state before the
+  playhead wraps. If a sequence is left → center → right → center, add the
+  center → left return leg; otherwise `loop: true` teleports from center to
+  left at the boundary. Repeat a keyframe to create a deliberate pause, then
+  finish the return path. This contract applies to transform, opacity, color
+  and discrete `set` state — either close them all or make an instantaneous
+  reset an explicit part of the design.
+- **Explicit duration must include stagger.** `stagger()` moves the final
+  keyframe by `index * eachMs`; it does not extend an explicit `duration`.
+  For `count` tracks whose unshifted last key is at `endMs`, the minimum
+  duration is `endMs + (count - 1) * eachMs`. At that time every staggered
+  track must have reached the same state it holds at the beginning of the
+  next pass. Test at least one complete wrap in a real browser; a still image
+  or a partial playthrough cannot reveal a seam.
 - **Compositor promotion**: while a timeline moves, each tracked element is
   promoted to its own GPU layer (`will-change` + `translate3d`) for a smooth
   tween, then **de-promoted at rest** (an identity transform becomes `none`
@@ -1948,7 +2020,10 @@ cascade, SKIP INTRO, scrubber and scene-jump deck. Visual authoring:
 `examples/motion-editor` — a Flash-IDE-style timeline editor (draggable
 keyframe diamonds with multi-selection, undo/redo via `useHistory`, motion
 guides drawn by clicking on the stage, scrubbing, inspector, live
-`useTimeline` code export).
+`useTimeline` code export). For a production-shaped composition, see
+`examples/inox-landing`: an Inox landing page with independent in-view reveals,
+an inspection scanner, a replayable three-state mechanical assembly and a
+staggered alloy seal whose final left-edge state closes its infinite loop.
 
 ### `PipelineCanvas`
 

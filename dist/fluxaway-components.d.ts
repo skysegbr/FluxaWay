@@ -21,10 +21,25 @@ type ExtraProps = Record<string, unknown>;
 
 // ── Button ─────────────────────────────────────────────────────────────────
 
+export declare const BUTTON_EFFECTS: readonly [
+  "reflection",
+  "edge",
+  "split",
+  "aperture",
+  "charge",
+  "corners",
+  "pulse",
+  "phase",
+  "conductor",
+];
+
+export type ButtonEffect = (typeof BUTTON_EFFECTS)[number];
+
 export declare function Button(props?: {
   variant?: "text" | "contained" | "tonal" | "danger" | "outline" | "outlined";
   icon?: VNode;
   accent?: boolean;
+  effect?: ButtonEffect;
   className?: string;
   type?: "button" | "submit" | "reset";
   ariaLabel?: string;
@@ -37,6 +52,7 @@ export declare function Button(props?: {
 export declare function IconButton(props?: {
   label: string;
   variant?: "text" | "contained" | "tonal" | "danger" | "outline" | "outlined";
+  effect?: ButtonEffect;
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;

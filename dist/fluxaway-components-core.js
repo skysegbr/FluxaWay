@@ -27,6 +27,22 @@ const buttonVariants = {
   outlined: "m-button m-button-outline",
 };
 
+export const BUTTON_EFFECTS = Object.freeze([
+  "reflection",
+  "edge",
+  "split",
+  "aperture",
+  "charge",
+  "corners",
+  "pulse",
+  "phase",
+  "conductor",
+]);
+
+const buttonEffectClasses = Object.fromEntries(
+  BUTTON_EFFECTS.map((effect) => [effect, `m-button-effect m-button-effect-${effect}`]),
+);
+
 const namedButtonIcons = {
   close: "×",
 };
@@ -42,6 +58,7 @@ export function Button({
   variant = "text",
   icon,
   accent = false,
+  effect,
   className = "",
   type = "button",
   ariaLabel,
@@ -51,6 +68,9 @@ export function Button({
 } = {}) {
   const hasIcon = icon !== undefined && icon !== null && icon !== false;
   const hasLabel = hasChildren(children);
+  const effectClass = typeof effect === "string" && BUTTON_EFFECTS.includes(effect)
+    ? buttonEffectClasses[effect]
+    : "";
 
   if (
     hasIcon &&
@@ -77,6 +97,7 @@ export function Button({
         hasIcon && "m-button-with-icon",
         hasIcon && !hasLabel && "m-button-icon-only",
         accent && "m-button-accent",
+        effectClass,
         className,
       ),
     },
@@ -86,7 +107,7 @@ export function Button({
         { className: "m-button-icon", ariaHidden: "true" },
         icon === "close" ? namedButtonIcons.close : icon,
       ),
-    children,
+    hasLabel && (effectClass ? h("span", { className: "m-button-label" }, children) : children),
   );
 }
 

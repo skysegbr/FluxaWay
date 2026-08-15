@@ -5,6 +5,7 @@
  */
 
 export {
+  BUTTON_EFFECTS,
   Button,
   IconButton,
   Card,
@@ -20,3 +21,5 @@ export {
   AvatarGroup,
   Progress,
 } from "./fluxaway-components.js";
+
+export type { ButtonEffect } from "./fluxaway-components.js";

@@ -139,6 +139,7 @@ def run(browser_type, base: str) -> list[str]:
         "/examples/fluxaway-motion/",
         "/examples/form/",
         "/examples/gallery/",
+        "/examples/inox-landing/",
         "/examples/landing/",
         "/examples/metallic-themes/",
         "/examples/mindmap/",
@@ -168,7 +169,7 @@ def run(browser_type, base: str) -> list[str]:
     desktop.keyboard.press("Escape")
     expect(desktop.locator("#docs-examples-menu").count() == 0, "Escape did not close examples")
     expect(examples_trigger.evaluate("(button) => document.activeElement === button"), "focus not restored")
-    passed.append("examples menu matches all 21 build links and supports keyboard navigation")
+    passed.append("examples menu matches all 22 build links and supports keyboard navigation")
 
     desktop.locator('.nd-sidebar-link[href="#/getting-started"]').click()
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
@@ -306,7 +307,7 @@ def run(browser_type, base: str) -> list[str]:
         "props table is not named by its section heading",
     )
     expect(
-        props_table.locator('tbody td[data-label="Description"]').count() == 7,
+        props_table.locator('tbody td[data-label="Description"]').count() == 8,
         "props table rows are missing their responsive labels",
     )
     passed.append("component docs colocate setup, readable API tables and local Cobalt scope")
@@ -538,7 +539,7 @@ def run(browser_type, base: str) -> list[str]:
         "props rows did not become labelled cards on mobile",
     )
     expect(
-        mobile.locator('#props td[data-label="Prop"]').count() == 7,
+        mobile.locator('#props td[data-label="Prop"]').count() == 8,
         "mobile props cards lost their property labels",
     )
     expect(

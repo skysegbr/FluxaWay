@@ -1,0 +1,115 @@
+:root {
+  color-scheme: dark;
+  --il-bg: #07090b;
+  --il-bg-soft: #0d1114;
+  --il-panel: rgba(19, 24, 28, 0.86);
+  --il-line: rgba(204, 219, 228, 0.2);
+  --il-line-strong: rgba(226, 237, 243, 0.42);
+  --il-text: #f2f5f7;
+  --il-muted: #9ba8af;
+  --il-ice: #a8e6ff;
+  --il-steel: #b9c4ca;
+  --il-max: 1280px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--il-bg);
+  color: var(--il-text);
+  font-family: var(--m-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a { font: inherit; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.il-page {
+  min-height: 100vh;
+  overflow: clip;
+  background:
+    linear-gradient(90deg, transparent 49.9%, rgba(255, 255, 255, 0.025) 50%, transparent 50.1%),
+    radial-gradient(circle at 82% 6%, rgba(147, 203, 228, 0.1), transparent 30rem),
+    var(--il-bg);
+}
+
+.il-shell {
+  width: min(var(--il-max), calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.il-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  color: var(--il-ice);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.il-eyebrow::before {
+  width: 2rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor);
+  content: "";
+}
+
+.il-section-title {
+  max-width: 13ch;
+  margin: 1rem 0 0;
+  font-size: clamp(2.5rem, 6vw, 5.6rem);
+  font-weight: 560;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.il-footer {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  width: min(var(--il-max), calc(100% - 40px));
+  margin-inline: auto;
+  padding-block: 2rem;
+  border-top: 1px solid var(--il-line);
+  color: var(--il-muted);
+  font-size: 0.74rem;
+}
+
+.il-footer p { margin: 0; }
+.il-footer p:last-child { text-align: right; }
+
+.il-footer-mark {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--il-line-strong);
+  color: var(--il-text);
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .il-shell,
+  .il-footer { width: min(100% - 28px, var(--il-max)); }
+
+  .il-footer { grid-template-columns: auto 1fr; }
+  .il-footer p:last-child { grid-column: 2; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

@@ -1,5 +1,17 @@
 import { h, Fragment, useTheme } from "/dist/fluxaway.js";
-import { Button, IconButton } from "/dist/fluxaway-components-core.js";
+import { BUTTON_EFFECTS, Button, IconButton } from "/dist/fluxaway-components-core.js";
+
+const BUTTON_EFFECT_LABELS = {
+  reflection: "Reflect",
+  edge: "Route",
+  split: "Merge",
+  aperture: "Open",
+  charge: "Charge",
+  corners: "Lock",
+  pulse: "Confirm",
+  phase: "Shift",
+  conductor: "Conduct",
+};
 
 export const BUTTON_ENTRIES = [
   {
@@ -8,8 +20,8 @@ export const BUTTON_ENTRIES = [
     category: "core",
     module: "fluxaway-components-core.js",
     summary:
-      "The standard action trigger. Five variants, an optional leading icon and an accent " +
-      "modifier that follows the active palette.",
+      "The standard action trigger. Five variants, nine official interaction effects, an " +
+      "optional leading icon and an accent modifier that follows the active palette.",
     demos: [
       {
         id: "button-variants",
@@ -56,6 +68,35 @@ export const BUTTON_ENTRIES = [
             h(Button, { variant: "contained", disabled: true }, "Disabled"),
             h(Button, { variant: "contained", type: "submit" }, "Submit"),
             h(Button, { variant: "outline", icon: "close", ariaLabel: "Dismiss" }),
+          ),
+      },
+      {
+        id: "button-effects",
+        title: "Interaction effects",
+        note:
+          "effect is an official Button prop. The motion works in every design; Metallic " +
+          "replaces the conductor contour with the active finish's exact alloy recipe.",
+        code: `import { h, Fragment } from "/dist/fluxaway.js";
+import { BUTTON_EFFECTS, Button } from "/dist/fluxaway-components-core.js";
+
+const labels = {
+  reflection: "Reflect", edge: "Route", split: "Merge",
+  aperture: "Open", charge: "Charge", corners: "Lock",
+  pulse: "Confirm", phase: "Shift", conductor: "Conduct",
+};
+
+h(Fragment, null,
+  BUTTON_EFFECTS.map((effect) =>
+    h(Button, { key: effect, variant: "outline", effect }, labels[effect]),
+  ),
+);`,
+        render: () =>
+          h(
+            Fragment,
+            null,
+            BUTTON_EFFECTS.map((effect) =>
+              h(Button, { key: effect, variant: "outline", effect }, BUTTON_EFFECT_LABELS[effect]),
+            ),
           ),
       },
       {
@@ -126,6 +167,12 @@ function CobaltButtons() {
         description: "Adds a --m-primary leading border and emphasizes the icon.",
       },
       {
+        name: "effect",
+        type: '"reflection" | "edge" | "split" | "aperture" | "charge" | "corners" | "pulse" | "phase" | "conductor"',
+        description:
+          "Optional official interaction signature. Use outline for the canonical presentation.",
+      },
+      {
         name: "type",
         type: '"button" | "submit" | "reset"',
         default: '"button"',
@@ -150,6 +197,7 @@ function CobaltButtons() {
     ],
     notes: [
       "Every unlisted prop is spread onto the underlying <button>, so name, form, value and data attributes pass straight through.",
+      "BUTTON_EFFECTS exports the nine canonical effect names for generated catalogs and selectors.",
       "Design scoping is descendant-based. A local Metallic wrapper affects every FluxaWay component inside it, so keep only the controls that should share that material in the wrapper.",
     ],
   },
