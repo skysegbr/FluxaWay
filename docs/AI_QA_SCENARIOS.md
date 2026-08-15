@@ -166,7 +166,8 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-THM-02 | Multiple `useTheme` in sync | all instances update via `fluxaway:themechange` event | browser |
 | SC-THM-03 | `usePalette` set/custom | `data-palette`; `setCustomColor(hex)` writes `--m-primary`, derives shades; invalid hex ignored | browser |
 | SC-THM-04 | `usePalette` invalid name | `setPalette('x')` no-op | suite |
-| SC-THM-05 | `useDesign` bootstrap | `data-design="bootstrap"` only skins when `fluxaway-bootstrap.css` loaded; composes with theme/palette | visual |
+| SC-THM-05 | `useDesign` optional skins | Bootstrap and Metallic only skin when their companion CSS is loaded; both compose with light/dark | visual |
+| SC-THM-06 | `useMetalTheme` | seven allowlisted finishes persist through `data-metal-theme`; junk values are ignored | suite/visual |
 
 ## §7. Hooks — utility & mobile — `SC-UTL`
 
@@ -270,7 +271,7 @@ Apply the relevant baseline to every component, then its specific rows.
 |---|---|---|---|
 | SC-C-THM-01 | ThemeToggle | toggles theme, reflects current, a11y label | browser |
 | SC-C-THM-02 | PaletteSwitcher | lists palettes; selects; custom color input (squared vs round presets) | browser |
-| SC-C-THM-03 | DesignSwitcher | switches fluxaway↔bootstrap; inert without bootstrap.css | browser |
+| SC-C-THM-03 | DesignSwitcher | switches FluxaWay/Bootstrap/Metallic; optional choices are inert without companion CSS | browser |
 
 ## §10. Forms integration — `SC-FORM`
 
@@ -369,6 +370,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-CSS-06 | Category CSS = monolith | base+all categories renders byte-identical to `fluxaway-ui.css` (AI_QA.md §3.2) | visual |
 | SC-CSS-07 | Category subset completeness | each example loads exactly the categories it uses (no unstyled) | static (validate) |
 | SC-CSS-08 | Mobile shell classes | app-bar/bottom-nav offsets; safe-area insets | visual |
+| SC-CSS-09 | Metallic skin | seven finishes reskin actions, surfaces, feedback and validation in light/dark without flattening semantic states | suite/visual |
 
 ## §14. Accessibility (cross-cutting) — `SC-A11Y`
 
@@ -381,6 +383,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-A11Y-05 | `aria*` string values | passed as `"true"`/`"false"` strings, not booleans (documented) | suite |
 | SC-A11Y-06 | Reduced motion | animations respect `prefers-reduced-motion` where applicable | visual |
 | SC-A11Y-07 | Color contrast | text/UI meets WCAG AA in light + dark + each palette | visual |
+| SC-A11Y-08 | Docs reference tables | section heading names the table; every `th` has `scope="col"`; mobile cards retain visible Prop/Type/Default/Description labels | browser |
 
 ## §15. Security — `SC-SEC`
 
@@ -425,7 +428,7 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
 | SC-APP-11 | gallery / landing / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; console clean | visual |
-| SC-APP-12 | docs-site | lazy home payload, desktop sidebar/mobile inline Navbar, keyboard menu with all 20 published examples, desktop/mobile scroll-spy TOC, route/section focus, Ctrl+K palette including CSS, AI/security guide with `AI_SPEC` prompt template and review checklist, lazy read-only `CodeEditor` viewer for all 13 add-on resources plus AI docs, preserved live-demo actions, eight CSS guides, five add-on pages | browser |
+| SC-APP-12 | docs-site | 107 descriptor-driven pages; Setup shows component CSS beside JS; local Cobalt scope does not leak; semantic desktop tables become labelled mobile cards; TOC compacts before squeezing API content; lazy home payload, responsive shell, 21-example menu, scroll spy, route/section focus, Ctrl+K search, AI/security guide, 13 add-on resources, eight CSS guides and five add-on pages | browser |
 | SC-APP-13 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
 
 ## §18. Cross-browser & performance — `SC-XB`

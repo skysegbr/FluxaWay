@@ -97,6 +97,17 @@ and nothing else. No `src/` wrapper, no parallel `styles/` tree. A single
 monolithic `app.js` is acceptable only for throwaway demos; the validator
 warns past a 250-line-per-component-file monolith guard.
 
+The docs-site reference is descriptor-driven, not one page per API. Its 107
+entries flow through `components/reference/ReferencePage.js`; shared API tables
+flow through `PropsTable.js`. Preserve the reference sequence **Setup → live
+examples → API tables → resources → implementation notes**. Component Setup
+must show `fluxaway-ui-base.css` plus its category CSS beside the JavaScript
+import. `PropsTable` owns semantic column headers, stable desktop widths and
+labelled mobile cards — do not duplicate that layout inside a content entry.
+The desktop TOC intentionally becomes the compact disclosure at 1320px so it
+does not crush technical tables. Any change to these contracts must update
+`scripts/check_docs_site.py` and pass it in Chromium, Firefox and WebKit.
+
 ---
 
 ## 4. Commands (Python 3, from repo root)
@@ -177,6 +188,12 @@ Commit subjects follow Conventional Commits with a scope, e.g.
 - CI = `.github/workflows/ci.yml`: static validation + the two `--check`
   sync gates + tutorial selectors, then the browser suite and the docs-site
   smoke across chromium/firefox/webkit.
+- Optional designs are descendant-scoped. A wrapper with
+  `data-design="metallic"`, `data-metal-theme="cobalt"` and the current
+  `data-theme` can skin only its contained controls; it also skins *every*
+  FluxaWay descendant in that wrapper. Keep a local design wrapper as narrow
+  as the intended component group. `useDesign()` remains the global `<html>`
+  switcher; do not call it when the requirement is “Cobalt buttons only.”
 - Chart colors are validated, not decorative. `scripts/validate_chart_palette.py`
   recomputes lightness/chroma/contrast/colorblind guarantees from the tokens
   in `dist/fluxaway-charts.css`, and asserts every `:root` token exists in all

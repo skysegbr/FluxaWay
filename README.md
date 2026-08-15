@@ -50,6 +50,8 @@ Optional modules build on top of that core:
   assets in `assets/codemirror/` (no CDN).
 - `dist/fluxaway-bootstrap.css` — optional Bootstrap 5 visual skin, switched at
   runtime with `useDesign()`. See [Design](#design) below.
+- `dist/fluxaway-metallic.css` + `dist/fluxaway-metallic.js` — experimental
+  metallic skin and material selector. See [Design](#design) below.
 - `dist/fluxaway-server.js` — server-side rendering entry: `renderToString(App)`
   produces an HTML string (SEO / first paint), no DOM and no build required.
 
@@ -130,6 +132,8 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor-snippets.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-bootstrap.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-metallic.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-metallic.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-server.js
 ```
 
@@ -148,6 +152,8 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.min.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.min.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor-snippets.min.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-bootstrap.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-metallic.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-metallic.min.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-server.min.js
 ```
 
@@ -415,11 +421,12 @@ python -m http.server 8080
 | [examples/basic](./examples/basic) | Start here — minimal screen: `h`, `render`, `useState`, `useEffect`, components from `fluxaway-components.js` and `ThemeToggle` for dark mode |
 | [examples/form](./examples/form) | Controlled fields, validation, loading submit, reset, `useForm` |
 | [examples/complete-page](./examples/complete-page) | App-shell with sidebar, table, dialog, tabs, and toast |
-| [examples/docs-site](./examples/docs-site) | Bootstrap-style documentation site for the design system, built in FluxaWay: sticky desktop sidebar, animated inline mobile `Navbar`, a keyboard-accessible header menu for all 20 published examples, scroll-spy "on this page" rail, Ctrl+K `CommandPalette` search, live demos, reference tables, a dependency-free syntax highlighter, and a lazy read-only `CodeEditor` for every add-on resource and linked AI document. Example source viewers preserve a separate action to launch the live demo. Documents security and AI-assisted development with `AI_SPEC` and copyable prompt patterns, eight CSS guides (bundles, tokens/themes, grid, layout, spacing, typography, utilities and animations), all six component categories (61 components), 33 hooks and five add-ons |
+| [examples/docs-site](./examples/docs-site) | Published documentation app built in FluxaWay: 107 descriptor-driven reference pages with a consistent Setup → examples → API → notes flow, component CSS beside its JavaScript import, semantic desktop tables that become labelled mobile cards, live locally scoped design examples, a responsive scroll-spy TOC, Ctrl+K search, all 21 published examples, eight CSS guides, 61 components, 33 hooks, five add-ons and lazy read-only source viewers |
 | [examples/components](./examples/components) | `Switch`, `Collapse`, `Combobox`, `ContextMenu`, `FileDropZone`, `CodeEditor`, toasts, a `Cards` page showcasing the `m-card-*` variants + `SpeedDial`, `Accordion`, `Slider`/`RangeSlider`, `Menu` with nested submenus, `DataTable`, `DatePicker`, a `Forms & Widgets` page with `RadioGroup`, `NumberInput`, `TimePicker`, `Stat`, `TreeView`, `Popover`, and `CommandPalette`, plus a `UI Primitives` page driving `Avatar`, `Breadcrumb`, `Skeleton`, and `Divider` through the component API |
 | [examples/mobile](./examples/mobile) | Polished mobile shell: animated responsive `Navbar`, `BottomNav`, `BottomSheet`, `FAB`, responsive cards, swipe, long press and live device status |
 | [examples/landing](./examples/landing) | SaaS landing page: sticky nav with mobile menu, SVG hero chart, testimonial carousel, pricing toggle |
 | [examples/gallery](./examples/gallery) | Photo gallery: category filter, masonry grid with lazy-load fade-in, keyboard/swipe lightbox with focus trap |
+| [examples/metallic-themes](./examples/metallic-themes) | Experimental Metallic design laboratory: seven material finishes, light/dark modes, semantic feedback, validation, operational layouts and nine signature button effects |
 | [examples/mindmap](./examples/mindmap) | Draggable mindmap: free-form card positioning, double-click inline editing, SVG bezier connectors that track card size, branch coloring |
 | [examples/dashboard](./examples/dashboard) | Complete analytics dashboard using the first-party charts add-on: KPI cards, line/area/bar/donut/scatter/heatmap charts, small multiples, brush-to-zoom, export and accessible table twins |
 | [examples/aurora-ops](./examples/aurora-ops) | Polar research command center: an aurora-themed dashboard combining MetricCard, DashboardGrid, line/donut/heatmap/diverging/dumbbell/small-multiple charts and resource meters |
@@ -633,29 +640,62 @@ directly as an inline style, and `fluxaway-ui.css` derives `--m-primary-hover`,
 |---|---|
 | `useDesign()` | Returns `{ design, designs, setDesign }` |
 
-FluxaWay's default look ("fluxaway") needs nothing beyond `fluxaway-ui.css`. To offer a
-Bootstrap 5 visual skin as an *option*, also load `dist/fluxaway-bootstrap.css`
-and switch `data-design="bootstrap"` at runtime:
+FluxaWay's default look (`"fluxaway"`) needs nothing beyond `fluxaway-ui.css`.
+Bootstrap and the experimental Metallic design are optional companion skins:
 
 ```html
 <link rel="stylesheet" href="./dist/fluxaway-ui.css" />
 <link rel="stylesheet" href="./dist/fluxaway-bootstrap.css" />
+<link rel="stylesheet" href="./dist/fluxaway-metallic.css" />
 ```
 
 ```js
 const { design, designs, setDesign } = useDesign();
-// design: "fluxaway" | "bootstrap"
+// design: "fluxaway" | "bootstrap" | "metallic"
 // designs: the full list, for building a picker
-// setDesign("bootstrap")
+setDesign("metallic");
+
+import { useMetalTheme } from "./dist/fluxaway-metallic.js";
+const { metalTheme, metalThemes, setMetalTheme } = useMetalTheme();
+setMetalTheme("black-inox");
 ```
 
-This is independent of `useTheme` and `usePalette` — light/dark and accent
-color both keep working under either design. `fluxaway-bootstrap.css` is scoped
-entirely under `[data-design="bootstrap"]`; if it isn't loaded, or the design
-is left at the default `"fluxaway"`, nothing changes. It re-points FluxaWay's
-existing `--m-*` tokens (color, radius, shadow, font) at Bootstrap 5's real
-values, plus a handful of grouped overrides for the few things that aren't
-token-driven (font-weight, focus-ring style, badge shape).
+This remains independent of `useTheme`: light/dark works under every design.
+`fluxaway-bootstrap.css` and `fluxaway-metallic.css` are fully scoped and inert
+until selected. Metallic currently offers `aurum`, `cobalt`, `cobalt-aurum`,
+`inox`, `bronze`, `ferrum`, and `black-inox`; it is intentionally marked
+experimental while it is evaluated across different kinds of pages. Palette
+switching remains available for FluxaWay and Bootstrap, while Metallic owns its
+material colors through `useMetalTheme()`.
+
+#### Apply a design to one component group
+
+`useDesign()` writes to `<html>` and therefore switches the whole page. Optional
+skins are descendant-scoped too, so a narrow wrapper can apply Cobalt only to
+the buttons it contains:
+
+```js
+import { h, useTheme } from "./dist/fluxaway.js";
+import { Button } from "./dist/fluxaway-components-core.js";
+
+function CobaltActions() {
+  const { theme } = useTheme();
+
+  return h("div", {
+    className: "m-cluster",
+    dataset: { design: "metallic", metalTheme: "cobalt", theme },
+  },
+    h(Button, { variant: "contained" }, "Deploy"),
+    h(Button, { variant: "tonal" }, "Review"),
+    h(Button, { variant: "outline" }, "Cancel"),
+  );
+}
+```
+
+Load `fluxaway-ui-base.css`, `fluxaway-ui-core.css`, and then
+`fluxaway-metallic.css`. The wrapper skins every FluxaWay descendant inside it,
+so keep the scope limited to the controls that should share the material. See
+the live “Cobalt on buttons only” tutorial in the docs-site Button reference.
 
 ### Mobile hooks
 

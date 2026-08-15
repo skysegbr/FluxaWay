@@ -64,7 +64,7 @@ URL it prints. The browser console is the source of truth, not any Node output.
 
 ```
 scripts/validate_fluxaway.py       static gate (imports, assets, guards, sync)
-scripts/run_browser_tests.py    the ~300-test engine/component/add-on suite
+scripts/run_browser_tests.py    the ~400-test engine/component/add-on suite
 scripts/check_docs_site.py       docs-site lazy/mobile/add-on browser smoke
 scripts/minify.py               regenerate/verify dist/*.min.*
 scripts/split_css.py            regenerate/verify dist/fluxaway-ui-<cat>.css
@@ -127,10 +127,13 @@ not flake; report the engine.
 **1.6** protects the documentation app itself: home payload stays lazy,
 category CSS and CodeMirror load on demand, search navigates to component and
 CSS references, all eight CSS guides and five add-on pages render their expected
-content, the header menu matches all 20 examples published in the build, the
-catalog matches its 107 descriptors, route changes focus the new heading, the
-sidebar reveals its active page, and mobile navigation/TOC lock, restore and
-move focus without overflow.
+content, the header menu matches all 21 examples published in the build, the
+catalog matches its 107 descriptors, and every component reference presents a
+Setup recipe with base/category CSS beside its JavaScript import. It also locks
+the locally scoped Cobalt Button tutorial, table/header associations and stable
+desktop columns, labelled mobile API cards, route/section focus, the 1320px
+compact TOC boundary, active-page sidebar reveal, and mobile navigation without
+page overflow.
 
 ---
 
@@ -140,7 +143,7 @@ move focus without overflow.
 test framework, no build. `tests/run.js` imports every `*.test.js` and exposes
 the outcome on `window.__fluxawayTestResults`, which `run_browser_tests.py` reads.
 
-Coverage (~300 tests across 13 files):
+Coverage (~400 tests across 16 files):
 
 | File | Area |
 |---|---|
@@ -148,11 +151,14 @@ Coverage (~300 tests across 13 files):
 | `hooks.test.js` | `useState/Effect/Ref/Memo/Callback/Reducer`, error boundary, form, router |
 | `new-features.test.js` / `v02-features.test.js` | later hooks/components (routes, presence, virtual list, i18n, mobile hooks…) |
 | `coverage.test.js` | broad component behavior sweep |
+| `button.test.js` | Button variants, accessibility and Metallic interaction-effect contracts |
 | `components-new.test.js` | newer UI components |
 | `categories.test.js` | barrel ↔ category-module export parity |
+| `charts.test.js` | chart scales, marks, palettes, tables, exports and interaction |
 | `ssr.test.js` | `renderToString`, `hydrate`, head, escaping, text-node quirks |
 | `a11y.test.js` | keyboard nav, focus trap/restore, ARIA (Dialog, Drawer, Combobox, Tabs…) |
 | `addons.test.js` | PipelineCanvas (`fluxaway-canvas`), ZoomStage (`fluxaway-zoom`) |
+| `metallic.test.js` | finish allowlist, persistence and local/global Metallic scoping |
 | `motion.test.js` / `motion-editor.test.js` | `fluxaway-motion` runtime + the visual editor |
 | `security.test.js` | `safeUrl()` scheme guard (client + SSR) |
 
