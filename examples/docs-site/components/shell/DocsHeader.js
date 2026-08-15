@@ -1,8 +1,66 @@
-import { h } from "/dist/fluxaway.js";
+import { h, useDesign } from "/dist/fluxaway.js";
+import { useMetalTheme } from "/dist/fluxaway-metallic.js";
+import { Button } from "/dist/fluxaway-components-core.js";
 import { Navbar } from "/dist/fluxaway-components-nav.js";
+import { Menu } from "/dist/fluxaway-components-overlay.js";
 import { PaletteSwitcher, ThemeToggle } from "/dist/fluxaway-components-theme.js";
 import { EXAMPLE_LINKS, NAV_LINKS } from "../../data.js";
 import { ExamplesMenu } from "./ExamplesMenu.js";
+
+const DESIGN_LABELS = {
+  fluxaway: "FluxaWay",
+  bootstrap: "Bootstrap",
+  metallic: "Metallic",
+};
+
+function DesignMenus() {
+  const { design, designs, setDesign } = useDesign();
+  const { metalTheme, metalThemes, setMetalTheme } = useMetalTheme();
+  const activeLabel = DESIGN_LABELS[design] ?? design;
+
+  return h(
+    "div",
+    { className: "nd-design-tools" },
+    h(Menu, {
+      id: "docs-design-menu",
+      align: "right",
+      trigger: h(
+        Button,
+        {
+          variant: "outline",
+          className: "nd-design-trigger",
+          ariaLabel: `Design: ${activeLabel}`,
+        },
+        `${activeLabel} ▾`,
+      ),
+      items: designs.map((name) => ({
+        key: name,
+        label: DESIGN_LABELS[name] ?? name,
+        icon: name === design ? "✓" : undefined,
+        onClick: () => setDesign(name),
+      })),
+    }),
+    design === "metallic" && h(Menu, {
+      id: "docs-metal-finish-menu",
+      align: "right",
+      trigger: h(
+        Button,
+        {
+          variant: "outline",
+          className: "nd-metal-finish-trigger",
+          ariaLabel: `Metallic finish: ${metalTheme}`,
+        },
+        `${metalTheme} ▾`,
+      ),
+      items: metalThemes.map((name) => ({
+        key: name,
+        label: name,
+        icon: name === metalTheme ? "✓" : undefined,
+        onClick: () => setMetalTheme(name),
+      })),
+    }),
+  );
+}
 
 function Brand({ onClick } = {}) {
   return h(
@@ -58,6 +116,7 @@ function MobileHeader({ menuOpen, mobileNavigation, onMenuChange, onOpenSearch }
         h(
           "div",
           { className: "nd-mobile-preferences" },
+          h(DesignMenus, null),
           h(PaletteSwitcher, null),
           h(ThemeToggle, null),
         ),
@@ -104,6 +163,7 @@ export function DocsHeader({
     h(
       "div",
       { className: "nd-header-tools" },
+      h(DesignMenus, null),
       h(PaletteSwitcher, null),
       h(ThemeToggle, null),
     ),

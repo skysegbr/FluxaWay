@@ -96,6 +96,36 @@
   gap: var(--m-space-2);
 }
 
+.nd-design-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-2);
+}
+
+.nd-design-trigger,
+.nd-metal-finish-trigger {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+@media (max-width: 78rem) and (min-width: 901px) {
+  .nd-header {
+    gap: var(--m-space-2);
+  }
+
+  .nd-header-search {
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    padding-inline: 0;
+  }
+
+  .nd-header-search-label,
+  .nd-header-kbd {
+    display: none;
+  }
+}
+
 .nd-mobile-navbar {
   position: sticky;
   inset-block-start: 0;
@@ -171,4 +201,9 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--m-space-3);
+}
+
+.nd-mobile-preferences .nd-design-tools {
+  flex: 1 1 100%;
+  flex-wrap: wrap;
 }

@@ -15,27 +15,44 @@ export function PropsTable({
   if (!rows?.length) return null;
 
   const hasDefaults = rows.some((row) => row.default);
+  const titleId = `${id}-title`;
+  const tableClass = `m-table nd-props-table${
+    hasDefaults ? " nd-props-table-defaults" : " nd-props-table-compact"
+  }`;
 
   return h(
     "section",
     { className: "nd-props", id },
-    h("h2", { className: "nd-demo-title" }, title),
+    h("h2", { className: "nd-demo-title", id: titleId }, title),
     h(
       "div",
-      { className: "nd-props-scroll" },
+      {
+        className: "nd-props-scroll",
+        tabIndex: 0,
+        role: "region",
+        ariaLabel: `${title} table`,
+      },
       h(
         "table",
-        { className: "m-table nd-props-table" },
+        { className: tableClass, ariaLabelledby: titleId },
+        h(
+          "colgroup",
+          null,
+          h("col", { className: "nd-props-col-name" }),
+          h("col", { className: "nd-props-col-type" }),
+          hasDefaults ? h("col", { className: "nd-props-col-default" }) : null,
+          h("col", { className: "nd-props-col-description" }),
+        ),
         h(
           "thead",
           null,
           h(
             "tr",
             null,
-            h("th", null, nameHeader),
-            h("th", null, typeHeader),
-            hasDefaults ? h("th", null, "Default") : null,
-            h("th", null, "Description"),
+            h("th", { scope: "col" }, nameHeader),
+            h("th", { scope: "col" }, typeHeader),
+            hasDefaults ? h("th", { scope: "col" }, "Default") : null,
+            h("th", { scope: "col" }, "Description"),
           ),
         ),
         h(
@@ -45,18 +62,26 @@ export function PropsTable({
             h(
               "tr",
               { key: row.name },
-              h("td", null, h("code", { className: "nd-props-name" }, row.name)),
-              h("td", null, h("code", { className: "nd-props-type" }, row.type)),
+              h(
+                "td",
+                { dataset: { label: nameHeader } },
+                h("code", { className: "nd-props-name" }, row.name),
+              ),
+              h(
+                "td",
+                { dataset: { label: typeHeader } },
+                h("code", { className: "nd-props-type" }, row.type),
+              ),
               hasDefaults
                 ? h(
                     "td",
-                    null,
+                    { dataset: { label: "Default" } },
                     row.default
-                      ? h("code", null, row.default)
+                      ? h("code", { className: "nd-props-default" }, row.default)
                       : h("span", { className: "nd-props-empty" }, "—"),
                   )
                 : null,
-              h("td", null, row.description),
+              h("td", { dataset: { label: "Description" } }, row.description),
             ),
           ),
         ),

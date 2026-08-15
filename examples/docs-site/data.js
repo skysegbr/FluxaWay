@@ -22,6 +22,7 @@ export const EXAMPLE_LINKS = [
   { label: "Form", href: "/examples/form/" },
   { label: "Gallery", href: "/examples/gallery/" },
   { label: "Landing", href: "/examples/landing/" },
+  { label: "Metallic themes", href: "/examples/metallic-themes/" },
   { label: "Mind map", href: "/examples/mindmap/" },
   { label: "Minified build", href: "/examples/minified/" },
   { label: "Mobile", href: "/examples/mobile/" },

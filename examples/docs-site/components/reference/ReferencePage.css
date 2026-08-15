@@ -32,8 +32,21 @@
   color: var(--m-text-muted);
 }
 
-.nd-article-lead + .nd-code {
-  margin-top: var(--m-space-6);
+.nd-section-lead {
+  max-width: 68ch;
+  margin: var(--m-space-2) 0 0;
+  color: var(--m-text-muted);
+}
+
+.nd-setup {
+  margin-block: var(--m-space-10);
+  scroll-margin-top: 5.5rem;
+}
+
+.nd-setup-code {
+  display: grid;
+  gap: var(--m-space-3);
+  margin-top: var(--m-space-4);
 }
 
 .nd-import {
@@ -47,13 +60,34 @@
 
 .nd-notes {
   margin-block: var(--m-space-10);
-  padding: var(--m-space-4) var(--m-space-6);
-  border-inline-start: 3px solid var(--m-primary);
-  background: var(--m-surface-soft);
-  border-radius: 0 var(--m-radius) var(--m-radius) 0;
+  scroll-margin-top: 5.5rem;
 }
 
-.nd-notes ul { margin: var(--m-space-2) 0 0; }
+.nd-notes ol {
+  display: grid;
+  gap: var(--m-space-2);
+  margin: var(--m-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nd-notes li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--m-space-3);
+  align-items: start;
+  padding: var(--m-space-4);
+  border: 1px solid var(--m-border);
+  border-inline-start: 3px solid var(--m-primary);
+  border-radius: var(--m-radius);
+  background: var(--m-surface-soft);
+  line-height: 1.6;
+}
+
+.nd-notes .bi {
+  margin-top: 0.15em;
+  color: var(--m-primary);
+}
 
 .nd-resources {
   margin-block: var(--m-space-10);
@@ -61,8 +95,30 @@
 }
 
 .nd-resources ul {
+  display: grid;
+  gap: var(--m-space-2);
   margin: var(--m-space-3) 0 0;
-  padding-inline-start: var(--m-space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.nd-resources li {
+  display: grid;
+  gap: var(--m-space-1);
+  padding: var(--m-space-4);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+}
+
+.nd-resources a {
+  width: fit-content;
+  font-weight: 700;
+}
+
+.nd-resource-description {
+  color: var(--m-text-muted);
+  line-height: 1.5;
 }
 
 .nd-resources a:focus-visible {
@@ -109,7 +165,7 @@
   text-transform: uppercase;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1320px) {
   .nd-page { grid-template-columns: minmax(0, 1fr); }
 }
 
@@ -119,7 +175,7 @@
 
 /* A hook's call signature, shown right under the import line. */
 .nd-signature {
-  margin: var(--m-space-3) 0 0;
+  margin: var(--m-space-2) 0 0;
   padding: var(--m-space-3) var(--m-space-4);
   border: 1px solid var(--m-border);
   border-inline-start: 3px solid var(--m-primary);
@@ -127,4 +183,14 @@
   background: var(--m-surface);
   overflow-x: auto;
   font-size: var(--m-font-size-sm);
+}
+
+.nd-signature-group { margin-top: var(--m-space-4); }
+
+.nd-signature-label {
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
