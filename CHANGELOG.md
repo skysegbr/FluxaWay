@@ -5,6 +5,44 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.23.0] - 2026-08-15
+
+### Added
+- Experimental `fluxaway-metallic.css` design skin with seven selectable
+  material finishes, cohesive metallic actions, surfaces, feedback and form
+  validation in both light and dark modes.
+- `useMetalTheme()` and `METAL_THEMES` in the optional
+  `fluxaway-metallic.js` add-on. The selection is persisted and exposed as
+  `data-metal-theme` independently from `useDesign()` and `useTheme()`.
+- A multi-page-oriented metallic specimen under `examples/metallic-themes/`
+  for evaluating the design system before it is considered official.
+- The Components button catalog now presents all nine metallic interaction
+  studies together, including the theme-exact Alloy circuit recipes, keyboard
+  focus, reduced-motion behavior and a responsive one-column mobile layout.
+
+### Changed
+- The 107 descriptor-driven docs reference pages now follow a shared
+  Setup → examples → API → resources → implementation-notes hierarchy.
+  Technical tables use semantic column associations and stable desktop widths,
+  become labelled cards on mobile, and receive the full content width before
+  the page TOC can make them cramped.
+- Component reference pages now place their required split CSS beside the
+  JavaScript import, and Button documents a live locally scoped Cobalt group
+  that leaves the surrounding page design untouched.
+- The docs-site header now uses the documented compact design menu on desktop
+  and mobile, revealing a separate finish menu only while Metallic is active.
+- The DesignSwitcher reference now documents a compact Menu composition for
+  space-constrained headers while retaining the existing chip switcher as the
+  default component presentation.
+- The Components example groups its mutually exclusive FluxaWay, Bootstrap and
+  Metallic design choices into one compact menu that names the active design.
+- FluxaWay's default typography now uses an available system-variable UI stack,
+  moderate control weights and restrained heading/label tracking for clearer
+  buttons, forms, tables and navigation without changing the color identity.
+- Metallic typography now uses a system-variable UI stack, moderate interface
+  weights and restrained tracking so material reflections do not reduce text
+  clarity on buttons, badges, tables and navigation.
+
 ## [0.22.10] - 2026-08-04
 
 ### Changed

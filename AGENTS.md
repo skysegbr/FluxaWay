@@ -148,10 +148,11 @@ missing gate.
 Releases are cut on a branch, never straight on `main`:
 
 1. Branch off `main`.
-2. `chore(release): prepare X.Y.Z` — one commit bumping **10 version
+2. `chore(release): prepare X.Y.Z` — one commit bumping **11 version
    occurrences** across 5 files plus the changelog entry:
    - `package.json` (1)
-   - `README.md` (6 — CDN URLs, SRI example, cache-busting note)
+   - `README.md` (7 — CDN URLs, SRI example, the `@vX.Y.Z` prose mention,
+     and the `?v=X.Y.Z` cache-busting note)
    - `docs/AI_SPEC.md` (1), `docs/TUTORIAL.md` (1)
    - `examples/docs-site/content/css/guides.js` (1)
    - `CHANGELOG.md` — a `## [X.Y.Z]` heading (the validator **fails** if
