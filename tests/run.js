@@ -8,6 +8,7 @@ import "./coverage.test.js";
 import "./components-new.test.js";
 import "./categories.test.js";
 import "./addons.test.js";
+import "./metallic.test.js";
 import "./v02-features.test.js";
 import "./motion.test.js";
 import "./charts.test.js";

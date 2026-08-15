@@ -547,7 +547,7 @@ test('useDesign: defaults to "fluxaway", setDesign persists and applies data-des
   await flush();
 
   assertEqual(captured.design, "fluxaway");
-  assertEqual(captured.designs.length, 2);
+  assertEqual(captured.designs.join(","), "fluxaway,bootstrap,metallic");
 
   captured.setDesign("bootstrap");
   await flush();

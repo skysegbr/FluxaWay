@@ -2534,16 +2534,15 @@ export function usePalette() {
 //
 // Switches the overall visual design, independent of theme and palette.
 // Sets data-design on <html>; "fluxaway" (default) needs no stylesheet beyond
-// fluxaway-ui.css. "bootstrap" only takes effect if the optional
-// dist/fluxaway-bootstrap.css is also loaded — it's scoped entirely under
-// [data-design="bootstrap"], so loading it changes nothing until this hook
-// (or a manual data-design="bootstrap" attribute) switches to it.
+// fluxaway-ui.css. Optional designs only take effect when their companion
+// stylesheet is loaded: dist/fluxaway-bootstrap.css or the experimental
+// dist/fluxaway-metallic.css. Both are inert until data-design selects them.
 //
 // Usage:
 //   const { design, designs, setDesign } = useDesign();
 //   setDesign("bootstrap");
 
-const DESIGNS = ["fluxaway", "bootstrap"];
+const DESIGNS = ["fluxaway", "bootstrap", "metallic"];
 
 export function useDesign() {
   const getResolved = () => {
