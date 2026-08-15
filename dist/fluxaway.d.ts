@@ -706,11 +706,13 @@ export declare function usePalette(): {
 
 // ── useDesign ──────────────────────────────────────────────────────────────
 
-export type Design = "fluxaway" | "bootstrap";
+export type Design = "fluxaway" | "bootstrap" | "metallic";
 
 /**
  * Switches the overall visual design via `data-design` on `<html>`.
- * `"bootstrap"` requires `dist/fluxaway-bootstrap.css` to also be loaded.
+ * Optional designs require their companion stylesheet: `"bootstrap"` uses
+ * `dist/fluxaway-bootstrap.css`; experimental `"metallic"` uses
+ * `dist/fluxaway-metallic.css`.
  */
 export declare function useDesign(): {
   design: Design;

@@ -7,6 +7,15 @@ import { PropsTable } from "./PropsTable.js";
 import { PageToc } from "./PageToc.js";
 import { categoryFor, neighborsFor } from "../../content/catalog.js";
 
+const COMPONENT_STYLESHEETS = {
+  core: "fluxaway-ui-core.css",
+  forms: "fluxaway-ui-forms.css",
+  overlay: "fluxaway-ui-overlay.css",
+  data: "fluxaway-ui-data.css",
+  nav: "fluxaway-ui-nav.css",
+  theme: "fluxaway-ui-theme.css",
+};
+
 // One page renders every reference entry — CSS, component (props), hook
 // (signature + parameters + returns), or add-on. Adding one is a content
 // descriptor, never a new page component.
@@ -22,14 +31,26 @@ export function ReferencePage({ entry }) {
   const importLine = entry.stylesheet
     ? `<link rel="stylesheet" href="/dist/${entry.module}" />`
     : `import { ${entry.imports ?? entry.name} } from ` + `"/dist/${entry.module}";`;
+  const componentStylesheet = COMPONENT_STYLESHEETS[entry.category];
+  const componentCSS = componentStylesheet
+    ? `<link rel="stylesheet" href="/dist/fluxaway-ui-base.css" />\n` +
+      `<link rel="stylesheet" href="/dist/${componentStylesheet}" />`
+    : null;
+  const setupDescription = entry.stylesheet
+    ? "Load the stylesheet before using the classes documented on this page."
+    : componentCSS
+      ? "Load the component styles, then import its browser module."
+      : "Import the API from its browser module before using the examples below.";
 
   const toc = [
+    { id: "setup", title: "Setup" },
     ...entry.demos.map((demo) => ({ id: demo.id, title: demo.title })),
     ...(entry.params?.length ? [{ id: "params", title: "Parameters" }] : []),
     ...(entry.returns?.length ? [{ id: "returns", title: "Returns" }] : []),
     ...(entry.props?.length ? [{ id: "props", title: "Props" }] : []),
     ...(entry.tables?.map((table) => ({ id: table.id, title: table.title })) ?? []),
     ...(entry.resources?.length ? [{ id: "resources", title: "Resources" }] : []),
+    ...(entry.notes?.length ? [{ id: "notes", title: "Implementation notes" }] : []),
   ];
   const category = categoryFor(entry.category);
   const { previous, next } = neighborsFor(entry.slug);
@@ -55,14 +76,40 @@ export function ReferencePage({ entry }) {
       ),
       h("p", { className: "nd-article-lead" }, entry.summary),
       h(PageToc, { variant: "mobile", items: toc }),
-      h(CodeBlock, {
-        code: importLine,
-        lang: entry.stylesheet ? "html" : "js",
-        label: entry.stylesheet ? "Stylesheet" : "Import",
-      }),
-      entry.signature
-        ? h("figure", { className: "nd-signature" }, h("code", null, entry.signature))
-        : null,
+      h(
+        "section",
+        { className: "nd-setup", id: "setup" },
+        h("h2", { className: "nd-demo-title" }, "Setup"),
+        h("p", { className: "nd-section-lead" }, setupDescription),
+        h(
+          "div",
+          { className: "nd-setup-code" },
+          componentCSS
+            ? h(CodeBlock, {
+                code: componentCSS,
+                lang: "html",
+                label: "1 · Component CSS",
+              })
+            : null,
+          h(CodeBlock, {
+            code: importLine,
+            lang: entry.stylesheet ? "html" : "js",
+            label: componentCSS
+              ? "2 · JavaScript import"
+              : entry.stylesheet
+                ? "Stylesheet"
+                : "JavaScript import",
+          }),
+        ),
+        entry.signature
+          ? h(
+              "div",
+              { className: "nd-signature-group" },
+              h("span", { className: "nd-signature-label" }, "Signature"),
+              h("figure", { className: "nd-signature" }, h("code", null, entry.signature)),
+            )
+          : null,
+      ),
       entry.demos.map((demo) => h(DemoBlock, { key: demo.id, demo })),
       h(PropsTable, { id: "params", title: "Parameters", rows: entry.params, nameHeader: "Argument" }),
       h(PropsTable, { id: "returns", title: "Returns", rows: entry.returns, nameHeader: "Key" }),
@@ -99,18 +146,31 @@ export function ReferencePage({ entry }) {
                     },
                     resource.label,
                   ),
-                  resource.description ? ` — ${resource.description}` : null,
+                  resource.description
+                    ? h("span", { className: "nd-resource-description" }, resource.description)
+                    : null,
                 ),
               ),
             ),
           )
         : null,
-      entry.notes
+      entry.notes?.length
         ? h(
             "section",
-            { className: "nd-notes" },
-            h("h2", { className: "nd-demo-title" }, "Notes"),
-            h("ul", null, entry.notes.map((note, i) => h("li", { key: i }, note))),
+            { className: "nd-notes", id: "notes" },
+            h("h2", { className: "nd-demo-title" }, "Implementation notes"),
+            h(
+              "ol",
+              null,
+              entry.notes.map((note, i) =>
+                h(
+                  "li",
+                  { key: i },
+                  h("i", { className: "bi bi-info-circle", ariaHidden: "true" }),
+                  h("span", null, note),
+                ),
+              ),
+            ),
           )
         : null,
       h(

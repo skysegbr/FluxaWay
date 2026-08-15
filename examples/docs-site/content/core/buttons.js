@@ -1,4 +1,4 @@
-import { h, Fragment } from "/dist/fluxaway.js";
+import { h, Fragment, useTheme } from "/dist/fluxaway.js";
 import { Button, IconButton } from "/dist/fluxaway-components-core.js";
 
 export const BUTTON_ENTRIES = [
@@ -58,6 +58,54 @@ export const BUTTON_ENTRIES = [
             h(Button, { variant: "outline", icon: "close", ariaLabel: "Dismiss" }),
           ),
       },
+      {
+        id: "button-local-metallic",
+        title: "Cobalt on buttons only",
+        note:
+          "Load fluxaway-metallic.css after the component CSS, then scope data-design and " +
+          "data-metal-theme to a wrapper containing only the buttons that should become Cobalt.",
+        code: `import { h, loadCSS, useTheme } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+
+await loadCSS("/dist/fluxaway-metallic.css");
+
+function CobaltButtons() {
+  const { theme } = useTheme();
+
+  return h(
+    "div",
+    {
+      className: "m-cluster",
+      dataset: {
+        design: "metallic",
+        metalTheme: "cobalt",
+        theme,
+      },
+    },
+    h(Button, { variant: "contained" }, "Deploy"),
+    h(Button, { variant: "tonal" }, "Review"),
+    h(Button, { variant: "outline" }, "Cancel"),
+  );
+}`,
+        render: () => {
+          const { theme } = useTheme();
+
+          return h(
+            "div",
+            {
+              className: "m-cluster",
+              dataset: {
+                design: "metallic",
+                metalTheme: "cobalt",
+                theme,
+              },
+            },
+            h(Button, { variant: "contained" }, "Deploy"),
+            h(Button, { variant: "tonal" }, "Review"),
+            h(Button, { variant: "outline" }, "Cancel"),
+          );
+        },
+      },
     ],
     props: [
       {
@@ -102,6 +150,7 @@ export const BUTTON_ENTRIES = [
     ],
     notes: [
       "Every unlisted prop is spread onto the underlying <button>, so name, form, value and data attributes pass straight through.",
+      "Design scoping is descendant-based. A local Metallic wrapper affects every FluxaWay component inside it, so keep only the controls that should share that material in the wrapper.",
     ],
   },
 

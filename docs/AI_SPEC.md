@@ -91,6 +91,8 @@ Consequences you must respect when writing code, tooling, or reviews:
 /dist/fluxaway-components-{core,forms,overlay,data,nav,theme}.js ← component categories (import only what you use — see §9)
 /dist/fluxaway-ui.css          ← design system CSS (required for components to look right)
 /dist/fluxaway-bootstrap.css   ← optional Bootstrap 5 visual skin (opt-in, see §9)
+/dist/fluxaway-metallic.css    ← experimental metallic visual skin (opt-in, see §9)
+/dist/fluxaway-metallic.js     ← experimental material selector hook
 /dist/fluxaway-server.js       ← server-side rendering entry (renderToString)
 /dist/fluxaway-hmr.js          ← HMR client (dev only — injected by server.py)
 /dist/fluxaway-motion.js       ← timeline ANIMATION add-on: keyframes/tweens/easings, Flash-style (useTimeline)
@@ -114,7 +116,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.22.10`.
+release tag such as `@v0.23.0`.
 
 Typical HTML entry point:
 
@@ -656,16 +658,27 @@ const { palette, palettes, setPalette, customColor, setCustomColor } = usePalett
 
 ```js
 const { design, designs, setDesign } = useDesign();
-// design: 'fluxaway' | 'bootstrap'
+// design: 'fluxaway' | 'bootstrap' | 'metallic'
 // designs: the full list, for building a picker UI
 // Standalone, same pattern as useTheme/usePalette — reads/writes
 // localStorage('fluxaway-design') and sets data-design on <html>.
 //
-// "fluxaway" (default) needs nothing beyond fluxaway-ui.css. "bootstrap" only
-// takes visual effect if dist/fluxaway-bootstrap.css is ALSO loaded — that
-// stylesheet is scoped entirely under [data-design="bootstrap"], so it's inert
-// until this hook (or a manual data-design="bootstrap" attribute) switches to it.
+// "fluxaway" (default) needs nothing beyond fluxaway-ui.css. Optional designs
+// require their companion stylesheet: fluxaway-bootstrap.css or the
+// experimental fluxaway-metallic.css. Both are fully scoped and inert until
+// this hook (or a manual data-design attribute) selects them.
 // Composes freely with useTheme and usePalette.
+```
+
+For the experimental metallic design, select its finish through the optional
+add-on. Material selection is independent of light/dark mode:
+
+```js
+import { useMetalTheme } from "/dist/fluxaway-metallic.js";
+
+const { metalTheme, metalThemes, setMetalTheme } = useMetalTheme();
+// aurum | cobalt | cobalt-aurum | inox | bronze | ferrum | black-inox
+setMetalTheme("inox"); // sets data-metal-theme and persists the selection
 ```
 
 ### `useContext` / `createContext`
@@ -1059,6 +1072,43 @@ lossless) — edit `fluxaway-ui.css`, never the `fluxaway-ui-*.css` files. Prefe
 monolith for a quick page; reach for the split on a production page that uses
 only part of the library (a core-only page drops ~114 KB → ~52 KB before
 minify/gzip).
+
+### Local design scope (for example, Cobalt buttons only)
+
+Design selectors are descendant-based. `useDesign()` switches the whole
+document by writing to `<html>`; when only one component group should use an
+optional skin, set the design attributes on a narrow wrapper instead. Load the
+normal component CSS first and the companion skin last:
+
+```html
+<link rel="stylesheet" href="/dist/fluxaway-ui-base.css">
+<link rel="stylesheet" href="/dist/fluxaway-ui-core.css">
+<link rel="stylesheet" href="/dist/fluxaway-metallic.css">
+```
+
+```js
+import { h, useTheme } from "/dist/fluxaway.js";
+import { Button } from "/dist/fluxaway-components-core.js";
+
+function CobaltActions() {
+  const { theme } = useTheme();
+
+  return h('div', {
+    className: 'm-cluster',
+    dataset: { design: 'metallic', metalTheme: 'cobalt', theme },
+  },
+    h(Button, { variant: 'contained' }, 'Deploy'),
+    h(Button, { variant: 'tonal' }, 'Review'),
+    h(Button, { variant: 'outline' }, 'Cancel'),
+  );
+}
+```
+
+The wrapper affects **every FluxaWay descendant inside it**, not only Buttons.
+Keep only the controls that should share the material inside that wrapper. Pass
+the current `theme` so local Metallic light/dark recipes follow the document;
+material selection itself remains independent. The docs-site Button reference
+is the canonical live example.
 
 ### Basic
 
@@ -1587,7 +1637,7 @@ h(ThemeToggle)  // no props required; renders sun/moon SVG icon
 h(PaletteSwitcher)  // no props required
 
 // DesignSwitcher — chip toggle, calls useDesign().setDesign()
-// Only visually meaningful if dist/fluxaway-bootstrap.css is also loaded.
+// Optional choices require their companion Bootstrap or Metallic stylesheet.
 h(DesignSwitcher)  // no props required
 
 // Sidebar nav links — CSS-only, use inside .m-sidebar
@@ -2818,6 +2868,34 @@ h('a', { href: '#/reports',
          onMouseEnter: () => import('./components/reports/Reports.js') },
   'Reports')
 ```
+
+### Docs-site reference authoring (repository contributors)
+
+`examples/docs-site` is the published documentation source. API content stays
+as descriptors under `content/`; do not create a custom page component to solve
+the presentation of one entry. `components/reference/ReferencePage.js` renders
+the common contract across all 107 entries:
+
+1. **Setup** — required CSS first, then the browser-module import (and signature
+   for hooks/add-ons).
+2. **Live examples** — the rendered component and its copyable source are the
+   same example.
+3. **API tables** — props, parameters, returns and named reference tables.
+4. **Resources** — related source and runnable examples.
+5. **Implementation notes** — constraints that would otherwise be easy to miss.
+
+Component reference Setup maps its category to
+`fluxaway-ui-base.css + fluxaway-ui-<category>.css`; this keeps CSS beside the
+component tutorial without pretending the CSS and JavaScript APIs are separate
+products. Shared tables go through `PropsTable`: real `<th scope="col">`
+headers, predictable desktop column widths, technical values that wrap without
+clipping, and labelled row cards below 680px. At 1320px and below the desktop
+TOC becomes the compact disclosure so it cannot squeeze a technical table.
+
+When changing the shared reference layout, update
+`scripts/check_docs_site.py` and run it in Chromium, Firefox and WebKit. The
+smoke test locks the setup recipe, accessible table associations, local design
+scope, responsive cards, no page overflow and the complete catalog.
 
 ---
 

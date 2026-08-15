@@ -10,8 +10,8 @@
 .nd-toc-heading {
   margin: 0 0 var(--m-space-3);
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--m-text-muted);
 }
@@ -87,8 +87,8 @@
 .nd-toc-summary-label {
   display: block;
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--m-text-muted);
 }
@@ -112,6 +112,6 @@
   margin: 0 var(--m-space-4) var(--m-space-4);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1320px) {
   .nd-toc-desktop { display: none; }
 }

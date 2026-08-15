@@ -612,8 +612,8 @@
   padding: var(--m-space-2) var(--m-space-3) var(--m-space-1);
   color: var(--m-text-muted);
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-weight: 600;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 

@@ -70,6 +70,20 @@ test("Button: maps every variant without regressing the existing classes", async
   assert(buttons[5].classList.contains("m-button-outline"), "outlined remains a compatibility alias");
 });
 
+test("FluxaWay typography: keeps interface text readable without flattening hierarchy", () => {
+  const root = cssRule(":root");
+  const body = cssRule("body");
+  const button = cssRule(".m-button");
+  const title = cssRule(".m-title");
+
+  assert(root.style.getPropertyValue("--m-font").includes("Segoe UI Variable"));
+  assertEqual(body.style.fontKerning, "normal");
+  assertEqual(body.style.fontSynthesis, "none");
+  assertEqual(button.style.fontWeight, "600", "actions use a clear interface weight");
+  assertEqual(title.style.fontWeight, "700", "titles retain a stronger hierarchy");
+  assert(parseFloat(title.style.letterSpacing) < 0, "display text keeps compact tracking");
+});
+
 test("Button outline: renders text, leading icons, DOM props and custom classes", async () => {
   const container = mountPoint();
 

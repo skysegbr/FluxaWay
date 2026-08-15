@@ -88,11 +88,14 @@ export function PaletteSwitcher({ className = "", ...props } = {}) {
   );
 }
 
-const _DESIGN_LABELS = { fluxaway: "FluxaWay", bootstrap: "Bootstrap" };
+const _DESIGN_LABELS = {
+  fluxaway: "FluxaWay",
+  bootstrap: "Bootstrap",
+  metallic: "Metallic",
+};
 
-// Switches data-design via useDesign(). Only visible if dist/fluxaway-bootstrap.css
-// (or another design stylesheet) is loaded — otherwise switching design is a
-// no-op, since "bootstrap" has nothing to style against.
+// Switches data-design via useDesign(). Optional designs only become visible
+// when their companion design stylesheet is loaded.
 export function DesignSwitcher({ className = "", ...props } = {}) {
   const { design, designs, setDesign } = useDesign();
 

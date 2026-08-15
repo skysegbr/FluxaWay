@@ -21,8 +21,8 @@
 
   /* Typography */
   --m-font:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+    "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", Inter,
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --m-font-size-xs:   0.75rem;
   --m-font-size-sm:   0.875rem;
   --m-font-size-base: 1rem;
@@ -438,7 +438,11 @@ body {
   color: var(--m-text);
   font-family: var(--m-font);
   font-size: var(--m-font-size-base);
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-synthesis: none;
   line-height: 1.5;
+  text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
@@ -901,8 +905,8 @@ video {
   margin: 0 0 var(--m-space-4);
   color: var(--m-text-muted);
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 
@@ -916,7 +920,8 @@ video {
 .m-title {
   margin: 0;
   font-size: clamp(1.5rem, 4vw, 2.25rem);
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: -0.018em;
   line-height: 1.2;
 }
 
@@ -1417,7 +1422,7 @@ video {
   gap: var(--m-space-1);
   color: var(--m-text);
   font-size: var(--m-font-size-sm);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .m-required { color: var(--m-danger); }
@@ -1430,7 +1435,7 @@ video {
 }
 
 .m-help  { color: var(--m-text-muted); }
-.m-error { color: var(--m-danger); font-weight: 700; }
+.m-error { color: var(--m-danger); font-weight: 600; }
 
 .m-field {
   min-width: 0;
@@ -1498,7 +1503,7 @@ textarea.m-field {
   background: transparent;
   color: var(--m-primary);
   font-size: var(--m-font-size-sm);
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: none;
   touch-action: manipulation;
   user-select: none;
@@ -1636,7 +1641,7 @@ textarea.m-field {
   background: var(--m-surface);
   color: var(--m-text);
   font-size: var(--m-font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
@@ -1665,7 +1670,7 @@ textarea.m-field {
   background: var(--m-primary-soft);
   color: var(--m-primary-hover);
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 /* ── Alert ─────────────────────────────────────────────── */
@@ -1915,7 +1920,8 @@ textarea.m-field {
   background: var(--m-surface-muted);
   color: var(--m-text-muted);
   font-size: var(--m-font-size-xs);
-  font-weight: 900;
+  font-weight: 600;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -2233,7 +2239,7 @@ textarea.m-field {
   background: var(--m-surface);
   color: var(--m-text);
   font-size: var(--m-font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   touch-action: manipulation;
 }
 
@@ -2323,7 +2329,7 @@ textarea.m-field {
 
 .m-switch-label {
   font-size: var(--m-font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--m-text);
 }
 
@@ -2347,7 +2353,7 @@ textarea.m-field {
   background: transparent;
   color: var(--m-text);
   font-size: var(--m-font-size-sm);
-  font-weight: 800;
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
 }
@@ -2437,7 +2443,7 @@ textarea.m-field {
   background: transparent;
   color: var(--m-text);
   font-size: var(--m-font-size-sm);
-  font-weight: 800;
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
 }
@@ -2651,7 +2657,7 @@ textarea.m-field {
   border-radius: var(--m-radius);
   color: var(--m-text-muted);
   font-size: var(--m-font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
   transition: color 120ms ease, background 120ms ease;
@@ -2770,7 +2776,7 @@ textarea.m-field {
 .m-combobox-option-selected {
   background: var(--m-primary-soft);
   color: var(--m-primary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .m-combobox-option-active {
@@ -2906,7 +2912,7 @@ textarea.m-field {
 .m-file-dropzone-label {
   margin: 0;
   font-size: var(--m-font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--m-text);
 }
 
@@ -3081,7 +3087,7 @@ textarea.m-field {
   flex: 1;
   margin: 0;
   font-size: var(--m-font-size-lg);
-  font-weight: 800;
+  font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -3127,7 +3133,7 @@ textarea.m-field {
   background: transparent;
   color: var(--m-text-muted);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
   touch-action: manipulation;
   cursor: pointer;
@@ -3170,7 +3176,7 @@ textarea.m-field {
   background: var(--m-danger);
   color: #ffffff;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3280,7 +3286,7 @@ textarea.m-field {
   color: #ffffff;
   box-shadow: var(--m-shadow-2);
   font-size: var(--m-font-size-xl);
-  font-weight: 800;
+  font-weight: 600;
   touch-action: manipulation;
   cursor: pointer;
   transition:
@@ -3854,8 +3860,8 @@ textarea.m-field {
   padding: var(--m-space-2) var(--m-space-3);
   color: var(--m-text-muted);
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-weight: 600;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 
@@ -4251,7 +4257,8 @@ textarea.m-field {
 
 .m-stat-value {
   font-size: var(--m-font-size-3xl);
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: -0.018em;
   line-height: 1.1;
   color: var(--m-text);
 }
@@ -4546,8 +4553,8 @@ textarea.m-field {
   padding: var(--m-space-2) var(--m-space-3) var(--m-space-1);
   color: var(--m-text-muted);
   font-size: var(--m-font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-weight: 600;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 

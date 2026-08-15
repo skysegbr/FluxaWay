@@ -103,6 +103,31 @@ def run(browser_type, base: str) -> list[str]:
     desktop.wait_for_function("() => document.documentElement.dataset.theme === 'light'")
     passed.append("FluxaWay logo follows the active light and dark theme")
 
+    header_design_trigger = desktop.locator("#docs-design-menu .m-menu-trigger button")
+    expect(header_design_trigger.inner_text() == "FluxaWay ▾", "header design menu lost the active label")
+    header_design_trigger.click()
+    desktop.wait_for_selector("#docs-design-menu-menu")
+    header_design_items = desktop.locator("#docs-design-menu-menu .m-menu-button")
+    expect(header_design_items.count() == 3, "header design menu does not list all designs")
+    header_design_items.nth(1).click()
+    desktop.wait_for_function("() => document.documentElement.dataset.design === 'bootstrap'")
+    expect(header_design_trigger.inner_text() == "Bootstrap ▾", "header design label did not update")
+    header_design_trigger.click()
+    desktop.locator("#docs-design-menu-menu .m-menu-button").nth(2).click()
+    desktop.wait_for_function("() => document.documentElement.dataset.design === 'metallic'")
+    finish_trigger = desktop.locator("#docs-metal-finish-menu .m-menu-trigger button")
+    expect(finish_trigger.count() == 1, "Metallic did not reveal the header finish menu")
+    finish_trigger.click()
+    desktop.wait_for_selector("#docs-metal-finish-menu-menu")
+    desktop.locator("#docs-metal-finish-menu-menu .m-menu-button").nth(1).click()
+    desktop.wait_for_function("() => document.documentElement.dataset.metalTheme === 'cobalt'")
+    expect(finish_trigger.inner_text() == "cobalt ▾", "header finish label did not update")
+    header_design_trigger.click()
+    desktop.locator("#docs-design-menu-menu .m-menu-button").nth(0).click()
+    desktop.wait_for_function("() => document.documentElement.dataset.design === 'fluxaway'")
+    expect(desktop.locator("#docs-metal-finish-menu").count() == 0, "finish menu survived FluxaWay")
+    passed.append("header design menu switches skins and scopes Metallic finishes")
+
     expected_examples = [
         "/examples/basic/",
         "/examples/complete-page/",
@@ -115,6 +140,7 @@ def run(browser_type, base: str) -> list[str]:
         "/examples/form/",
         "/examples/gallery/",
         "/examples/landing/",
+        "/examples/metallic-themes/",
         "/examples/mindmap/",
         "/examples/minified/",
         "/examples/mobile/",
@@ -142,7 +168,7 @@ def run(browser_type, base: str) -> list[str]:
     desktop.keyboard.press("Escape")
     expect(desktop.locator("#docs-examples-menu").count() == 0, "Escape did not close examples")
     expect(examples_trigger.evaluate("(button) => document.activeElement === button"), "focus not restored")
-    passed.append("examples menu matches all 20 build links and supports keyboard navigation")
+    passed.append("examples menu matches all 21 build links and supports keyboard navigation")
 
     desktop.locator('.nd-sidebar-link[href="#/getting-started"]').click()
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Getting started'")
@@ -247,6 +273,43 @@ def run(browser_type, base: str) -> list[str]:
     desktop.keyboard.press("Enter")
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'Button'")
     expect(desktop.locator("h1").inner_text() == "Button", "search did not navigate to Button")
+    component_css = desktop.locator(".nd-code").first
+    expect(
+        component_css.locator(".nd-code-lang").inner_text() == "1 · Component CSS",
+        "Button docs did not place its CSS beside the component import",
+    )
+    component_css_text = component_css.locator(".nd-code-pre").inner_text()
+    expect("fluxaway-ui-base.css" in component_css_text, "Button docs omitted base CSS")
+    expect("fluxaway-ui-core.css" in component_css_text, "Button docs omitted core CSS")
+    cobalt_scope = desktop.locator('#button-local-metallic [data-design="metallic"]')
+    expect(cobalt_scope.count() == 1, "Button docs omitted the local Cobalt scope")
+    expect(cobalt_scope.locator(".m-button").count() == 3, "local Cobalt demo is incomplete")
+    expect(
+        cobalt_scope.evaluate(
+            "element => getComputedStyle(element).getPropertyValue('--mx-material-name').trim() === 'cobalt'"
+        ),
+        "local button wrapper did not resolve the Cobalt material",
+    )
+    expect(
+        desktop.locator("html").get_attribute("data-design") == "fluxaway",
+        "local Cobalt buttons leaked into the page design",
+    )
+    props_table = desktop.locator("#props .nd-props-table")
+    expect(desktop.locator("#setup .nd-code").count() == 2, "Button setup is not a two-step recipe")
+    expect(props_table.locator("colgroup col").count() == 4, "props table lost its column sizing")
+    expect(
+        props_table.locator('thead th[scope="col"]').count() == 4,
+        "props table headers are not associated with their columns",
+    )
+    expect(
+        props_table.get_attribute("aria-labelledby") == "props-title",
+        "props table is not named by its section heading",
+    )
+    expect(
+        props_table.locator('tbody td[data-label="Description"]').count() == 7,
+        "props table rows are missing their responsive labels",
+    )
+    passed.append("component docs colocate setup, readable API tables and local Cobalt scope")
 
     desktop.keyboard.press("Control+k")
     desktop.wait_for_selector('[role="dialog"] input[role="combobox"]')
@@ -264,6 +327,29 @@ def run(browser_type, base: str) -> list[str]:
     desktop.wait_for_function("() => document.querySelector('h1')?.textContent === 'AI & security'")
     expect(desktop.locator("h1").inner_text() == "AI & security", "search omitted AI_SPEC guide")
     passed.append("Ctrl/Cmd+K search navigates to component, CSS and AI references")
+
+    open_route(desktop, base, "/components/design-switcher", "DesignSwitcher")
+    expect(
+        desktop.locator("#design-switcher-menu").count() == 1,
+        "DesignSwitcher docs omitted the compact menu composition",
+    )
+    design_menu_trigger = desktop.locator('#design-menu-demo [aria-label^="Design:"]')
+    expect(design_menu_trigger.inner_text() == "Design: FluxaWay ▾", "design menu lost the active label")
+    design_menu_trigger.click()
+    desktop.wait_for_selector("#design-menu-demo-menu")
+    design_items = desktop.locator("#design-menu-demo-menu .m-menu-button")
+    expect(design_items.count() == 3, "design menu does not list all three designs")
+    design_items.nth(1).click()
+    desktop.wait_for_function("() => document.documentElement.dataset.design === 'bootstrap'")
+    expect(design_menu_trigger.inner_text() == "Design: Bootstrap ▾", "design menu did not update its label")
+    design_menu_trigger.click()
+    desktop.locator("#design-menu-demo-menu .m-menu-button").nth(2).click()
+    desktop.wait_for_function("() => document.documentElement.dataset.design === 'metallic'")
+    expect(
+        desktop.locator("#metal-finish-menu-demo").count() == 1,
+        "Metallic selection did not reveal its dependent finish menu",
+    )
+    passed.append("DesignSwitcher documents the compact menu composition")
 
     open_route(desktop, base, "/components/code-editor", "CodeEditor")
     desktop.wait_for_selector(".CodeMirror")
@@ -389,6 +475,10 @@ def run(browser_type, base: str) -> list[str]:
     mobile.wait_for_timeout(250)
     expect(menu.get_attribute("aria-expanded") == "true", "mobile Navbar did not expand")
     expect(
+        mobile.locator("#docs-design-menu .m-menu-trigger button").count() == 1,
+        "mobile Navbar omitted the compact design menu",
+    )
+    expect(
         mobile.locator(".nd-shell").bounding_box()["y"] > shell_top,
         "inline Navbar did not push the docs content down",
     )
@@ -438,6 +528,24 @@ def run(browser_type, base: str) -> list[str]:
         "mobile TOC caused overflow",
     )
     passed.append("mobile TOC and route focus are accessible")
+
+    open_route(mobile, base, "/components/button", "Button")
+    mobile.locator("#props").scroll_into_view_if_needed()
+    expect(
+        mobile.locator("#props .nd-props-table td").first.evaluate(
+            "(cell) => getComputedStyle(cell).display === 'grid'"
+        ),
+        "props rows did not become labelled cards on mobile",
+    )
+    expect(
+        mobile.locator('#props td[data-label="Prop"]').count() == 7,
+        "mobile props cards lost their property labels",
+    )
+    expect(
+        mobile.evaluate("document.documentElement.scrollWidth <= innerWidth"),
+        "mobile props cards caused page overflow",
+    )
+    passed.append("API tables become labelled cards on mobile")
 
     mobile.set_viewport_size({"width": 1024, "height": 768})
     mobile.wait_for_selector(".nd-sidebar:not(.nd-sidebar-mobile)")

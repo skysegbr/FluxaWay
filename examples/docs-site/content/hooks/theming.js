@@ -114,12 +114,12 @@ export const THEMING_HOOK_ENTRIES = [
     module: "fluxaway.js",
     signature: "const { design, designs, setDesign } = useDesign()",
     summary:
-      "Swaps the visual skin between the native FluxaWay look and a Bootstrap 5 one, by setting " +
-      "data-design on <html>.",
+      "Swaps the visual skin between native FluxaWay, Bootstrap 5 and experimental Metallic, " +
+      "by setting data-design on <html>.",
     demos: [
       {
         id: "use-design-basic",
-        title: "Two skins, one markup",
+        title: "Three skins, one markup",
         stack: true,
         render: () => {
           const { design, designs, setDesign } = useDesign();
@@ -141,13 +141,13 @@ export const THEMING_HOOK_ENTRIES = [
       },
     ],
     returns: [
-      { name: "design", type: '"fluxaway" | "bootstrap"', description: "Active skin." },
+      { name: "design", type: '"fluxaway" | "bootstrap" | "metallic"', description: "Active skin." },
       { name: "designs", type: "string[]", description: "The full list." },
       { name: "setDesign", type: "(name) => void", description: "Switches skin and persists the choice." },
     ],
     notes: [
-      '"bootstrap" only takes visual effect when dist/fluxaway-bootstrap.css is also loaded. That stylesheet is scoped under [data-design="bootstrap"], so it is inert until then.',
-      "Composes freely with useTheme and usePalette — bootstrap skin, dark theme and the rose palette all apply at once.",
+      "Bootstrap and Metallic only take visual effect when their companion CSS is loaded. Both stylesheets are inert until their data-design value is selected.",
+      "Both compose with useTheme. Metallic owns its material colors through the optional useMetalTheme() add-on instead of usePalette().",
     ],
   },
 ];

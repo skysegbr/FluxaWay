@@ -13,7 +13,7 @@ import {
 export function PageToc({ items, variant = "desktop" }) {
   const [active, setActive] = useState(items[0]?.id ?? null);
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const compactViewport = useMediaQuery("(max-width: 1200px)");
+  const compactViewport = useMediaQuery("(max-width: 1320px)");
   const detailsRef = useRef(null);
   const ids = items.map((item) => item.id).join(",");
   const visible = variant === "mobile" ? compactViewport : !compactViewport;

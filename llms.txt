@@ -43,7 +43,7 @@ Key differences from React (common analysis mistakes):
   Stable fetchable URL:
   https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
 - [AI_QA.md](docs/AI_QA.md): QA runbook for an AI (or human) running a full
-  quality pass — Python-only gates, the ~300-test browser suite across three
+  quality pass — Python-only gates, the ~400-test browser suite across three
   engines, and AI-executable visual/example checks. Read this before running
   QA on FluxaWay (it is NOT for generating app code — that's AI_SPEC.md).
 - [AI_QA_SCENARIOS.md](docs/AI_QA_SCENARIOS.md): the ID'd catalog of every test
@@ -52,6 +52,17 @@ Key differences from React (common analysis mistakes):
   per-item cases with expected results.
 - [README.md](README.md): human-oriented overview and component tables.
 - [CHANGELOG.md](CHANGELOG.md): versioned change history.
+
+Repository documentation memory: `examples/docs-site/` is the published source,
+and its 107 API entries are descriptors rendered by one shared `ReferencePage`.
+Preserve the order Setup (component CSS + JS import) → live examples → API
+tables → resources → implementation notes. `PropsTable` owns accessible desktop
+columns and labelled mobile cards; do not hand-build a second table layout in a
+content entry. A local optional-design wrapper is descendant-scoped: use
+`data-design="metallic"`, `data-metal-theme`, and the current `data-theme` on the
+narrow component group instead of `useDesign()` when only that group should be
+Metallic. Validate docs changes with `scripts/check_docs_site.py` on all three
+browser engines.
 
 ## Files
 
@@ -88,6 +99,13 @@ Key differences from React (common analysis mistakes):
   color tweens, discrete `set` steps, `stagger()` cascades; elements bind
   via `tl.track(name)` refs. A visual authoring IDE lives in
   `examples/motion-editor`. Full reference: docs/AI_SPEC.md §10.
+- `dist/fluxaway-bootstrap.css`: optional Bootstrap-compatible design skin,
+  activated with `useDesign().setDesign("bootstrap")`.
+- `dist/fluxaway-metallic.js|css`: EXPERIMENTAL metallic design skin with
+  Aurum, Cobalt, Cobalt Au, Inox, Bronze, Ferrum and Black Inox finishes.
+  Activate `useDesign().setDesign("metallic")`, then select the finish with
+  `useMetalTheme()`. Light/dark remains independent. Evaluate it across real
+  page types before treating it as an official FluxaWay brand theme.
 - `tests/`: browser test suite (`python3 scripts/run_browser_tests.py`)
 - `scripts/bundle.py`: OPTIONAL production bundler (dev is always no-build) —
   one JS + one CSS standalone folder; pure-Python engine or esbuild built

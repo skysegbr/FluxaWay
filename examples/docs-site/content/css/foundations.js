@@ -37,7 +37,7 @@ export const CSS_FOUNDATION_ENTRIES = [
     notes: [
       "Do not load fluxaway-ui.css together with the split files; that duplicates the same rules.",
       "Every readable stylesheet has a .min.css twin with the same behavior.",
-      "fluxaway-bootstrap.css is an optional skin and should load after the FluxaWay files.",
+      "fluxaway-bootstrap.css and experimental fluxaway-metallic.css are optional skins and should load after the FluxaWay files.",
     ],
   }),
 
