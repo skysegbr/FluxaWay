@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.24.0] - 2026-08-15
+
+### Added
+- `Button.effect` and `BUTTON_EFFECTS` now expose Reflection, Edge, Split,
+  Aperture, Charge, Corners, Pulse, Phase and Conductor as official component
+  API. Every design receives token-driven motion, while Metallic supplies an
+  exact Conductor contour recipe for each of its seven finishes.
+- An original `examples/inox-landing/` product landing page with two generated
+  and optimized stainless-steel images, a shutter reveal, inspection scanner,
+  interactive three-state assembly and distinct linear motion language.
+
+### Changed
+- The Components and Metallic button catalogs now drive their interaction
+  studies through the official `effect` prop instead of example-local CSS;
+  the Alloy circuit study is renamed Conductor.
+- The AI generation specification now requires seamless loop closure (including
+  stagger-adjusted duration), shared proportional layout geometry and
+  browser-measured section framing for Next-style landing navigation.
+
 ## [0.23.0] - 2026-08-15
 
 ### Added

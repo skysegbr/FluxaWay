@@ -206,6 +206,21 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   hand-rolled rAF loop); presentations/decks → `ZoomStage` (`fluxaway-zoom`),
   not scroll-snap sections; node graphs → `PipelineCanvas`; embedded code
   editor → `FullCodeEditor` (needs the local `assets/codemirror/`, no CDN).
+- Button interaction studies are public component API, not example-local CSS.
+  Use `Button.effect` with one of `BUTTON_EFFECTS` (`reflection`, `edge`,
+  `split`, `aperture`, `charge`, `corners`, `pulse`, `phase`, `conductor`)
+  instead of copying their selectors into an app. Metallic themes specialize
+  the same effects through material tokens; `conductor` has an exact recipe
+  for every finish.
+- A repeating Motion timeline must return every animated property to its
+  initial visual state before wrapping. With `stagger()`, explicit duration
+  must include the last track's offset: `endMs + (count - 1) * eachMs`.
+  Otherwise the loop or its final staggered items jump at the seam.
+- Screen-by-screen landing navigation is a measured layout contract. Reuse a
+  shared shell and proportional geometry; after a real Next/anchor navigation,
+  verify the destination's primary content and following transition fit the
+  intended desktop viewport. Keep natural vertical flow on mobile. See
+  `docs/AI_SPEC.md` §3 and §10 and `examples/inox-landing`.
 
 ---
 

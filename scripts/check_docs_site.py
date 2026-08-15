@@ -307,7 +307,7 @@ def run(browser_type, base: str) -> list[str]:
         "props table is not named by its section heading",
     )
     expect(
-        props_table.locator('tbody td[data-label="Description"]').count() == 7,
+        props_table.locator('tbody td[data-label="Description"]').count() == 8,
         "props table rows are missing their responsive labels",
     )
     passed.append("component docs colocate setup, readable API tables and local Cobalt scope")
@@ -539,7 +539,7 @@ def run(browser_type, base: str) -> list[str]:
         "props rows did not become labelled cards on mobile",
     )
     expect(
-        mobile.locator('#props td[data-label="Prop"]').count() == 7,
+        mobile.locator('#props td[data-label="Prop"]').count() == 8,
         "mobile props cards lost their property labels",
     )
     expect(
