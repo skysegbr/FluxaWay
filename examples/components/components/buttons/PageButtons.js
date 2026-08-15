@@ -1,64 +1,55 @@
 import { h } from "/dist/fluxaway.js";
-import { Button } from "/dist/fluxaway-components-core.js";
+import { BUTTON_EFFECTS, Button } from "/dist/fluxaway-components-core.js";
 
 const icon = (name) => h("i", { className: `bi ${name}` });
 
-const BUTTON_EFFECTS = [
-  {
-    id: "reflection",
+const BUTTON_EFFECT_DETAILS = {
+  reflection: {
     name: "Reflection",
     label: "Reflect",
     description: "O reflexo atravessa a superfície e refaz o caminho ao retirar o cursor.",
   },
-  {
-    id: "edge",
+  edge: {
     name: "Edge runner",
     label: "Route",
     description: "A corrente percorre somente o contorno, sem preencher o botão.",
   },
-  {
-    id: "split",
+  split: {
     name: "Split current",
     label: "Merge",
     description: "Dois metais entram por lados opostos e se encontram no centro.",
   },
-  {
-    id: "aperture",
+  aperture: {
     name: "Aperture",
     label: "Open",
     description: "O material ativo se abre radialmente a partir do centro.",
   },
-  {
-    id: "charge",
+  charge: {
     name: "Surface charge",
     label: "Charge",
     description: "Uma linha de energia sobe até carregar toda a superfície.",
   },
-  {
-    id: "corners",
+  corners: {
     name: "Corner trace",
     label: "Lock",
     description: "Cantos opostos se estendem e formam um quadro de precisão.",
   },
-  {
-    id: "pulse",
+  pulse: {
     name: "Signal echo",
     label: "Confirm",
     description: "Um pulso de confirmação se expande além do contorno.",
   },
-  {
-    id: "phase",
+  phase: {
     name: "Phase shift",
     label: "Shift",
     description: "A superfície transita entre os dois metais em uma fase diagonal.",
   },
-  {
-    id: "circuit",
-    name: "Alloy circuit",
+  conductor: {
+    name: "Conductor",
     label: "Conduct",
     description: "O reflexo metálico percorre o circuito do contorno.",
   },
-];
+};
 
 export function PageButtons() {
   return h(
@@ -99,7 +90,7 @@ export function PageButtons() {
       BUTTON_EFFECTS.map((effect, index) =>
         h(
           "article",
-          { key: effect.id, className: "button-effect-card" },
+          { key: effect, className: "button-effect-card" },
           h(
             "div",
             { className: "button-effect-preview" },
@@ -107,14 +98,14 @@ export function PageButtons() {
               Button,
               {
                 variant: "outline",
-                className: `button-effect-button button-effect-${effect.id}`,
+                effect,
               },
-              h("span", { className: "button-effect-label" }, effect.label),
+              BUTTON_EFFECT_DETAILS[effect].label,
             ),
           ),
           h("span", { className: "button-effect-index" }, String(index + 1).padStart(2, "0")),
-          h("h4", null, effect.name),
-          h("p", null, effect.description),
+          h("h4", null, BUTTON_EFFECT_DETAILS[effect].name),
+          h("p", null, BUTTON_EFFECT_DETAILS[effect].description),
         ),
       ),
     ),

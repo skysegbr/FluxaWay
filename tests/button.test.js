@@ -1,5 +1,5 @@
 import { h, render } from "../dist/fluxaway.js";
-import { Button } from "../dist/fluxaway-components-core.js";
+import { BUTTON_EFFECTS, Button } from "../dist/fluxaway-components-core.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 function cssRule(selector) {
@@ -68,6 +68,52 @@ test("Button: maps every variant without regressing the existing classes", async
   assert(buttons[3].classList.contains("m-button-danger"));
   assert(buttons[4].classList.contains("m-button-outline"));
   assert(buttons[5].classList.contains("m-button-outline"), "outlined remains a compatibility alias");
+});
+
+test("Button: exposes nine official interaction effects through one prop", async () => {
+  const container = mountPoint();
+
+  render(
+    () => h(
+      "div",
+      null,
+      BUTTON_EFFECTS.map((effect) =>
+        h(Button, { key: effect, variant: "outline", effect }, effect),
+      ),
+      h(Button, { effect: "toString" }, "fallback"),
+    ),
+    container,
+  );
+  await flush();
+
+  assertEqual(BUTTON_EFFECTS.length, 9);
+  BUTTON_EFFECTS.forEach((effect) => {
+    const button = container.querySelector(`.m-button-effect-${effect}`);
+    assert(button, `${effect} receives its public effect class`);
+    assert(button.classList.contains("m-button-effect"));
+    assertEqual(button.querySelector(".m-button-label").textContent, effect);
+  });
+  assert(
+    !container.lastElementChild.classList.contains("m-button-effect"),
+    "unknown effects are ignored without leaking a class",
+  );
+});
+
+test("Button effects keep their surface out of the generic hover cascade", () => {
+  [
+    ".m-button:hover:not(.m-button-effect)",
+    ".m-button-contained:hover:not(.m-button-effect)",
+    ".m-button-tonal:hover:not(.m-button-effect)",
+    ".m-button-danger:hover:not(.m-button-effect)",
+    ".m-button-outline:hover:not(:disabled):not(.m-button-effect)",
+  ].forEach((selector) => assert(cssRule(selector), `${selector} must exclude effect buttons`));
+
+  const phase = cssRule(".m-button.m-button-effect-phase");
+  assert(phase.style.backgroundPosition, "Phase defines a resting gradient position");
+  assert(
+    phase.style.transition.includes("background-position"),
+    "Phase must animate its gradient instead of replacing it on hover",
+  );
 });
 
 test("FluxaWay typography: keeps interface text readable without flattening hierarchy", () => {
@@ -234,7 +280,7 @@ test("Button: icon-only usage requires and exposes an accessible name", async ()
 test("Button outline: focus, hover and disabled rules use FluxaWay theme tokens", () => {
   const focus = cssRule(".m-button:focus-visible");
   const outlineFocus = cssRule(".m-button-outline:focus-visible");
-  const hover = cssRule(".m-button-outline:hover:not(:disabled)");
+  const hover = cssRule(".m-button-outline:hover:not(:disabled):not(.m-button-effect)");
   const disabled = cssRule(".m-button-outline:disabled");
 
   assert(focus, "focus-visible rule exists");

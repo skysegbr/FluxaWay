@@ -18,11 +18,7 @@ export function CommandHero({ theme }) {
         { className: "mt-hero-actions" },
         h(Button, { variant: "contained" }, theme.action),
         h(Button, { variant: "outline" }, theme.secondaryAction),
-        h(
-          Button,
-          { variant: "outline", className: "mt-button-flow" },
-          h("span", { className: "mt-button-flow-label" }, theme.flowAction),
-        ),
+        h(Button, { variant: "outline", effect: "reflection" }, theme.flowAction),
       ),
     ),
     h(

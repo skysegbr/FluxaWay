@@ -1515,7 +1515,7 @@ textarea.m-field {
   outline-offset: 2px;
 }
 
-.m-button:hover { background: var(--m-primary-soft); }
+.m-button:hover:not(.m-button-effect) { background: var(--m-primary-soft); }
 
 .m-button-contained {
   border-color: var(--m-primary);
@@ -1523,7 +1523,7 @@ textarea.m-field {
   color: #ffffff;
 }
 
-.m-button-contained:hover {
+.m-button-contained:hover:not(.m-button-effect) {
   border-color: var(--m-primary-hover);
   background: var(--m-primary-hover);
 }
@@ -1534,7 +1534,7 @@ textarea.m-field {
   color: var(--m-primary-hover);
 }
 
-.m-button-tonal:hover {
+.m-button-tonal:hover:not(.m-button-effect) {
   filter: brightness(0.94);
 }
 
@@ -1544,7 +1544,7 @@ textarea.m-field {
   color: #ffffff;
 }
 
-.m-button-danger:hover {
+.m-button-danger:hover:not(.m-button-effect) {
   border-color: var(--m-danger-hover);
   background: var(--m-danger-hover);
 }
@@ -1563,7 +1563,7 @@ textarea.m-field {
   outline-color: color-mix(in srgb, var(--m-focus) 50%, var(--m-text));
 }
 
-.m-button-outline:hover:not(:disabled) {
+.m-button-outline:hover:not(:disabled):not(.m-button-effect) {
   border-color: var(--m-primary);
   background: var(--m-surface-raised);
   color: var(--m-text);
@@ -1622,6 +1622,350 @@ textarea.m-field {
 }
 
 .m-button-full { width: 100%; }
+
+/* Official interaction signatures. The effect prop adds these classes; the
+ * active design can refine the material tokens without replacing the motion. */
+.m-button-effect {
+  --m-button-effect-metal: var(--mx-metal, var(--m-primary));
+  --m-button-effect-metal-bright: var(--mx-metal-bright, var(--m-primary-soft));
+  --m-button-effect-accent: var(--mx-accent, var(--m-secondary));
+  --m-button-effect-accent-bright: var(--mx-accent-bright, var(--m-primary));
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--m-button-effect-metal) 56%, var(--m-border));
+  background: color-mix(in srgb, var(--m-surface-soft) 88%, var(--m-button-effect-metal));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset;
+  color: var(--m-text);
+  transition:
+    border-color 420ms ease,
+    background-color 420ms ease,
+    color 260ms ease,
+    box-shadow 420ms ease,
+    transform 180ms ease;
+}
+
+.m-button-label,
+.m-button-effect .m-button-icon {
+  position: relative;
+  z-index: 3;
+}
+
+/* 01 — a reflection crosses the surface and retraces on pointer exit. */
+.m-button-effect-reflection::before {
+  position: absolute;
+  top: -35%;
+  bottom: -35%;
+  left: -82%;
+  z-index: 1;
+  width: 70%;
+  background: linear-gradient(
+    105deg,
+    transparent 14%,
+    color-mix(in srgb, var(--m-button-effect-metal) 55%, transparent) 36%,
+    color-mix(in srgb, var(--m-button-effect-accent-bright) 76%, transparent) 56%,
+    rgb(255 255 255 / 0.36) 65%,
+    transparent 86%
+  );
+  content: "";
+  pointer-events: none;
+  transition: transform 640ms cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+.m-button.m-button-effect-reflection:hover:not(:disabled),
+.m-button.m-button-effect-reflection:focus-visible:not(:disabled) {
+  border-color: var(--m-button-effect-metal);
+  background: color-mix(in srgb, var(--m-surface-raised) 80%, var(--m-primary-soft));
+  color: var(--m-text);
+}
+
+.m-button-effect-reflection:hover::before,
+.m-button-effect-reflection:focus-visible::before { transform: translateX(275%); }
+
+/* 02 — energy remains constrained to the frame. */
+.m-button.m-button-effect-edge {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--m-surface-soft), var(--m-surface-soft)) padding-box,
+    linear-gradient(100deg, transparent 8%, var(--m-button-effect-accent) 43%, var(--m-button-effect-metal) 57%, transparent 92%) border-box;
+  background-position: 0 0, 100% 0;
+  background-size: 100% 100%, 260% 100%;
+  transition: background-position 680ms cubic-bezier(0.22, 0.8, 0.26, 1), color 260ms ease;
+}
+
+.m-button.m-button-effect-edge:hover:not(:disabled),
+.m-button.m-button-effect-edge:focus-visible:not(:disabled) {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--m-surface-raised), var(--m-surface-raised)) padding-box,
+    linear-gradient(100deg, transparent 8%, var(--m-button-effect-accent) 43%, var(--m-button-effect-metal) 57%, transparent 92%) border-box;
+  background-position: 0 0, 0 0;
+  background-size: 100% 100%, 260% 100%;
+  color: var(--m-text);
+}
+
+/* 03 — two material fields lock at the center. */
+.m-button-effect-split::before,
+.m-button-effect-split::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 51%;
+  content: "";
+  transition: transform 480ms cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+.m-button-effect-split::before {
+  left: 0;
+  background: color-mix(in srgb, var(--m-button-effect-accent) 72%, #111827);
+  transform: translateX(-104%);
+}
+
+.m-button-effect-split::after {
+  right: 0;
+  background: color-mix(in srgb, var(--m-button-effect-metal) 72%, #111827);
+  transform: translateX(104%);
+}
+
+.m-button.m-button-effect-split:hover:not(:disabled),
+.m-button.m-button-effect-split:focus-visible:not(:disabled) {
+  border-color: color-mix(in srgb, var(--m-button-effect-accent) 50%, var(--m-button-effect-metal));
+  background: var(--m-surface-soft);
+  color: #ffffff;
+}
+
+.m-button-effect-split:hover::before,
+.m-button-effect-split:hover::after,
+.m-button-effect-split:focus-visible::before,
+.m-button-effect-split:focus-visible::after { transform: translateX(0); }
+
+/* 04 — a circular material aperture expands from the center. */
+.m-button-effect-aperture::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--m-primary) 62%, #111827);
+  content: "";
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 520ms cubic-bezier(0.2, 0.78, 0.24, 1);
+}
+
+.m-button.m-button-effect-aperture:hover:not(:disabled),
+.m-button.m-button-effect-aperture:focus-visible:not(:disabled) {
+  border-color: var(--m-primary);
+  background: var(--m-surface-soft);
+  color: #ffffff;
+}
+
+.m-button-effect-aperture:hover::before,
+.m-button-effect-aperture:focus-visible::before {
+  transform: translate(-50%, -50%) scale(13);
+}
+
+/* 05 — a thin rail charges the full surface. */
+.m-button-effect-charge::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(110deg, var(--m-button-effect-accent), var(--m-button-effect-metal));
+  content: "";
+  transform: scaleY(0.06);
+  transform-origin: bottom;
+  transition: transform 460ms cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+.m-button.m-button-effect-charge:hover:not(:disabled),
+.m-button.m-button-effect-charge:focus-visible:not(:disabled) {
+  border-color: var(--m-button-effect-metal);
+  background: var(--m-surface-soft);
+  color: #ffffff;
+}
+
+.m-button-effect-charge:hover::before,
+.m-button-effect-charge:focus-visible::before { transform: scaleY(1); }
+
+/* 06 — opposing corners grow into a targeting frame. */
+.m-button-effect-corners::before,
+.m-button-effect-corners::after {
+  position: absolute;
+  z-index: 1;
+  width: 16px;
+  height: 12px;
+  content: "";
+  transition: width 420ms ease, height 420ms ease;
+}
+
+.m-button-effect-corners::before {
+  top: 4px;
+  left: 4px;
+  border-top: 2px solid var(--m-button-effect-accent);
+  border-left: 2px solid var(--m-button-effect-accent);
+}
+
+.m-button-effect-corners::after {
+  right: 4px;
+  bottom: 4px;
+  border-right: 2px solid var(--m-button-effect-metal);
+  border-bottom: 2px solid var(--m-button-effect-metal);
+}
+
+.m-button.m-button-effect-corners:hover:not(:disabled),
+.m-button.m-button-effect-corners:focus-visible:not(:disabled) {
+  border-color: color-mix(in srgb, var(--m-button-effect-accent) 40%, var(--m-button-effect-metal));
+  background: var(--m-surface-raised);
+  color: var(--m-text);
+}
+
+.m-button-effect-corners:hover::before,
+.m-button-effect-corners:hover::after,
+.m-button-effect-corners:focus-visible::before,
+.m-button-effect-corners:focus-visible::after {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+}
+
+/* 07 — an acknowledgement pulse escapes the frame. */
+.m-button.m-button-effect-pulse { overflow: visible; }
+
+.m-button-effect-pulse::before {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border: 1px solid var(--m-button-effect-accent);
+  border-radius: inherit;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.m-button.m-button-effect-pulse:hover:not(:disabled),
+.m-button.m-button-effect-pulse:focus-visible:not(:disabled) {
+  border-color: var(--m-button-effect-accent);
+  background: color-mix(in srgb, var(--m-surface-raised) 78%, var(--m-primary-soft));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--m-button-effect-accent) 18%, transparent);
+  color: var(--m-text);
+}
+
+.m-button-effect-pulse:hover::before,
+.m-button-effect-pulse:focus-visible::before {
+  animation: m-button-signal-echo 820ms ease-out;
+}
+
+/* 08 — the dominant metal changes across a diagonal phase. */
+.m-button.m-button-effect-phase {
+  border-color: color-mix(in srgb, var(--m-button-effect-metal) 62%, var(--m-border));
+  background: linear-gradient(
+    112deg,
+    color-mix(in srgb, var(--m-button-effect-metal) 76%, #111827) 0 38%,
+    color-mix(in srgb, var(--m-button-effect-accent-bright) 86%, #111827) 48%,
+    color-mix(in srgb, var(--m-button-effect-accent) 76%, #111827) 58% 100%
+  );
+  background-position: 100% 0;
+  background-size: 240% 100%;
+  color: #ffffff;
+  transition: background-position 620ms cubic-bezier(0.22, 0.8, 0.26, 1), border-color 320ms ease;
+}
+
+.m-button.m-button-effect-phase:hover:not(:disabled),
+.m-button.m-button-effect-phase:focus-visible:not(:disabled) {
+  border-color: var(--m-button-effect-accent);
+  background-position: 0 0;
+  color: #ffffff;
+}
+
+/* 09 — a material reflection travels through the contour. */
+.m-button.m-button-effect-conductor {
+  --m-button-conductor-shadow: color-mix(in srgb, var(--m-button-effect-metal) 45%, #020304);
+  --m-button-conductor-deep: var(--m-button-effect-metal);
+  --m-button-conductor-base: var(--m-button-effect-metal);
+  --m-button-conductor-bright: var(--m-button-effect-metal-bright);
+  --m-button-conductor-glint: #ffffff;
+  --m-button-conductor-highlight: var(--m-button-effect-metal-bright);
+  --m-button-conductor-accent: var(--m-button-effect-accent-bright);
+  --m-button-conductor-accent-deep: var(--m-button-effect-accent);
+  --m-button-conductor-tail: var(--m-button-effect-metal-bright);
+  --m-button-conductor-end: var(--m-button-effect-metal);
+  --m-button-conductor-gradient: linear-gradient(
+    110deg,
+    var(--m-button-conductor-shadow) 0%,
+    var(--m-button-conductor-deep) 14%,
+    var(--m-button-conductor-base) 27%,
+    var(--m-button-conductor-bright) 38%,
+    var(--m-button-conductor-glint) 44%,
+    var(--m-button-conductor-highlight) 49%,
+    var(--m-button-conductor-accent) 58%,
+    var(--m-button-conductor-accent-deep) 72%,
+    var(--m-button-conductor-tail) 88%,
+    var(--m-button-conductor-end) 100%
+  );
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--m-surface-soft), var(--m-surface-soft)) padding-box,
+    var(--m-button-conductor-gradient) border-box;
+  background-position: 0 0, 100% 0;
+  background-size: 100% 100%, 240% 100%;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset;
+  color: var(--m-text);
+  transition: background-position 720ms cubic-bezier(0.22, 0.8, 0.26, 1), box-shadow 360ms ease;
+}
+
+.m-button-effect-conductor::after {
+  position: absolute;
+  inset: 2px;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--m-button-effect-metal-bright) 22%, transparent);
+  border-radius: calc(var(--m-radius) - 2px);
+  content: "";
+  pointer-events: none;
+}
+
+.m-button.m-button-effect-conductor:hover:not(:disabled),
+.m-button.m-button-effect-conductor:focus-visible:not(:disabled) {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--m-surface-raised), var(--m-surface-raised)) padding-box,
+    var(--m-button-conductor-gradient) border-box;
+  background-position: 0 0, 0 0;
+  background-size: 100% 100%, 240% 100%;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.16) inset,
+    0 0 18px color-mix(in srgb, var(--m-button-effect-metal-bright) 22%, transparent);
+  color: var(--m-text);
+  transition:
+    background-position 980ms cubic-bezier(0.45, 0, 0.25, 1),
+    box-shadow 360ms ease,
+    color 260ms ease;
+}
+
+.m-button-effect:disabled::before,
+.m-button-effect:disabled::after { display: none; }
+
+.m-button.m-button-effect:disabled {
+  border-color: var(--m-border);
+  background: var(--m-surface-muted);
+  box-shadow: none;
+  color: var(--m-text-muted);
+  cursor: not-allowed;
+}
+
+@keyframes m-button-signal-echo {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.16, 1.34); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-button-effect,
+  .m-button-effect::before,
+  .m-button-effect::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
 
 .m-icon-button {
   width: 44px;

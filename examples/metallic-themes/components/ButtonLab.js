@@ -1,6 +1,6 @@
 import { h } from "/dist/fluxaway.js";
-import { Button, Card } from "/dist/fluxaway-components-core.js";
-import { BUTTON_EFFECTS } from "../data.js";
+import { BUTTON_EFFECTS, Button, Card } from "/dist/fluxaway-components-core.js";
+import { BUTTON_EFFECT_DETAILS } from "../data.js";
 
 export function ButtonLab() {
   return h(
@@ -22,10 +22,11 @@ export function ButtonLab() {
     h(
       "div",
       { className: "mt-button-lab-grid" },
-      BUTTON_EFFECTS.map((effect, index) =>
-        h(
+      BUTTON_EFFECTS.map((effect, index) => {
+        const details = BUTTON_EFFECT_DETAILS[effect];
+        return h(
           Card,
-          { key: effect.id, className: "mt-button-effect" },
+          { key: effect, className: "mt-button-effect" },
           h(
             "div",
             { className: "mt-button-preview" },
@@ -33,22 +34,16 @@ export function ButtonLab() {
               Button,
               {
                 variant: "outline",
-                className: `mt-fx-button mt-fx-${effect.id} ${effect.id === "reflection" ? "mt-button-flow" : ""}`,
+                effect,
               },
-              h(
-                "span",
-                {
-                  className: `mt-fx-label ${effect.id === "reflection" ? "mt-button-flow-label" : ""}`,
-                },
-                effect.label,
-              ),
+              details.label,
             ),
           ),
           h("span", { className: "mt-button-effect-index" }, String(index + 1).padStart(2, "0")),
-          h("h3", null, effect.name),
-          h("p", null, effect.description),
-        ),
-      ),
+          h("h3", null, details.name),
+          h("p", null, details.description),
+        );
+      }),
     ),
   );
 }

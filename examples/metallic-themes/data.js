@@ -173,62 +173,53 @@ export const ACTIVITY = [
   { time: "09:31", title: "Integrity verified", detail: "No drift detected" },
 ];
 
-export const BUTTON_EFFECTS = [
-  {
-    id: "reflection",
+export const BUTTON_EFFECT_DETAILS = {
+  reflection: {
     name: "Reflection",
     label: "Reflect",
     description: "A specular band crosses the surface and retraces its path on exit.",
   },
-  {
-    id: "edge",
+  edge: {
     name: "Edge runner",
     label: "Route",
     description: "A current travels through the frame without filling the control.",
   },
-  {
-    id: "split",
+  split: {
     name: "Split current",
     label: "Merge",
     description: "Two material fields enter from opposite sides and lock together.",
   },
-  {
-    id: "aperture",
+  aperture: {
     name: "Aperture",
     label: "Open",
     description: "The active material opens radially from the center of the button.",
   },
-  {
-    id: "charge",
+  charge: {
     name: "Surface charge",
     label: "Charge",
     description: "A resting energy rail rises to charge the entire surface.",
   },
-  {
-    id: "corners",
+  corners: {
     name: "Corner trace",
     label: "Lock",
     description: "Opposing corners extend into a precise acquisition frame.",
   },
-  {
-    id: "pulse",
+  pulse: {
     name: "Signal echo",
     label: "Confirm",
     description: "A single confirmation echo expands beyond the control boundary.",
   },
-  {
-    id: "phase",
+  phase: {
     name: "Phase shift",
     label: "Shift",
     description: "The control transitions between both metals through a diagonal phase.",
   },
-  {
-    id: "circuit",
-    name: "Alloy circuit",
+  conductor: {
+    name: "Conductor",
     label: "Conduct",
     description: "A theme-derived metallic reflection travels through the contour while the core stays quiet.",
   },
-];
+};
 
 export const SEMANTIC_BUTTONS = [
   { id: "text", label: "Text", variant: "text" }, { id: "contained", label: "Contained", variant: "contained" },
