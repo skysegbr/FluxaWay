@@ -1,8 +1,9 @@
-import { h, render, useHead, useToast, useRouter } from "/dist/fluxaway.js";
+import { h, render, useDesign, useHead, useToast, useRouter } from "/dist/fluxaway.js";
+import { useMetalTheme } from "/dist/fluxaway-metallic.js";
 import { Button } from "/dist/fluxaway-components-core.js";
 import { ToastStack, Menu } from "/dist/fluxaway-components-overlay.js";
 import { Navbar } from "/dist/fluxaway-components-nav.js";
-import { ThemeToggle, PaletteSwitcher, DesignSwitcher } from "/dist/fluxaway-components-theme.js";
+import { ThemeToggle, PaletteSwitcher } from "/dist/fluxaway-components-theme.js";
 
 import { PageSwitches }    from "./components/switches/PageSwitches.js";
 import { PageCombobox }    from "./components/PageCombobox.js";
@@ -38,9 +39,17 @@ const EXAMPLE_PAGES = [
   { key: "widgets",    label: "Forms & Widgets",       path: "/widgets",    icon: "bi-magic" },
 ];
 
+const DESIGN_LABELS = {
+  fluxaway: "FluxaWay",
+  bootstrap: "Bootstrap",
+  metallic: "Metallic",
+};
+
 function App() {
   const { path, navigate } = useRouter();
   const { toasts, toast }  = useToast();
+  const { design, designs, setDesign } = useDesign();
+  const { metalTheme, metalThemes, setMetalTheme } = useMetalTheme();
   const current = EXAMPLE_PAGES.find((p) => p.path === path) ?? EXAMPLE_PAGES[0];
 
   // Browser tab follows the selected page.
@@ -64,7 +73,35 @@ function App() {
             onClick: () => navigate(p.path),
           })),
         }),
-        h(DesignSwitcher, { key: "design" }),
+        h(Menu, {
+          key: "design",
+          id: "design-menu",
+          align: "right",
+          trigger: h(
+            Button,
+            {
+              variant: "outline",
+              ariaLabel: `Design: ${DESIGN_LABELS[design] ?? design}`,
+            },
+            `Design: ${DESIGN_LABELS[design] ?? design} ▾`,
+          ),
+          items: designs.map((name) => ({
+            key: name,
+            label: DESIGN_LABELS[name] ?? name,
+            icon: name === design ? "✓" : undefined,
+            onClick: () => setDesign(name),
+          })),
+        }),
+        design === "metallic" && h(Menu, {
+          key: "metal-theme",
+          trigger: h(Button, { variant: "outline" }, `${metalTheme} ▾`),
+          align: "right",
+          items: metalThemes.map((name) => ({
+            key: name,
+            label: name,
+            onClick: () => setMetalTheme(name),
+          })),
+        }),
         h(PaletteSwitcher, { key: "palette" }),
         h(ThemeToggle, { key: "theme" }),
       ],

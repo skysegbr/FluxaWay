@@ -1,0 +1,105 @@
+.mt-brief {
+  display: grid;
+  gap: var(--m-space-8);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background:
+    linear-gradient(105deg, color-mix(in srgb, var(--mt-metal) 8%, transparent), transparent 42%),
+    var(--m-surface);
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
+}
+
+.mt-brief-copy > p {
+  margin: 0 0 var(--m-space-3);
+  color: var(--mt-metal);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+
+.mt-brief-copy h2 {
+  max-width: 30rem;
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 570;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.mt-brief-copy ul {
+  display: grid;
+  gap: var(--m-space-2);
+  margin: var(--m-space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mt-brief-copy li {
+  display: flex;
+  gap: var(--m-space-3);
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+}
+
+.mt-brief-copy li span {
+  color: var(--mt-accent);
+  font-size: var(--m-font-size-xs);
+  font-weight: 900;
+}
+
+.mt-swatches {
+  display: grid;
+  gap: var(--m-space-3);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.mt-swatch {
+  display: grid;
+  min-width: 0;
+  align-content: end;
+  gap: 2px;
+}
+
+.mt-swatch-color {
+  position: relative;
+  display: block;
+  min-height: 8.5rem;
+  margin-bottom: var(--m-space-3);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: var(--m-radius);
+  box-shadow: var(--m-shadow-1);
+}
+
+.mt-swatch-color::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(118deg, rgb(255 255 255 / 0.38), transparent 34%, rgb(0 0 0 / 0.13));
+  content: "";
+}
+
+.mt-swatch strong {
+  overflow: hidden;
+  font-size: var(--m-font-size-xs);
+  text-overflow: ellipsis;
+}
+
+.mt-swatch code {
+  color: var(--m-text-muted);
+  font-size: 0.66rem;
+}
+
+@media (max-width: 52rem) {
+  .mt-brief {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 34rem) {
+  .mt-swatches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mt-swatch-color {
+    min-height: 6rem;
+  }
+}

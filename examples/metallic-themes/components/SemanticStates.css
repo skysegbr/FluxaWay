@@ -1,0 +1,298 @@
+.mt-semantic-states {
+  display: grid;
+  gap: var(--m-space-6);
+}
+
+.mt-semantic-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--m-space-8);
+}
+
+.mt-semantic-heading > div > p,
+.mt-semantic-panel-heading > span {
+  margin: 0 0 var(--m-space-2);
+  color: var(--mt-metal);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+
+.mt-semantic-heading h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 570;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.mt-semantic-intro {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+  line-height: 1.65;
+  text-align: right;
+}
+
+.mt-semantic-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.mt-semantic-panel::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(36%, 13rem);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mt-metal), var(--mt-accent));
+  content: "";
+}
+
+.mt-semantic-panel-heading h3 {
+  margin: 0;
+  font-size: var(--m-font-size-xl);
+  letter-spacing: -0.025em;
+}
+
+.mt-semantic-panel-heading p {
+  max-width: 46rem;
+  margin: var(--m-space-2) 0 0;
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+  line-height: 1.55;
+}
+
+.mt-semantic-buttons {
+  display: grid;
+  gap: var(--m-space-5);
+}
+
+.mt-semantic-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: var(--m-space-3);
+}
+
+.mt-semantic-button {
+  min-height: 46px;
+}
+
+.mt-semantic-buttons .m-button-danger {
+  background-image: linear-gradient(115deg, transparent, rgb(255 255 255 / 0.18) 48%, transparent 52%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.26) inset, 0 8px 18px color-mix(in srgb, var(--m-danger) 20%, transparent);
+}
+
+.mt-semantic-grid {
+  display: grid;
+  align-items: stretch;
+  gap: var(--m-space-4);
+  grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.85fr);
+}
+
+.mt-semantic-alert-panel,
+.mt-semantic-validation {
+  display: grid;
+  align-content: start;
+  gap: var(--m-space-5);
+}
+
+.mt-semantic-alert-grid {
+  display: grid;
+  gap: var(--m-space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mt-semantic-alert {
+  --mt-state: var(--m-info);
+
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--mt-state) 58%, var(--m-border));
+  background:
+    linear-gradient(
+      112deg,
+      transparent 0 35%,
+      color-mix(in srgb, var(--mt-metal-bright) 18%, transparent) 45%,
+      transparent 56%
+    ),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--m-surface-soft) 91%, var(--mt-state)),
+      color-mix(in srgb, var(--m-surface) 92%, var(--mt-metal))
+    );
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.12) inset,
+    0 10px 24px color-mix(in srgb, var(--mt-state) 7%, transparent);
+  color: var(--mt-state);
+}
+
+.mt-semantic-alert::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, currentColor, var(--mt-metal-bright), currentColor);
+  content: "";
+  opacity: 0.74;
+}
+
+.mt-semantic-alert::after {
+  position: absolute;
+  top: var(--m-space-4);
+  bottom: var(--m-space-4);
+  left: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--mt-metal-bright), var(--mt-state), var(--mt-state));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--mt-state) 36%, transparent);
+  content: "";
+}
+
+.mt-semantic-alert.m-alert-success {
+  --mt-state: var(--m-success);
+}
+
+.mt-semantic-alert.m-alert-warning {
+  --mt-state: var(--m-warning);
+}
+
+.mt-semantic-alert.m-alert-danger {
+  --mt-state: var(--m-danger);
+}
+
+.mt-semantic-alert .m-alert-body {
+  display: grid;
+  gap: var(--m-space-1);
+}
+
+.mt-semantic-alert .m-alert-body strong {
+  color: color-mix(in srgb, var(--mt-state) 74%, var(--m-text));
+  font-size: var(--m-font-size-sm);
+}
+
+.mt-semantic-alert .m-alert-body span {
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+}
+
+.mt-semantic-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-2);
+}
+
+.mt-semantic-badge {
+  --mt-state: var(--m-info);
+  --mt-state-soft: var(--m-info-soft);
+
+  display: inline-flex;
+  gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--mt-state) 46%, var(--m-border));
+  background:
+    linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.14) 48%, transparent 58%),
+    color-mix(in srgb, var(--m-surface-soft) 88%, var(--mt-metal));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.14) inset;
+  color: color-mix(in srgb, var(--mt-state) 72%, var(--m-text));
+}
+
+.mt-semantic-badge > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mt-state);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--mt-state) 52%, transparent);
+}
+
+.mt-semantic-badge-success {
+  --mt-state: var(--m-success);
+  --mt-state-soft: var(--m-success-soft);
+}
+
+.mt-semantic-badge-warning {
+  --mt-state: var(--m-warning);
+  --mt-state-soft: var(--m-warning-soft);
+}
+
+.mt-semantic-badge-danger {
+  --mt-state: var(--m-danger);
+  --mt-state-soft: var(--m-danger-soft);
+}
+
+.mt-semantic-field .m-field {
+  background-image: linear-gradient(90deg, transparent 70%, color-mix(in srgb, var(--mt-metal) 12%, transparent));
+}
+
+.mt-semantic-field .m-field-error {
+  border-color: color-mix(in srgb, var(--m-danger) 72%, var(--mt-metal));
+  background:
+    linear-gradient(110deg, transparent 48%, color-mix(in srgb, var(--mt-metal-bright) 10%, transparent) 55%, transparent 64%),
+    color-mix(in srgb, var(--m-surface-soft) 96%, var(--m-danger));
+  box-shadow:
+    3px 0 0 var(--m-danger) inset,
+    0 1px 0 rgb(255 255 255 / 0.1) inset;
+}
+
+.mt-semantic-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--m-space-3);
+  padding: var(--m-space-3);
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-surface-muted);
+}
+
+.mt-semantic-rule > span {
+  color: var(--mt-accent);
+}
+
+.mt-semantic-rule p {
+  margin: 0;
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+  line-height: 1.5;
+}
+
+.mt-semantic-rule strong {
+  color: var(--m-text);
+}
+
+@media (max-width: 62rem) {
+  .mt-semantic-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 42rem) {
+  .mt-semantic-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--m-space-3);
+  }
+
+  .mt-semantic-intro {
+    text-align: left;
+  }
+
+  .mt-semantic-button-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mt-semantic-button {
+    width: 100%;
+  }
+
+  .mt-semantic-button:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .mt-semantic-alert-grid {
+    grid-template-columns: 1fr;
+  }
+}

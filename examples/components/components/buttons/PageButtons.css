@@ -46,3 +46,513 @@
   align-items: center;
   gap: var(--m-space-3);
 }
+
+/* Metallic interaction studies. These stay in the component catalog so each
+ * motion can be evaluated against every finish before becoming framework API. */
+
+.button-effect-grid {
+  --button-fx-metal: var(--mx-metal, var(--m-primary));
+  --button-fx-metal-bright: var(--mx-metal-bright, var(--m-primary-soft));
+  --button-fx-accent: var(--mx-accent, var(--m-secondary));
+  --button-fx-accent-bright: var(--mx-accent-bright, var(--m-primary));
+  display: grid;
+  gap: var(--m-space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.button-effect-card {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-lg);
+  background: var(--m-surface);
+}
+
+.button-effect-preview {
+  display: grid;
+  min-height: 7rem;
+  padding: var(--m-space-5);
+  place-items: center;
+  border-bottom: 1px solid var(--m-border);
+  background:
+    linear-gradient(color-mix(in srgb, var(--m-border) 34%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--m-border) 34%, transparent) 1px, transparent 1px),
+    var(--m-surface-muted);
+  background-size: 16px 16px;
+}
+
+.button-effect-card > :not(.button-effect-preview) {
+  margin-inline: var(--m-space-4);
+}
+
+.button-effect-index {
+  margin-top: var(--m-space-3);
+  color: var(--button-fx-accent);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.button-effect-card h4 {
+  margin-block: var(--m-space-1) 0;
+  color: var(--m-text);
+  font-size: var(--m-font-size-sm);
+}
+
+.button-effect-card > p {
+  margin-block: var(--m-space-1) var(--m-space-4);
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+  line-height: 1.5;
+}
+
+.button-catalog .button-effect-button {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 52px;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--button-fx-metal) 56%, var(--m-border));
+  background: color-mix(in srgb, var(--m-surface-soft) 88%, var(--button-fx-metal));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset;
+  color: var(--m-text);
+  transition:
+    border-color 420ms ease,
+    background-color 420ms ease,
+    color 260ms ease,
+    box-shadow 420ms ease,
+    transform 180ms ease;
+}
+
+.button-effect-label {
+  position: relative;
+  z-index: 3;
+}
+
+/* 01 — a reflection crosses the surface and retraces on pointer exit. */
+.button-effect-reflection::before {
+  position: absolute;
+  top: -35%;
+  bottom: -35%;
+  left: -82%;
+  z-index: 1;
+  width: 70%;
+  background: linear-gradient(
+    105deg,
+    transparent 14%,
+    color-mix(in srgb, var(--button-fx-metal) 55%, transparent) 36%,
+    color-mix(in srgb, var(--button-fx-accent-bright) 76%, transparent) 56%,
+    rgb(255 255 255 / 0.36) 65%,
+    transparent 86%
+  );
+  content: "";
+  pointer-events: none;
+  transition: transform 640ms cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+.button-catalog .button-effect-button.button-effect-reflection:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-reflection:focus-visible {
+  border-color: var(--button-fx-metal);
+  background: color-mix(in srgb, var(--m-surface-raised) 80%, var(--m-primary-soft));
+  color: var(--m-text);
+}
+
+.button-effect-reflection:hover::before,
+.button-effect-reflection:focus-visible::before {
+  transform: translateX(275%);
+}
+
+/* 02 — energy remains constrained to the frame. */
+.button-catalog .button-effect-button.button-effect-edge {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--m-surface-soft), var(--m-surface-soft)) padding-box,
+    linear-gradient(100deg, transparent 8%, var(--button-fx-accent) 43%, var(--button-fx-metal) 57%, transparent 92%) border-box;
+  background-position: 0 0, 100% 0;
+  background-size: 100% 100%, 260% 100%;
+  transition: background-position 680ms cubic-bezier(0.22, 0.8, 0.26, 1), color 260ms ease;
+}
+
+.button-catalog .button-effect-button.button-effect-edge:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-edge:focus-visible {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--m-surface-raised), var(--m-surface-raised)) padding-box,
+    linear-gradient(100deg, transparent 8%, var(--button-fx-accent) 43%, var(--button-fx-metal) 57%, transparent 92%) border-box;
+  background-position: 0 0, 0 0;
+  background-size: 100% 100%, 260% 100%;
+  color: var(--m-text);
+}
+
+/* 03 — two material fields lock at the center. */
+.button-effect-split::before,
+.button-effect-split::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 51%;
+  content: "";
+  transition: transform 480ms cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+.button-effect-split::before {
+  left: 0;
+  background: color-mix(in srgb, var(--button-fx-accent) 72%, #111827);
+  transform: translateX(-104%);
+}
+
+.button-effect-split::after {
+  right: 0;
+  background: color-mix(in srgb, var(--button-fx-metal) 72%, #111827);
+  transform: translateX(104%);
+}
+
+.button-catalog .button-effect-button.button-effect-split:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-split:focus-visible {
+  border-color: color-mix(in srgb, var(--button-fx-accent) 50%, var(--button-fx-metal));
+  background: var(--m-surface-soft);
+  color: #ffffff;
+}
+
+.button-effect-split:hover::before,
+.button-effect-split:hover::after,
+.button-effect-split:focus-visible::before,
+.button-effect-split:focus-visible::after {
+  transform: translateX(0);
+}
+
+/* 04 — a circular material aperture expands from the center. */
+.button-effect-aperture::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--m-primary) 62%, #111827);
+  content: "";
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 520ms cubic-bezier(0.2, 0.78, 0.24, 1);
+}
+
+.button-catalog .button-effect-button.button-effect-aperture:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-aperture:focus-visible {
+  border-color: var(--m-primary);
+  background: var(--m-surface-soft);
+  color: #ffffff;
+}
+
+.button-effect-aperture:hover::before,
+.button-effect-aperture:focus-visible::before {
+  transform: translate(-50%, -50%) scale(13);
+}
+
+/* 05 — a thin rail charges the full surface. */
+.button-effect-charge::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(110deg, var(--button-fx-accent), var(--button-fx-metal));
+  content: "";
+  transform: scaleY(0.06);
+  transform-origin: bottom;
+  transition: transform 460ms cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+.button-catalog .button-effect-button.button-effect-charge:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-charge:focus-visible {
+  border-color: var(--button-fx-metal);
+  background: var(--m-surface-soft);
+  color: #ffffff;
+}
+
+.button-effect-charge:hover::before,
+.button-effect-charge:focus-visible::before {
+  transform: scaleY(1);
+}
+
+/* 06 — opposing corners grow into a targeting frame. */
+.button-effect-corners::before,
+.button-effect-corners::after {
+  position: absolute;
+  z-index: 1;
+  width: 16px;
+  height: 12px;
+  content: "";
+  transition: width 420ms ease, height 420ms ease;
+}
+
+.button-effect-corners::before {
+  top: 4px;
+  left: 4px;
+  border-top: 2px solid var(--button-fx-accent);
+  border-left: 2px solid var(--button-fx-accent);
+}
+
+.button-effect-corners::after {
+  right: 4px;
+  bottom: 4px;
+  border-right: 2px solid var(--button-fx-metal);
+  border-bottom: 2px solid var(--button-fx-metal);
+}
+
+.button-catalog .button-effect-button.button-effect-corners:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-corners:focus-visible {
+  border-color: color-mix(in srgb, var(--button-fx-accent) 40%, var(--button-fx-metal));
+  background: var(--m-surface-raised);
+  color: var(--m-text);
+}
+
+.button-effect-corners:hover::before,
+.button-effect-corners:hover::after,
+.button-effect-corners:focus-visible::before,
+.button-effect-corners:focus-visible::after {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+}
+
+/* 07 — an acknowledgement pulse escapes the frame. */
+.button-catalog .button-effect-button.button-effect-pulse {
+  overflow: visible;
+}
+
+.button-effect-pulse::before {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border: 1px solid var(--button-fx-accent);
+  border-radius: inherit;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.button-catalog .button-effect-button.button-effect-pulse:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-pulse:focus-visible {
+  border-color: var(--button-fx-accent);
+  background: color-mix(in srgb, var(--m-surface-raised) 78%, var(--m-primary-soft));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--button-fx-accent) 18%, transparent);
+  color: var(--m-text);
+}
+
+.button-effect-pulse:hover::before,
+.button-effect-pulse:focus-visible::before {
+  animation: button-signal-echo 820ms ease-out;
+}
+
+/* 08 — the dominant metal changes across a diagonal phase. */
+.button-catalog .button-effect-button.button-effect-phase {
+  border-color: color-mix(in srgb, var(--button-fx-metal) 62%, var(--m-border));
+  background: linear-gradient(
+    112deg,
+    color-mix(in srgb, var(--button-fx-metal) 76%, #111827) 0 38%,
+    color-mix(in srgb, var(--button-fx-accent-bright) 86%, #111827) 48%,
+    color-mix(in srgb, var(--button-fx-accent) 76%, #111827) 58% 100%
+  );
+  background-position: 100% 0;
+  background-size: 240% 100%;
+  color: #ffffff;
+  transition: background-position 620ms cubic-bezier(0.22, 0.8, 0.26, 1), border-color 320ms ease;
+}
+
+.button-catalog .button-effect-button.button-effect-phase:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-phase:focus-visible {
+  border-color: var(--button-fx-accent);
+  background: linear-gradient(
+    112deg,
+    color-mix(in srgb, var(--button-fx-metal) 76%, #111827) 0 38%,
+    color-mix(in srgb, var(--button-fx-accent-bright) 86%, #111827) 48%,
+    color-mix(in srgb, var(--button-fx-accent) 76%, #111827) 58% 100%
+  );
+  background-position: 0 0;
+  background-size: 240% 100%;
+  color: #ffffff;
+}
+
+/* 09 — the active alloy is visible only through the contour. */
+.button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: color-mix(in srgb, var(--button-fx-metal) 45%, #020304);
+  --button-circuit-deep: var(--button-fx-metal);
+  --button-circuit-base: var(--button-fx-metal);
+  --button-circuit-bright: var(--button-fx-metal-bright);
+  --button-circuit-glint: #ffffff;
+  --button-circuit-highlight: var(--button-fx-metal-bright);
+  --button-circuit-accent: var(--button-fx-accent-bright);
+  --button-circuit-accent-deep: var(--button-fx-accent);
+  --button-circuit-tail: var(--button-fx-metal-bright);
+  --button-circuit-end: var(--button-fx-metal);
+  --button-circuit-gradient: linear-gradient(
+    110deg,
+    var(--button-circuit-shadow) 0%,
+    var(--button-circuit-deep) 14%,
+    var(--button-circuit-base) 27%,
+    var(--button-circuit-bright) 38%,
+    var(--button-circuit-glint) 44%,
+    var(--button-circuit-highlight) 49%,
+    var(--button-circuit-accent) 58%,
+    var(--button-circuit-accent-deep) 72%,
+    var(--button-circuit-tail) 88%,
+    var(--button-circuit-end) 100%
+  );
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--m-surface-soft), var(--m-surface-soft)) padding-box,
+    var(--button-circuit-gradient) border-box;
+  background-position: 0 0, 100% 0;
+  background-size: 100% 100%, 240% 100%;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset;
+  color: var(--m-text);
+  transition: background-position 720ms cubic-bezier(0.22, 0.8, 0.26, 1), box-shadow 360ms ease;
+}
+
+.button-effect-circuit::after {
+  position: absolute;
+  inset: 2px;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--button-fx-metal-bright) 22%, transparent);
+  border-radius: calc(var(--m-radius) - 2px);
+  content: "";
+  pointer-events: none;
+}
+
+.button-catalog .button-effect-button.button-effect-circuit:hover:not(:disabled),
+.button-catalog .button-effect-button.button-effect-circuit:focus-visible {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--m-surface-raised), var(--m-surface-raised)) padding-box,
+    var(--button-circuit-gradient) border-box;
+  background-position: 0 0, 0 0;
+  background-size: 100% 100%, 240% 100%;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.16) inset, 0 0 18px color-mix(in srgb, var(--button-fx-metal-bright) 22%, transparent);
+  color: var(--m-text);
+  transition:
+    background-position 980ms cubic-bezier(0.45, 0, 0.25, 1),
+    box-shadow 360ms ease,
+    color 260ms ease;
+}
+
+/* The Metallic finishes use the exact alloy recipes from metallic-themes.
+ * FluxaWay and Bootstrap intentionally retain the token-driven fallback. */
+[data-design="metallic"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #5c3500;
+  --button-circuit-deep: #8f5700;
+  --button-circuit-base: #c58a12;
+  --button-circuit-bright: #f3c746;
+  --button-circuit-glint: #fff8d6;
+  --button-circuit-highlight: #fff1a6;
+  --button-circuit-accent: #c58a12;
+  --button-circuit-accent-deep: #5c3500;
+  --button-circuit-tail: #f3c746;
+  --button-circuit-end: #8f5700;
+}
+
+[data-design="metallic"][data-metal-theme="cobalt"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #07111f;
+  --button-circuit-deep: #173e79;
+  --button-circuit-base: #3169b8;
+  --button-circuit-bright: #8eb6ec;
+  --button-circuit-glint: #f3f7ff;
+  --button-circuit-highlight: #f0a3aa;
+  --button-circuit-accent: #d45b67;
+  --button-circuit-accent-deep: #7b2230;
+  --button-circuit-tail: #6d9edc;
+  --button-circuit-end: #173e79;
+}
+
+[data-design="metallic"][data-metal-theme="cobalt-aurum"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #102033;
+  --button-circuit-deep: #294a68;
+  --button-circuit-base: #426b91;
+  --button-circuit-bright: #8babc7;
+  --button-circuit-glint: #fff8d6;
+  --button-circuit-highlight: #fff1a6;
+  --button-circuit-accent: #f3c746;
+  --button-circuit-accent-deep: #8f5700;
+  --button-circuit-tail: #c58a12;
+  --button-circuit-end: #426b91;
+}
+
+[data-design="metallic"][data-metal-theme="inox"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #1a242b;
+  --button-circuit-deep: #52616b;
+  --button-circuit-base: #8d9ba4;
+  --button-circuit-bright: #c9d3d9;
+  --button-circuit-glint: #ffffff;
+  --button-circuit-highlight: #e7eef2;
+  --button-circuit-accent: #7b96a7;
+  --button-circuit-accent-deep: #354c5a;
+  --button-circuit-tail: #b7c3ca;
+  --button-circuit-end: #52616b;
+}
+
+[data-design="metallic"][data-metal-theme="bronze"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #32190d;
+  --button-circuit-deep: #6d371b;
+  --button-circuit-base: #a7622e;
+  --button-circuit-bright: #e0a56d;
+  --button-circuit-glint: #ffe3b8;
+  --button-circuit-highlight: #efbd82;
+  --button-circuit-accent: #76998d;
+  --button-circuit-accent-deep: #365e55;
+  --button-circuit-tail: #b9763f;
+  --button-circuit-end: #6d371b;
+}
+
+[data-design="metallic"][data-metal-theme="ferrum"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #111416;
+  --button-circuit-deep: #30383c;
+  --button-circuit-base: #68747a;
+  --button-circuit-bright: #aab1b4;
+  --button-circuit-glint: #e7e5e1;
+  --button-circuit-highlight: #e6a074;
+  --button-circuit-accent: #b95228;
+  --button-circuit-accent-deep: #642612;
+  --button-circuit-tail: #7c3720;
+  --button-circuit-end: #252c30;
+}
+
+[data-design="metallic"][data-metal-theme="black-inox"] .button-catalog .button-effect-button.button-effect-circuit {
+  --button-circuit-shadow: #020304;
+  --button-circuit-deep: #121619;
+  --button-circuit-base: #38434a;
+  --button-circuit-bright: #8d9ba3;
+  --button-circuit-glint: #ffffff;
+  --button-circuit-highlight: #dce4e8;
+  --button-circuit-accent: #252c30;
+  --button-circuit-accent-deep: #07090a;
+  --button-circuit-tail: #66757d;
+  --button-circuit-end: #121619;
+}
+
+@keyframes button-signal-echo {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.16, 1.34); }
+}
+
+@media (max-width: 56rem) {
+  .button-effect-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 36rem) {
+  .button-catalog-section {
+    padding: var(--m-space-4);
+  }
+
+  .button-effect-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-catalog .button-effect-button,
+  .button-catalog .button-effect-button::before,
+  .button-catalog .button-effect-button::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}

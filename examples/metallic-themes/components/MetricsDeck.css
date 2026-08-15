@@ -1,0 +1,71 @@
+.mt-metrics {
+  display: grid;
+  gap: var(--m-space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mt-metric {
+  position: relative;
+  display: grid;
+  min-height: 11.5rem;
+  overflow: hidden;
+  align-content: end;
+}
+
+.mt-metric::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 34%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mt-accent));
+  content: "";
+}
+
+.mt-metric-code {
+  position: absolute;
+  top: var(--m-space-4);
+  right: var(--m-space-4);
+  color: color-mix(in srgb, var(--mt-metal) 70%, var(--m-text-muted));
+  font-size: var(--m-font-size-xs);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.mt-metric-label {
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mt-metric-value {
+  margin-top: var(--m-space-2);
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.mt-metric-delta {
+  width: fit-content;
+  margin-top: var(--m-space-3);
+  color: var(--m-success);
+  font-size: var(--m-font-size-xs);
+  font-weight: 800;
+}
+
+.mt-metric-delta.is-down {
+  color: var(--mt-metal);
+}
+
+.mt-app[data-metal-model="cobalt"] .mt-metric-2::after {
+  background: linear-gradient(90deg, transparent, var(--mt-signal));
+}
+
+@media (max-width: 44rem) {
+  .mt-metrics {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,59 @@
+@import "./components/ThemeHeader.css";
+@import "./components/CommandHero.css";
+@import "./components/MetricsDeck.css";
+@import "./components/OperationsPanel.css";
+@import "./components/SemanticStates.css";
+@import "./components/ButtonLab.css";
+@import "./components/ThemeBrief.css";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--m-font);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mt-app {
+  --mt-accent: var(--mx-accent);
+  --mt-accent-bright: var(--mx-accent-bright);
+  --mt-metal: var(--mx-metal);
+  --mt-metal-bright: var(--mx-metal-bright);
+  --mt-signal: var(--mx-signal);
+  --mt-on-primary: var(--mx-on-primary);
+  --mt-grid: var(--mx-grid);
+  --mt-black-inox-core: var(--mx-black-inox-core, #242a2e);
+
+  min-height: 100vh;
+  overflow: clip;
+  color: var(--m-text);
+  transition: color var(--m-transition-base);
+}
+
+.mt-main {
+  display: grid;
+  gap: var(--m-space-8);
+  padding-block: clamp(2rem, 5vw, 5rem);
+}
+
+.mt-footer {
+  display: flex;
+  justify-content: center;
+  gap: var(--m-space-2);
+  padding: var(--m-space-6);
+  border-top: 1px solid var(--m-border);
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-xs);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.mt-footer span {
+  color: var(--mt-accent);
+}
