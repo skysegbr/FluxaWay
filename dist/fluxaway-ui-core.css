@@ -520,6 +520,66 @@ textarea.m-field {
   border-color: var(--m-danger);
 }
 
+/* The open <select> list is browser-painted, not page CSS. Classic popups
+   honor only option background/color (the selection highlight stays
+   UA-owned); engines with customizable-select support opt in below so the
+   whole picker uses the tokens. Touch devices keep the native wheel/sheet
+   picker on purpose — hence the any-pointer gate. */
+
+select.m-field option,
+select.m-field optgroup {
+  background: var(--m-surface);
+  color: var(--m-text);
+}
+
+select.m-field option:disabled {
+  color: var(--m-text-muted);
+}
+
+@supports (appearance: base-select) {
+  @media (any-pointer: fine) {
+    select.m-field,
+    select.m-field::picker(select) {
+      appearance: base-select;
+    }
+
+    /* base-select turns the trigger into a plain flex button; recenter it. */
+    select.m-field {
+      align-items: center;
+    }
+
+    select.m-field::picker(select) {
+      margin-block: var(--m-space-1);
+      padding: var(--m-space-1);
+      border: 1px solid var(--m-border);
+      border-radius: var(--m-radius);
+      background: var(--m-surface);
+      color: var(--m-text);
+      box-shadow: var(--m-shadow-2);
+    }
+
+    select.m-field option {
+      padding: 10px 12px;
+      border-radius: var(--m-radius-sm);
+    }
+
+    select.m-field option:hover,
+    select.m-field option:focus-visible {
+      background: var(--m-surface-muted);
+    }
+
+    select.m-field option:focus-visible {
+      outline: 2px solid var(--m-focus);
+      outline-offset: -2px;
+    }
+
+    select.m-field option:checked {
+      background: var(--m-primary-soft);
+      font-weight: 600;
+    }
+  }
+}
+
 .m-checkbox {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
