@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.24.1] - 2026-08-17
+
+### Fixed
+- The native `<select>` dropdown no longer falls back to browser default
+  colors on dark themes. Options are tinted with the surface/text tokens in
+  every engine, and on Chromium and WebKit with a fine pointer the stylesheet
+  opts into the customizable select (`appearance: base-select` +
+  `::picker(select)`) so the whole picker follows the design tokens — border,
+  radius, shadow, hover and a `--m-primary-soft` checked row. Firefox and
+  touch devices keep the native picker.
+
 ## [0.24.0] - 2026-08-15
 
 ### Added

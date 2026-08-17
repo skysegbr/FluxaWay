@@ -116,7 +116,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.24.0`.
+release tag such as `@v0.24.1`.
 
 Typical HTML entry point:
 
@@ -1454,6 +1454,12 @@ h(Select, {
   disabled: false,
   error: '',
 })
+// The dropdown body is token-styled out of the box. On engines with
+// customizable-select support (Chromium, WebKit) and a fine pointer, the
+// stylesheet opts into `appearance: base-select` so the whole picker uses
+// --m-surface/--m-border/--m-radius plus a --m-primary-soft checked row.
+// Firefox and touch devices keep the native picker with tinted options.
+// Do not re-style the picker per app — the tokens already theme it.
 
 // Checkbox
 h(Checkbox, {
