@@ -1672,9 +1672,12 @@ h(Tabs, {
   items: [
     { value: 'overview', label: 'Overview' },
     { value: 'settings', label: 'Settings' },
-    { value: 'logs',     label: 'Logs' },
+    { value: 'logs',     label: 'Logs', disabled: true },   // optional
   ],
+  // className: 'm-tabs-pills',   // optional — filled "pill" style instead of underline
 })
+// Tabs renders ONLY the horizontal tab strip (it is the role="tablist" element);
+// the strip scrolls sideways when it does not fit. Put each TabPanel after it.
 // TabPanel — renders children only when active
 h(TabPanel, { id: 'overview', activeId: activeTab },
   h('p', null, 'Overview content')

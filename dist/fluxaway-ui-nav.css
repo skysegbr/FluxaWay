@@ -544,27 +544,32 @@
 
 /* ── Tabs ────────────────────────────────────────────────────────────────────── */
 
-.m-tabs { display: flex; flex-direction: column; }
-
-.m-tabs-list {
+/*
+ * Tabs renders the tab strip only — .m-tabs IS the role="tablist" element and the
+ * .m-tab buttons are its direct children; panels are separate TabPanel nodes.
+ * The baseline is an inset shadow, not a border: overflow-x clips at the padding
+ * box, which would cut off an indicator pulled over a real border with a
+ * negative margin. The tab's own border-bottom paints over it instead.
+ */
+.m-tabs {
   display: flex;
   gap: 2px;
-  border-bottom: 2px solid var(--m-border);
+  box-shadow: inset 0 -2px 0 var(--m-border);
   overflow-x: auto;
   scrollbar-width: none;
 }
 
-.m-tabs-list::-webkit-scrollbar { display: none; }
+.m-tabs::-webkit-scrollbar { display: none; }
 
 .m-tab {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 6px;
   padding: 10px 16px;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;
@@ -575,13 +580,15 @@
 }
 
 .m-tab:hover:not(:disabled)     { color: var(--m-text); }
-.m-tab:focus-visible            { outline: 3px solid var(--m-focus); outline-offset: 2px; }
+/* Inset ring: the strip scrolls, so an outset outline would be clipped top and bottom. */
+.m-tab:focus-visible            { outline: 3px solid var(--m-focus); outline-offset: -3px; }
 .m-tab-active                   { color: var(--m-primary); border-bottom-color: var(--m-primary); }
+.m-tab:disabled,
 .m-tab-disabled                 { opacity: 0.45; cursor: not-allowed; }
 .m-tab-icon                     { line-height: 1; }
 
-/* pills variant */
-.m-tabs-pills .m-tabs-list      { border-bottom: none; gap: 4px; padding: 4px; background: var(--m-surface); border-radius: var(--m-radius-lg); width: fit-content; }
+/* pills variant — h(Tabs, { className: "m-tabs-pills" }) */
+.m-tabs-pills                   { box-shadow: none; gap: 4px; padding: 4px; background: var(--m-surface); border-radius: var(--m-radius-lg); width: fit-content; max-width: 100%; }
 .m-tabs-pills .m-tab            { border-bottom: none; border-radius: var(--m-radius); }
 .m-tabs-pills .m-tab-active     { background: var(--m-primary); color: var(--m-on-primary); }
 

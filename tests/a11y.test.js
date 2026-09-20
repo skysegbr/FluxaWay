@@ -306,6 +306,48 @@ test("Tabs: roving tabindex, arrow keys move focus and selection, aria linkage m
   assertEqual(container.querySelector("#panel-a"), null, "the previous panel is no longer rendered");
 });
 
+// The tablist IS .m-tabs, with the tabs as direct children. The stylesheet once
+// styled a .m-tabs-list wrapper no component ever rendered, which left .m-tabs as
+// a column and stacked the tabs — against the ArrowLeft/ArrowRight contract above.
+test("Tabs: tabs sit in one row, and a narrow strip scrolls sideways without clipping", async () => {
+  const container = mountPoint();
+  const labels = ["Overview", "Orders", "Customers", "Inventory", "Reports", "Settings"];
+  const items = labels.map((label, index) => ({ value: `row-${index}`, label, disabled: index === 5 }));
+
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h("div", { id: "tabs-wide", style: { width: "900px" } }, h(Tabs, { value: "row-0", items })),
+        h("div", { id: "tabs-narrow", style: { width: "260px" } }, h(Tabs, { value: "row-0", items })),
+      ),
+    container,
+  );
+  await flush();
+
+  for (const id of ["tabs-wide", "tabs-narrow"]) {
+    const strip = container.querySelector(`#${id} [role="tablist"]`);
+    const tabs = [...strip.querySelectorAll('[role="tab"]')];
+    const tops = new Set(tabs.map((tab) => Math.round(tab.getBoundingClientRect().top)));
+
+    assertEqual(tabs.length, 6);
+    assert(tabs.every((tab) => tab.parentElement === strip), "tabs are direct children of the tablist");
+    assertEqual(tops.size, 1, `${id}: every tab shares one row`);
+    assert(strip.scrollHeight <= strip.clientHeight, `${id}: the strip never scrolls vertically`);
+
+    const stripBox = strip.getBoundingClientRect();
+    const activeBox = strip.querySelector(".m-tab-active").getBoundingClientRect();
+    assert(activeBox.bottom <= stripBox.bottom + 0.5, `${id}: the active indicator is not clipped below the strip`);
+  }
+
+  const wide = container.querySelector('#tabs-wide [role="tablist"]');
+  const narrow = container.querySelector('#tabs-narrow [role="tablist"]');
+  assert(wide.scrollWidth <= wide.clientWidth, "a wide strip fits");
+  assert(narrow.scrollWidth > narrow.clientWidth, "a narrow strip scrolls sideways instead of wrapping or shrinking");
+  assertEqual(getComputedStyle(narrow.querySelector("[disabled]")).opacity, "0.45", "a disabled tab looks disabled");
+});
+
 // ── Dialog ──────────────────────────────────────────────────────────────────
 
 test("Dialog: focuses first element on open, traps Tab, restores focus on close", async () => {

@@ -31,6 +31,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `data-palette` stays readable too, and `usePalette().setCustomColor()` derives
   the text color for an arbitrary hex (white or black, never below 4.58:1).
 
+- **`Tabs` stacked its tabs vertically.** The stylesheet laid out a
+  `.m-tabs-list` wrapper that no component ever rendered and left `.m-tabs` — the
+  actual `role="tablist"` element — as a column, against the component's own
+  ArrowLeft/ArrowRight keyboard contract. `.m-tabs` is now the horizontal strip
+  and scrolls sideways when it does not fit; its baseline is an inset shadow, so
+  the active indicator is no longer pulled over a border where `overflow-x`
+  would clip it, and the focus ring is inset for the same reason. Disabled tabs
+  now look disabled (the rule targeted a `.m-tab-disabled` class the component
+  never emits), and `className: "m-tabs-pills"` applies to the strip itself.
+  The unused `.m-tabs-list` rules are gone.
+
 ### Changed
 - `useForm`'s `touched[name]` now means "blurred or submitted", not "edited".
   Use `dirty` to detect edits.
