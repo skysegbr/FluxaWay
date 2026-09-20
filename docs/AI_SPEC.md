@@ -120,7 +120,9 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.24.2`.
+release tag such as `@v0.24.2`. In a multi-file project the URL must be
+**identical in every file**, or the framework loads twice — see §14, "The same
+app from the CDN".
 
 Typical HTML entry point:
 
@@ -246,6 +248,17 @@ For an app outside this repo, any static file server works
 (`python -m http.server`) — the rule is: **served over HTTP, judged in a
 browser**. Syntax-check a single file, if you must, with the browser itself
 (the console reports the parse error and line) — never with `node --check`.
+
+**How many browsers?** It depends on what you are building:
+
+- **An app** (a landing page, a dashboard, anything built *with* FluxaWay): one
+  browser is the bar — load every screen, exercise it, and end with a clean
+  console. FluxaWay's own suite already runs on Chromium, Firefox and WebKit, so
+  the components are covered; your job is your own code. Check a second engine
+  only for what is engine-sensitive in **your** CSS or layout (the measured
+  landing contract below, `position: sticky`, scroll behavior, `100svh`).
+- **The framework itself** (anything under `dist/` in this repo): all three
+  engines, always. A Chromium-green / WebKit-red result is a real bug.
 
 ### ❌ NEVER edit a generated file in `dist/`
 
@@ -1024,6 +1037,29 @@ h('button', { ariaExpanded: isOpen ? 'true' : 'false' })
 h('span', { ariaHidden: true })                 // WRONG — sets aria-hidden=""
 ```
 
+### SVG through `h()`
+
+`h('svg', …)` and everything inside it is created in the SVG namespace — inline
+icons and illustrations need nothing special. `className`, `viewBox`, `width`,
+`fill`, `d`, `ariaHidden` work as written. **Presentation attributes keep their
+real hyphenated names, as quoted keys** — there is no camelCase alias for them:
+
+```js
+h('svg', { className: 'l-icon', viewBox: '0 0 24 24', width: 24, height: 24,
+           fill: 'none', stroke: 'currentColor',
+           'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+           ariaHidden: 'true', focusable: 'false' },
+  h('path', { d: 'M4 12h16M12 4v16' }),
+)
+
+h('path', { strokeWidth: '2' })   // WRONG — writes a dead strokeWidth="2" attribute;
+                                  // the stroke keeps its inherited width, silently
+```
+
+A decorative icon gets `ariaHidden: 'true'`; an icon that carries meaning on its
+own gets `role: 'img'` + `ariaLabel`. Use `stroke: 'currentColor'` /
+`fill: 'currentColor'` so it follows the text color and the theme.
+
 ### `style` prop
 
 Accepts a **camelCase object** or a CSS string:
@@ -1211,6 +1247,27 @@ Keep only the controls that should share the material inside that wrapper. Pass
 the current `theme` so local Metallic light/dark recipes follow the document;
 material selection itself remains independent. The docs-site Button reference
 is the canonical live example.
+
+### `className` and extra props pass through
+
+Every component accepts `className` and **merges** it onto its root element —
+it never replaces the component's own `m-*` classes. Use it to position or size
+a component from your CSS: `h(Card, { className: 'l-plan' })`.
+
+Any prop the component does not know (`id`, `style`, `dataset`, `aria*`, `on*`,
+`title`…) is forwarded to that same root element, so
+`h(Navbar, { id: 'top', ariaLabel: 'Main' })` puts both on the `<nav>`. The
+exceptions take **only** their documented props plus `className`: `Tabs`,
+`BottomNav`, `Pagination`, `ContextMenu`, `ToastStack`, `BottomSheet`.
+
+Field components (TextField, Textarea, Select, NumberInput…) split it: `className`
+styles the **wrapper** (label + control + help), `inputClassName` styles the
+control, and extra props go to the **control** — that is why `...field('name')`,
+`placeholder`, `type`, `autocomplete` and `onInput` reach the `<input>`.
+
+Do not inspect the DOM to find the `m-*` class names and restyle them from
+outside: they are not API. Add your own class through `className`, or set `--m-*`
+tokens on a wrapper (§11).
 
 ### Built-in text is always a prop (pages that are not in English)
 
@@ -2863,6 +2920,7 @@ my-app/
 |------|--------|
 | **No `src/` wrapper** | Projects live directly in their named folder |
 | **No `pages/` / `store/` / `utils/`** | Not used in FluxaWay — keep it flat |
+| **Small helpers get a named module** | A pure function that is neither a component nor a hook (format a price, build a WhatsApp URL) lives in its own lower-case file **named after what it does** — `format.js`, `links.js` — next to what uses it: in `components/` (or the domain folder) when one area uses it, at the root when the whole app does. Never a `utils/` folder or a grab-bag `utils.js`, never inlined in `app.js`, never a second export squeezed into a component file |
 | **One component per file** | Small, single-purpose function |
 | **Paired CSS** | `Hero.js` → `Hero.css` — always a sibling file |
 | **CSS imported centrally** | `styles.css` collects all component CSS via `@import`. Components do NOT import CSS themselves |
@@ -2873,8 +2931,13 @@ my-app/
 
 ### Scaling to domain subfolders
 
-When an app grows beyond ~6 components, group by feature/domain **inside** `components/`.
-Never group by type (`forms/`, `ui/`, `shared/`).
+**The trigger is a domain, not a count.** Create `components/<domain>/` when
+**three or more files belong to the same feature** — `LoginForm.js`,
+`RegisterForm.js`, `useAuth.js` → `auth/`. A component's paired `.css` does not
+count toward the three. Until then, stay flat, however many components there
+are: a landing page of eight independent sections (`Hero`, `Features`, `Pricing`,
+… `Footer`) is eight flat component files, because no two of them share a
+feature. Never group by type (`forms/`, `ui/`, `shared/`).
 
 ```
 my-app/
@@ -2910,8 +2973,7 @@ my-app/
 | **`styles.css` still collects everything** | Even nested CSS is imported at root — components never import their own CSS. Exception: in a large app with lazy routes, each route's domain CSS moves to a per-route `css:` collector and `styles.css` keeps only the critical shell (see "Code splitting in large apps") |
 | **Domain hook lives in its domain** | `dashboard/useDashboard.js`, not a separate `hooks/` folder |
 | **`data.js` stays at root** | Unless the project is very large, keep one `data.js`; don't split per domain |
-| **Minimum 2 files to justify a folder** | Don't create `auth/` for a single `LoginForm.js` |
-| **Flat first, then split** | Start flat. Create a subfolder when you have 3+ files for the same domain |
+| **Flat first, then split** | Start flat. A subfolder needs 3+ `.js` files of the **same** domain (paired `.css` not counted) — never one folder per component, and never a folder just because the app passed some number of components |
 
 ### Domain-owned context
 
@@ -3373,16 +3435,20 @@ render(App, document.getElementById('app'));
 ## 14. Complete multi-file app (domain-componentized)
 
 A landing page split across `data.js` + two components + paired CSS.
-This is the structure to use for any real app.
+This is the structure to use for any real app. Note what it does **not** do:
+it does not rebuild a navbar, a card or a button by hand, and it defines no
+colors of its own — the design system's components and `--m-*` tokens (§11) give
+it a dark theme and every palette for free.
 
-**`index.html`**
+**`index.html`** — `fluxaway-ui.css` first, then your `styles.css`
 ```html
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="/dist/fluxaway-ui.css">  <!-- the design system, FIRST -->
+  <link rel="stylesheet" href="./styles.css">           <!-- then your app -->
   <title>My App</title>
 </head>
 <body>
@@ -3401,54 +3467,53 @@ export const PLANS = [
 
 export const NAV_LINKS = [
   { href: '#pricing', label: 'Pricing' },
-  { href: '#contact', label: 'Contact' },
+  { href: 'mailto:hello@example.com', label: 'Contact' },
 ];
 ```
 
-**`components/Navbar.js`** — receives data as props, uses prefix `a-`
+**`format.js`** — a small pure helper: its own lower-case module, named after what it does (§12)
 ```js
-import { h, useState } from '/dist/fluxaway.js';
+export function formatPrice(price) {
+  return price === 0 ? 'Free' : `$${price}/mo`;
+}
+```
 
-export function Navbar({ links }) {
-  return h('header', { className: 'a-navbar' },
-    h('span', { className: 'a-brand' }, 'My App'),
-    h('nav', null,
-      links.map((l) => h('a', { key: l.href, href: l.href, className: 'a-nav-link' }, l.label))
-    ),
+**`components/TopBar.js`** — wraps FluxaWay's `Navbar`; named `TopBar` so it does not shadow it
+```js
+import { h } from '/dist/fluxaway.js';
+import { Navbar } from '/dist/fluxaway-components-nav.js';
+import { ThemeToggle } from '/dist/fluxaway-components-theme.js';
+
+export function TopBar({ links }) {
+  return h('header', { className: 'a-topbar' },
+    h(Navbar, { brand: 'My App', items: links, actions: h(ThemeToggle) }),
   );
 }
 ```
 
-**`components/Navbar.css`** — paired, imported by `styles.css`
+**`components/TopBar.css`** — paired, imported by `styles.css`
 ```css
-.a-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: var(--a-surface);
-  border-bottom: 1px solid var(--a-border);
-}
-.a-brand   { font-weight: 700; font-size: 1.25rem; }
-.a-nav-link { color: var(--a-text); text-decoration: none; margin-left: 1.5rem; }
+.a-topbar { position: sticky; top: 0; z-index: var(--m-z-appbar); }
 ```
 
-**`components/Pricing.js`** — maps over props data
+**`components/Pricing.js`** — maps over props data; `Card` and a link-`Button`, prefix `a-` for its own classes
 ```js
 import { h } from '/dist/fluxaway.js';
+import { Button, Card } from '/dist/fluxaway-components-core.js';
+import { formatPrice } from '../format.js';
 
 export function Pricing({ plans }) {
   return h('section', { className: 'a-pricing', id: 'pricing' },
     h('h2', { className: 'a-pricing-title' }, 'Plans'),
     h('div', { className: 'a-pricing-grid' },
       plans.map((plan) =>
-        h('div', { key: plan.id, className: 'a-plan-card' },
+        h(Card, { key: plan.id, className: 'a-plan' },
           h('h3', null, plan.name),
-          h('p', { className: 'a-plan-price' }, plan.price === 0 ? 'Free' : `$${plan.price}/mo`),
+          h('p', { className: 'a-plan-price' }, formatPrice(plan.price)),
           h('ul', null,
             plan.features.map((f) => h('li', { key: f }, f))
           ),
-          h('a', { className: 'a-plan-cta', href: '#contact' }, 'Get started'),
+          h(Button, { variant: 'contained', href: 'mailto:hello@example.com' }, 'Get started'),
         )
       ),
     ),
@@ -3456,31 +3521,21 @@ export function Pricing({ plans }) {
 }
 ```
 
-**`components/Pricing.css`** — paired CSS
+**`components/Pricing.css`** — paired CSS: layout only, colors and spacing from `--m-*`
 ```css
-.a-pricing       { padding: 5rem 1.5rem; text-align: center; }
-.a-pricing-title { font-size: 2rem; margin-bottom: 2.5rem; }
-.a-pricing-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; max-width: 800px; margin: 0 auto; }
-.a-plan-card     { background: var(--a-surface); border: 1px solid var(--a-border); border-radius: 12px; padding: 2rem; }
-.a-plan-price    { font-size: 1.75rem; font-weight: 700; color: var(--a-accent); margin: 0.5rem 0 1.5rem; }
-.a-plan-cta      { display: inline-block; margin-top: 1.5rem; padding: 0.6rem 1.5rem; background: var(--a-accent); color: #fff; border-radius: 6px; text-decoration: none; }
+.a-pricing       { padding: var(--m-space-12) var(--m-space-4); text-align: center; }
+.a-pricing-title { font-size: var(--m-font-size-3xl); margin: 0 0 var(--m-space-8); }
+.a-pricing-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--m-space-6); max-width: 800px; margin: 0 auto; }
+.a-plan ul       { list-style: none; padding: 0; margin: 0 0 var(--m-space-6); color: var(--m-text-muted); }
+.a-plan-price    { font-size: var(--m-font-size-2xl); font-weight: 700; color: var(--m-primary); margin: var(--m-space-2) 0 var(--m-space-5); }
 ```
 
 **`styles.css`** — central entry point, collects all component CSS
 ```css
-@import './components/Navbar.css';
+@import './components/TopBar.css';
 @import './components/Pricing.css';
 
-:root {
-  --a-bg:      #f8fafc;
-  --a-surface: #ffffff;
-  --a-text:    #0f172a;
-  --a-border:  #e2e8f0;
-  --a-accent:  #4f46e5;
-}
-
-* { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; background: var(--a-bg); color: var(--a-text); }
+html { scroll-behavior: smooth; scroll-padding-top: 60px; } /* anchors clear the sticky bar */
 
 .a-page { min-height: 100vh; }
 ```
@@ -3489,12 +3544,12 @@ body { margin: 0; font-family: system-ui, sans-serif; background: var(--a-bg); c
 ```js
 import { h, render } from '/dist/fluxaway.js';
 import { NAV_LINKS, PLANS } from './data.js';
-import { Navbar }  from './components/Navbar.js';
+import { TopBar }  from './components/TopBar.js';
 import { Pricing } from './components/Pricing.js';
 
 function App() {
   return h('div', { className: 'a-page' },
-    h(Navbar,  { links: NAV_LINKS }),
+    h(TopBar, { links: NAV_LINKS }),
     h('main', null,
       h(Pricing, { plans: PLANS }),
     ),
@@ -3503,6 +3558,44 @@ function App() {
 
 render(App, document.getElementById('app'));
 ```
+
+### The same app from the CDN (no local `/dist/`)
+
+Replace **every** `/dist/…` specifier — in `index.html` and in each `.js` file —
+with the full CDN URL (§2):
+
+```js
+import { h } from 'https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js';
+import { Button, Card } from 'https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-core.js';
+```
+
+**The URL must be character-for-character identical in every file.** The
+browser keys ES modules by URL, so two spellings of `fluxaway.js` load the
+framework **twice**, and the two copies do not share render state. The symptom
+is a blank page and, in the console, `FluxaWay: render failed … useState can
+only be used during rendering`. All of these create a second copy:
+
+- a different ref in one file (`@main` here, a release tag there);
+- a query string on some imports (`fluxaway.js?v=2`) — the component modules
+  import `./fluxaway.js` internally, without it;
+- mixing builds: `fluxaway.js` with `fluxaway-components-core.min.js`. The
+  `.min.js` files import their `.min.js` siblings — use **all** `.min.js` or none;
+- a CDN import in one file and a `/dist/` import in another.
+
+The barrel (`fluxaway-components.js`) and the category modules of the **same**
+ref mix freely: the barrel only re-exports those same URLs.
+
+To write the URL **once**, add an import map to `index.html`, before the module
+script (supported by every evergreen browser):
+
+```html
+<script type="importmap">
+{ "imports": { "/dist/": "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/" } }
+</script>
+```
+
+With it, every file keeps the `/dist/…` imports exactly as written in this
+document. The stylesheet `<link>` is not a module: give it the full CDN URL.
 
 ---
 
@@ -3530,6 +3623,7 @@ Before submitting any FluxaWay code, verify:
 - [ ] aria-* attributes use camelCase: `ariaLabel`, `ariaHidden`, etc.
 - [ ] aria-* boolean-ish values are the string `"true"`/`"false"`, not a JS boolean
 - [ ] Style is a camelCase object: `{ fontSize: '1rem' }` not `{ 'font-size': '1rem' }`
+- [ ] SVG presentation attributes are the opposite: real hyphenated names as quoted keys — `'stroke-width'`, not `strokeWidth` (§8)
 - [ ] `useEffect` cleanup returns a function (not a Promise)
 - [ ] Conditional rendering uses `&&` or ternary — no returning `undefined` without `null`
 - [ ] Elements with `innerHTML` have **no children** and never receive unsanitized input
@@ -3542,8 +3636,8 @@ Before submitting any FluxaWay code, verify:
 - [ ] `styles.css` collects component CSS via `@import` — components don't import CSS
 - [ ] Static/mock data lives in `data.js` as `UPPER_CASE` named exports
 - [ ] `app.js` only imports, orchestrates top-level state, and calls `render()`
-- [ ] No `src/` wrapper, no `pages/`, no `store/`, no `utils/` directories
-- [ ] For 6+ components, group by domain inside `components/` (e.g. `components/auth/`, `components/dashboard/`) — never by type
+- [ ] No `src/` wrapper, no `pages/`, no `store/`, no `utils/` directories — a small pure helper is its own lower-case module named after what it does (`format.js`)
+- [ ] Flat `components/` by default; a domain subfolder (`components/auth/`) only when 3+ `.js` files share that feature — never by type, never by component count
 - [ ] Domain hooks live inside their domain folder (`components/auth/useAuth.js`), not a top-level `hooks/`
 - [ ] A domain needing shared state owns its own `createContext` next to its hook (`cart/CartContext.js`) — providers are composed by nesting `.provide()` calls in `app.js`, never via a separate component that takes `children` as a prop
 - [ ] CSS class names use a project-wide prefix (e.g. `l-`, `tm-`, `a-`) not `m-*`

@@ -86,6 +86,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   with no transition (the re-render runs in a microtask, before the click's
   default action), so the anchor is measured against the final layout. The
   toggle, Escape and an outside press keep the collapse animation.
+- **AI_SPEC's canonical multi-file example taught the opposite of the spec.** §14
+  did not load `fluxaway-ui.css`, used no FluxaWay component, hand-built a
+  `Navbar` (shadowing the real one) and a link-button with a fixed `#fff`, and
+  defined its own `--a-*` colors with no dark theme. It is rewritten around
+  `Navbar`, `Card`, a link `Button` and `--m-*` tokens, run in all three engines
+  before being pasted in. Also fixed or added: how to import from the **CDN in a
+  multi-file project** — the URL must be identical in every file or the
+  framework loads twice and renders a blank page, with an import-map recipe that
+  writes it once (the README's `?v=` cache-busting tip caused exactly that on
+  module URLs and is now limited to the stylesheet); one rule for **domain
+  subfolders** instead of three that contradicted each other ("6+ components",
+  "minimum 2 files", "3+ files") — three or more `.js` files of the same
+  feature, never a component count; where a **small helper** lives (its own
+  lower-case module named after what it does, never `utils/`); **SVG through
+  `h()`** (presentation attributes keep their hyphenated names — `strokeWidth`
+  writes a dead attribute); **`className` and extra props** pass through to the
+  root element, with the six components that do not; and how many **browsers an
+  app author** has to check (one) versus the framework (all three).
 - **AI_SPEC said things the code does not do.** `useForm` was documented with 5
   of the 18 keys it returns, so `reset`, `setFieldError`, `isValid`, `dirty` and
   the rest could only be found by inspecting the object; §6 now lists every key,

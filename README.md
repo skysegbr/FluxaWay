@@ -385,8 +385,10 @@ origin: after you update the file, browsers keep the stale copy for a year.
 Immutable caching is safe only when the URL changes whenever the content does —
 a pinned CDN tag (`@v0.24.2`), a bundler output filename, or a versioned path
 such as `/dist/0.19.2/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
-`Cache-Control: no-cache` (revalidate via ETag) instead, or add a `?v=0.24.2`
-query and bump it on release.
+`Cache-Control: no-cache` (revalidate via ETag) instead. A `?v=0.24.2` query,
+bumped on release, is safe on the **stylesheet** only — never on a module URL:
+the component modules import `./fluxaway.js` without it, so the browser would
+load the framework twice and nothing renders (`docs/AI_SPEC.md` §14).
 
 Pair this with [SRI](#subresource-integrity-sri--pin-the-bytes-not-just-the-tag)
 above: compression and caching make it fast, `integrity` makes it tamper-proof.
