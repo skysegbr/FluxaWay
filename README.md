@@ -204,12 +204,12 @@ Minimal page:
 tag and pin the CDN URL to it, for example:
 
 ```text
-https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.2/dist/fluxaway.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.25.0/dist/fluxaway.js
 ```
 
 ### Subresource Integrity (SRI) — pin the bytes, not just the tag
 
-Pinning to `@v0.24.2` pins the *URL*, but a git tag can still be moved, so it is
+Pinning to `@v0.25.0` pins the *URL*, but a git tag can still be moved, so it is
 not a cryptographic guarantee of *which bytes* run. For the strongest
 supply-chain posture — the whole reason FluxaWay ships zero dependencies — add an
 `integrity` hash so the browser refuses to execute a file that doesn't match,
@@ -219,13 +219,13 @@ even if the CDN or the tag is ever tampered with. Pair it with
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.2/dist/fluxaway-ui.min.css"
+  href="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.25.0/dist/fluxaway-ui.min.css"
   integrity="sha384-…"
   crossorigin="anonymous"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.2/dist/fluxaway.min.js"
+  src="https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.25.0/dist/fluxaway.min.js"
   integrity="sha384-…"
   crossorigin="anonymous"
 ></script>
@@ -239,7 +239,7 @@ local file or straight from the CDN URL:
 python -c "import base64,hashlib,sys;print('sha384-'+base64.b64encode(hashlib.sha384(open(sys.argv[1],'rb').read()).digest()).decode())" dist/fluxaway.min.js
 
 # from the pinned CDN URL (verifies what will actually be served)
-python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.24.2/dist/fluxaway.min.js
+python -c "import base64,hashlib,sys,urllib.request as u;print('sha384-'+base64.b64encode(hashlib.sha384(u.urlopen(sys.argv[1]).read()).digest()).decode())" https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.25.0/dist/fluxaway.min.js
 ```
 
 **ES-module caveat.** `integrity` only covers the file the browser fetches
@@ -383,9 +383,9 @@ location /dist/ {
 is a footgun on an *unversioned* path like `/dist/fluxaway.js` served from your own
 origin: after you update the file, browsers keep the stale copy for a year.
 Immutable caching is safe only when the URL changes whenever the content does —
-a pinned CDN tag (`@v0.24.2`), a bundler output filename, or a versioned path
+a pinned CDN tag (`@v0.25.0`), a bundler output filename, or a versioned path
 such as `/dist/0.19.2/fluxaway.min.js`. For an unversioned self-hosted `/dist`, use
-`Cache-Control: no-cache` (revalidate via ETag) instead. A `?v=0.24.2` query,
+`Cache-Control: no-cache` (revalidate via ETag) instead. A `?v=0.25.0` query,
 bumped on release, is safe on the **stylesheet** only — never on a module URL:
 the component modules import `./fluxaway.js` without it, so the browser would
 load the framework twice and nothing renders (`docs/AI_SPEC.md` §14).
