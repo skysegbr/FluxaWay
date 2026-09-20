@@ -83,8 +83,18 @@ export declare function Badge(props?: {
 
 // ── Chip ───────────────────────────────────────────────────────────────────
 
+/**
+ * A static label, or — when `onClick` is given — a toggle rendered as
+ * `<button type="button" aria-pressed>`, reachable and operable by keyboard.
+ * Passing your own `role` (e.g. `"radio"` with `ariaChecked`) turns `aria-pressed` off.
+ */
 export declare function Chip(props?: {
+  /** Filled style; announced as `aria-pressed` when the chip is a button. */
   active?: boolean;
+  /** Makes the chip a `<button>`. Without it the chip is a non-focusable `<span>`. */
+  onClick?: (event: MouseEvent) => void;
+  /** Only meaningful together with `onClick`. */
+  disabled?: boolean;
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;

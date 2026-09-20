@@ -1224,8 +1224,14 @@ h(IconButton, {
 h(Badge, null, 'New')
 h(Badge, { className: 'm-badge-success' }, '3')
 
-// Chip — toggleable tag
-h(Chip, { active: true, onClick: fn }, 'Design')
+// Chip — a static label, or a toggle/filter when it has onClick
+h(Chip, { active: form.dirty }, 'Modified')             // no onClick → <span>, not focusable
+h(Chip, { active: on, onClick: () => setOn(!on) }, 'Design')
+// with onClick → <button type="button" aria-pressed="true|false">: focusable,
+// Enter/Space work, `disabled` is supported. This is the component for filter
+// chips — never put onClick on a Badge or a plain <span>. For a one-of-many
+// group, wrap the chips in h('div', { role: 'group', ariaLabel: 'Filter by…' }).
+// Passing your own `role` (e.g. 'radio' + ariaChecked) turns aria-pressed off.
 
 // FAB — Floating Action Button
 h(FAB, {

@@ -42,9 +42,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   never emits), and `className: "m-tabs-pills"` applies to the strip itself.
   The unused `.m-tabs-list` rules are gone.
 
+- **A clickable `Chip` could not be reached or operated by keyboard.** With
+  `onClick` it still rendered a `<span>` — no tab stop, no role, no Enter/Space —
+  which is how the spec itself taught filter chips. It now renders
+  `<button type="button">` with `aria-pressed` reflecting `active`, supports
+  `disabled`, and never submits a surrounding form; an explicit `role` opts out
+  of `aria-pressed`. Without `onClick` it remains a static `<span>`.
+
 ### Changed
 - `useForm`'s `touched[name]` now means "blurred or submitted", not "edited".
   Use `dirty` to detect edits.
+- A `Chip` with `onClick` is now a `<button>`, not a `<span>`. App CSS that
+  targets `span.m-chip`, or relies on it being inline text, needs `.m-chip`.
 - App CSS that overrides `--m-primary` (or `--m-danger`) should set
   `--m-on-primary` (`--m-on-danger`) in the same rule. Without it, a single dark
   brand color keeps white text in the light theme but gets dark ink in the dark

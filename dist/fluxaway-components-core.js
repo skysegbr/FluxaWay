@@ -165,10 +165,20 @@ export function Badge({ className = "", children, ...props } = {}) {
   return h("span", { ...props, className: joinClasses("m-badge", className) }, children);
 }
 
+// A Chip with `onClick` is a control, so it has to be a real button: a <span>
+// is unreachable by keyboard and announces no role. `aria-pressed` carries the
+// `active` state as a toggle; pass your own `role` (e.g. "radio" with
+// `ariaChecked`) to opt out of it. Without `onClick` it stays a static label.
 export function Chip({ active = false, className = "", children, ...props } = {}) {
+  const interactive = typeof props.onClick === "function";
+
   return h(
-    "span",
+    interactive ? "button" : "span",
     {
+      ...(interactive && {
+        type: "button",
+        ariaPressed: props.role ? undefined : String(Boolean(active)),
+      }),
       ...props,
       className: joinClasses("m-chip", active && "m-chip-active", className),
     },

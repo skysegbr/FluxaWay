@@ -1096,12 +1096,18 @@ select.m-field option:disabled {
   border-radius: var(--m-radius);
   background: var(--m-surface);
   color: var(--m-text);
+  font-family: inherit;
   font-size: var(--m-font-size-sm);
   font-weight: 600;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* A Chip with onClick renders as a <button>; without one it is a static <span>. */
+button.m-chip { cursor: pointer; }
+button.m-chip:hover:not(:disabled):not(.m-chip-active) { border-color: var(--m-primary); }
+button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .m-chip:focus-visible {
   outline: 3px solid var(--m-focus);

@@ -14,6 +14,7 @@ import {
   Dialog,
   Drawer,
   Button,
+  Chip,
 } from "../dist/fluxaway-components.js";
 import {
   LineChart as ChartLine,
@@ -346,6 +347,53 @@ test("Tabs: tabs sit in one row, and a narrow strip scrolls sideways without cli
   assert(wide.scrollWidth <= wide.clientWidth, "a wide strip fits");
   assert(narrow.scrollWidth > narrow.clientWidth, "a narrow strip scrolls sideways instead of wrapping or shrinking");
   assertEqual(getComputedStyle(narrow.querySelector("[disabled]")).opacity, "0.45", "a disabled tab looks disabled");
+});
+
+// ── Chip ────────────────────────────────────────────────────────────────────
+
+test("Chip: with onClick it is a focusable toggle button; without one, a static label", async () => {
+  const container = mountPoint();
+  let submits = 0;
+
+  function Wrapper() {
+    const [on, setOn] = useState(false);
+    return h(
+      "form",
+      { onSubmit: (event) => { event.preventDefault(); submits += 1; } },
+      h(Chip, { id: "chip-static", active: true }, "Status"),
+      h(Chip, { id: "chip-toggle", active: on, onClick: () => setOn(!on) }, "Filter"),
+      h(Chip, { id: "chip-radio", role: "radio", ariaChecked: "true", onClick: () => {} }, "Choice"),
+      h(Chip, { id: "chip-off", disabled: true, onClick: () => {} }, "Off"),
+    );
+  }
+
+  render(Wrapper, container);
+  await flush();
+
+  const still = container.querySelector("#chip-static");
+  assertEqual(still.tagName, "SPAN", "no onClick: a static label, not a control");
+  assertEqual(still.hasAttribute("aria-pressed"), false);
+  assertEqual(still.tabIndex, -1);
+
+  const toggle = container.querySelector("#chip-toggle");
+  assertEqual(toggle.tagName, "BUTTON", "onClick: a real button, reachable and operable by keyboard");
+  assertEqual(toggle.tabIndex, 0);
+  assertEqual(toggle.getAttribute("aria-pressed"), "false");
+  assert(toggle.classList.contains("m-chip"), "keeps the chip class");
+
+  toggle.focus();
+  assertEqual(document.activeElement, toggle, "it takes focus");
+  toggle.click();
+  await flush();
+  assertEqual(container.querySelector("#chip-toggle").getAttribute("aria-pressed"), "true", "active is announced as pressed");
+  assert(container.querySelector("#chip-toggle").classList.contains("m-chip-active"));
+  assertEqual(submits, 0, "type=button: a chip inside a form never submits it");
+
+  const radio = container.querySelector("#chip-radio");
+  assertEqual(radio.getAttribute("role"), "radio");
+  assertEqual(radio.hasAttribute("aria-pressed"), false, "an explicit role opts out of aria-pressed");
+
+  assertEqual(container.querySelector("#chip-off").disabled, true);
 });
 
 // ── Dialog ──────────────────────────────────────────────────────────────────
