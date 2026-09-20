@@ -75,6 +75,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `disabled`, and never submits a surrounding form; an explicit `role` opts out
   of `aria-pressed`. Without `onClick` it remains a static `<span>`.
 
+- **`Navbar`: a mobile menu link landed the page in the wrong place.** The
+  mobile menu is in-flow by design, so closing it is a layout change — and a
+  tapped link closed it, animated over 220ms, at the moment the browser computed
+  the anchor's scroll position. With `scroll-behavior: smooth` the target was
+  measured against the still-open menu and the page then shrank under the
+  scroll: in Chromium and Firefox the section heading ended up above the
+  viewport, off by the menu's height (160px with four links); WebKit abandoned
+  the scroll and barely moved. A link now closes the menu in the same frame,
+  with no transition (the re-render runs in a microtask, before the click's
+  default action), so the anchor is measured against the final layout. The
+  toggle, Escape and an outside press keep the collapse animation.
 - **AI_SPEC said things the code does not do.** `useForm` was documented with 5
   of the 18 keys it returns, so `reset`, `setFieldError`, `isValid`, `dirty` and
   the rest could only be found by inspecting the object; §6 now lists every key,

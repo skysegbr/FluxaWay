@@ -80,6 +80,16 @@ export function Navbar({
   ...props
 } = {}) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  // The mobile menu is in-flow on purpose: it pushes the page down instead of
+  // covering it. That makes closing it a layout change, and a tapped link closes
+  // it at the very moment the browser computes where to scroll for the anchor.
+  // Left animating, the menu is still open when that position is taken, then
+  // shrinks under the scroll: with `scroll-behavior: smooth` the target lands off
+  // by the menu's height in Chromium and Firefox, and WebKit abandons the scroll.
+  // So a link closes the menu with no transition — the re-render runs in a
+  // microtask, before the click's default action — while the toggle, Escape and
+  // an outside press keep the animation.
+  const [closedByLink, setClosedByLink] = useState(false);
   const isOpen = open !== undefined ? open : internalOpen;
   const menuId = useId();
   const navRef = useRef(null);
@@ -91,6 +101,9 @@ export function Navbar({
 
   useEffect(() => {
     if (!isOpen) return undefined;
+
+    // Every opening starts animated again, however the previous one ended.
+    setClosedByLink(false);
 
     const onMouseDown = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -116,7 +129,7 @@ export function Navbar({
     {
       ...props,
       ref: navRef,
-      className: joinClasses("m-navbar", isOpen && "m-navbar-open", className),
+      className: joinClasses("m-navbar", isOpen && "m-navbar-open", closedByLink && !isOpen && "m-navbar-instant", className),
     },
     hasChildren(brand) && h("div", { className: "m-navbar-brand" }, brand),
     hasMenu &&
@@ -159,6 +172,7 @@ export function Navbar({
                         ),
                         href: item.href || "#",
                         onClick: (event) => {
+                          setClosedByLink(true);
                           setOpen(false);
                           item.onClick?.(event);
                         },

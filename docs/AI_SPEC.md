@@ -1810,6 +1810,16 @@ h(Navbar, {
   ],
   actions: h(Button, { variant: 'tonal' }, 'Login'),
 })
+// Below 768px the items collapse behind a ☰ button. The mobile menu is IN-FLOW:
+// it pushes the page down instead of covering it (open/defaultOpen/onToggle
+// control it). Anchor links (`href: '#contact'`) are safe with a sticky header
+// and `scroll-behavior: smooth`: a tapped link closes the menu in the same
+// frame, so the section lands where it should. For a sticky header wrap it
+// yourself and reserve its height for anchors:
+//   header { position: sticky; top: 0; z-index: var(--m-z-appbar); }
+//   html   { scroll-padding-top: 60px; }        /* the closed Navbar's height */
+// Do NOT rebuild the menu as a position:fixed/absolute overlay to work around
+// scrolling — that was only needed before this was fixed.
 
 // AppBar — sticky top bar
 h(AppBar, {

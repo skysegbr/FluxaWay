@@ -3037,6 +3037,10 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
   transition: grid-template-rows 220ms ease;
 }
 
+/* Closed by tapping one of its links: collapse in the same frame, so the anchor
+   the browser scrolls to is measured against the final layout (see Navbar). */
+.m-navbar-instant .m-navbar-menu-wrap { transition: none; }
+
 .m-navbar-open .m-navbar-menu-wrap {
   grid-template-rows: 1fr;
 }

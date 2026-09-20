@@ -16,6 +16,7 @@ import {
   Button,
   Chip,
   Avatar,
+  Navbar,
 } from "../dist/fluxaway-components.js";
 import {
   LineChart as ChartLine,
@@ -395,6 +396,61 @@ test("Chip: with onClick it is a focusable toggle button; without one, a static 
   assertEqual(radio.hasAttribute("aria-pressed"), false, "an explicit role opts out of aria-pressed");
 
   assertEqual(container.querySelector("#chip-off").disabled, true);
+});
+
+// ── Navbar ──────────────────────────────────────────────────────────────────
+
+// The mobile menu is in-flow, so closing it is a layout change. A tapped link
+// closes it while the browser is computing the anchor's scroll position; left
+// animating, a smooth scroll lands the target off by the menu's height (and
+// WebKit abandons the scroll). The end-to-end measurement needs a real tap at a
+// phone width; what the suite can hold is the contract that makes it work.
+test("Navbar: a tapped link closes the menu without the collapse animation; every other way keeps it", async () => {
+  const container = mountPoint();
+  render(
+    () => h(Navbar, { brand: "Shop", items: [{ label: "Contact", href: "#navbar-instant-target" }] }),
+    container,
+  );
+  await flush();
+
+  const nav = container.querySelector(".m-navbar");
+  const toggle = container.querySelector(".m-navbar-toggle");
+  const state = () => [nav.classList.contains("m-navbar-open"), nav.classList.contains("m-navbar-instant")].join();
+
+  toggle.click();
+  await flush();
+  assertEqual(state(), "true,false", "opening animates");
+
+  container.querySelector(".m-navbar-link").click();
+  await flush();
+  assertEqual(state(), "false,true", "a link closes it in the same frame");
+
+  toggle.click();
+  await flush();
+  assertEqual(state(), "true,false", "the next opening animates again");
+
+  keydown(document, "Escape");
+  await flush();
+  assertEqual(state(), "false,false", "Escape keeps the collapse animation");
+
+  toggle.click();
+  await flush();
+  toggle.click();
+  await flush();
+  assertEqual(state(), "false,false", "so does the toggle");
+
+  let rule = null;
+  const visit = (rules) => {
+    for (const candidate of rules) {
+      if (candidate.selectorText === ".m-navbar-instant .m-navbar-menu-wrap") rule = candidate;
+      if (candidate.cssRules) visit(candidate.cssRules);
+    }
+  };
+  for (const sheet of document.styleSheets) visit(sheet.cssRules);
+  assert(rule, "the stylesheet has the instant-close rule");
+  assert(rule.style.transition.startsWith("none"), `it turns the transition off, got "${rule.style.transition}"`);
+
+  history.replaceState(null, "", location.pathname + location.search);
 });
 
 // ── Avatar ──────────────────────────────────────────────────────────────────
