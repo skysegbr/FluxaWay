@@ -2440,10 +2440,12 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
                       FluxaWay brand palette in docs/BRAND.md is separate) */
 --m-primary-hover  /* #115e59 */
 --m-primary-soft   /* light tint #d9f3ef */
+--m-on-primary     /* text/icons ON a solid --m-primary fill: #ffffff light, #0f172a dark */
 --m-secondary      /* #3f4f9f */
 
 --m-danger         /* red #b42318 */
 --m-danger-soft    /* #fee4e2 */
+--m-on-danger      /* text/icons ON a solid --m-danger fill: #ffffff light, #0f172a dark */
 --m-success        /* green #067647 */
 --m-success-soft   /* #dcfae6 */
 --m-warning        /* orange #b54708 */
@@ -2524,9 +2526,25 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
 Override tokens on a scoped element or globally:
 
 ```css
-:root { --m-primary: #7c3aed; } /* purple brand */
+:root { --m-primary: #7c3aed; --m-on-primary: #ffffff; } /* purple brand */
 .my-widget { --m-radius: 0; }   /* square corners for this widget */
 ```
+
+**Whoever sets `--m-primary` sets `--m-on-primary` in the same rule** (same for
+`--m-danger` / `--m-on-danger`). The fill flips from a dark color in the light
+theme to a light one in the dark theme, so no fixed text color survives both:
+white on the dark-theme teal is 1.86:1. Every built-in theme and palette rule
+follows this; your override must too, with a pair that reaches 4.5:1. A brand
+color that should change per theme needs both halves:
+
+```css
+:root               { --m-primary: #7c3aed; --m-on-primary: #ffffff; }
+[data-theme="dark"] { --m-primary: #a78bfa; --m-on-primary: #0f172a; }
+```
+
+Never hard-code `color: #fff` on a `var(--m-primary)` background in app CSS —
+use `color: var(--m-on-primary)`. `usePalette().setCustomColor(hex)` derives
+`--m-on-primary` for you (white or black, whichever contrasts more).
 
 Public animation utility classes (apply directly to any element — distinct
 from the internal `m-fade-in`/`m-scale-in`/`m-slide-up` keyframes used by

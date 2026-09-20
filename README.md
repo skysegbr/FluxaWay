@@ -629,8 +629,13 @@ const { theme, setTheme, toggleTheme } = useTheme();
 `usePalette` switches the accent color independently of light/dark — it writes
 `data-palette` on `<html>` and persists to `localStorage`. Each preset palette
 defines both a light and a dark variant of `--m-primary`, `--m-primary-hover`,
-`--m-primary-soft`, `--m-secondary`, and `--m-focus`, so it composes freely with
-`useTheme`.
+`--m-primary-soft`, `--m-on-primary`, `--m-secondary`, and `--m-focus`, so it
+composes freely with `useTheme`.
+
+`--m-on-primary` (and `--m-on-danger`) is the text color for content on a solid
+`--m-primary` (`--m-danger`) fill — white in the light theme, dark ink in the dark
+one, where the fill itself turns light. If you override `--m-primary` in your own
+CSS, set `--m-on-primary` in the same rule.
 
 ```js
 const { palette, palettes, setPalette, customColor, setCustomColor } = usePalette();
@@ -641,7 +646,8 @@ const { palette, palettes, setPalette, customColor, setCustomColor } = usePalett
 ```
 
 `"custom"` is a free-form palette: `setCustomColor(hex)` writes `--m-primary`
-directly as an inline style, and `fluxaway-ui.css` derives `--m-primary-hover`,
+directly as an inline style — plus `--m-on-primary`, white or black, whichever
+contrasts more with it — and `fluxaway-ui.css` derives `--m-primary-hover`,
 `--m-primary-soft`, `--m-secondary`, and `--m-focus` from it with `color-mix()`
 — any color works without computing shades by hand. Requires a browser with
 `color-mix()` support (all evergreen browsers since 2023).

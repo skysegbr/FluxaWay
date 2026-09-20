@@ -19,9 +19,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   clears as soon as the value is valid. Typing still never raises a new error,
   and `validateOnChange: true` keeps its touch-and-validate-per-keystroke mode.
 
+- **Text on a solid primary or danger fill was unreadable in the dark theme.**
+  `--m-primary` and `--m-danger` turn light there, but the text on them was a
+  fixed white: 1.67–2.72:1 across all six palettes, 2.77:1 on danger. New
+  `--m-on-primary` / `--m-on-danger` tokens (white in light, `#0f172a` in dark)
+  now color `Button` contained and danger, the active `Chip`, `FAB`, the active
+  `Pagination` item and page button, pills `Tabs`, the done `Stepper` indicator,
+  the selected `DatePicker` day, the pricing badge, the card reveal trigger, the
+  `BottomNav` badge and the `Swipeable` action. Every built-in rule that sets
+  `--m-primary` sets `--m-on-primary` beside it, so a wrapper carrying only
+  `data-palette` stays readable too, and `usePalette().setCustomColor()` derives
+  the text color for an arbitrary hex (white or black, never below 4.58:1).
+
 ### Changed
 - `useForm`'s `touched[name]` now means "blurred or submitted", not "edited".
   Use `dirty` to detect edits.
+- App CSS that overrides `--m-primary` (or `--m-danger`) should set
+  `--m-on-primary` (`--m-on-danger`) in the same rule. Without it, a single dark
+  brand color keeps white text in the light theme but gets dark ink in the dark
+  theme.
 - The documentation app moved out of this repository: `examples/docs-site/` and
   `scripts/check_docs_site.py` now live in the separate `fluxaway-docs-site`
   project (history preserved), which vendors `dist/`, `assets/`, `docs/` and the

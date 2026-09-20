@@ -337,3 +337,129 @@ test("Button outline: light and dark themes resolve token colors with AA text co
     "dark theme text meets WCAG AA",
   );
 });
+
+// Text on a solid --m-primary / --m-danger fill. Those colors flip from dark (light
+// theme) to light (dark theme), so a fixed white read 1.67–2.77:1 in dark. Plain
+// class-bearing elements are enough here: this is the stylesheet's contract.
+
+const ON_COLOR_PALETTES = ["default", "violet", "rose", "blue", "amber", "emerald"];
+
+function onColorSamples() {
+  const sample = (label, tag, className, wrapperClass) => {
+    const node = h(tag, { className, dataset: { contrastSample: label } }, "Aa");
+    return wrapperClass ? h("div", { className: wrapperClass }, node) : node;
+  };
+  const probe = (label, background, color) =>
+    h("span", { dataset: { contrastSample: label }, style: { background, color } }, "Aa");
+
+  return [
+    h(Button, { variant: "contained", dataset: { contrastSample: "Button contained" } }, "Aa"),
+    h(Button, { variant: "danger", dataset: { contrastSample: "Button danger" } }, "Aa"),
+    sample("Chip active", "span", "m-chip m-chip-active"),
+    sample("FAB", "button", "m-fab"),
+    // Gradient from --m-primary-hover to --m-primary: both ends are measured by
+    // other samples, so this one only has to use the same text token.
+    h("span", { className: "m-card-pricing-badge", dataset: { onPrimaryGradient: "pricing badge" } }, "Aa"),
+    sample("card reveal trigger", "button", "m-card-reveal-trigger"),
+    sample("Pagination active", "button", "m-pagination-item m-pagination-item-active"),
+    sample("page button active", "button", "m-page-btn m-page-btn-active"),
+    sample("Tabs pills active", "button", "m-tab m-tab-active", "m-tabs-pills"),
+    sample("Stepper done", "span", "m-step-indicator", "m-step-done"),
+    sample("DatePicker selected day", "button", "m-datepicker-day m-datepicker-day-selected"),
+    sample("BottomNav badge", "span", "m-bottom-nav-badge"),
+    sample("Swipeable action", "button", "m-swipeable-action"),
+    probe("primary hover fill", "var(--m-primary-hover)", "var(--m-on-primary)"),
+    probe("danger hover fill", "var(--m-danger-hover)", "var(--m-on-danger)"),
+  ];
+}
+
+test("on-primary / on-danger: every palette in both themes keeps AA text on solid fills", async () => {
+  const container = mountPoint();
+
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        ["light", "dark"].flatMap((theme) =>
+          ON_COLOR_PALETTES.map((palette) =>
+            h(
+              "div",
+              { key: `${theme}-${palette}`, dataset: { theme, palette, scope: `${theme}/${palette}` } },
+              onColorSamples(),
+            ),
+          ),
+        ),
+        // A wrapper carrying only data-palette takes that palette's light variant even
+        // on a dark page — the dark selector needs both attributes on one element.
+        h(
+          "div",
+          { dataset: { theme: "dark" } },
+          ON_COLOR_PALETTES.filter((palette) => palette !== "default").map((palette) =>
+            h("div", { key: palette, dataset: { palette, scope: `dark page > ${palette} wrapper` } }, onColorSamples()),
+          ),
+        ),
+      ),
+    container,
+  );
+  await flush();
+
+  const scopes = [...container.querySelectorAll("[data-scope]")];
+  assertEqual(scopes.length, 17, "six palettes in two themes, plus five palette-only wrappers");
+
+  const failures = [];
+  for (const scope of scopes) {
+    const samples = [...scope.querySelectorAll("[data-contrast-sample]")];
+    assertEqual(samples.length, 14, `${scope.dataset.scope} renders every sample`);
+
+    const onPrimary = getComputedStyle(scope.querySelector('[data-contrast-sample="primary hover fill"]')).color;
+    for (const node of scope.querySelectorAll("[data-on-primary-gradient]")) {
+      assertEqual(
+        getComputedStyle(node).color,
+        onPrimary,
+        `${scope.dataset.scope} ${node.dataset.onPrimaryGradient} uses --m-on-primary`,
+      );
+    }
+
+    for (const node of samples) {
+      const style = getComputedStyle(node);
+      // A stale class name would leave the fill transparent and the check meaningless.
+      assert(
+        style.backgroundColor !== "rgba(0, 0, 0, 0)",
+        `${scope.dataset.scope} ${node.dataset.contrastSample}: no solid fill resolved`,
+      );
+      const ratio = contrast(style.color, style.backgroundColor);
+      if (ratio < 4.5) {
+        failures.push(`${scope.dataset.scope} ${node.dataset.contrastSample} = ${ratio.toFixed(2)}:1`);
+      }
+    }
+  }
+
+  assertEqual(failures.length, 0, `below WCAG AA 4.5:1 — ${failures.join("; ")}`);
+});
+
+test("on-primary / on-danger: every rule that sets a fill color also sets its text token", async () => {
+  // The invariant app authors are told to follow, held by the stylesheet itself. It also
+  // covers the @media (prefers-color-scheme: dark) block, which a page test cannot switch on.
+  const missing = [];
+  const counts = { "--m-primary": 0, "--m-danger": 0 };
+  const pairs = { "--m-primary": "--m-on-primary", "--m-danger": "--m-on-danger" };
+  const visit = (rules) => {
+    for (const rule of rules) {
+      if (rule.cssRules && !rule.style) visit(rule.cssRules);
+      if (!rule.style || !rule.selectorText) continue;
+      for (const [fill, text] of Object.entries(pairs)) {
+        if (!rule.style.getPropertyValue(fill)) continue;
+        counts[fill] += 1;
+        if (!rule.style.getPropertyValue(text)) missing.push(`${rule.selectorText} sets ${fill} without ${text}`);
+      }
+    }
+  };
+  for (const sheet of document.styleSheets) {
+    if (sheet.href && sheet.href.endsWith("/dist/fluxaway-ui.css")) visit(sheet.cssRules);
+  }
+
+  assertEqual(counts["--m-primary"], 19, "4 theme scopes + 5 palettes in 3 scopes each");
+  assertEqual(counts["--m-danger"], 4, "4 theme scopes");
+  assertEqual(missing.length, 0, missing.join("; "));
+});

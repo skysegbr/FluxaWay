@@ -2467,6 +2467,19 @@ export function useTheme() {
 const PALETTES = ["default", "violet", "rose", "blue", "amber", "emerald", "custom"];
 const HEX_COLOR_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
+// Text color for content sitting on an arbitrary primary: white or black,
+// whichever contrasts more. For any color one of the two clears WCAG AA
+// (the worst case is 4.58:1), which a fixed per-theme value cannot promise.
+function onColorFor(hex) {
+  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join("") : hex.slice(1);
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const channel = parseInt(digits.slice(i, i + 2), 16) / 255;
+    return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return 1.05 / (luminance + 0.05) >= (luminance + 0.05) / 0.05 ? "#ffffff" : "#000000";
+}
+
 export function usePalette() {
   const getResolved = () => {
     try {
@@ -2492,10 +2505,16 @@ export function usePalette() {
     document.documentElement.setAttribute("data-palette", palette);
     try { localStorage.setItem("fluxaway-palette", palette); } catch {}
 
+    // The built-in palettes are dark in the light theme and light in the dark
+    // one, so the stylesheet's per-theme --m-on-primary fits them all. A custom
+    // color is the same in both themes and can be anything, so its text color
+    // is derived here and written alongside it.
     if (palette === "custom" && customColor) {
       document.documentElement.style.setProperty("--m-primary", customColor);
+      document.documentElement.style.setProperty("--m-on-primary", onColorFor(customColor));
     } else {
       document.documentElement.style.removeProperty("--m-primary");
+      document.documentElement.style.removeProperty("--m-on-primary");
     }
   }, [palette, customColor]);
 

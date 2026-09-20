@@ -345,7 +345,7 @@
   padding: 0 4px;
   border-radius: 999px;
   background: var(--m-danger);
-  color: #ffffff;
+  color: var(--m-on-danger);
   font-size: 10px;
   font-weight: 600;
   display: flex;
@@ -375,7 +375,7 @@
   border: none;
   border-radius: 999px;
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
   box-shadow: var(--m-shadow-2);
   font-size: var(--m-font-size-xl);
   font-weight: 600;
@@ -523,7 +523,7 @@
   gap: 4px;
   border: none;
   background: var(--m-danger);
-  color: #ffffff;
+  color: var(--m-on-danger);
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
@@ -583,7 +583,7 @@
 /* pills variant */
 .m-tabs-pills .m-tabs-list      { border-bottom: none; gap: 4px; padding: 4px; background: var(--m-surface); border-radius: var(--m-radius-lg); width: fit-content; }
 .m-tabs-pills .m-tab            { border-bottom: none; border-radius: var(--m-radius); }
-.m-tabs-pills .m-tab-active     { background: var(--m-primary); color: #fff; }
+.m-tabs-pills .m-tab-active     { background: var(--m-primary); color: var(--m-on-primary); }
 
 .m-tab-panel { padding: var(--m-space-4) 0; }
 .m-tab-panel:focus-visible { outline: 3px solid var(--m-focus); outline-offset: -3px; }
@@ -623,7 +623,7 @@
   transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
-.m-step-done    .m-step-indicator { background: var(--m-primary); border-color: var(--m-primary); color: #fff; }
+.m-step-done    .m-step-indicator { background: var(--m-primary); border-color: var(--m-primary); color: var(--m-on-primary); }
 .m-step-current .m-step-indicator { border-color: var(--m-primary); color: var(--m-primary); }
 
 .m-step-check  { font-size: 1rem; }
