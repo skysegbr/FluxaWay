@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Every text a component writes on its own is now a prop.** 22 strings were
+  hard-coded with no way to change them, so a page in another language had a
+  screen reader announce "Open menu", "required" or "Next page" in English.
+  New props, all defaulting to the previous English text: `requiredLabel` on
+  every field component (`""` hides the asterisk from readers, for controls whose
+  native `required` already says it); `openMenuLabel` / `closeMenuLabel` on
+  `Navbar`; `switchToLightLabel` / `switchToDarkLabel` on `ThemeToggle`;
+  `ariaLabel`, `customLabel`, `paletteLabels` on `PaletteSwitcher` and `ariaLabel`
+  on `DesignSwitcher`; `ariaLabel`, `previousLabel`, `nextLabel` on `Pagination`;
+  `closeLabel` on `Toast`, `ToastStack` and `BottomSheet`; `ariaLabel` on
+  `CommandPalette`; `emptyLabel` on `Combobox`; `moreLabel` on `AvatarGroup`; and
+  `previousMonthLabel`, `nextMonthLabel`, `monthNames`, `weekdayNames`,
+  `formatValue`, `formatDayLabel` on `DatePicker` (`value`/`onChange` stay ISO).
+  No default changed, and nothing global was added. AI_SPEC §9 lists them per
+  component.
 - **`Button` (and `IconButton`) accept `href` and render a real `<a>`** with the
   same classes and size as the `<button>` form, so a call-to-action that
   navigates keeps link behavior — open in a new tab, copy address, works without

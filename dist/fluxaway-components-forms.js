@@ -5,7 +5,7 @@
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useEffect, useId, useRef, useState } from "./fluxaway.js";
-import { finiteNumber, focusFirstElement, hasChildren, joinClasses, moveMenuFocus } from "./fluxaway-components-util.js";
+import { finiteNumber, focusFirstElement, hasChildren, joinClasses, moveMenuFocus, requiredMarkProps } from "./fluxaway-components-util.js";
 import { IconButton, FormField, Progress } from "./fluxaway-components-core.js";
 
 // Resolves the field id: the caller's explicit id wins, otherwise a stable
@@ -23,6 +23,7 @@ export function TextField({
   help,
   error,
   required = false,
+  requiredLabel,
   className = "",
   inputClassName = "",
   ...props
@@ -30,7 +31,7 @@ export function TextField({
   id = useFieldId(id);
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h("input", fieldProps({ id, error, help, required, inputClassName, props })),
   );
 }
@@ -41,6 +42,7 @@ export function Textarea({
   help,
   error,
   required = false,
+  requiredLabel,
   className = "",
   inputClassName = "",
   ...props
@@ -50,7 +52,7 @@ export function Textarea({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h("textarea", fieldProps({ id, error, help, required, inputClassName, props: textareaProps })),
   );
 }
@@ -62,6 +64,7 @@ export function Select({
   error,
   options = [],
   required = false,
+  requiredLabel,
   className = "",
   inputClassName = "",
   children,
@@ -70,7 +73,7 @@ export function Select({
   id = useFieldId(id);
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "select",
       fieldProps({ id, error, help, required, inputClassName, props }),
@@ -171,7 +174,9 @@ export function Combobox({
   options = [],
   placeholder = "Select...",
   searchPlaceholder = "Search...",
+  emptyLabel = "No results",
   required = false,
+  requiredLabel,
   className = "",
   inputClassName = "",
   ...props
@@ -269,7 +274,7 @@ export function Combobox({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "div",
       { ref: wrapRef, className: "m-combobox" },
@@ -344,7 +349,7 @@ export function Combobox({
                     opt.label,
                   ),
                 )
-              : h("li", { className: "m-combobox-empty" }, "No results"),
+              : h("li", { className: "m-combobox-empty" }, emptyLabel),
           ),
         ),
     ),
@@ -517,6 +522,7 @@ export function Slider({
   help,
   error,
   required = false,
+  requiredLabel,
   showValue = false,
   min = 0,
   max = 100,
@@ -532,7 +538,7 @@ export function Slider({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "div",
       { className: "m-slider" },
@@ -565,6 +571,7 @@ export function RangeSlider({
   help,
   error,
   required = false,
+  requiredLabel,
   showValue = false,
   min = 0,
   max = 100,
@@ -585,7 +592,7 @@ export function RangeSlider({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "div",
       { className: "m-slider m-slider-range" },
@@ -684,12 +691,19 @@ export function DatePicker({
   help,
   error,
   required = false,
+  requiredLabel,
   disabled = false,
   value,
   onChange,
   min,
   max,
   placeholder = "Select a date",
+  previousMonthLabel = "Previous month",
+  nextMonthLabel = "Next month",
+  monthNames = DATE_PICKER_MONTHS,
+  weekdayNames = DATE_PICKER_WEEKDAYS,
+  formatValue = toISODate,
+  formatDayLabel = (date) => date.toDateString(),
   className = "",
   inputClassName = "",
   ...props
@@ -784,7 +798,7 @@ export function DatePicker({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "div",
       { ...props, ref: wrapRef, className: "m-datepicker" },
@@ -806,7 +820,7 @@ export function DatePicker({
           ariaInvalid: error ? "true" : undefined,
           ariaDescribedby: joinClasses(helpId, errorId) || undefined,
         },
-        selected ? toISODate(selected) : placeholder,
+        selected ? formatValue(selected) : placeholder,
       ),
       open &&
         h(
@@ -815,18 +829,18 @@ export function DatePicker({
           h(
             "div",
             { className: "m-datepicker-header" },
-            h(IconButton, { label: "Previous month", onClick: () => setViewDate((v) => addMonths(v, -1)) }, "‹"),
+            h(IconButton, { label: previousMonthLabel, onClick: () => setViewDate((v) => addMonths(v, -1)) }, "‹"),
             h(
               "span",
               { className: "m-datepicker-month", ariaLive: "polite" },
-              `${DATE_PICKER_MONTHS[viewDate.getMonth()]} ${viewDate.getFullYear()}`,
+              `${monthNames[viewDate.getMonth()]} ${viewDate.getFullYear()}`,
             ),
-            h(IconButton, { label: "Next month", onClick: () => setViewDate((v) => addMonths(v, 1)) }, "›"),
+            h(IconButton, { label: nextMonthLabel, onClick: () => setViewDate((v) => addMonths(v, 1)) }, "›"),
           ),
           h(
             "div",
             { className: "m-datepicker-weekdays", ariaHidden: "true" },
-            DATE_PICKER_WEEKDAYS.map((wd) => h("span", { key: wd }, wd)),
+            weekdayNames.map((wd, day) => h("span", { key: day }, wd)),
           ),
           h(
             "div",
@@ -834,7 +848,7 @@ export function DatePicker({
               ref: gridRef,
               className: "m-datepicker-grid",
               role: "group",
-              ariaLabel: `${DATE_PICKER_MONTHS[viewDate.getMonth()]} ${viewDate.getFullYear()}`,
+              ariaLabel: `${monthNames[viewDate.getMonth()]} ${viewDate.getFullYear()}`,
               onKeyDown: onGridKeyDown,
             },
             grid.map(({ date, outside }) => {
@@ -855,7 +869,7 @@ export function DatePicker({
                   tabIndex: isFocusTarget ? 0 : -1,
                   disabled: dayDisabled,
                   ariaCurrent: isSelected ? "date" : undefined,
-                  ariaLabel: date.toDateString(),
+                  ariaLabel: formatDayLabel(date),
                   onClick: () => selectDate(date),
                 },
                 date.getDate(),
@@ -914,6 +928,7 @@ export function RadioGroup({
   help,
   error,
   required = false,
+  requiredLabel = "required",
   disabled = false,
   name,
   options = [],
@@ -937,7 +952,7 @@ export function RadioGroup({
         "span",
         { id: labelId, className: "m-label" },
         label,
-        required && h("span", { className: "m-required", ariaLabel: "required" }, "*"),
+        required && h("span", requiredMarkProps(requiredLabel), "*"),
       ),
     h(
       "div",
@@ -985,6 +1000,7 @@ export function NumberInput({
   help,
   error,
   required = false,
+  requiredLabel,
   disabled = false,
   min,
   max,
@@ -1020,7 +1036,7 @@ export function NumberInput({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "div",
       { className: "m-number-input" },
@@ -1090,6 +1106,7 @@ export function TimePicker({
   help,
   error,
   required = false,
+  requiredLabel,
   disabled = false,
   value,
   onChange,
@@ -1156,7 +1173,7 @@ export function TimePicker({
 
   return h(
     FormField,
-    { id, label, help, error, required, className },
+    { id, label, help, error, required, requiredLabel, className },
     h(
       "div",
       { ...props, ref: wrapRef, className: "m-timepicker" },

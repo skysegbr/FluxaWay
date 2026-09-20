@@ -1175,6 +1175,52 @@ the current `theme` so local Metallic light/dark recipes follow the document;
 material selection itself remains independent. The docs-site Button reference
 is the canonical live example.
 
+### Built-in text is always a prop (pages that are not in English)
+
+A few components have to write text of their own: mostly *invisible*
+`aria-label`s a screen reader speaks ("Open menu", "required", "Next page"),
+plus some visible placeholders and the DatePicker calendar. Each one is a prop
+with an English default. **On a page in another language, pass them** —
+otherwise a screen reader announces English in the middle of your page.
+
+| Component | Props (English default) |
+|---|---|
+| every field — TextField, Textarea, Select, Combobox, Slider, RangeSlider, DatePicker, NumberInput, TimePicker, RadioGroup, FormField | `requiredLabel` ("required") |
+| Navbar | `openMenuLabel` ("Open menu"), `closeMenuLabel` ("Close menu") |
+| ThemeToggle | `switchToLightLabel`, `switchToDarkLabel` |
+| PaletteSwitcher / DesignSwitcher | `ariaLabel`, `customLabel`, `paletteLabels` ({ violet: 'Violeta' }) / `ariaLabel` |
+| Dialog, Drawer, BottomSheet / Toast, ToastStack | `closeLabel` ("Close") / `closeLabel` ("Dismiss") |
+| Pagination | `ariaLabel` ("Pagination"), `previousLabel`, `nextLabel` |
+| Combobox | `placeholder` ("Select..."), `searchPlaceholder` ("Search..."), `emptyLabel` ("No results") |
+| DatePicker | `placeholder`, `previousMonthLabel`, `nextMonthLabel`, `monthNames` (12, January first), `weekdayNames` (7, Sunday first), `formatValue(date)`, `formatDayLabel(date)` |
+| TimePicker / NumberInput / RangeSlider / FileDropZone | `placeholder` / `decrementLabel`, `incrementLabel` / `minLabel`, `maxLabel` / `label` |
+| Table, DataTable / EmptyState / Spinner | `emptyTitle`, `emptyDescription` / `title` / `label` ("Loading") |
+| CommandPalette | `ariaLabel`, `placeholder`, `emptyLabel` |
+| AvatarGroup | `moreLabel` — a function: `(count) => 'mais ' + count` |
+| SpeedDial / Breadcrumb, TreeView, ContextMenu | `label` / `ariaLabel` |
+
+```js
+// A Brazilian Portuguese contact form
+h(Navbar, { brand: 'Flor & Cia', items, openMenuLabel: 'Abrir menu', closeMenuLabel: 'Fechar menu' })
+h(ThemeToggle, { switchToLightLabel: 'Mudar para o tema claro', switchToDarkLabel: 'Mudar para o tema escuro' })
+h(TextField, { ...field('nome'), label: 'Seu nome', required: true, requiredLabel: 'obrigatório' })
+h(DatePicker, {
+  label: 'Data da entrega', value, onChange, placeholder: 'Escolha uma data',
+  previousMonthLabel: 'Mês anterior', nextMonthLabel: 'Próximo mês',
+  monthNames: MESES, weekdayNames: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+  formatValue: (date) => date.toLocaleDateString('pt-BR'),            // trigger shows 20/09/2026
+  formatDayLabel: (date) => date.toLocaleDateString('pt-BR', { dateStyle: 'full' }),
+})  // value / onChange stay ISO 'YYYY-MM-DD'
+```
+
+Keep repeated wording in `data.js` (e.g. `export const UI = { required: 'obrigatório' }`)
+or in a `useTranslation(dict)` dictionary (§6) and pass it where needed.
+
+`requiredLabel: ''` hides the asterisk from screen readers (it stays visible).
+Use it on TextField / Textarea / Select: their native `required` attribute
+already makes the reader say "required" in the **user's** language, so a spoken
+asterisk only repeats it.
+
 ### Basic
 
 ```js
@@ -1738,7 +1784,7 @@ h(BottomNav, {
 })
 
 // ThemeToggle — icon button that calls useTheme().toggleTheme()
-h(ThemeToggle)  // no props required; renders sun/moon SVG icon
+h(ThemeToggle)  // renders sun/moon SVG icon; switchToLightLabel / switchToDarkLabel set its spoken name
 
 // PaletteSwitcher — row of color swatches, calls usePalette().setPalette()
 h(PaletteSwitcher)  // no props required

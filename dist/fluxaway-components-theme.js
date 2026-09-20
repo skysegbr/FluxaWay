@@ -21,7 +21,12 @@ function _MoonIcon() {
   );
 }
 
-export function ThemeToggle({ className = "", ...props } = {}) {
+export function ThemeToggle({
+  switchToLightLabel = "Switch to light theme",
+  switchToDarkLabel = "Switch to dark theme",
+  className = "",
+  ...props
+} = {}) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -30,7 +35,7 @@ export function ThemeToggle({ className = "", ...props } = {}) {
     {
       ...props,
       className,
-      label: isDark ? "Switch to light theme" : "Switch to dark theme",
+      label: isDark ? switchToLightLabel : switchToDarkLabel,
       onClick: toggleTheme,
     },
     isDark ? h(_SunIcon, null) : h(_MoonIcon, null),
@@ -48,7 +53,15 @@ const _PALETTE_SWATCH_COLORS = {
   emerald: "#047857",
 };
 
-export function PaletteSwitcher({ className = "", ...props } = {}) {
+// `paletteLabels` maps a palette name to its spoken/hover label, e.g.
+// { violet: "Violeta" }; a name left out falls back to its capitalized id.
+export function PaletteSwitcher({
+  ariaLabel = "Color palette",
+  customLabel = "Custom color",
+  paletteLabels = {},
+  className = "",
+  ...props
+} = {}) {
   const { palette, palettes, setPalette, customColor, setCustomColor } = usePalette();
 
   return h(
@@ -57,7 +70,7 @@ export function PaletteSwitcher({ className = "", ...props } = {}) {
       ...props,
       className: joinClasses("m-palette-switcher", className),
       role: "radiogroup",
-      "aria-label": "Color palette",
+      "aria-label": ariaLabel,
     },
     palettes
       .filter((name) => name !== "custom")
@@ -67,8 +80,8 @@ export function PaletteSwitcher({ className = "", ...props } = {}) {
           type: "button",
           role: "radio",
           "aria-checked": name === palette,
-          "aria-label": name.charAt(0).toUpperCase() + name.slice(1),
-          title: name.charAt(0).toUpperCase() + name.slice(1),
+          "aria-label": paletteLabels[name] ?? name.charAt(0).toUpperCase() + name.slice(1),
+          title: paletteLabels[name] ?? name.charAt(0).toUpperCase() + name.slice(1),
           className: joinClasses("m-palette-swatch", name === palette && "is-active"),
           style: { backgroundColor: _PALETTE_SWATCH_COLORS[name] },
           onClick: () => setPalette(name),
@@ -79,8 +92,8 @@ export function PaletteSwitcher({ className = "", ...props } = {}) {
       type: "color",
       role: "radio",
       "aria-checked": palette === "custom",
-      "aria-label": "Custom color",
-      title: "Custom color",
+      "aria-label": customLabel,
+      title: customLabel,
       className: joinClasses("m-palette-swatch", "m-palette-swatch-custom", palette === "custom" && "is-active"),
       value: customColor || "#0f766e",
       onInput: (event) => setCustomColor(event.target.value),
@@ -96,7 +109,7 @@ const _DESIGN_LABELS = {
 
 // Switches data-design via useDesign(). Optional designs only become visible
 // when their companion design stylesheet is loaded.
-export function DesignSwitcher({ className = "", ...props } = {}) {
+export function DesignSwitcher({ ariaLabel = "Design", className = "", ...props } = {}) {
   const { design, designs, setDesign } = useDesign();
 
   return h(
@@ -105,7 +118,7 @@ export function DesignSwitcher({ className = "", ...props } = {}) {
       ...props,
       className: joinClasses("m-design-switcher", className),
       role: "radiogroup",
-      "aria-label": "Design",
+      "aria-label": ariaLabel,
     },
     designs.map((name) =>
       h(

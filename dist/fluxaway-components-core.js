@@ -15,7 +15,7 @@
  * https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
  */
 import { h } from "./fluxaway.js";
-import { finiteNumber, hasChildren, joinClasses } from "./fluxaway-components-util.js";
+import { finiteNumber, hasChildren, joinClasses, requiredMarkProps } from "./fluxaway-components-util.js";
 
 const buttonVariants = {
   text: "m-button",
@@ -209,6 +209,7 @@ export function FormField({
   help,
   error,
   required = false,
+  requiredLabel = "required",
   className = "",
   children,
   ...props
@@ -224,7 +225,7 @@ export function FormField({
         "label",
         { className: "m-label", htmlFor: id },
         label,
-        required && h("span", { className: "m-required", ariaLabel: "required" }, "*"),
+        required && h("span", requiredMarkProps(requiredLabel), "*"),
       ),
     children,
     help && h("p", { id: helpId, className: "m-help" }, help),
@@ -390,6 +391,7 @@ export function AvatarGroup({
   avatars = [],
   max = 4,
   size = "md",
+  moreLabel = (count) => `${count} more`,
   className = "",
   ...props
 } = {}) {
@@ -403,7 +405,7 @@ export function AvatarGroup({
   const rendered = [];
   if (extra > 0) {
     rendered.push(
-      h(Avatar, { key: "m-avatar-overflow", size, name: `${extra} more`, className: "m-avatar-overflow" }, `+${extra}`),
+      h(Avatar, { key: "m-avatar-overflow", size, name: moreLabel(extra), className: "m-avatar-overflow" }, `+${extra}`),
     );
   }
   for (let i = visible.length - 1; i >= 0; i -= 1) {

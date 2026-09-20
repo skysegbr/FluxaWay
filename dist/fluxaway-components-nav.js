@@ -74,6 +74,8 @@ export function Navbar({
   defaultOpen = false,
   open,
   onToggle,
+  openMenuLabel = "Open menu",
+  closeMenuLabel = "Close menu",
   className = "",
   ...props
 } = {}) {
@@ -126,7 +128,7 @@ export function Navbar({
           onClick: () => setOpen(!isOpen),
           ariaExpanded: isOpen ? "true" : "false",
           ariaControls: menuId,
-          ariaLabel: isOpen ? "Close menu" : "Open menu",
+          ariaLabel: isOpen ? closeMenuLabel : openMenuLabel,
         },
         h("span", { className: "m-navbar-toggle-icon", ariaHidden: "true" }),
       ),

@@ -139,6 +139,7 @@ export function Toast({
   message,
   duration = 0,
   onClose,
+  closeLabel = "Dismiss",
   action,
   className = "",
   children,
@@ -173,7 +174,7 @@ export function Toast({
       hasChildren(children) && children,
     ),
     hasChildren(action) && h("div", { className: "m-toast-action" }, action),
-    onClose && h(IconButton, { label: "Dismiss", onClick: onClose }, "x"),
+    onClose && h(IconButton, { label: closeLabel, onClick: onClose }, "x"),
   );
 }
 
@@ -513,7 +514,7 @@ export function ContextMenu({
 
 // ── ToastStack ─────────────────────────────────────────────
 
-export function ToastStack({ toasts = [], onClose, className = "" } = {}) {
+export function ToastStack({ toasts = [], onClose, closeLabel, className = "" } = {}) {
   if (!toasts.length) return null;
 
   return h(
@@ -527,6 +528,7 @@ export function ToastStack({ toasts = [], onClose, className = "" } = {}) {
         title: t.title,
         message: t.message,
         duration: t.duration,
+        closeLabel,
         onClose: () => onClose?.(t.id),
       }),
     ),
@@ -536,6 +538,7 @@ export function BottomSheet({
   open,
   title,
   onClose,
+  closeLabel = "Close",
   children,
   className = "",
 } = {}) {
@@ -596,7 +599,7 @@ export function BottomSheet({
         onClose &&
           h(
             IconButton,
-            { label: "Close", onClick: onClose },
+            { label: closeLabel, onClick: onClose },
             "✕",
           ),
       ),
@@ -1028,6 +1031,7 @@ export function CommandPalette({
   commands = [],
   placeholder = "Type a command…",
   emptyLabel = "No matching commands",
+  ariaLabel = "Command palette",
   className = "",
   ...props
 } = {}) {
@@ -1156,7 +1160,7 @@ export function CommandPalette({
         className: joinClasses("m-command", className),
         role: "dialog",
         ariaModal: "true",
-        ariaLabel: "Command palette",
+        ariaLabel,
       },
       h("input", {
         ref: inputRef,

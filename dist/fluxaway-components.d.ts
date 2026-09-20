@@ -120,6 +120,8 @@ export declare function FormField(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;
@@ -132,6 +134,8 @@ export declare function TextField(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   className?: string;
   inputClassName?: string;
 } & ExtraProps): VNode;
@@ -144,6 +148,8 @@ export declare function Textarea(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   className?: string;
   inputClassName?: string;
 } & ExtraProps): VNode;
@@ -163,6 +169,8 @@ export declare function Select(props?: {
   error?: string;
   options?: SelectOption[];
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   className?: string;
   inputClassName?: string;
   children?: VNode;
@@ -265,6 +273,8 @@ export declare function Toast(props?: {
   duration?: number;
   onClose?: () => void;
   action?: VNode;
+  /** Accessible name of the dismiss button. Default `"Dismiss"`. */
+  closeLabel?: string;
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;
@@ -330,6 +340,12 @@ export declare function Pagination(props?: {
   total?: number;
   siblings?: number;
   onChange?: (page: number) => void;
+  /** Accessible name of the nav landmark. Default `"Pagination"`. */
+  ariaLabel?: string;
+  /** Default `"Previous page"`. */
+  previousLabel?: string;
+  /** Default `"Next page"`. */
+  nextLabel?: string;
   className?: string;
 }): VNode;
 
@@ -398,6 +414,10 @@ export declare function Navbar(props?: {
   defaultOpen?: boolean;
   open?: boolean;
   onToggle?: (nextOpen: boolean) => void;
+  /** Accessible name of the mobile menu button while closed. Default `"Open menu"`. */
+  openMenuLabel?: string;
+  /** Accessible name of the mobile menu button while open. Default `"Close menu"`. */
+  closeMenuLabel?: string;
   className?: string;
 } & ExtraProps): VNode;
 
@@ -419,6 +439,10 @@ export declare function Combobox(props?: {
   placeholder?: string;
   searchPlaceholder?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
+  /** Shown when the search matches nothing. Default `"No results"`. */
+  emptyLabel?: string;
   className?: string;
   inputClassName?: string;
 } & ExtraProps): VNode;
@@ -475,6 +499,8 @@ export declare function CodeEditor(props?: {
 export declare function ToastStack(props?: {
   toasts?: ToastItem[];
   onClose?: (id: string) => void;
+  /** Forwarded to every Toast. Default `"Dismiss"`. */
+  closeLabel?: string;
   className?: string;
 }): VNode;
 
@@ -510,6 +536,8 @@ export declare function BottomSheet(props?: {
   title?: string;
   onClose?: () => void;
   children?: VNode;
+  /** Accessible name of the close button. Default `"Close"`. */
+  closeLabel?: string;
   className?: string;
 }): VNode;
 
@@ -562,18 +590,30 @@ export declare function SwipeableListItem(props?: {
 // ── ThemeToggle ────────────────────────────────────────────────────────────
 
 export declare function ThemeToggle(props?: {
+  /** Accessible name while the dark theme is on. Default `"Switch to light theme"`. */
+  switchToLightLabel?: string;
+  /** Accessible name while the light theme is on. Default `"Switch to dark theme"`. */
+  switchToDarkLabel?: string;
   className?: string;
 } & ExtraProps): VNode;
 
 // ── PaletteSwitcher ────────────────────────────────────────────────────────
 
 export declare function PaletteSwitcher(props?: {
+  /** Accessible name of the radio group. Default `"Color palette"`. */
+  ariaLabel?: string;
+  /** Name of the free-form color input. Default `"Custom color"`. */
+  customLabel?: string;
+  /** Palette id → spoken/hover name, e.g. `{ violet: "Violeta" }`. Missing ids fall back to the capitalized id. */
+  paletteLabels?: Partial<Record<"default" | "violet" | "rose" | "blue" | "amber" | "emerald", string>>;
   className?: string;
 } & ExtraProps): VNode;
 
 // ── DesignSwitcher ─────────────────────────────────────────────────────────
 
 export declare function DesignSwitcher(props?: {
+  /** Accessible name of the radio group. Default `"Design"`. */
+  ariaLabel?: string;
   className?: string;
 } & ExtraProps): VNode;
 
@@ -608,6 +648,8 @@ export declare function Slider(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   /** Shows the current numeric value next to the track. */
   showValue?: boolean;
   min?: number;
@@ -624,6 +666,8 @@ export declare function RangeSlider(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   showValue?: boolean;
   min?: number;
   max?: number;
@@ -691,6 +735,8 @@ export declare function DatePicker(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   disabled?: boolean;
   /** "YYYY-MM-DD", or omit/null for no selection. */
   value?: string | null;
@@ -700,6 +746,18 @@ export declare function DatePicker(props?: {
   /** "YYYY-MM-DD" upper bound, inclusive. */
   max?: string;
   placeholder?: string;
+  /** Default `"Previous month"`. */
+  previousMonthLabel?: string;
+  /** Default `"Next month"`. */
+  nextMonthLabel?: string;
+  /** Twelve names, January first. Default English. */
+  monthNames?: string[];
+  /** Seven names, Sunday first. Names may repeat (pt-BR narrow: D S T Q Q S S). */
+  weekdayNames?: string[];
+  /** Text shown on the trigger for the selected date. Default ISO `YYYY-MM-DD`. `value`/`onChange` stay ISO. */
+  formatValue?: (date: Date) => string;
+  /** Accessible name of each day button. Default `date.toDateString()`. */
+  formatDayLabel?: (date: Date) => string;
   className?: string;
   inputClassName?: string;
 } & ExtraProps): VNode;
@@ -727,6 +785,8 @@ export declare function RadioGroup(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   disabled?: boolean;
   /** Radio `name` shared by the options; defaults to `id`. */
   name?: string;
@@ -779,6 +839,8 @@ export declare function AvatarGroup(props?: {
   /** Avatars beyond this render as a single "+N" counter. */
   max?: number;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Accessible name of the "+N" overflow avatar. Default ``(count) => `${count} more` ``. */
+  moreLabel?: (count: number) => string;
   className?: string;
 } & ExtraProps): VNode;
 
@@ -823,6 +885,8 @@ export declare function NumberInput(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   disabled?: boolean;
   min?: number;
   max?: number;
@@ -844,6 +908,8 @@ export declare function TimePicker(props?: {
   help?: string;
   error?: string;
   required?: boolean;
+  /** What a screen reader says for the required asterisk. Default `"required"`; `""` hides it from readers (use when the control carries a native `required`). */
+  requiredLabel?: string;
   disabled?: boolean;
   /** "HH:MM", or omit/null for no selection. */
   value?: string | null;
@@ -910,5 +976,7 @@ export declare function CommandPalette(props?: {
   commands?: CommandItem[];
   placeholder?: string;
   emptyLabel?: string;
+  /** Accessible name of the dialog. Default `"Command palette"`. */
+  ariaLabel?: string;
   className?: string;
 } & ExtraProps): VNode;
