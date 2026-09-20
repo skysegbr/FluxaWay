@@ -469,6 +469,43 @@ h(Button, { onClick: handleSubmit(), disabled: isSubmitting }, 'Sign in')
 ```
 
 `field(name)` returns `{ name, value, error, onBlur, onInput, onChange }`.
+For a checkbox: `field('terms', { type: 'checkbox' })` returns `checked` instead
+of `value`. `field(name, { onBlur, onInput, onChange })` chains your own handlers.
+
+Options: `initialValues`, `validate(values) → { field: 'message' }`, `onSubmit(values, helpers)`,
+`validateOnBlur` (default `true`), `validateOnChange` (default `false`).
+
+**Everything `useForm` returns** (do not inspect the object to find these):
+
+| Key | What it is |
+|---|---|
+| `values`, `errors`, `touched` | current state, keyed by field name |
+| `field(name, options?)` | props to spread on a field component |
+| `handleSubmit(fn?)` | returns the event handler: validates; if invalid, touches every field (so all errors show) and resolves `false`; otherwise calls `fn` or `onSubmit` and resolves `true` |
+| `isSubmitting` | `true` while an async `onSubmit` is pending — use it for `disabled` |
+| `isValid` | no error is currently recorded |
+| `dirty` | any value differs from `initialValues` |
+| `submitCount` | how many times submit was attempted |
+| `reset(nextValues?)` | back to `initialValues` (or new ones); clears errors, touched, submitCount |
+| `setValue(name, value)`, `setValues(partial \| fn)` | set programmatically |
+| `setFieldError(name, message)` | record an error and touch the field — for **server-side** errors |
+| `setErrors(errors)`, `setFieldTouched(name, bool?)`, `setTouched(map)` | low-level setters |
+| `validateForm(values?)` | run `validate` now; returns the errors |
+| `serialize()` | a plain copy of `values` |
+
+`onSubmit`'s second argument carries the same helpers (`reset`, `setFieldError`,
+`setValues`, …), so the usual endings need no outer variable:
+
+```js
+onSubmit: async (values, { reset, setFieldError }) => {
+  const result = await api.send(values);
+  if (result.emailTaken) return setFieldError('email', 'E-mail already registered');
+  reset();                       // clear the form after a successful send
+}
+```
+
+Prefer a real form so Enter submits too:
+`h('form', { noValidate: true, onSubmit: handleSubmit() }, …, h(Button, { type: 'submit' }, 'Send'))`.
 
 **When `field(name).error` appears and goes away** (defaults: `validateOnBlur: true`,
 `validateOnChange: false`):
@@ -1317,6 +1354,13 @@ h(SpeedDial, {
 // Avatar — initials fallback derived from `name` when there is no src
 h(Avatar, { name: 'Ada Lovelace', size: 'md' })   // renders "AL"
 h(Avatar, { src: '/u/ada.png', name: 'Ada Lovelace' })
+// a11y: Avatar names itself — role="img" + aria-label from `name` (or the img alt).
+// Right when it stands ALONE. When the same name is written next to it, a screen
+// reader says it twice; hide the avatar from readers and let the text speak:
+h('div', { className: 'author' },
+  h(Avatar, { name: 'Ada Lovelace', ariaHidden: 'true' }),
+  h('span', null, 'Ada Lovelace'),
+)
 // sizes: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 // AvatarGroup — overlapping stack; avatars beyond `max` collapse into "+N"
@@ -1333,8 +1377,10 @@ h(Divider, { vertical: true }) // inline separator, role="separator"
 ### Layout
 
 ```js
-// Card
-h(Card, { padded: true }, h('p', null, 'Content'))
+// Card — `padded` DEFAULTS TO TRUE (16px). Writing it is optional; the examples
+// in this document spell it out only for clarity.
+h(Card, null, h('p', null, 'Content'))                 // padded
+h(Card, { padded: false }, h('img', { src, alt }))     // edge-to-edge: media, tables, lists
 // CSS: add m-card-hover for a clickable card (pointer + hover border/shadow)
 
 // Card variants — CSS-only modifier classes on top of Card/.m-card, combine

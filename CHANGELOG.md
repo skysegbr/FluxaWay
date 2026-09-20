@@ -75,6 +75,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `disabled`, and never submits a surrounding form; an explicit `role` opts out
   of `aria-pressed`. Without `onClick` it remains a static `<span>`.
 
+- **AI_SPEC said things the code does not do.** `useForm` was documented with 5
+  of the 18 keys it returns, so `reset`, `setFieldError`, `isValid`, `dirty` and
+  the rest could only be found by inspecting the object; §6 now lists every key,
+  the options, the `onSubmit` helpers and the checkbox form of `field()`. `Card`
+  was shown as `{ padded: true }` everywhere, implying padding is opt-in — it
+  defaults to `true`, and `padded: false` is the edge-to-edge form. And `Avatar`
+  names itself (`role="img"` + `aria-label`), which a screen reader repeats when
+  the name is written beside it: the spec now shows `ariaHidden: 'true'` for that
+  case. No code changed for these three.
+
 ### Changed
 - `useForm`'s `touched[name]` now means "blurred or submitted", not "edited".
   Use `dirty` to detect edits.

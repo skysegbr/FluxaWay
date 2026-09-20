@@ -15,6 +15,7 @@ import {
   Drawer,
   Button,
   Chip,
+  Avatar,
 } from "../dist/fluxaway-components.js";
 import {
   LineChart as ChartLine,
@@ -394,6 +395,36 @@ test("Chip: with onClick it is a focusable toggle button; without one, a static 
   assertEqual(radio.hasAttribute("aria-pressed"), false, "an explicit role opts out of aria-pressed");
 
   assertEqual(container.querySelector("#chip-off").disabled, true);
+});
+
+// ── Avatar ──────────────────────────────────────────────────────────────────
+
+// The recipe AI_SPEC teaches for an avatar that sits next to its written name.
+test("Avatar: names itself when alone, and ariaHidden takes it out of the reading order", async () => {
+  const container = mountPoint();
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h(Avatar, { id: "avatar-alone", name: "Ada Lovelace" }),
+        h(Avatar, { id: "avatar-beside-text", name: "Ada Lovelace", ariaHidden: "true" }),
+        h(Avatar, { id: "avatar-photo-beside-text", name: "Ada Lovelace", src: "data:image/gif;base64,R0lGODlhAQABAAAAACw=", ariaHidden: "true" }),
+      ),
+    container,
+  );
+  await flush();
+
+  const alone = container.querySelector("#avatar-alone");
+  assertEqual(alone.getAttribute("role"), "img");
+  assertEqual(alone.getAttribute("aria-label"), "Ada Lovelace");
+  assertEqual(alone.hasAttribute("aria-hidden"), false);
+
+  for (const id of ["avatar-beside-text", "avatar-photo-beside-text"]) {
+    const hidden = container.querySelector(`#${id}`);
+    assertEqual(hidden.getAttribute("aria-hidden"), "true", `${id}: the prop reaches the element`);
+    assert(hidden.classList.contains("m-avatar"), "still drawn as an avatar");
+  }
 });
 
 // ── Dialog ──────────────────────────────────────────────────────────────────
