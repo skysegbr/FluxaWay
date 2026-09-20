@@ -482,7 +482,7 @@
 
 .m-datepicker-day-selected {
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 .m-datepicker-day-selected:hover:not(:disabled) { background: var(--m-primary-hover); }

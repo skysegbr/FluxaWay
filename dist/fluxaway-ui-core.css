@@ -80,7 +80,7 @@
   display: grid;
   place-items: center;
   background: var(--m-primary);
-  color: var(--m-surface);
+  color: var(--m-on-primary);
   box-shadow: 0 0 16px 4px color-mix(in srgb, var(--m-primary) 55%, transparent);
   cursor: pointer;
   transition: transform var(--m-transition-base);
@@ -277,7 +277,7 @@
   padding-top: var(--m-space-3);
   padding-bottom: var(--m-space-2);
   text-align: center;
-  color: #fff;
+  color: var(--m-on-primary);
   font-weight: 700;
   background: linear-gradient(157deg, var(--m-primary-hover) -12%, var(--m-primary) 109%);
 }
@@ -629,10 +629,16 @@ select.m-field option:disabled {
 
 .m-button:hover:not(.m-button-effect) { background: var(--m-primary-soft); }
 
+/* Button with `href` renders an <a>, which has no :disabled state. */
+a.m-button[aria-disabled="true"] {
+  opacity: 0.56;
+  pointer-events: none;
+}
+
 .m-button-contained {
   border-color: var(--m-primary);
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 .m-button-contained:hover:not(.m-button-effect) {
@@ -653,7 +659,7 @@ select.m-field option:disabled {
 .m-button-danger {
   border-color: var(--m-danger);
   background: var(--m-danger);
-  color: #ffffff;
+  color: var(--m-on-danger);
 }
 
 .m-button-danger:hover:not(.m-button-effect) {
@@ -1096,12 +1102,18 @@ select.m-field option:disabled {
   border-radius: var(--m-radius);
   background: var(--m-surface);
   color: var(--m-text);
+  font-family: inherit;
   font-size: var(--m-font-size-sm);
   font-weight: 600;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* A Chip with onClick renders as a <button>; without one it is a static <span>. */
+button.m-chip { cursor: pointer; }
+button.m-chip:hover:not(:disabled):not(.m-chip-active) { border-color: var(--m-primary); }
+button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .m-chip:focus-visible {
   outline: 3px solid var(--m-focus);
@@ -1111,7 +1123,7 @@ select.m-field option:disabled {
 .m-chip-active {
   border-color: var(--m-primary);
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 /* ── Badge ─────────────────────────────────────────────── */

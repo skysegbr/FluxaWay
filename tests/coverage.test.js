@@ -532,6 +532,43 @@ test('usePalette: setCustomColor switches to the "custom" palette and sets --m-p
   localStorage.removeItem("fluxaway-palette-custom-color");
 });
 
+test("usePalette: a custom color gets a readable --m-on-primary, cleared again with the palette", async () => {
+  localStorage.removeItem("fluxaway-palette");
+  localStorage.removeItem("fluxaway-palette-custom-color");
+
+  let captured;
+  function Widget() {
+    captured = usePalette();
+    return h("div", null);
+  }
+
+  render(Widget, mountPoint());
+  await flush();
+
+  const onPrimary = () => document.documentElement.style.getPropertyValue("--m-on-primary").trim();
+
+  // The custom color is the same in both themes, so the per-theme token cannot fit it.
+  captured.setCustomColor("#4c1d95");
+  await flush();
+  assertEqual(onPrimary(), "#ffffff", "dark custom color takes white text");
+
+  captured.setCustomColor("#fde047");
+  await flush();
+  assertEqual(onPrimary(), "#000000", "light custom color takes black text");
+
+  captured.setCustomColor("#fd0");
+  await flush();
+  assertEqual(onPrimary(), "#000000", "3-digit hex is expanded before measuring");
+
+  captured.setPalette("rose");
+  await flush();
+  assertEqual(onPrimary(), "", "built-in palettes fall back to the stylesheet token");
+
+  document.documentElement.removeAttribute("data-palette");
+  localStorage.removeItem("fluxaway-palette");
+  localStorage.removeItem("fluxaway-palette-custom-color");
+});
+
 // ── useDesign ─────────────────────────────────────────────────────────────
 
 test('useDesign: defaults to "fluxaway", setDesign persists and applies data-design, unknown values ignored', async () => {

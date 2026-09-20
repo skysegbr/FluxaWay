@@ -5,9 +5,124 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.25.0] - 2026-09-20
+
+### Added
+- **Every text a component writes on its own is now a prop.** 22 strings were
+  hard-coded with no way to change them, so a page in another language had a
+  screen reader announce "Open menu", "required" or "Next page" in English.
+  New props, all defaulting to the previous English text: `requiredLabel` on
+  every field component (`""` hides the asterisk from readers, for controls whose
+  native `required` already says it); `openMenuLabel` / `closeMenuLabel` on
+  `Navbar`; `switchToLightLabel` / `switchToDarkLabel` on `ThemeToggle`;
+  `ariaLabel`, `customLabel`, `paletteLabels` on `PaletteSwitcher` and `ariaLabel`
+  on `DesignSwitcher`; `ariaLabel`, `previousLabel`, `nextLabel` on `Pagination`;
+  `closeLabel` on `Toast`, `ToastStack` and `BottomSheet`; `ariaLabel` on
+  `CommandPalette`; `emptyLabel` on `Combobox`; `moreLabel` on `AvatarGroup`; and
+  `previousMonthLabel`, `nextMonthLabel`, `monthNames`, `weekdayNames`,
+  `formatValue`, `formatDayLabel` on `DatePicker` (`value`/`onChange` stay ISO).
+  No default changed, and nothing global was added. AI_SPEC §9 lists them per
+  component.
+- **`Button` (and `IconButton`) accept `href` and render a real `<a>`** with the
+  same classes and size as the `<button>` form, so a call-to-action that
+  navigates keeps link behavior — open in a new tab, copy address, works without
+  JS. Until now the only way to get a link that looks like a button was to
+  discover the `m-button m-button-contained` classes by inspecting the DOM.
+  `target="_blank"` gets `rel="noopener noreferrer"` unless a `rel` is passed; a
+  disabled link drops its `href` and takes `role="link"` + `aria-disabled`, which
+  removes it from the tab order. The URL is passed through untouched, like on any
+  `h("a")`: untrusted values still go through `safeUrl()`.
+
+### Fixed
+- **`useForm`: a valid form could swallow the click on its submit button.** Blur
+  validates the whole form, so leaving one field recorded an error for the next,
+  still-empty one; the first keystroke there marked it touched and showed that
+  stale error, which then stayed on screen after the value became valid. It only
+  cleared on the blur caused by pressing Submit — removing the error line,
+  moving the button ~25px between `mousedown` and `mouseup`, and dropping the
+  `click`. Typing no longer marks a field touched (blur and submit do), and
+  editing a field re-checks an error already recorded for it, so the message
+  clears as soon as the value is valid. Typing still never raises a new error,
+  and `validateOnChange: true` keeps its touch-and-validate-per-keystroke mode.
+
+- **Text on a solid primary or danger fill was unreadable in the dark theme.**
+  `--m-primary` and `--m-danger` turn light there, but the text on them was a
+  fixed white: 1.67–2.72:1 across all six palettes, 2.77:1 on danger. New
+  `--m-on-primary` / `--m-on-danger` tokens (white in light, `#0f172a` in dark)
+  now color `Button` contained and danger, the active `Chip`, `FAB`, the active
+  `Pagination` item and page button, pills `Tabs`, the done `Stepper` indicator,
+  the selected `DatePicker` day, the pricing badge, the card reveal trigger, the
+  `BottomNav` badge and the `Swipeable` action. Every built-in rule that sets
+  `--m-primary` sets `--m-on-primary` beside it, so a wrapper carrying only
+  `data-palette` stays readable too, and `usePalette().setCustomColor()` derives
+  the text color for an arbitrary hex (white or black, never below 4.58:1).
+
+- **`Tabs` stacked its tabs vertically.** The stylesheet laid out a
+  `.m-tabs-list` wrapper that no component ever rendered and left `.m-tabs` — the
+  actual `role="tablist"` element — as a column, against the component's own
+  ArrowLeft/ArrowRight keyboard contract. `.m-tabs` is now the horizontal strip
+  and scrolls sideways when it does not fit; its baseline is an inset shadow, so
+  the active indicator is no longer pulled over a border where `overflow-x`
+  would clip it, and the focus ring is inset for the same reason. Disabled tabs
+  now look disabled (the rule targeted a `.m-tab-disabled` class the component
+  never emits), and `className: "m-tabs-pills"` applies to the strip itself.
+  The unused `.m-tabs-list` rules are gone.
+
+- **A clickable `Chip` could not be reached or operated by keyboard.** With
+  `onClick` it still rendered a `<span>` — no tab stop, no role, no Enter/Space —
+  which is how the spec itself taught filter chips. It now renders
+  `<button type="button">` with `aria-pressed` reflecting `active`, supports
+  `disabled`, and never submits a surrounding form; an explicit `role` opts out
+  of `aria-pressed`. Without `onClick` it remains a static `<span>`.
+
+- **`Navbar`: a mobile menu link landed the page in the wrong place.** The
+  mobile menu is in-flow by design, so closing it is a layout change — and a
+  tapped link closed it, animated over 220ms, at the moment the browser computed
+  the anchor's scroll position. With `scroll-behavior: smooth` the target was
+  measured against the still-open menu and the page then shrank under the
+  scroll: in Chromium and Firefox the section heading ended up above the
+  viewport, off by the menu's height (160px with four links); WebKit abandoned
+  the scroll and barely moved. A link now closes the menu in the same frame,
+  with no transition (the re-render runs in a microtask, before the click's
+  default action), so the anchor is measured against the final layout. The
+  toggle, Escape and an outside press keep the collapse animation.
+- **AI_SPEC's canonical multi-file example taught the opposite of the spec.** §14
+  did not load `fluxaway-ui.css`, used no FluxaWay component, hand-built a
+  `Navbar` (shadowing the real one) and a link-button with a fixed `#fff`, and
+  defined its own `--a-*` colors with no dark theme. It is rewritten around
+  `Navbar`, `Card`, a link `Button` and `--m-*` tokens, run in all three engines
+  before being pasted in. Also fixed or added: how to import from the **CDN in a
+  multi-file project** — the URL must be identical in every file or the
+  framework loads twice and renders a blank page, with an import-map recipe that
+  writes it once (the README's `?v=` cache-busting tip caused exactly that on
+  module URLs and is now limited to the stylesheet); one rule for **domain
+  subfolders** instead of three that contradicted each other ("6+ components",
+  "minimum 2 files", "3+ files") — three or more `.js` files of the same
+  feature, never a component count; where a **small helper** lives (its own
+  lower-case module named after what it does, never `utils/`); **SVG through
+  `h()`** (presentation attributes keep their hyphenated names — `strokeWidth`
+  writes a dead attribute); **`className` and extra props** pass through to the
+  root element, with the six components that do not; and how many **browsers an
+  app author** has to check (one) versus the framework (all three).
+- **AI_SPEC said things the code does not do.** `useForm` was documented with 5
+  of the 18 keys it returns, so `reset`, `setFieldError`, `isValid`, `dirty` and
+  the rest could only be found by inspecting the object; §6 now lists every key,
+  the options, the `onSubmit` helpers and the checkbox form of `field()`. `Card`
+  was shown as `{ padded: true }` everywhere, implying padding is opt-in — it
+  defaults to `true`, and `padded: false` is the edge-to-edge form. And `Avatar`
+  names itself (`role="img"` + `aria-label`), which a screen reader repeats when
+  the name is written beside it: the spec now shows `ariaHidden: 'true'` for that
+  case. No code changed for these three.
 
 ### Changed
+- `useForm`'s `touched[name]` now means "blurred or submitted", not "edited".
+  Use `dirty` to detect edits.
+- A `Chip` with `onClick` is now a `<button>`, not a `<span>`. App CSS that
+  targets `span.m-chip`, or relies on it being inline text, needs `.m-chip`.
+- App CSS that overrides `--m-primary` (or `--m-danger`) should set
+  `--m-on-primary` (`--m-on-danger`) in the same rule. Without it, a single dark
+  brand color keeps white text in the light theme but gets dark ink in the dark
+  theme.
 - The documentation app moved out of this repository: `examples/docs-site/` and
   `scripts/check_docs_site.py` now live in the separate `fluxaway-docs-site`
   project (history preserved), which vendors `dist/`, `assets/`, `docs/` and the

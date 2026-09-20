@@ -49,11 +49,13 @@
   --m-primary:        #0f766e;
   --m-primary-hover:  #115e59;
   --m-primary-soft:   #d9f3ef;
+  --m-on-primary:     #ffffff;
   --m-secondary:      #3f4f9f;
 
   --m-danger:         #b42318;
   --m-danger-hover:   #8f1d14;
   --m-danger-soft:    #fee4e2;
+  --m-on-danger:      #ffffff;
   --m-success:        #067647;
   --m-success-soft:   #dcfae6;
   --m-warning:        #b54708;
@@ -133,10 +135,12 @@
     --m-primary:       #2dd4bf;
     --m-primary-hover: #5eead4;
     --m-primary-soft:  #134e4a;
+    --m-on-primary:    #0f172a;
 
     --m-danger:        #f87171;
     --m-danger-hover:  #fca5a5;
     --m-danger-soft:   #450a0a;
+    --m-on-danger:     #0f172a;
     --m-success:       #4ade80;
     --m-success-soft:  #052e16;
     --m-warning:       #fbbf24;
@@ -166,10 +170,12 @@
   --m-primary:        #2dd4bf;
   --m-primary-hover:  #5eead4;
   --m-primary-soft:   #134e4a;
+  --m-on-primary:     #0f172a;
 
   --m-danger:         #f87171;
   --m-danger-hover:   #fca5a5;
   --m-danger-soft:    #450a0a;
+  --m-on-danger:      #0f172a;
   --m-success:        #4ade80;
   --m-success-soft:   #052e16;
   --m-warning:        #fbbf24;
@@ -198,10 +204,12 @@
   --m-primary:        #0f766e;
   --m-primary-hover:  #115e59;
   --m-primary-soft:   #d9f3ef;
+  --m-on-primary:     #ffffff;
 
   --m-danger:         #b42318;
   --m-danger-hover:   #8f1d14;
   --m-danger-soft:    #fee4e2;
+  --m-on-danger:      #ffffff;
   --m-success:        #067647;
   --m-success-soft:   #dcfae6;
   --m-warning:        #b54708;
@@ -228,6 +236,7 @@
   --m-primary:       #6d28d9;
   --m-primary-hover: #5b21b6;
   --m-primary-soft:  #ede9fe;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #9333ea;
   --m-focus:         #c4b5fd;
 }
@@ -236,6 +245,7 @@
   --m-primary:       #be123c;
   --m-primary-hover: #9f1239;
   --m-primary-soft:  #ffe4e6;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #db2777;
   --m-focus:         #fda4af;
 }
@@ -244,6 +254,7 @@
   --m-primary:       #1d4ed8;
   --m-primary-hover: #1e40af;
   --m-primary-soft:  #dbeafe;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #0284c7;
   --m-focus:         #93c5fd;
 }
@@ -252,6 +263,7 @@
   --m-primary:       #b45309;
   --m-primary-hover: #92400e;
   --m-primary-soft:  #fef3c7;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #ea580c;
   --m-focus:         #fcd34d;
 }
@@ -260,6 +272,7 @@
   --m-primary:       #047857;
   --m-primary-hover: #065f46;
   --m-primary-soft:  #d1fae5;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #0d9488;
   --m-focus:         #6ee7b7;
 }
@@ -280,6 +293,7 @@
   --m-primary:       #a78bfa;
   --m-primary-hover: #c4b5fd;
   --m-primary-soft:  #4c1d95;
+  --m-on-primary:    #0f172a;
   --m-focus:         #a78bfa;
 }
 
@@ -287,6 +301,7 @@
   --m-primary:       #fb7185;
   --m-primary-hover: #fda4af;
   --m-primary-soft:  #4c0519;
+  --m-on-primary:    #0f172a;
   --m-focus:         #fb7185;
 }
 
@@ -294,6 +309,7 @@
   --m-primary:       #60a5fa;
   --m-primary-hover: #93c5fd;
   --m-primary-soft:  #1e3a8a;
+  --m-on-primary:    #0f172a;
   --m-focus:         #60a5fa;
 }
 
@@ -301,6 +317,7 @@
   --m-primary:       #fbbf24;
   --m-primary-hover: #fcd34d;
   --m-primary-soft:  #78350f;
+  --m-on-primary:    #0f172a;
   --m-focus:         #fbbf24;
 }
 
@@ -308,6 +325,7 @@
   --m-primary:       #34d399;
   --m-primary-hover: #6ee7b7;
   --m-primary-soft:  #064e3b;
+  --m-on-primary:    #0f172a;
   --m-focus:         #34d399;
 }
 
@@ -322,6 +340,7 @@
     --m-primary:       #a78bfa;
     --m-primary-hover: #c4b5fd;
     --m-primary-soft:  #4c1d95;
+    --m-on-primary:    #0f172a;
     --m-focus:         #a78bfa;
   }
 
@@ -329,6 +348,7 @@
     --m-primary:       #fb7185;
     --m-primary-hover: #fda4af;
     --m-primary-soft:  #4c0519;
+    --m-on-primary:    #0f172a;
     --m-focus:         #fb7185;
   }
 
@@ -336,6 +356,7 @@
     --m-primary:       #60a5fa;
     --m-primary-hover: #93c5fd;
     --m-primary-soft:  #1e3a8a;
+    --m-on-primary:    #0f172a;
     --m-focus:         #60a5fa;
   }
 
@@ -343,6 +364,7 @@
     --m-primary:       #fbbf24;
     --m-primary-hover: #fcd34d;
     --m-primary-soft:  #78350f;
+    --m-on-primary:    #0f172a;
     --m-focus:         #fbbf24;
   }
 
@@ -350,6 +372,7 @@
     --m-primary:       #34d399;
     --m-primary-hover: #6ee7b7;
     --m-primary-soft:  #064e3b;
+    --m-on-primary:    #0f172a;
     --m-focus:         #34d399;
   }
 
@@ -1028,7 +1051,7 @@ video {
   display: grid;
   place-items: center;
   background: var(--m-primary);
-  color: var(--m-surface);
+  color: var(--m-on-primary);
   box-shadow: 0 0 16px 4px color-mix(in srgb, var(--m-primary) 55%, transparent);
   cursor: pointer;
   transition: transform var(--m-transition-base);
@@ -1225,7 +1248,7 @@ video {
   padding-top: var(--m-space-3);
   padding-bottom: var(--m-space-2);
   text-align: center;
-  color: #fff;
+  color: var(--m-on-primary);
   font-weight: 700;
   background: linear-gradient(157deg, var(--m-primary-hover) -12%, var(--m-primary) 109%);
 }
@@ -1577,10 +1600,16 @@ select.m-field option:disabled {
 
 .m-button:hover:not(.m-button-effect) { background: var(--m-primary-soft); }
 
+/* Button with `href` renders an <a>, which has no :disabled state. */
+a.m-button[aria-disabled="true"] {
+  opacity: 0.56;
+  pointer-events: none;
+}
+
 .m-button-contained {
   border-color: var(--m-primary);
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 .m-button-contained:hover:not(.m-button-effect) {
@@ -1601,7 +1630,7 @@ select.m-field option:disabled {
 .m-button-danger {
   border-color: var(--m-danger);
   background: var(--m-danger);
-  color: #ffffff;
+  color: var(--m-on-danger);
 }
 
 .m-button-danger:hover:not(.m-button-effect) {
@@ -2044,12 +2073,18 @@ select.m-field option:disabled {
   border-radius: var(--m-radius);
   background: var(--m-surface);
   color: var(--m-text);
+  font-family: inherit;
   font-size: var(--m-font-size-sm);
   font-weight: 600;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* A Chip with onClick renders as a <button>; without one it is a static <span>. */
+button.m-chip { cursor: pointer; }
+button.m-chip:hover:not(:disabled):not(.m-chip-active) { border-color: var(--m-primary); }
+button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .m-chip:focus-visible {
   outline: 3px solid var(--m-focus);
@@ -2059,7 +2094,7 @@ select.m-field option:disabled {
 .m-chip-active {
   border-color: var(--m-primary);
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 /* ── Badge ─────────────────────────────────────────────── */
@@ -2655,7 +2690,7 @@ select.m-field option:disabled {
 .m-pagination-item-active {
   border-color: var(--m-primary);
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 .m-pagination-item-active:hover:not(:disabled) {
@@ -3001,6 +3036,10 @@ select.m-field option:disabled {
   grid-template-rows: 0fr;
   transition: grid-template-rows 220ms ease;
 }
+
+/* Closed by tapping one of its links: collapse in the same frame, so the anchor
+   the browser scrolls to is measured against the final layout (see Navbar). */
+.m-navbar-instant .m-navbar-menu-wrap { transition: none; }
 
 .m-navbar-open .m-navbar-menu-wrap {
   grid-template-rows: 1fr;
@@ -3578,7 +3617,7 @@ select.m-field option:disabled {
   padding: 0 4px;
   border-radius: 999px;
   background: var(--m-danger);
-  color: #ffffff;
+  color: var(--m-on-danger);
   font-size: 10px;
   font-weight: 600;
   display: flex;
@@ -3687,7 +3726,7 @@ select.m-field option:disabled {
   border: none;
   border-radius: 999px;
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
   box-shadow: var(--m-shadow-2);
   font-size: var(--m-font-size-xl);
   font-weight: 600;
@@ -3946,7 +3985,7 @@ select.m-field option:disabled {
   gap: 4px;
   border: none;
   background: var(--m-danger);
-  color: #ffffff;
+  color: var(--m-on-danger);
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
@@ -3967,27 +4006,32 @@ select.m-field option:disabled {
 
 /* ── Tabs ────────────────────────────────────────────────────────────────────── */
 
-.m-tabs { display: flex; flex-direction: column; }
-
-.m-tabs-list {
+/*
+ * Tabs renders the tab strip only — .m-tabs IS the role="tablist" element and the
+ * .m-tab buttons are its direct children; panels are separate TabPanel nodes.
+ * The baseline is an inset shadow, not a border: overflow-x clips at the padding
+ * box, which would cut off an indicator pulled over a real border with a
+ * negative margin. The tab's own border-bottom paints over it instead.
+ */
+.m-tabs {
   display: flex;
   gap: 2px;
-  border-bottom: 2px solid var(--m-border);
+  box-shadow: inset 0 -2px 0 var(--m-border);
   overflow-x: auto;
   scrollbar-width: none;
 }
 
-.m-tabs-list::-webkit-scrollbar { display: none; }
+.m-tabs::-webkit-scrollbar { display: none; }
 
 .m-tab {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 6px;
   padding: 10px 16px;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;
@@ -3998,15 +4042,17 @@ select.m-field option:disabled {
 }
 
 .m-tab:hover:not(:disabled)     { color: var(--m-text); }
-.m-tab:focus-visible            { outline: 3px solid var(--m-focus); outline-offset: 2px; }
+/* Inset ring: the strip scrolls, so an outset outline would be clipped top and bottom. */
+.m-tab:focus-visible            { outline: 3px solid var(--m-focus); outline-offset: -3px; }
 .m-tab-active                   { color: var(--m-primary); border-bottom-color: var(--m-primary); }
+.m-tab:disabled,
 .m-tab-disabled                 { opacity: 0.45; cursor: not-allowed; }
 .m-tab-icon                     { line-height: 1; }
 
-/* pills variant */
-.m-tabs-pills .m-tabs-list      { border-bottom: none; gap: 4px; padding: 4px; background: var(--m-surface); border-radius: var(--m-radius-lg); width: fit-content; }
+/* pills variant — h(Tabs, { className: "m-tabs-pills" }) */
+.m-tabs-pills                   { box-shadow: none; gap: 4px; padding: 4px; background: var(--m-surface); border-radius: var(--m-radius-lg); width: fit-content; max-width: 100%; }
 .m-tabs-pills .m-tab            { border-bottom: none; border-radius: var(--m-radius); }
-.m-tabs-pills .m-tab-active     { background: var(--m-primary); color: #fff; }
+.m-tabs-pills .m-tab-active     { background: var(--m-primary); color: var(--m-on-primary); }
 
 .m-tab-panel { padding: var(--m-space-4) 0; }
 .m-tab-panel:focus-visible { outline: 3px solid var(--m-focus); outline-offset: -3px; }
@@ -4039,7 +4085,7 @@ select.m-field option:disabled {
 
 .m-page-btn:hover:not(:disabled) { background: var(--m-surface-raised); border-color: var(--m-primary); }
 .m-page-btn:disabled              { opacity: 0.4; cursor: not-allowed; }
-.m-page-btn-active                { background: var(--m-primary); border-color: var(--m-primary); color: #fff; font-weight: 700; }
+.m-page-btn-active                { background: var(--m-primary); border-color: var(--m-primary); color: var(--m-on-primary); font-weight: 700; }
 .m-page-ellipsis                  { display: inline-flex; align-items: center; padding: 0 4px; color: var(--m-text-muted); }
 
 /* ── Stepper ─────────────────────────────────────────────────────────────────── */
@@ -4077,7 +4123,7 @@ select.m-field option:disabled {
   transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
-.m-step-done    .m-step-indicator { background: var(--m-primary); border-color: var(--m-primary); color: #fff; }
+.m-step-done    .m-step-indicator { background: var(--m-primary); border-color: var(--m-primary); color: var(--m-on-primary); }
 .m-step-current .m-step-indicator { border-color: var(--m-primary); color: var(--m-primary); }
 
 .m-step-check  { font-size: 1rem; }
@@ -4614,7 +4660,7 @@ select.m-field option:disabled {
 
 .m-datepicker-day-selected {
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 .m-datepicker-day-selected:hover:not(:disabled) { background: var(--m-primary-hover); }

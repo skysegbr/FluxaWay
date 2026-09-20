@@ -282,7 +282,11 @@ export interface FieldProps {
   type?: string;
   value?: string;
   checked?: boolean;
-  /** Error message for this field — shown only after the field was touched. */
+  /**
+   * Error message for this field — empty until the field is touched (on blur or
+   * submit, never by typing). Typing re-checks an error already recorded for
+   * this field, so it clears as soon as the value becomes valid.
+   */
   error?: string;
   onBlur: (event: Event) => void;
   onInput?: (event: Event) => void;
@@ -309,7 +313,9 @@ export interface FormHelpers<V extends Record<string, unknown>> {
 export interface UseFormOptions<V extends Record<string, unknown>> {
   initialValues?: V;
   validate?: (values: V) => Partial<Record<keyof V, string>>;
+  /** Touch the field and validate the whole form on every keystroke. Default `false`. */
   validateOnChange?: boolean;
+  /** Validate the whole form when a field blurs (blur always marks it touched). Default `true`. */
   validateOnBlur?: boolean;
   onSubmit?: (values: V, helpers: FormHelpers<V>) => void | Promise<void>;
 }

@@ -90,7 +90,7 @@
 .m-pagination-item-active {
   border-color: var(--m-primary);
   background: var(--m-primary);
-  color: #ffffff;
+  color: var(--m-on-primary);
 }
 
 .m-pagination-item-active:hover:not(:disabled) {
@@ -309,7 +309,7 @@
 
 .m-page-btn:hover:not(:disabled) { background: var(--m-surface-raised); border-color: var(--m-primary); }
 .m-page-btn:disabled              { opacity: 0.4; cursor: not-allowed; }
-.m-page-btn-active                { background: var(--m-primary); border-color: var(--m-primary); color: #fff; font-weight: 700; }
+.m-page-btn-active                { background: var(--m-primary); border-color: var(--m-primary); color: var(--m-on-primary); font-weight: 700; }
 .m-page-ellipsis                  { display: inline-flex; align-items: center; padding: 0 4px; color: var(--m-text-muted); }
 
 /* ── DataTable ─────────────────────────────────────────── */

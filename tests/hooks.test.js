@@ -9,6 +9,8 @@ import {
   useRoutes,
   matchPath,
 } from "../dist/fluxaway.js";
+import { Button } from "../dist/fluxaway-components-core.js";
+import { TextField, Textarea } from "../dist/fluxaway-components-forms.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 // ── useForm ───────────────────────────────────────────────────────────────────
@@ -187,6 +189,147 @@ test("useForm: handleSubmit calls onSubmit and returns true when form is valid",
 
   assertEqual(result, true, "handleSubmit should return true when form is valid");
   assertEqual(submittedValues.name, "Alice");
+});
+
+// When field().error appears and when it goes away. Blur validates the whole
+// form, so leaving `name` records an error for the still-empty `message`.
+
+const twoFieldValidate = (v) => ({
+  name: v.name.trim().length < 2 ? "Name too short" : "",
+  message: v.message.trim().length < 10 ? "Message too short" : "",
+});
+
+test("useForm: typing does not mark a field touched or show an error recorded by another field's blur", async () => {
+  let form;
+
+  function Form() {
+    form = useForm({ initialValues: { name: "", message: "" }, validate: twoFieldValidate });
+    return h("div", null);
+  }
+
+  render(Form, mountPoint());
+  await flush();
+
+  form.field("name").onInput({ target: { value: "Ana" } });
+  await flush();
+  form.field("name").onBlur({ target: { value: "Ana" } });
+  await flush();
+  assertEqual(form.errors.message, "Message too short", "blur validates the whole form");
+
+  form.field("message").onInput({ target: { value: "Hi" } });
+  await flush();
+  assertEqual(Boolean(form.touched.message), false, "typing must not touch the field");
+  assertEqual(form.field("message").error, "", "an untouched field shows no error while typing");
+});
+
+test("useForm: a recorded error clears as soon as the value becomes valid, before any blur", async () => {
+  let form;
+
+  function Form() {
+    form = useForm({ initialValues: { name: "", message: "" }, validate: twoFieldValidate });
+    return h("div", null);
+  }
+
+  render(Form, mountPoint());
+  await flush();
+
+  form.field("message").onBlur({ target: { value: "" } });
+  await flush();
+  assertEqual(form.field("message").error, "Message too short", "blur shows the error");
+
+  form.field("message").onInput({ target: { value: "Still bad" } });
+  await flush();
+  assertEqual(form.field("message").error, "Message too short", "still invalid, still shown");
+
+  form.field("message").onInput({ target: { value: "A bouquet of roses, please." } });
+  await flush();
+  assertEqual(form.field("message").error, "", "valid value clears the error without a blur");
+  assertEqual(form.errors.name, "Name too short", "other fields' errors are left alone");
+});
+
+test("useForm: typing never raises a new error on a valid touched field", async () => {
+  let form;
+
+  function Form() {
+    form = useForm({ initialValues: { name: "Ana", message: "" }, validate: twoFieldValidate });
+    return h("div", null);
+  }
+
+  render(Form, mountPoint());
+  await flush();
+
+  form.field("name").onBlur({ target: { value: "Ana" } });
+  await flush();
+  assertEqual(form.field("name").error, "", "valid on blur");
+
+  form.field("name").onInput({ target: { value: "A" } });
+  await flush();
+  assertEqual(form.field("name").error, "", "invalid while typing stays quiet until blur");
+
+  form.field("name").onBlur({ target: { value: "A" } });
+  await flush();
+  assertEqual(form.field("name").error, "Name too short", "blur raises it");
+});
+
+test("useForm: validateOnChange still touches and validates on the first keystroke", async () => {
+  let form;
+
+  function Form() {
+    form = useForm({
+      initialValues: { name: "", message: "" },
+      validate: twoFieldValidate,
+      validateOnChange: true,
+    });
+    return h("div", null);
+  }
+
+  render(Form, mountPoint());
+  await flush();
+
+  form.field("name").onInput({ target: { value: "A" } });
+  await flush();
+  assertEqual(form.touched.name, true);
+  assertEqual(form.field("name").error, "Name too short");
+});
+
+test("useForm: the submit button does not move when the last valid field blurs", async () => {
+  function Form() {
+    const form = useForm({ initialValues: { name: "", message: "" }, validate: twoFieldValidate });
+    return h(
+      "form",
+      { noValidate: true, onSubmit: form.handleSubmit() },
+      h(TextField, { ...form.field("name"), label: "Name", id: "shift-name" }),
+      h(Textarea, { ...form.field("message"), label: "Message", id: "shift-message" }),
+      h(Button, { type: "submit", id: "shift-submit" }, "Send"),
+    );
+  }
+
+  const container = mountPoint();
+  render(Form, container);
+  await flush();
+
+  const type = async (id, text) => {
+    const el = container.querySelector(`#${id}`);
+    el.focus();
+    el.value = text;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    await flush();
+    return el;
+  };
+
+  const name = await type("shift-name", "Ana");
+  name.dispatchEvent(new FocusEvent("blur"));
+  await flush();
+
+  const message = await type("shift-message", "A bouquet of roses, please.");
+  assertEqual(container.querySelectorAll(".m-error").length, 0, "no error line while typing a valid value");
+
+  const before = container.querySelector("#shift-submit").getBoundingClientRect().top;
+  message.dispatchEvent(new FocusEvent("blur"));
+  await flush();
+  const after = container.querySelector("#shift-submit").getBoundingClientRect().top;
+
+  assertEqual(after, before, "a layout shift here lands mouseup off the button and eats the click");
 });
 
 // ── useRouter (hash mode) ─────────────────────────────────────────────────────

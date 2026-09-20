@@ -124,6 +124,9 @@ export function Pagination({
   total = 1,
   siblings = 1,
   onChange,
+  ariaLabel = "Pagination",
+  previousLabel = "Previous page",
+  nextLabel = "Next page",
   className = "",
 } = {}) {
   const safeTotal = Math.max(1, Math.floor(finiteNumber(total, 1)));
@@ -132,7 +135,7 @@ export function Pagination({
 
   return h(
     "nav",
-    { className: joinClasses("m-pagination", className), ariaLabel: "Pagination" },
+    { className: joinClasses("m-pagination", className), ariaLabel },
     h(
       "button",
       {
@@ -140,7 +143,7 @@ export function Pagination({
         className: "m-pagination-item",
         disabled: safePage <= 1,
         onClick: () => onChange?.(safePage - 1),
-        ariaLabel: "Previous page",
+        ariaLabel: previousLabel,
       },
       "\u2039",
     ),
@@ -169,7 +172,7 @@ export function Pagination({
         className: "m-pagination-item",
         disabled: safePage >= safeTotal,
         onClick: () => onChange?.(safePage + 1),
-        ariaLabel: "Next page",
+        ariaLabel: nextLabel,
       },
       "\u203a",
     ),

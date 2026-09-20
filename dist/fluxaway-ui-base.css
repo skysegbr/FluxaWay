@@ -51,11 +51,13 @@
   --m-primary:        #0f766e;
   --m-primary-hover:  #115e59;
   --m-primary-soft:   #d9f3ef;
+  --m-on-primary:     #ffffff;
   --m-secondary:      #3f4f9f;
 
   --m-danger:         #b42318;
   --m-danger-hover:   #8f1d14;
   --m-danger-soft:    #fee4e2;
+  --m-on-danger:      #ffffff;
   --m-success:        #067647;
   --m-success-soft:   #dcfae6;
   --m-warning:        #b54708;
@@ -135,10 +137,12 @@
     --m-primary:       #2dd4bf;
     --m-primary-hover: #5eead4;
     --m-primary-soft:  #134e4a;
+    --m-on-primary:    #0f172a;
 
     --m-danger:        #f87171;
     --m-danger-hover:  #fca5a5;
     --m-danger-soft:   #450a0a;
+    --m-on-danger:     #0f172a;
     --m-success:       #4ade80;
     --m-success-soft:  #052e16;
     --m-warning:       #fbbf24;
@@ -168,10 +172,12 @@
   --m-primary:        #2dd4bf;
   --m-primary-hover:  #5eead4;
   --m-primary-soft:   #134e4a;
+  --m-on-primary:     #0f172a;
 
   --m-danger:         #f87171;
   --m-danger-hover:   #fca5a5;
   --m-danger-soft:    #450a0a;
+  --m-on-danger:      #0f172a;
   --m-success:        #4ade80;
   --m-success-soft:   #052e16;
   --m-warning:        #fbbf24;
@@ -200,10 +206,12 @@
   --m-primary:        #0f766e;
   --m-primary-hover:  #115e59;
   --m-primary-soft:   #d9f3ef;
+  --m-on-primary:     #ffffff;
 
   --m-danger:         #b42318;
   --m-danger-hover:   #8f1d14;
   --m-danger-soft:    #fee4e2;
+  --m-on-danger:      #ffffff;
   --m-success:        #067647;
   --m-success-soft:   #dcfae6;
   --m-warning:        #b54708;
@@ -230,6 +238,7 @@
   --m-primary:       #6d28d9;
   --m-primary-hover: #5b21b6;
   --m-primary-soft:  #ede9fe;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #9333ea;
   --m-focus:         #c4b5fd;
 }
@@ -238,6 +247,7 @@
   --m-primary:       #be123c;
   --m-primary-hover: #9f1239;
   --m-primary-soft:  #ffe4e6;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #db2777;
   --m-focus:         #fda4af;
 }
@@ -246,6 +256,7 @@
   --m-primary:       #1d4ed8;
   --m-primary-hover: #1e40af;
   --m-primary-soft:  #dbeafe;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #0284c7;
   --m-focus:         #93c5fd;
 }
@@ -254,6 +265,7 @@
   --m-primary:       #b45309;
   --m-primary-hover: #92400e;
   --m-primary-soft:  #fef3c7;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #ea580c;
   --m-focus:         #fcd34d;
 }
@@ -262,6 +274,7 @@
   --m-primary:       #047857;
   --m-primary-hover: #065f46;
   --m-primary-soft:  #d1fae5;
+  --m-on-primary:    #ffffff;
   --m-secondary:     #0d9488;
   --m-focus:         #6ee7b7;
 }
@@ -282,6 +295,7 @@
   --m-primary:       #a78bfa;
   --m-primary-hover: #c4b5fd;
   --m-primary-soft:  #4c1d95;
+  --m-on-primary:    #0f172a;
   --m-focus:         #a78bfa;
 }
 
@@ -289,6 +303,7 @@
   --m-primary:       #fb7185;
   --m-primary-hover: #fda4af;
   --m-primary-soft:  #4c0519;
+  --m-on-primary:    #0f172a;
   --m-focus:         #fb7185;
 }
 
@@ -296,6 +311,7 @@
   --m-primary:       #60a5fa;
   --m-primary-hover: #93c5fd;
   --m-primary-soft:  #1e3a8a;
+  --m-on-primary:    #0f172a;
   --m-focus:         #60a5fa;
 }
 
@@ -303,6 +319,7 @@
   --m-primary:       #fbbf24;
   --m-primary-hover: #fcd34d;
   --m-primary-soft:  #78350f;
+  --m-on-primary:    #0f172a;
   --m-focus:         #fbbf24;
 }
 
@@ -310,6 +327,7 @@
   --m-primary:       #34d399;
   --m-primary-hover: #6ee7b7;
   --m-primary-soft:  #064e3b;
+  --m-on-primary:    #0f172a;
   --m-focus:         #34d399;
 }
 
@@ -324,6 +342,7 @@
     --m-primary:       #a78bfa;
     --m-primary-hover: #c4b5fd;
     --m-primary-soft:  #4c1d95;
+    --m-on-primary:    #0f172a;
     --m-focus:         #a78bfa;
   }
 
@@ -331,6 +350,7 @@
     --m-primary:       #fb7185;
     --m-primary-hover: #fda4af;
     --m-primary-soft:  #4c0519;
+    --m-on-primary:    #0f172a;
     --m-focus:         #fb7185;
   }
 
@@ -338,6 +358,7 @@
     --m-primary:       #60a5fa;
     --m-primary-hover: #93c5fd;
     --m-primary-soft:  #1e3a8a;
+    --m-on-primary:    #0f172a;
     --m-focus:         #60a5fa;
   }
 
@@ -345,6 +366,7 @@
     --m-primary:       #fbbf24;
     --m-primary-hover: #fcd34d;
     --m-primary-soft:  #78350f;
+    --m-on-primary:    #0f172a;
     --m-focus:         #fbbf24;
   }
 
@@ -352,6 +374,7 @@
     --m-primary:       #34d399;
     --m-primary-hover: #6ee7b7;
     --m-primary-soft:  #064e3b;
+    --m-on-primary:    #0f172a;
     --m-focus:         #34d399;
   }
 

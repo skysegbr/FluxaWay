@@ -14,6 +14,9 @@ import {
   Dialog,
   Drawer,
   Button,
+  Chip,
+  Avatar,
+  Navbar,
 } from "../dist/fluxaway-components.js";
 import {
   LineChart as ChartLine,
@@ -304,6 +307,180 @@ test("Tabs: roving tabindex, arrow keys move focus and selection, aria linkage m
   );
   assert(container.querySelector("#panel-b"), "the newly selected tab's panel is now rendered");
   assertEqual(container.querySelector("#panel-a"), null, "the previous panel is no longer rendered");
+});
+
+// The tablist IS .m-tabs, with the tabs as direct children. The stylesheet once
+// styled a .m-tabs-list wrapper no component ever rendered, which left .m-tabs as
+// a column and stacked the tabs — against the ArrowLeft/ArrowRight contract above.
+test("Tabs: tabs sit in one row, and a narrow strip scrolls sideways without clipping", async () => {
+  const container = mountPoint();
+  const labels = ["Overview", "Orders", "Customers", "Inventory", "Reports", "Settings"];
+  const items = labels.map((label, index) => ({ value: `row-${index}`, label, disabled: index === 5 }));
+
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h("div", { id: "tabs-wide", style: { width: "900px" } }, h(Tabs, { value: "row-0", items })),
+        h("div", { id: "tabs-narrow", style: { width: "260px" } }, h(Tabs, { value: "row-0", items })),
+      ),
+    container,
+  );
+  await flush();
+
+  for (const id of ["tabs-wide", "tabs-narrow"]) {
+    const strip = container.querySelector(`#${id} [role="tablist"]`);
+    const tabs = [...strip.querySelectorAll('[role="tab"]')];
+    const tops = new Set(tabs.map((tab) => Math.round(tab.getBoundingClientRect().top)));
+
+    assertEqual(tabs.length, 6);
+    assert(tabs.every((tab) => tab.parentElement === strip), "tabs are direct children of the tablist");
+    assertEqual(tops.size, 1, `${id}: every tab shares one row`);
+    assert(strip.scrollHeight <= strip.clientHeight, `${id}: the strip never scrolls vertically`);
+
+    const stripBox = strip.getBoundingClientRect();
+    const activeBox = strip.querySelector(".m-tab-active").getBoundingClientRect();
+    assert(activeBox.bottom <= stripBox.bottom + 0.5, `${id}: the active indicator is not clipped below the strip`);
+  }
+
+  const wide = container.querySelector('#tabs-wide [role="tablist"]');
+  const narrow = container.querySelector('#tabs-narrow [role="tablist"]');
+  assert(wide.scrollWidth <= wide.clientWidth, "a wide strip fits");
+  assert(narrow.scrollWidth > narrow.clientWidth, "a narrow strip scrolls sideways instead of wrapping or shrinking");
+  assertEqual(getComputedStyle(narrow.querySelector("[disabled]")).opacity, "0.45", "a disabled tab looks disabled");
+});
+
+// ── Chip ────────────────────────────────────────────────────────────────────
+
+test("Chip: with onClick it is a focusable toggle button; without one, a static label", async () => {
+  const container = mountPoint();
+  let submits = 0;
+
+  function Wrapper() {
+    const [on, setOn] = useState(false);
+    return h(
+      "form",
+      { onSubmit: (event) => { event.preventDefault(); submits += 1; } },
+      h(Chip, { id: "chip-static", active: true }, "Status"),
+      h(Chip, { id: "chip-toggle", active: on, onClick: () => setOn(!on) }, "Filter"),
+      h(Chip, { id: "chip-radio", role: "radio", ariaChecked: "true", onClick: () => {} }, "Choice"),
+      h(Chip, { id: "chip-off", disabled: true, onClick: () => {} }, "Off"),
+    );
+  }
+
+  render(Wrapper, container);
+  await flush();
+
+  const still = container.querySelector("#chip-static");
+  assertEqual(still.tagName, "SPAN", "no onClick: a static label, not a control");
+  assertEqual(still.hasAttribute("aria-pressed"), false);
+  assertEqual(still.tabIndex, -1);
+
+  const toggle = container.querySelector("#chip-toggle");
+  assertEqual(toggle.tagName, "BUTTON", "onClick: a real button, reachable and operable by keyboard");
+  assertEqual(toggle.tabIndex, 0);
+  assertEqual(toggle.getAttribute("aria-pressed"), "false");
+  assert(toggle.classList.contains("m-chip"), "keeps the chip class");
+
+  toggle.focus();
+  assertEqual(document.activeElement, toggle, "it takes focus");
+  toggle.click();
+  await flush();
+  assertEqual(container.querySelector("#chip-toggle").getAttribute("aria-pressed"), "true", "active is announced as pressed");
+  assert(container.querySelector("#chip-toggle").classList.contains("m-chip-active"));
+  assertEqual(submits, 0, "type=button: a chip inside a form never submits it");
+
+  const radio = container.querySelector("#chip-radio");
+  assertEqual(radio.getAttribute("role"), "radio");
+  assertEqual(radio.hasAttribute("aria-pressed"), false, "an explicit role opts out of aria-pressed");
+
+  assertEqual(container.querySelector("#chip-off").disabled, true);
+});
+
+// ── Navbar ──────────────────────────────────────────────────────────────────
+
+// The mobile menu is in-flow, so closing it is a layout change. A tapped link
+// closes it while the browser is computing the anchor's scroll position; left
+// animating, a smooth scroll lands the target off by the menu's height (and
+// WebKit abandons the scroll). The end-to-end measurement needs a real tap at a
+// phone width; what the suite can hold is the contract that makes it work.
+test("Navbar: a tapped link closes the menu without the collapse animation; every other way keeps it", async () => {
+  const container = mountPoint();
+  render(
+    () => h(Navbar, { brand: "Shop", items: [{ label: "Contact", href: "#navbar-instant-target" }] }),
+    container,
+  );
+  await flush();
+
+  const nav = container.querySelector(".m-navbar");
+  const toggle = container.querySelector(".m-navbar-toggle");
+  const state = () => [nav.classList.contains("m-navbar-open"), nav.classList.contains("m-navbar-instant")].join();
+
+  toggle.click();
+  await flush();
+  assertEqual(state(), "true,false", "opening animates");
+
+  container.querySelector(".m-navbar-link").click();
+  await flush();
+  assertEqual(state(), "false,true", "a link closes it in the same frame");
+
+  toggle.click();
+  await flush();
+  assertEqual(state(), "true,false", "the next opening animates again");
+
+  keydown(document, "Escape");
+  await flush();
+  assertEqual(state(), "false,false", "Escape keeps the collapse animation");
+
+  toggle.click();
+  await flush();
+  toggle.click();
+  await flush();
+  assertEqual(state(), "false,false", "so does the toggle");
+
+  let rule = null;
+  const visit = (rules) => {
+    for (const candidate of rules) {
+      if (candidate.selectorText === ".m-navbar-instant .m-navbar-menu-wrap") rule = candidate;
+      if (candidate.cssRules) visit(candidate.cssRules);
+    }
+  };
+  for (const sheet of document.styleSheets) visit(sheet.cssRules);
+  assert(rule, "the stylesheet has the instant-close rule");
+  assert(rule.style.transition.startsWith("none"), `it turns the transition off, got "${rule.style.transition}"`);
+
+  history.replaceState(null, "", location.pathname + location.search);
+});
+
+// ── Avatar ──────────────────────────────────────────────────────────────────
+
+// The recipe AI_SPEC teaches for an avatar that sits next to its written name.
+test("Avatar: names itself when alone, and ariaHidden takes it out of the reading order", async () => {
+  const container = mountPoint();
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h(Avatar, { id: "avatar-alone", name: "Ada Lovelace" }),
+        h(Avatar, { id: "avatar-beside-text", name: "Ada Lovelace", ariaHidden: "true" }),
+        h(Avatar, { id: "avatar-photo-beside-text", name: "Ada Lovelace", src: "data:image/gif;base64,R0lGODlhAQABAAAAACw=", ariaHidden: "true" }),
+      ),
+    container,
+  );
+  await flush();
+
+  const alone = container.querySelector("#avatar-alone");
+  assertEqual(alone.getAttribute("role"), "img");
+  assertEqual(alone.getAttribute("aria-label"), "Ada Lovelace");
+  assertEqual(alone.hasAttribute("aria-hidden"), false);
+
+  for (const id of ["avatar-beside-text", "avatar-photo-beside-text"]) {
+    const hidden = container.querySelector(`#${id}`);
+    assertEqual(hidden.getAttribute("aria-hidden"), "true", `${id}: the prop reaches the element`);
+    assert(hidden.classList.contains("m-avatar"), "still drawn as an avatar");
+  }
 });
 
 // ── Dialog ──────────────────────────────────────────────────────────────────

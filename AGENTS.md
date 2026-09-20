@@ -226,6 +226,33 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   verify the destination's primary content and following transition fit the
   intended desktop viewport. Keep natural vertical flow on mobile. See
   `docs/AI_SPEC.md` §3 and §10 and `examples/inox-landing`.
+- **The public imports `@main`.** `docs/AI_SPEC.md` §2 and the tutorial prompts
+  point at `cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/…`, so every push to
+  `main` that touches `dist/` is live for users (jsDelivr caches a branch for up
+  to 12h; `https://purge.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/<file>`
+  forces it). Behavior changes land on a branch and reach `main` together.
+- **Text a component writes on its own is a prop with an English default**, in the
+  existing convention: `closeLabel`, `ariaLabel`, `placeholder`, `emptyLabel`,
+  `requiredLabel`, `openMenuLabel`… A new component that needs an `aria-label` or
+  a placeholder takes it as a prop; it never hard-codes the string and never
+  reads a global table. `tests/labels.test.js` holds the contract.
+- **Whoever sets `--m-primary` sets `--m-on-primary` in the same rule** (same for
+  `--m-danger` / `--m-on-danger`). The fill is dark in the light theme and light
+  in the dark one, so a fixed `#fff` reads ~1.8:1 in dark. Never write
+  `color: #fff` on a `var(--m-primary)` background — `tests/button.test.js` walks
+  every palette × theme at 4.5:1 and asserts the pairing across the stylesheet.
+  The metallic design deliberately inherits the theme token: its own
+  `--mx-on-primary` is tuned for the dark-core button only.
+- **One URL spelling per module, or the framework loads twice.** ES modules are
+  keyed by URL and the component modules import `./fluxaway.js` internally, so an
+  app importing `fluxaway.js?v=2`, or `fluxaway.js` next to
+  `fluxaway-components-core.min.js` (the `.min.js` files import their `.min.js`
+  siblings), gets two cores, a blank page and `useState can only be used during
+  rendering`. Never suggest a query string on a module URL. AI_SPEC §14 has the
+  import-map recipe.
+- **`h(Component)` runs the component on the spot** — outside a render pass it
+  throws "can only be used during rendering". That includes test code:
+  `renderToString(() => h(Button, …))`, never `renderToString(h(Button, …))`.
 
 ---
 

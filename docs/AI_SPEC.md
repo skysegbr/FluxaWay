@@ -120,7 +120,9 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.24.2`.
+release tag such as `@v0.25.0`. In a multi-file project the URL must be
+**identical in every file**, or the framework loads twice — see §14, "The same
+app from the CDN".
 
 Typical HTML entry point:
 
@@ -246,6 +248,17 @@ For an app outside this repo, any static file server works
 (`python -m http.server`) — the rule is: **served over HTTP, judged in a
 browser**. Syntax-check a single file, if you must, with the browser itself
 (the console reports the parse error and line) — never with `node --check`.
+
+**How many browsers?** It depends on what you are building:
+
+- **An app** (a landing page, a dashboard, anything built *with* FluxaWay): one
+  browser is the bar — load every screen, exercise it, and end with a clean
+  console. FluxaWay's own suite already runs on Chromium, Firefox and WebKit, so
+  the components are covered; your job is your own code. Check a second engine
+  only for what is engine-sensitive in **your** CSS or layout (the measured
+  landing contract below, `position: sticky`, scroll behavior, `100svh`).
+- **The framework itself** (anything under `dist/` in this repo): all three
+  engines, always. A Chromium-green / WebKit-red result is a real bug.
 
 ### ❌ NEVER edit a generated file in `dist/`
 
@@ -469,6 +482,60 @@ h(Button, { onClick: handleSubmit(), disabled: isSubmitting }, 'Sign in')
 ```
 
 `field(name)` returns `{ name, value, error, onBlur, onInput, onChange }`.
+For a checkbox: `field('terms', { type: 'checkbox' })` returns `checked` instead
+of `value`. `field(name, { onBlur, onInput, onChange })` chains your own handlers.
+
+Options: `initialValues`, `validate(values) → { field: 'message' }`, `onSubmit(values, helpers)`,
+`validateOnBlur` (default `true`), `validateOnChange` (default `false`).
+
+**Everything `useForm` returns** (do not inspect the object to find these):
+
+| Key | What it is |
+|---|---|
+| `values`, `errors`, `touched` | current state, keyed by field name |
+| `field(name, options?)` | props to spread on a field component |
+| `handleSubmit(fn?)` | returns the event handler: validates; if invalid, touches every field (so all errors show) and resolves `false`; otherwise calls `fn` or `onSubmit` and resolves `true` |
+| `isSubmitting` | `true` while an async `onSubmit` is pending — use it for `disabled` |
+| `isValid` | no error is currently recorded |
+| `dirty` | any value differs from `initialValues` |
+| `submitCount` | how many times submit was attempted |
+| `reset(nextValues?)` | back to `initialValues` (or new ones); clears errors, touched, submitCount |
+| `setValue(name, value)`, `setValues(partial \| fn)` | set programmatically |
+| `setFieldError(name, message)` | record an error and touch the field — for **server-side** errors |
+| `setErrors(errors)`, `setFieldTouched(name, bool?)`, `setTouched(map)` | low-level setters |
+| `validateForm(values?)` | run `validate` now; returns the errors |
+| `serialize()` | a plain copy of `values` |
+
+`onSubmit`'s second argument carries the same helpers (`reset`, `setFieldError`,
+`setValues`, …), so the usual endings need no outer variable:
+
+```js
+onSubmit: async (values, { reset, setFieldError }) => {
+  const result = await api.send(values);
+  if (result.emailTaken) return setFieldError('email', 'E-mail already registered');
+  reset();                       // clear the form after a successful send
+}
+```
+
+Prefer a real form so Enter submits too:
+`h('form', { noValidate: true, onSubmit: handleSubmit() }, …, h(Button, { type: 'submit' }, 'Send'))`.
+
+**When `field(name).error` appears and goes away** (defaults: `validateOnBlur: true`,
+`validateOnChange: false`):
+
+- It is `""` until the field is **touched**. A field becomes touched when it
+  **blurs** or when `handleSubmit` runs — never by typing.
+- Blur validates the whole form, so an error can already be recorded for a field
+  the user has not reached. It stays hidden until that field is touched.
+- Typing never raises a new error. It re-checks only an error **already recorded
+  for the field being edited**, so the message clears the moment the value
+  becomes valid — it does not wait for the next blur.
+- `validateOnChange: true` opts into the eager mode: the field is touched and
+  the whole form validated on every keystroke.
+
+Do not add your own `onBlur`/`onInput` revalidation on top of `field()` — the
+error line appearing or vanishing between a button's `mousedown` and `mouseup`
+moves the button and the click is lost.
 
 ### `useLocalStorage`
 
@@ -970,6 +1037,29 @@ h('button', { ariaExpanded: isOpen ? 'true' : 'false' })
 h('span', { ariaHidden: true })                 // WRONG — sets aria-hidden=""
 ```
 
+### SVG through `h()`
+
+`h('svg', …)` and everything inside it is created in the SVG namespace — inline
+icons and illustrations need nothing special. `className`, `viewBox`, `width`,
+`fill`, `d`, `ariaHidden` work as written. **Presentation attributes keep their
+real hyphenated names, as quoted keys** — there is no camelCase alias for them:
+
+```js
+h('svg', { className: 'l-icon', viewBox: '0 0 24 24', width: 24, height: 24,
+           fill: 'none', stroke: 'currentColor',
+           'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+           ariaHidden: 'true', focusable: 'false' },
+  h('path', { d: 'M4 12h16M12 4v16' }),
+)
+
+h('path', { strokeWidth: '2' })   // WRONG — writes a dead strokeWidth="2" attribute;
+                                  // the stroke keeps its inherited width, silently
+```
+
+A decorative icon gets `ariaHidden: 'true'`; an icon that carries meaning on its
+own gets `role: 'img'` + `ariaLabel`. Use `stroke: 'currentColor'` /
+`fill: 'currentColor'` so it follows the text color and the theme.
+
 ### `style` prop
 
 Accepts a **camelCase object** or a CSS string:
@@ -1158,6 +1248,73 @@ the current `theme` so local Metallic light/dark recipes follow the document;
 material selection itself remains independent. The docs-site Button reference
 is the canonical live example.
 
+### `className` and extra props pass through
+
+Every component accepts `className` and **merges** it onto its root element —
+it never replaces the component's own `m-*` classes. Use it to position or size
+a component from your CSS: `h(Card, { className: 'l-plan' })`.
+
+Any prop the component does not know (`id`, `style`, `dataset`, `aria*`, `on*`,
+`title`…) is forwarded to that same root element, so
+`h(Navbar, { id: 'top', ariaLabel: 'Main' })` puts both on the `<nav>`. The
+exceptions take **only** their documented props plus `className`: `Tabs`,
+`BottomNav`, `Pagination`, `ContextMenu`, `ToastStack`, `BottomSheet`.
+
+Field components (TextField, Textarea, Select, NumberInput…) split it: `className`
+styles the **wrapper** (label + control + help), `inputClassName` styles the
+control, and extra props go to the **control** — that is why `...field('name')`,
+`placeholder`, `type`, `autocomplete` and `onInput` reach the `<input>`.
+
+Do not inspect the DOM to find the `m-*` class names and restyle them from
+outside: they are not API. Add your own class through `className`, or set `--m-*`
+tokens on a wrapper (§11).
+
+### Built-in text is always a prop (pages that are not in English)
+
+A few components have to write text of their own: mostly *invisible*
+`aria-label`s a screen reader speaks ("Open menu", "required", "Next page"),
+plus some visible placeholders and the DatePicker calendar. Each one is a prop
+with an English default. **On a page in another language, pass them** —
+otherwise a screen reader announces English in the middle of your page.
+
+| Component | Props (English default) |
+|---|---|
+| every field — TextField, Textarea, Select, Combobox, Slider, RangeSlider, DatePicker, NumberInput, TimePicker, RadioGroup, FormField | `requiredLabel` ("required") |
+| Navbar | `openMenuLabel` ("Open menu"), `closeMenuLabel` ("Close menu") |
+| ThemeToggle | `switchToLightLabel`, `switchToDarkLabel` |
+| PaletteSwitcher / DesignSwitcher | `ariaLabel`, `customLabel`, `paletteLabels` ({ violet: 'Violeta' }) / `ariaLabel` |
+| Dialog, Drawer, BottomSheet / Toast, ToastStack | `closeLabel` ("Close") / `closeLabel` ("Dismiss") |
+| Pagination | `ariaLabel` ("Pagination"), `previousLabel`, `nextLabel` |
+| Combobox | `placeholder` ("Select..."), `searchPlaceholder` ("Search..."), `emptyLabel` ("No results") |
+| DatePicker | `placeholder`, `previousMonthLabel`, `nextMonthLabel`, `monthNames` (12, January first), `weekdayNames` (7, Sunday first), `formatValue(date)`, `formatDayLabel(date)` |
+| TimePicker / NumberInput / RangeSlider / FileDropZone | `placeholder` / `decrementLabel`, `incrementLabel` / `minLabel`, `maxLabel` / `label` |
+| Table, DataTable / EmptyState / Spinner | `emptyTitle`, `emptyDescription` / `title` / `label` ("Loading") |
+| CommandPalette | `ariaLabel`, `placeholder`, `emptyLabel` |
+| AvatarGroup | `moreLabel` — a function: `(count) => 'mais ' + count` |
+| SpeedDial / Breadcrumb, TreeView, ContextMenu | `label` / `ariaLabel` |
+
+```js
+// A Brazilian Portuguese contact form
+h(Navbar, { brand: 'Flor & Cia', items, openMenuLabel: 'Abrir menu', closeMenuLabel: 'Fechar menu' })
+h(ThemeToggle, { switchToLightLabel: 'Mudar para o tema claro', switchToDarkLabel: 'Mudar para o tema escuro' })
+h(TextField, { ...field('nome'), label: 'Seu nome', required: true, requiredLabel: 'obrigatório' })
+h(DatePicker, {
+  label: 'Data da entrega', value, onChange, placeholder: 'Escolha uma data',
+  previousMonthLabel: 'Mês anterior', nextMonthLabel: 'Próximo mês',
+  monthNames: MESES, weekdayNames: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+  formatValue: (date) => date.toLocaleDateString('pt-BR'),            // trigger shows 20/09/2026
+  formatDayLabel: (date) => date.toLocaleDateString('pt-BR', { dateStyle: 'full' }),
+})  // value / onChange stay ISO 'YYYY-MM-DD'
+```
+
+Keep repeated wording in `data.js` (e.g. `export const UI = { required: 'obrigatório' }`)
+or in a `useTranslation(dict)` dictionary (§6) and pass it where needed.
+
+`requiredLabel: ''` hides the asterisk from screen readers (it stays visible).
+Use it on TextField / Textarea / Select: their native `required` attribute
+already makes the reader say "required" in the **user's** language, so a spoken
+asterisk only repeats it.
+
 ### Basic
 
 ```js
@@ -1171,6 +1328,21 @@ h(Button, {
   disabled: false,
   onClick: fn,
 }, 'Clear filters')
+
+// Button as a LINK — pass `href` and it renders <a class="m-button …"> instead of
+// <button>, identical to look at. Use it for every call-to-action that navigates
+// (anchors, other pages, WhatsApp/mailto/tel) — never onClick + location.href,
+// and never hand-write the m-button classes on your own <a>.
+h(Button, { variant: 'contained', href: '#pricing' }, 'See plans')
+h(Button, { variant: 'outline', href: 'https://example.com', target: '_blank' }, 'Docs')
+//   target: '_blank' gets rel="noopener noreferrer" unless you pass your own rel.
+//   disabled + href → the href is dropped (role="link" aria-disabled="true"):
+//   out of the tab order, nothing to navigate to. `type` is ignored on a link.
+//   IconButton forwards href the same way.
+// SECURITY: `href` is passed through UNTOUCHED, exactly like h('a', { href }) —
+// FluxaWay never rewrites URLs. Any URL that came from user input, an API or
+// third-party content goes through safeUrl() (§8):
+h(Button, { href: safeUrl(shop.website, '#') }, 'Visit the shop')
 
 // Official Button effects — exported as BUTTON_EFFECTS from the core module:
 // 'reflection' | 'edge' | 'split' | 'aperture' | 'charge' | 'corners' |
@@ -1207,8 +1379,14 @@ h(IconButton, {
 h(Badge, null, 'New')
 h(Badge, { className: 'm-badge-success' }, '3')
 
-// Chip — toggleable tag
-h(Chip, { active: true, onClick: fn }, 'Design')
+// Chip — a static label, or a toggle/filter when it has onClick
+h(Chip, { active: form.dirty }, 'Modified')             // no onClick → <span>, not focusable
+h(Chip, { active: on, onClick: () => setOn(!on) }, 'Design')
+// with onClick → <button type="button" aria-pressed="true|false">: focusable,
+// Enter/Space work, `disabled` is supported. This is the component for filter
+// chips — never put onClick on a Badge or a plain <span>. For a one-of-many
+// group, wrap the chips in h('div', { role: 'group', ariaLabel: 'Filter by…' }).
+// Passing your own `role` (e.g. 'radio' + ariaChecked) turns aria-pressed off.
 
 // FAB — Floating Action Button
 h(FAB, {
@@ -1233,6 +1411,13 @@ h(SpeedDial, {
 // Avatar — initials fallback derived from `name` when there is no src
 h(Avatar, { name: 'Ada Lovelace', size: 'md' })   // renders "AL"
 h(Avatar, { src: '/u/ada.png', name: 'Ada Lovelace' })
+// a11y: Avatar names itself — role="img" + aria-label from `name` (or the img alt).
+// Right when it stands ALONE. When the same name is written next to it, a screen
+// reader says it twice; hide the avatar from readers and let the text speak:
+h('div', { className: 'author' },
+  h(Avatar, { name: 'Ada Lovelace', ariaHidden: 'true' }),
+  h('span', null, 'Ada Lovelace'),
+)
 // sizes: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 // AvatarGroup — overlapping stack; avatars beyond `max` collapse into "+N"
@@ -1249,8 +1434,10 @@ h(Divider, { vertical: true }) // inline separator, role="separator"
 ### Layout
 
 ```js
-// Card
-h(Card, { padded: true }, h('p', null, 'Content'))
+// Card — `padded` DEFAULTS TO TRUE (16px). Writing it is optional; the examples
+// in this document spell it out only for clarity.
+h(Card, null, h('p', null, 'Content'))                 // padded
+h(Card, { padded: false }, h('img', { src, alt }))     // edge-to-edge: media, tables, lists
 // CSS: add m-card-hover for a clickable card (pointer + hover border/shadow)
 
 // Card variants — CSS-only modifier classes on top of Card/.m-card, combine
@@ -1655,9 +1842,12 @@ h(Tabs, {
   items: [
     { value: 'overview', label: 'Overview' },
     { value: 'settings', label: 'Settings' },
-    { value: 'logs',     label: 'Logs' },
+    { value: 'logs',     label: 'Logs', disabled: true },   // optional
   ],
+  // className: 'm-tabs-pills',   // optional — filled "pill" style instead of underline
 })
+// Tabs renders ONLY the horizontal tab strip (it is the role="tablist" element);
+// the strip scrolls sideways when it does not fit. Put each TabPanel after it.
 // TabPanel — renders children only when active
 h(TabPanel, { id: 'overview', activeId: activeTab },
   h('p', null, 'Overview content')
@@ -1677,6 +1867,16 @@ h(Navbar, {
   ],
   actions: h(Button, { variant: 'tonal' }, 'Login'),
 })
+// Below 768px the items collapse behind a ☰ button. The mobile menu is IN-FLOW:
+// it pushes the page down instead of covering it (open/defaultOpen/onToggle
+// control it). Anchor links (`href: '#contact'`) are safe with a sticky header
+// and `scroll-behavior: smooth`: a tapped link closes the menu in the same
+// frame, so the section lands where it should. For a sticky header wrap it
+// yourself and reserve its height for anchors:
+//   header { position: sticky; top: 0; z-index: var(--m-z-appbar); }
+//   html   { scroll-padding-top: 60px; }        /* the closed Navbar's height */
+// Do NOT rebuild the menu as a position:fixed/absolute overlay to work around
+// scrolling — that was only needed before this was fixed.
 
 // AppBar — sticky top bar
 h(AppBar, {
@@ -1697,7 +1897,7 @@ h(BottomNav, {
 })
 
 // ThemeToggle — icon button that calls useTheme().toggleTheme()
-h(ThemeToggle)  // no props required; renders sun/moon SVG icon
+h(ThemeToggle)  // renders sun/moon SVG icon; switchToLightLabel / switchToDarkLabel set its spoken name
 
 // PaletteSwitcher — row of color swatches, calls usePalette().setPalette()
 h(PaletteSwitcher)  // no props required
@@ -2423,10 +2623,12 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
                       FluxaWay brand palette in docs/BRAND.md is separate) */
 --m-primary-hover  /* #115e59 */
 --m-primary-soft   /* light tint #d9f3ef */
+--m-on-primary     /* text/icons ON a solid --m-primary fill: #ffffff light, #0f172a dark */
 --m-secondary      /* #3f4f9f */
 
 --m-danger         /* red #b42318 */
 --m-danger-soft    /* #fee4e2 */
+--m-on-danger      /* text/icons ON a solid --m-danger fill: #ffffff light, #0f172a dark */
 --m-success        /* green #067647 */
 --m-success-soft   /* #dcfae6 */
 --m-warning        /* orange #b54708 */
@@ -2507,9 +2709,25 @@ All tokens are CSS custom properties set on `:root` by `fluxaway-ui.css`.
 Override tokens on a scoped element or globally:
 
 ```css
-:root { --m-primary: #7c3aed; } /* purple brand */
+:root { --m-primary: #7c3aed; --m-on-primary: #ffffff; } /* purple brand */
 .my-widget { --m-radius: 0; }   /* square corners for this widget */
 ```
+
+**Whoever sets `--m-primary` sets `--m-on-primary` in the same rule** (same for
+`--m-danger` / `--m-on-danger`). The fill flips from a dark color in the light
+theme to a light one in the dark theme, so no fixed text color survives both:
+white on the dark-theme teal is 1.86:1. Every built-in theme and palette rule
+follows this; your override must too, with a pair that reaches 4.5:1. A brand
+color that should change per theme needs both halves:
+
+```css
+:root               { --m-primary: #7c3aed; --m-on-primary: #ffffff; }
+[data-theme="dark"] { --m-primary: #a78bfa; --m-on-primary: #0f172a; }
+```
+
+Never hard-code `color: #fff` on a `var(--m-primary)` background in app CSS —
+use `color: var(--m-on-primary)`. `usePalette().setCustomColor(hex)` derives
+`--m-on-primary` for you (white or black, whichever contrasts more).
 
 Public animation utility classes (apply directly to any element — distinct
 from the internal `m-fade-in`/`m-scale-in`/`m-slide-up` keyframes used by
@@ -2702,6 +2920,7 @@ my-app/
 |------|--------|
 | **No `src/` wrapper** | Projects live directly in their named folder |
 | **No `pages/` / `store/` / `utils/`** | Not used in FluxaWay — keep it flat |
+| **Small helpers get a named module** | A pure function that is neither a component nor a hook (format a price, build a WhatsApp URL) lives in its own lower-case file **named after what it does** — `format.js`, `links.js` — next to what uses it: in `components/` (or the domain folder) when one area uses it, at the root when the whole app does. Never a `utils/` folder or a grab-bag `utils.js`, never inlined in `app.js`, never a second export squeezed into a component file |
 | **One component per file** | Small, single-purpose function |
 | **Paired CSS** | `Hero.js` → `Hero.css` — always a sibling file |
 | **CSS imported centrally** | `styles.css` collects all component CSS via `@import`. Components do NOT import CSS themselves |
@@ -2712,8 +2931,13 @@ my-app/
 
 ### Scaling to domain subfolders
 
-When an app grows beyond ~6 components, group by feature/domain **inside** `components/`.
-Never group by type (`forms/`, `ui/`, `shared/`).
+**The trigger is a domain, not a count.** Create `components/<domain>/` when
+**three or more files belong to the same feature** — `LoginForm.js`,
+`RegisterForm.js`, `useAuth.js` → `auth/`. A component's paired `.css` does not
+count toward the three. Until then, stay flat, however many components there
+are: a landing page of eight independent sections (`Hero`, `Features`, `Pricing`,
+… `Footer`) is eight flat component files, because no two of them share a
+feature. Never group by type (`forms/`, `ui/`, `shared/`).
 
 ```
 my-app/
@@ -2749,8 +2973,7 @@ my-app/
 | **`styles.css` still collects everything** | Even nested CSS is imported at root — components never import their own CSS. Exception: in a large app with lazy routes, each route's domain CSS moves to a per-route `css:` collector and `styles.css` keeps only the critical shell (see "Code splitting in large apps") |
 | **Domain hook lives in its domain** | `dashboard/useDashboard.js`, not a separate `hooks/` folder |
 | **`data.js` stays at root** | Unless the project is very large, keep one `data.js`; don't split per domain |
-| **Minimum 2 files to justify a folder** | Don't create `auth/` for a single `LoginForm.js` |
-| **Flat first, then split** | Start flat. Create a subfolder when you have 3+ files for the same domain |
+| **Flat first, then split** | Start flat. A subfolder needs 3+ `.js` files of the **same** domain (paired `.css` not counted) — never one folder per component, and never a folder just because the app passed some number of components |
 
 ### Domain-owned context
 
@@ -3212,16 +3435,20 @@ render(App, document.getElementById('app'));
 ## 14. Complete multi-file app (domain-componentized)
 
 A landing page split across `data.js` + two components + paired CSS.
-This is the structure to use for any real app.
+This is the structure to use for any real app. Note what it does **not** do:
+it does not rebuild a navbar, a card or a button by hand, and it defines no
+colors of its own — the design system's components and `--m-*` tokens (§11) give
+it a dark theme and every palette for free.
 
-**`index.html`**
+**`index.html`** — `fluxaway-ui.css` first, then your `styles.css`
 ```html
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="/dist/fluxaway-ui.css">  <!-- the design system, FIRST -->
+  <link rel="stylesheet" href="./styles.css">           <!-- then your app -->
   <title>My App</title>
 </head>
 <body>
@@ -3240,54 +3467,53 @@ export const PLANS = [
 
 export const NAV_LINKS = [
   { href: '#pricing', label: 'Pricing' },
-  { href: '#contact', label: 'Contact' },
+  { href: 'mailto:hello@example.com', label: 'Contact' },
 ];
 ```
 
-**`components/Navbar.js`** — receives data as props, uses prefix `a-`
+**`format.js`** — a small pure helper: its own lower-case module, named after what it does (§12)
 ```js
-import { h, useState } from '/dist/fluxaway.js';
+export function formatPrice(price) {
+  return price === 0 ? 'Free' : `$${price}/mo`;
+}
+```
 
-export function Navbar({ links }) {
-  return h('header', { className: 'a-navbar' },
-    h('span', { className: 'a-brand' }, 'My App'),
-    h('nav', null,
-      links.map((l) => h('a', { key: l.href, href: l.href, className: 'a-nav-link' }, l.label))
-    ),
+**`components/TopBar.js`** — wraps FluxaWay's `Navbar`; named `TopBar` so it does not shadow it
+```js
+import { h } from '/dist/fluxaway.js';
+import { Navbar } from '/dist/fluxaway-components-nav.js';
+import { ThemeToggle } from '/dist/fluxaway-components-theme.js';
+
+export function TopBar({ links }) {
+  return h('header', { className: 'a-topbar' },
+    h(Navbar, { brand: 'My App', items: links, actions: h(ThemeToggle) }),
   );
 }
 ```
 
-**`components/Navbar.css`** — paired, imported by `styles.css`
+**`components/TopBar.css`** — paired, imported by `styles.css`
 ```css
-.a-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: var(--a-surface);
-  border-bottom: 1px solid var(--a-border);
-}
-.a-brand   { font-weight: 700; font-size: 1.25rem; }
-.a-nav-link { color: var(--a-text); text-decoration: none; margin-left: 1.5rem; }
+.a-topbar { position: sticky; top: 0; z-index: var(--m-z-appbar); }
 ```
 
-**`components/Pricing.js`** — maps over props data
+**`components/Pricing.js`** — maps over props data; `Card` and a link-`Button`, prefix `a-` for its own classes
 ```js
 import { h } from '/dist/fluxaway.js';
+import { Button, Card } from '/dist/fluxaway-components-core.js';
+import { formatPrice } from '../format.js';
 
 export function Pricing({ plans }) {
   return h('section', { className: 'a-pricing', id: 'pricing' },
     h('h2', { className: 'a-pricing-title' }, 'Plans'),
     h('div', { className: 'a-pricing-grid' },
       plans.map((plan) =>
-        h('div', { key: plan.id, className: 'a-plan-card' },
+        h(Card, { key: plan.id, className: 'a-plan' },
           h('h3', null, plan.name),
-          h('p', { className: 'a-plan-price' }, plan.price === 0 ? 'Free' : `$${plan.price}/mo`),
+          h('p', { className: 'a-plan-price' }, formatPrice(plan.price)),
           h('ul', null,
             plan.features.map((f) => h('li', { key: f }, f))
           ),
-          h('a', { className: 'a-plan-cta', href: '#contact' }, 'Get started'),
+          h(Button, { variant: 'contained', href: 'mailto:hello@example.com' }, 'Get started'),
         )
       ),
     ),
@@ -3295,31 +3521,21 @@ export function Pricing({ plans }) {
 }
 ```
 
-**`components/Pricing.css`** — paired CSS
+**`components/Pricing.css`** — paired CSS: layout only, colors and spacing from `--m-*`
 ```css
-.a-pricing       { padding: 5rem 1.5rem; text-align: center; }
-.a-pricing-title { font-size: 2rem; margin-bottom: 2.5rem; }
-.a-pricing-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; max-width: 800px; margin: 0 auto; }
-.a-plan-card     { background: var(--a-surface); border: 1px solid var(--a-border); border-radius: 12px; padding: 2rem; }
-.a-plan-price    { font-size: 1.75rem; font-weight: 700; color: var(--a-accent); margin: 0.5rem 0 1.5rem; }
-.a-plan-cta      { display: inline-block; margin-top: 1.5rem; padding: 0.6rem 1.5rem; background: var(--a-accent); color: #fff; border-radius: 6px; text-decoration: none; }
+.a-pricing       { padding: var(--m-space-12) var(--m-space-4); text-align: center; }
+.a-pricing-title { font-size: var(--m-font-size-3xl); margin: 0 0 var(--m-space-8); }
+.a-pricing-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--m-space-6); max-width: 800px; margin: 0 auto; }
+.a-plan ul       { list-style: none; padding: 0; margin: 0 0 var(--m-space-6); color: var(--m-text-muted); }
+.a-plan-price    { font-size: var(--m-font-size-2xl); font-weight: 700; color: var(--m-primary); margin: var(--m-space-2) 0 var(--m-space-5); }
 ```
 
 **`styles.css`** — central entry point, collects all component CSS
 ```css
-@import './components/Navbar.css';
+@import './components/TopBar.css';
 @import './components/Pricing.css';
 
-:root {
-  --a-bg:      #f8fafc;
-  --a-surface: #ffffff;
-  --a-text:    #0f172a;
-  --a-border:  #e2e8f0;
-  --a-accent:  #4f46e5;
-}
-
-* { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; background: var(--a-bg); color: var(--a-text); }
+html { scroll-behavior: smooth; scroll-padding-top: 60px; } /* anchors clear the sticky bar */
 
 .a-page { min-height: 100vh; }
 ```
@@ -3328,12 +3544,12 @@ body { margin: 0; font-family: system-ui, sans-serif; background: var(--a-bg); c
 ```js
 import { h, render } from '/dist/fluxaway.js';
 import { NAV_LINKS, PLANS } from './data.js';
-import { Navbar }  from './components/Navbar.js';
+import { TopBar }  from './components/TopBar.js';
 import { Pricing } from './components/Pricing.js';
 
 function App() {
   return h('div', { className: 'a-page' },
-    h(Navbar,  { links: NAV_LINKS }),
+    h(TopBar, { links: NAV_LINKS }),
     h('main', null,
       h(Pricing, { plans: PLANS }),
     ),
@@ -3342,6 +3558,44 @@ function App() {
 
 render(App, document.getElementById('app'));
 ```
+
+### The same app from the CDN (no local `/dist/`)
+
+Replace **every** `/dist/…` specifier — in `index.html` and in each `.js` file —
+with the full CDN URL (§2):
+
+```js
+import { h } from 'https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js';
+import { Button, Card } from 'https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-core.js';
+```
+
+**The URL must be character-for-character identical in every file.** The
+browser keys ES modules by URL, so two spellings of `fluxaway.js` load the
+framework **twice**, and the two copies do not share render state. The symptom
+is a blank page and, in the console, `FluxaWay: render failed … useState can
+only be used during rendering`. All of these create a second copy:
+
+- a different ref in one file (`@main` here, a release tag there);
+- a query string on some imports (`fluxaway.js?v=2`) — the component modules
+  import `./fluxaway.js` internally, without it;
+- mixing builds: `fluxaway.js` with `fluxaway-components-core.min.js`. The
+  `.min.js` files import their `.min.js` siblings — use **all** `.min.js` or none;
+- a CDN import in one file and a `/dist/` import in another.
+
+The barrel (`fluxaway-components.js`) and the category modules of the **same**
+ref mix freely: the barrel only re-exports those same URLs.
+
+To write the URL **once**, add an import map to `index.html`, before the module
+script (supported by every evergreen browser):
+
+```html
+<script type="importmap">
+{ "imports": { "/dist/": "https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/" } }
+</script>
+```
+
+With it, every file keeps the `/dist/…` imports exactly as written in this
+document. The stylesheet `<link>` is not a module: give it the full CDN URL.
 
 ---
 
@@ -3369,6 +3623,7 @@ Before submitting any FluxaWay code, verify:
 - [ ] aria-* attributes use camelCase: `ariaLabel`, `ariaHidden`, etc.
 - [ ] aria-* boolean-ish values are the string `"true"`/`"false"`, not a JS boolean
 - [ ] Style is a camelCase object: `{ fontSize: '1rem' }` not `{ 'font-size': '1rem' }`
+- [ ] SVG presentation attributes are the opposite: real hyphenated names as quoted keys — `'stroke-width'`, not `strokeWidth` (§8)
 - [ ] `useEffect` cleanup returns a function (not a Promise)
 - [ ] Conditional rendering uses `&&` or ternary — no returning `undefined` without `null`
 - [ ] Elements with `innerHTML` have **no children** and never receive unsanitized input
@@ -3381,8 +3636,8 @@ Before submitting any FluxaWay code, verify:
 - [ ] `styles.css` collects component CSS via `@import` — components don't import CSS
 - [ ] Static/mock data lives in `data.js` as `UPPER_CASE` named exports
 - [ ] `app.js` only imports, orchestrates top-level state, and calls `render()`
-- [ ] No `src/` wrapper, no `pages/`, no `store/`, no `utils/` directories
-- [ ] For 6+ components, group by domain inside `components/` (e.g. `components/auth/`, `components/dashboard/`) — never by type
+- [ ] No `src/` wrapper, no `pages/`, no `store/`, no `utils/` directories — a small pure helper is its own lower-case module named after what it does (`format.js`)
+- [ ] Flat `components/` by default; a domain subfolder (`components/auth/`) only when 3+ `.js` files share that feature — never by type, never by component count
 - [ ] Domain hooks live inside their domain folder (`components/auth/useAuth.js`), not a top-level `hooks/`
 - [ ] A domain needing shared state owns its own `createContext` next to its hook (`cart/CartContext.js`) — providers are composed by nesting `.provide()` calls in `app.js`, never via a separate component that takes `children` as a prop
 - [ ] CSS class names use a project-wide prefix (e.g. `l-`, `tm-`, `a-`) not `m-*`

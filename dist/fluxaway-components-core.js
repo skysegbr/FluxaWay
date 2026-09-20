@@ -15,7 +15,7 @@
  * https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
  */
 import { h } from "./fluxaway.js";
-import { finiteNumber, hasChildren, joinClasses } from "./fluxaway-components-util.js";
+import { finiteNumber, hasChildren, joinClasses, requiredMarkProps } from "./fluxaway-components-util.js";
 
 const buttonVariants = {
   text: "m-button",
@@ -61,11 +61,14 @@ export function Button({
   effect,
   className = "",
   type = "button",
+  href,
+  disabled,
   ariaLabel,
   ariaLabelledby,
   children,
   ...props
 } = {}) {
+  const isLink = typeof href === "string";
   const hasIcon = icon !== undefined && icon !== null && icon !== false;
   const hasLabel = hasChildren(children);
   const effectClass = typeof effect === "string" && BUTTON_EFFECTS.includes(effect)
@@ -85,13 +88,27 @@ export function Button({
     );
   }
 
+  // With `href` the button is a real link, so it keeps link behavior (open in a
+  // new tab, copy address, no JS needed). The URL is passed through untouched,
+  // like on any h("a") — wrap untrusted values in safeUrl(). An <a> has no
+  // `disabled`, so a disabled link drops its href instead: that takes it out of
+  // the tab order and leaves nothing to navigate to.
+  const hostProps = isLink
+    ? {
+        href: disabled ? undefined : href,
+        role: disabled ? "link" : undefined,
+        ariaDisabled: disabled ? "true" : undefined,
+        ...(props.target === "_blank" && !props.rel && { rel: "noopener noreferrer" }),
+      }
+    : { type, disabled };
+
   return h(
-    "button",
+    isLink ? "a" : "button",
     {
       ariaLabel,
       ariaLabelledby,
       ...props,
-      type,
+      ...hostProps,
       className: joinClasses(
         buttonVariants[variant] || buttonVariants.text,
         hasIcon && "m-button-with-icon",
@@ -165,10 +182,20 @@ export function Badge({ className = "", children, ...props } = {}) {
   return h("span", { ...props, className: joinClasses("m-badge", className) }, children);
 }
 
+// A Chip with `onClick` is a control, so it has to be a real button: a <span>
+// is unreachable by keyboard and announces no role. `aria-pressed` carries the
+// `active` state as a toggle; pass your own `role` (e.g. "radio" with
+// `ariaChecked`) to opt out of it. Without `onClick` it stays a static label.
 export function Chip({ active = false, className = "", children, ...props } = {}) {
+  const interactive = typeof props.onClick === "function";
+
   return h(
-    "span",
+    interactive ? "button" : "span",
     {
+      ...(interactive && {
+        type: "button",
+        ariaPressed: props.role ? undefined : String(Boolean(active)),
+      }),
       ...props,
       className: joinClasses("m-chip", active && "m-chip-active", className),
     },
@@ -182,6 +209,7 @@ export function FormField({
   help,
   error,
   required = false,
+  requiredLabel = "required",
   className = "",
   children,
   ...props
@@ -197,7 +225,7 @@ export function FormField({
         "label",
         { className: "m-label", htmlFor: id },
         label,
-        required && h("span", { className: "m-required", ariaLabel: "required" }, "*"),
+        required && h("span", requiredMarkProps(requiredLabel), "*"),
       ),
     children,
     help && h("p", { id: helpId, className: "m-help" }, help),
@@ -363,6 +391,7 @@ export function AvatarGroup({
   avatars = [],
   max = 4,
   size = "md",
+  moreLabel = (count) => `${count} more`,
   className = "",
   ...props
 } = {}) {
@@ -376,7 +405,7 @@ export function AvatarGroup({
   const rendered = [];
   if (extra > 0) {
     rendered.push(
-      h(Avatar, { key: "m-avatar-overflow", size, name: `${extra} more`, className: "m-avatar-overflow" }, `+${extra}`),
+      h(Avatar, { key: "m-avatar-overflow", size, name: moreLabel(extra), className: "m-avatar-overflow" }, `+${extra}`),
     );
   }
   for (let i = visible.length - 1; i >= 0; i -= 1) {

@@ -559,6 +559,31 @@ export function useForm({
   const dirty = [...new Set([...Object.keys(baseline), ...Object.keys(values)])]
     .some((key) => !Object.is(values[key], baseline[key]));
 
+  // Editing a field never raises a new error — blur and submit do that — and does
+  // not mark it touched. It does re-check an error already recorded for that
+  // field, so the message goes away the moment the value becomes valid.
+  // Blur validates the whole form, so it records errors for fields the user has
+  // not reached yet. Showing those on the first keystroke, and clearing them only
+  // on the blur caused by pressing Submit, shifted the layout between mousedown
+  // and mouseup and ate the click.
+  const handleEdit = (name, nextValue) => {
+    setValue(name, nextValue);
+
+    if (validateOnChange) {
+      setFieldTouched(name);
+      validateForm({ ...values, [name]: nextValue });
+      return;
+    }
+
+    if (errors[name]) {
+      const nextErrors = validate({ ...values, [name]: nextValue }) || {};
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        [name]: nextErrors[name] || "",
+      }));
+    }
+  };
+
   const field = (name, options = {}) => {
     const { onChange, onInput, onBlur, ...fieldOptions } = options;
     const type = options.type || "text";
@@ -585,12 +610,7 @@ export function useForm({
         error: touched[name] ? errors[name] : "",
         onBlur: handleBlur,
         onChange: (event) => {
-          const nextChecked = Boolean(event.target.checked);
-          setFieldTouched(name);
-          setValue(name, nextChecked);
-          if (validateOnChange) {
-            validateForm({ ...values, [name]: nextChecked });
-          }
+          handleEdit(name, Boolean(event.target.checked));
           onChange?.(event);
         },
       };
@@ -604,21 +624,11 @@ export function useForm({
       error: touched[name] ? errors[name] : "",
       onBlur: handleBlur,
       onInput: (event) => {
-        const nextVal = event.target.value;
-        setFieldTouched(name);
-        setValue(name, nextVal);
-        if (validateOnChange) {
-          validateForm({ ...values, [name]: nextVal });
-        }
+        handleEdit(name, event.target.value);
         onInput?.(event);
       },
       onChange: (event) => {
-        const nextVal = event.target.value;
-        setFieldTouched(name);
-        setValue(name, nextVal);
-        if (validateOnChange) {
-          validateForm({ ...values, [name]: nextVal });
-        }
+        handleEdit(name, event.target.value);
         onChange?.(event);
       },
     };
@@ -2457,6 +2467,19 @@ export function useTheme() {
 const PALETTES = ["default", "violet", "rose", "blue", "amber", "emerald", "custom"];
 const HEX_COLOR_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
+// Text color for content sitting on an arbitrary primary: white or black,
+// whichever contrasts more. For any color one of the two clears WCAG AA
+// (the worst case is 4.58:1), which a fixed per-theme value cannot promise.
+function onColorFor(hex) {
+  const digits = hex.length === 4 ? [...hex.slice(1)].map((d) => d + d).join("") : hex.slice(1);
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const channel = parseInt(digits.slice(i, i + 2), 16) / 255;
+    return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return 1.05 / (luminance + 0.05) >= (luminance + 0.05) / 0.05 ? "#ffffff" : "#000000";
+}
+
 export function usePalette() {
   const getResolved = () => {
     try {
@@ -2482,10 +2505,16 @@ export function usePalette() {
     document.documentElement.setAttribute("data-palette", palette);
     try { localStorage.setItem("fluxaway-palette", palette); } catch {}
 
+    // The built-in palettes are dark in the light theme and light in the dark
+    // one, so the stylesheet's per-theme --m-on-primary fits them all. A custom
+    // color is the same in both themes and can be anything, so its text color
+    // is derived here and written alongside it.
     if (palette === "custom" && customColor) {
       document.documentElement.style.setProperty("--m-primary", customColor);
+      document.documentElement.style.setProperty("--m-on-primary", onColorFor(customColor));
     } else {
       document.documentElement.style.removeProperty("--m-primary");
+      document.documentElement.style.removeProperty("--m-on-primary");
     }
   }, [palette, customColor]);
 

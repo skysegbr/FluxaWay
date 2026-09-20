@@ -7,6 +7,16 @@ export function joinClasses(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+// Props for the asterisk of a required field. `label` is what a screen reader
+// says for it; pass "" when the control already announces "required" on its own
+// (a native `required` attribute does, in the user's language) to keep the
+// asterisk visual only.
+export function requiredMarkProps(label) {
+  return label
+    ? { className: "m-required", ariaLabel: label }
+    : { className: "m-required", ariaHidden: "true" };
+}
+
 export function hasChildren(children) {
   return Array.isArray(children) ? children.length > 0 : children !== undefined;
 }
