@@ -53,16 +53,17 @@ Key differences from React (common analysis mistakes):
 - [README.md](README.md): human-oriented overview and component tables.
 - [CHANGELOG.md](CHANGELOG.md): versioned change history.
 
-Repository documentation memory: `examples/docs-site/` is the published source,
-and its 107 API entries are descriptors rendered by one shared `ReferencePage`.
+Documentation site memory: the published docs live in the separate
+`fluxaway-docs-site` project (formerly `examples/docs-site/`), which vendors this
+repository. Its 107 API entries are descriptors rendered by one shared `ReferencePage`.
 Preserve the order Setup (component CSS + JS import) → live examples → API
 tables → resources → implementation notes. `PropsTable` owns accessible desktop
 columns and labelled mobile cards; do not hand-build a second table layout in a
 content entry. A local optional-design wrapper is descendant-scoped: use
 `data-design="metallic"`, `data-metal-theme`, and the current `data-theme` on the
 narrow component group instead of `useDesign()` when only that group should be
-Metallic. Validate docs changes with `scripts/check_docs_site.py` on all three
-browser engines.
+Metallic. Validate docs changes with that project's `scripts/check_docs_site.py` on all
+three browser engines.
 
 ## Files
 

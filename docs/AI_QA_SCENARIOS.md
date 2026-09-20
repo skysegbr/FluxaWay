@@ -437,7 +437,7 @@ Run the §3.1 per-example checklist against **every** dir in `examples/`
 | SC-APP-09 | mindmap | drag, inline edit, SVG connectors (hand-rolled — *not* PipelineCanvas; SC-CANVAS has no example app) | browser |
 | SC-APP-10 | designer | palette drag, inspector, code export (uses the `CodeEditor` component, *not* FullCodeEditor) | browser |
 | SC-APP-11 | gallery / landing / inox-landing / metallic-themes / star-atlas / palate-journey / motion-landing | domain-specific render + interaction; Inox assembly states; every Inox Next destination keeps its primary frame and following transition inside the desktop viewport; alloy-seal loop closes without a seam; console clean | visual/browser |
-| SC-APP-12 | docs-site | 107 descriptor-driven pages; Setup shows component CSS beside JS; local Cobalt scope does not leak; semantic desktop tables become labelled mobile cards; TOC compacts before squeezing API content; lazy home payload, responsive shell, 25-example menu, scroll spy, route/section focus, Ctrl+K search, AI/security guide, 16 add-on resources, eight CSS guides and five add-on pages | browser |
+| SC-APP-12 | docs-site (separate `fluxaway-docs-site` project; gate 1.6) | 107 descriptor-driven pages; Setup shows component CSS beside JS; local Cobalt scope does not leak; semantic desktop tables become labelled mobile cards; TOC compacts before squeezing API content; lazy home payload, responsive shell, 25-example menu, scroll spy, route/section focus, Ctrl+K search, AI/security guide, 16 add-on resources, eight CSS guides and five add-on pages | browser |
 | SC-APP-13 | category-CSS examples | render == monolith (SC-CSS-06), links complete (SC-CSS-07) | visual/static |
 
 ## §18. Cross-browser & performance — `SC-XB`

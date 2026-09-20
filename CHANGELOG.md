@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- The documentation app moved out of this repository: `examples/docs-site/` and
+  `scripts/check_docs_site.py` now live in the separate `fluxaway-docs-site`
+  project (history preserved), which vendors `dist/`, `assets/`, `docs/` and the
+  public examples through its own sync script. CI no longer runs the docs smoke —
+  QA gate 1.6 runs from that project and stays a release requirement — and a
+  release now bumps 10 version occurrences across 4 files instead of 11 across 5.
+
 ## [0.24.2] - 2026-08-23
 
 ### Added

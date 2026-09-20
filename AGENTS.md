@@ -80,7 +80,6 @@ time its generator runs.
 | `dist/fluxaway-ui-{base,core,forms,overlay,data,nav,theme}.css` | GENERATED → `python scripts/split_css.py` |
 | `dist/*.d.ts` | hand-maintained; keep in sync when the API changes |
 | `examples/<name>/` | apps, each self-contained; also the QA surface |
-| `examples/docs-site/` | the documentation app — **source** of the published site |
 | `tests/` | browser test suite (plain ESM, no framework), entry `tests/index.html` |
 | `scripts/*.py` | all maintenance tooling; stdlib + playwright only |
 | `server.py` | dev server + SSE live reload (`dist/fluxaway-hmr.js` is the client) |
@@ -97,16 +96,14 @@ and nothing else. No `src/` wrapper, no parallel `styles/` tree. A single
 monolithic `app.js` is acceptable only for throwaway demos; the validator
 warns past a 250-line-per-component-file monolith guard.
 
-The docs-site reference is descriptor-driven, not one page per API. Its 107
-entries flow through `components/reference/ReferencePage.js`; shared API tables
-flow through `PropsTable.js`. Preserve the reference sequence **Setup → live
-examples → API tables → resources → implementation notes**. Component Setup
-must show `fluxaway-ui-base.css` plus its category CSS beside the JavaScript
-import. `PropsTable` owns semantic column headers, stable desktop widths and
-labelled mobile cards — do not duplicate that layout inside a content entry.
-The desktop TOC intentionally becomes the compact disclosure at 1320px so it
-does not crush technical tables. Any change to these contracts must update
-`scripts/check_docs_site.py` and pass it in Chromium, Firefox and WebKit.
+The published documentation site is **not in this repository**. It lives in the
+separate `fluxaway-docs-site` project (formerly `examples/docs-site`, split out
+with its history), which vendors this repo's `dist/`, `assets/`, `docs/`,
+`README.md`, `CHANGELOG.md` and the public examples through its
+`scripts/sync_fluxaway.py`. Two consequences here: renaming or removing an
+example, a `docs/*.md` file or a `dist/` module can break the docs site's next
+sync, and its browser smoke no longer runs in this repo's CI — after such a
+change, run that project's sync and smoke before releasing.
 
 ---
 
@@ -117,14 +114,13 @@ does not crush technical tables. Any change to these contracts must update
 python server.py                 # http://localhost:8000, live reload, localhost-only
 python server.py --host 0.0.0.0  # exposes the WHOLE repo on the LAN — deliberate use only
 
-# blocking gates, fast → slow (CI runs 1.1–1.6; see docs/AI_QA.md §1)
+# blocking gates, fast → slow (CI runs 1.1–1.5; see docs/AI_QA.md §1)
 python3 scripts/validate_fluxaway.py            # imports, assets, brackets, version sync
 python3 scripts/split_css.py --check            # category CSS up to date
 python3 scripts/minify.py --check               # .min.* up to date
 python3 scripts/check_tutorial_selectors.py     # tutorial recorders hit live selectors
 python3 scripts/validate_chart_palette.py       # + --sequential, --diverging
 python3 scripts/run_browser_tests.py --browser chromium   # then firefox, then webkit
-python3 scripts/check_docs_site.py  --browser chromium    # then firefox, then webkit
 
 # regenerate derived files after editing a source, then re-run the --check
 python3 scripts/split_css.py && python3 scripts/minify.py
@@ -148,18 +144,19 @@ missing gate.
 Releases are cut on a branch, never straight on `main`:
 
 1. Branch off `main`.
-2. `chore(release): prepare X.Y.Z` — one commit bumping **11 version
-   occurrences** across 5 files plus the changelog entry:
+2. `chore(release): prepare X.Y.Z` — one commit bumping **10 version
+   occurrences** across 4 files plus the changelog entry:
    - `package.json` (1)
    - `README.md` (7 — CDN URLs, SRI example, the `@vX.Y.Z` prose mention,
      and the `?v=X.Y.Z` cache-busting note)
    - `docs/AI_SPEC.md` (1), `docs/TUTORIAL.md` (1)
-   - `examples/docs-site/content/css/guides.js` (1)
    - `CHANGELOG.md` — a `## [X.Y.Z]` heading (the validator **fails** if
      `package.json`'s version has no matching heading)
 3. Run the full gate set **at the merge commit**, not just on the branch.
 4. `git merge --no-ff` into main with subject `merge: release FluxaWay vX.Y.Z`.
 5. Annotated tag `vX.Y.Z`, message `FluxaWay vX.Y.Z`.
+6. Then move the docs: in `fluxaway-docs-site`, sync `--ref vX.Y.Z` and bump its
+   own CDN pin (`site/content/css/guides.js`) — that pin left this repo with the app.
 
 `grep -rn "0\.22\.10" --include='*.md' --include='*.js' --include='*.json' . | grep -v build/`
 is the reliable way to find every pin before bumping.
@@ -187,8 +184,9 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   `run_hmr_test.py`, `run_priority_flows.py`. Those runners exist locally and
   are useful, but do not expect them in a fresh clone or in CI.
 - CI = `.github/workflows/ci.yml`: static validation + the two `--check`
-  sync gates + tutorial selectors, then the browser suite and the docs-site
-  smoke across chromium/firefox/webkit.
+  sync gates + tutorial selectors, then the browser suite across
+  chromium/firefox/webkit. The docs-site smoke runs in the `fluxaway-docs-site`
+  project's own CI.
 - Optional designs are descendant-scoped. A wrapper with
   `data-design="metallic"`, `data-metal-theme="cobalt"` and the current
   `data-theme` can skin only its contained controls; it also skins *every*

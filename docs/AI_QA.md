@@ -65,7 +65,6 @@ URL it prints. The browser console is the source of truth, not any Node output.
 ```
 scripts/validate_fluxaway.py       static gate (imports, assets, guards, sync)
 scripts/run_browser_tests.py    the ~400-test engine/component/add-on suite
-scripts/check_docs_site.py       docs-site lazy/mobile/add-on browser smoke
 scripts/minify.py               regenerate/verify dist/*.min.*
 scripts/split_css.py            regenerate/verify dist/fluxaway-ui-<cat>.css
 scripts/bundle.py               optional production bundler (+ --smoke)
@@ -81,7 +80,8 @@ examples/                       26 example apps to smoke visually
 ## 1. QA gates, fast → slow
 
 Run in this order; stop and report if a **blocking** gate fails (later gates
-assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.6.
+assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.5; 1.6 runs in the separate
+`fluxaway-docs-site` project.
 
 | # | Gate | Command | Pass signal | Blocking |
 |---|---|---|---|---|
@@ -91,7 +91,7 @@ assume earlier ones passed). CI (`.github/workflows/ci.yml`) enforces 1.1–1.6.
 | 1.4 | Tutorial recorders in sync | `python scripts/check_tutorial_selectors.py` | `Tutorial selectors OK — N token(s)...` | yes |
 | 1.4b | Chart palettes valid | `python3 scripts/validate_chart_palette.py` (+ `--sequential`, `--diverging`) | `Chart palette validation passed.` (exit 0) | yes |
 | 1.5 | Engine suite × 3 engines | `python3 scripts/run_browser_tests.py --browser {chromium,firefox,webkit}` | `NNN/NNN passed (<engine>)` (exit 0) | yes |
-| 1.6 | Docs-site smoke × 3 | `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | yes |
+| 1.6 | Docs-site smoke × 3 (external) | in the `fluxaway-docs-site` project: `python3 scripts/sync_fluxaway.py`, then `python3 scripts/check_docs_site.py --browser {chromium,firefox,webkit}` | all docs checks pass | no here (but required for a release) |
 | 1.7 | Bundle smoke (opt.) | `python3 scripts/bundle.py <app> --smoke` | renders headlessly, no page errors, no local 404s | no |
 | 1.8 | Manual/visual QA | §3 | per-example checklist clean | no (but required for a release) |
 
@@ -124,7 +124,9 @@ then `python scripts/minify.py`) and commit the result — **do not** hand-edit 
 targets each. A test that passes on chromium but fails on webkit is a real bug,
 not flake; report the engine.
 
-**1.6** protects the documentation app itself: home payload stays lazy,
+**1.6** lives in the separate `fluxaway-docs-site` project, which vendors this
+repository; syncing it against the branch under test makes the docs a consumer-side
+regression check of the framework. It protects the documentation app itself: home payload stays lazy,
 category CSS and CodeMirror load on demand, search navigates to component and
 CSS references, all eight CSS guides and five add-on pages render their expected
 content, the header menu matches all 22 examples published in the build, the
@@ -186,7 +188,7 @@ example apps *render correctly* (styled, no console errors, interactions work).
 These are AI-executable with playwright — you don't need a human to "look".
 
 Discover the apps: `ls examples/`. Prioritize the broad ones and the add-on
-demos: `docs-site`, `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
+demos: `complete-page`, `components`, `storefront`, `form`, `mobile`, `ssr`,
 `fluxaway-architecture`/`fluxaway-atlas` (ZoomStage), `star-atlas` (ZoomStage
 `freeZoom`), `fluxaway-motion`/`motion-editor` (motion), `designer`, `mindmap`,
 `gallery`.
@@ -299,7 +301,8 @@ this proves the full round-trip in a browser.
 
 Before signing off a branch or release:
 
-1. Gates 1.1–1.6 green on **all three** engines.
+1. Gates 1.1–1.5 green on **all three** engines, plus 1.6 from the
+   `fluxaway-docs-site` project synced against this branch.
 2. `python scripts/split_css.py --check` and `python scripts/minify.py --check`
    green (derived files committed, not stale).
 3. If `package.json` version changed, `CHANGELOG.md` has a matching
@@ -351,7 +354,6 @@ python  scripts/minify.py --check
 python3 scripts/validate_chart_palette.py                    # + --sequential, --diverging
 python  scripts/sync_legacy_aliases.py --check
 python3 scripts/run_browser_tests.py --browser chromium      # then firefox, webkit
-python3 scripts/check_docs_site.py --browser chromium        # then firefox, webkit
 
 # regenerate derived files after editing a source (then re-run --check)
 python  scripts/split_css.py        # dist/fluxaway-ui.css → fluxaway-ui-<cat>.css

@@ -406,6 +406,9 @@ above: compression and caching make it fast, `integrity` makes it tamper-proof.
 
 ## Examples
 
+The documentation site — itself a FluxaWay app — is maintained in the separate
+`fluxaway-docs-site` project, which vendors this repository.
+
 Run any example with:
 
 ```bash
@@ -422,7 +425,6 @@ python -m http.server 8080
 | [examples/basic](./examples/basic) | Start here — minimal screen: `h`, `render`, `useState`, `useEffect`, components from `fluxaway-components.js` and `ThemeToggle` for dark mode |
 | [examples/form](./examples/form) | Controlled fields, validation, loading submit, reset, `useForm` |
 | [examples/complete-page](./examples/complete-page) | App-shell with sidebar, table, dialog, tabs, and toast |
-| [examples/docs-site](./examples/docs-site) | Published documentation app built in FluxaWay: 107 descriptor-driven reference pages with a consistent Setup → examples → API → notes flow, component CSS beside its JavaScript import, semantic desktop tables that become labelled mobile cards, live locally scoped design examples, a responsive scroll-spy TOC, Ctrl+K search, all 25 published examples, eight CSS guides, 61 components, 33 hooks, five add-ons and lazy read-only source viewers |
 | [examples/components](./examples/components) | `Switch`, `Collapse`, `Combobox`, `ContextMenu`, `FileDropZone`, `CodeEditor`, toasts, a `Cards` page showcasing the `m-card-*` variants + `SpeedDial`, `Accordion`, `Slider`/`RangeSlider`, `Menu` with nested submenus, `DataTable`, `DatePicker`, a `Forms & Widgets` page with `RadioGroup`, `NumberInput`, `TimePicker`, `Stat`, `TreeView`, `Popover`, and `CommandPalette`, plus a `UI Primitives` page driving `Avatar`, `Breadcrumb`, `Skeleton`, and `Divider` through the component API |
 | [examples/mobile](./examples/mobile) | Polished mobile shell: animated responsive `Navbar`, `BottomNav`, `BottomSheet`, `FAB`, responsive cards, swipe, long press and live device status |
 | [examples/landing](./examples/landing) | SaaS landing page: sticky nav with mobile menu, SVG hero chart, testimonial carousel, pricing toggle |

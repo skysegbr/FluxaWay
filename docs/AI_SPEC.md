@@ -3090,8 +3090,9 @@ h('a', { href: '#/reports',
 
 ### Docs-site reference authoring (repository contributors)
 
-`examples/docs-site` is the published documentation source. API content stays
-as descriptors under `content/`; do not create a custom page component to solve
+The published documentation lives in the separate `fluxaway-docs-site` project
+(formerly `examples/docs-site`), which vendors this repository into its `site/`
+web root. API content stays as descriptors under `site/content/`; do not create a custom page component to solve
 the presentation of one entry. `components/reference/ReferencePage.js` renders
 the common contract across all 107 entries:
 
@@ -3111,7 +3112,7 @@ headers, predictable desktop column widths, technical values that wrap without
 clipping, and labelled row cards below 680px. At 1320px and below the desktop
 TOC becomes the compact disclosure so it cannot squeeze a technical table.
 
-When changing the shared reference layout, update
+When changing the shared reference layout, update that project's
 `scripts/check_docs_site.py` and run it in Chromium, Firefox and WebKit. The
 smoke test locks the setup recipe, accessible table associations, local design
 scope, responsive cards, no page overflow and the complete catalog.
