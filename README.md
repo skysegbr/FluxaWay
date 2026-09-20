@@ -529,6 +529,11 @@ Returns: `{ values, errors, touched, dirty, isValid, isSubmitting, submitCount,
 field, handleSubmit, reset, serialize, setValues, setValue, setErrors,
 setFieldError, setFieldTouched, setTouched, validateForm }`.
 
+`field(name).error` stays empty until the field is touched — on blur or on
+submit, never by typing. Typing does not raise new errors, but it re-checks an
+error already recorded for that field, so the message clears as soon as the
+value is valid. `validateOnChange: true` opts into validating on every keystroke.
+
 ### `useReducer`
 
 ```js

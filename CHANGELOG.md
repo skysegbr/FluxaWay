@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **`useForm`: a valid form could swallow the click on its submit button.** Blur
+  validates the whole form, so leaving one field recorded an error for the next,
+  still-empty one; the first keystroke there marked it touched and showed that
+  stale error, which then stayed on screen after the value became valid. It only
+  cleared on the blur caused by pressing Submit — removing the error line,
+  moving the button ~25px between `mousedown` and `mouseup`, and dropping the
+  `click`. Typing no longer marks a field touched (blur and submit do), and
+  editing a field re-checks an error already recorded for it, so the message
+  clears as soon as the value is valid. Typing still never raises a new error,
+  and `validateOnChange: true` keeps its touch-and-validate-per-keystroke mode.
+
 ### Changed
+- `useForm`'s `touched[name]` now means "blurred or submitted", not "edited".
+  Use `dirty` to detect edits.
 - The documentation app moved out of this repository: `examples/docs-site/` and
   `scripts/check_docs_site.py` now live in the separate `fluxaway-docs-site`
   project (history preserved), which vendors `dist/`, `assets/`, `docs/` and the

@@ -559,6 +559,31 @@ export function useForm({
   const dirty = [...new Set([...Object.keys(baseline), ...Object.keys(values)])]
     .some((key) => !Object.is(values[key], baseline[key]));
 
+  // Editing a field never raises a new error — blur and submit do that — and does
+  // not mark it touched. It does re-check an error already recorded for that
+  // field, so the message goes away the moment the value becomes valid.
+  // Blur validates the whole form, so it records errors for fields the user has
+  // not reached yet. Showing those on the first keystroke, and clearing them only
+  // on the blur caused by pressing Submit, shifted the layout between mousedown
+  // and mouseup and ate the click.
+  const handleEdit = (name, nextValue) => {
+    setValue(name, nextValue);
+
+    if (validateOnChange) {
+      setFieldTouched(name);
+      validateForm({ ...values, [name]: nextValue });
+      return;
+    }
+
+    if (errors[name]) {
+      const nextErrors = validate({ ...values, [name]: nextValue }) || {};
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        [name]: nextErrors[name] || "",
+      }));
+    }
+  };
+
   const field = (name, options = {}) => {
     const { onChange, onInput, onBlur, ...fieldOptions } = options;
     const type = options.type || "text";
@@ -585,12 +610,7 @@ export function useForm({
         error: touched[name] ? errors[name] : "",
         onBlur: handleBlur,
         onChange: (event) => {
-          const nextChecked = Boolean(event.target.checked);
-          setFieldTouched(name);
-          setValue(name, nextChecked);
-          if (validateOnChange) {
-            validateForm({ ...values, [name]: nextChecked });
-          }
+          handleEdit(name, Boolean(event.target.checked));
           onChange?.(event);
         },
       };
@@ -604,21 +624,11 @@ export function useForm({
       error: touched[name] ? errors[name] : "",
       onBlur: handleBlur,
       onInput: (event) => {
-        const nextVal = event.target.value;
-        setFieldTouched(name);
-        setValue(name, nextVal);
-        if (validateOnChange) {
-          validateForm({ ...values, [name]: nextVal });
-        }
+        handleEdit(name, event.target.value);
         onInput?.(event);
       },
       onChange: (event) => {
-        const nextVal = event.target.value;
-        setFieldTouched(name);
-        setValue(name, nextVal);
-        if (validateOnChange) {
-          validateForm({ ...values, [name]: nextVal });
-        }
+        handleEdit(name, event.target.value);
         onChange?.(event);
       },
     };

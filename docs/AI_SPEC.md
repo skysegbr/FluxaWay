@@ -470,6 +470,23 @@ h(Button, { onClick: handleSubmit(), disabled: isSubmitting }, 'Sign in')
 
 `field(name)` returns `{ name, value, error, onBlur, onInput, onChange }`.
 
+**When `field(name).error` appears and goes away** (defaults: `validateOnBlur: true`,
+`validateOnChange: false`):
+
+- It is `""` until the field is **touched**. A field becomes touched when it
+  **blurs** or when `handleSubmit` runs — never by typing.
+- Blur validates the whole form, so an error can already be recorded for a field
+  the user has not reached. It stays hidden until that field is touched.
+- Typing never raises a new error. It re-checks only an error **already recorded
+  for the field being edited**, so the message clears the moment the value
+  becomes valid — it does not wait for the next blur.
+- `validateOnChange: true` opts into the eager mode: the field is touched and
+  the whole form validated on every keystroke.
+
+Do not add your own `onBlur`/`onInput` revalidation on top of `field()` — the
+error line appearing or vanishing between a button's `mousedown` and `mouseup`
+moves the button and the click is lost.
+
 ### `useLocalStorage`
 
 ```js
