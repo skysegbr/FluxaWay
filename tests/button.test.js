@@ -1,5 +1,5 @@
 import { h, render } from "../dist/fluxaway.js";
-import { BUTTON_EFFECTS, Button } from "../dist/fluxaway-components-core.js";
+import { BUTTON_EFFECTS, Button, IconButton } from "../dist/fluxaway-components-core.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 function cssRule(selector) {
@@ -462,4 +462,70 @@ test("on-primary / on-danger: every rule that sets a fill color also sets its te
   assertEqual(counts["--m-primary"], 19, "4 theme scopes + 5 palettes in 3 scopes each");
   assertEqual(counts["--m-danger"], 4, "4 theme scopes");
   assertEqual(missing.length, 0, missing.join("; "));
+});
+
+// Button with `href` is a real link: it must keep link behavior (new tab, copy
+// address, works without JS) while looking exactly like the <button> form.
+
+test("Button href: renders an anchor with the same classes, and no button-only attributes", async () => {
+  const container = mountPoint();
+
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h(Button, { id: "as-button", variant: "contained" }, "Buy"),
+        h(Button, { id: "as-link", variant: "contained", href: "#pricing" }, "Buy"),
+        h(Button, { id: "as-blank", href: "https://example.com", target: "_blank" }, "Docs"),
+        h(Button, { id: "as-blank-rel", href: "https://example.com", target: "_blank", rel: "author" }, "Docs"),
+        h(IconButton, { id: "as-icon-link", label: "Close", href: "#top" }, "x"),
+      ),
+    container,
+  );
+  await flush();
+
+  const button = container.querySelector("#as-button");
+  const link = container.querySelector("#as-link");
+
+  assertEqual(button.tagName, "BUTTON");
+  assertEqual(button.getAttribute("type"), "button");
+  assertEqual(link.tagName, "A");
+  assertEqual(link.getAttribute("href"), "#pricing", "the URL is passed through untouched");
+  assertEqual(link.className, button.className, "both forms carry the same classes");
+  assertEqual(link.hasAttribute("type"), false, "type is a <button> attribute");
+  assertEqual(link.hasAttribute("role"), false, "an anchor with href already is a link");
+  assertEqual(link.hasAttribute("aria-disabled"), false);
+
+  const a = link.getBoundingClientRect();
+  const b = button.getBoundingClientRect();
+  assert(Math.abs(a.width - b.width) < 0.6 && Math.abs(a.height - b.height) < 0.6, "both forms are the same size");
+
+  assertEqual(container.querySelector("#as-blank").getAttribute("rel"), "noopener noreferrer");
+  assertEqual(container.querySelector("#as-blank-rel").getAttribute("rel"), "author", "an explicit rel is kept");
+
+  const iconLink = container.querySelector("#as-icon-link");
+  assertEqual(iconLink.tagName, "A", "IconButton forwards href");
+  assertEqual(iconLink.getAttribute("aria-label"), "Close");
+});
+
+test("Button href: a disabled link drops its href, leaves the tab order and says so", async () => {
+  const container = mountPoint();
+
+  render(
+    () => h(Button, { id: "link-off", variant: "contained", href: "#pricing", disabled: true }, "Buy"),
+    container,
+  );
+  await flush();
+
+  const link = container.querySelector("#link-off");
+  assertEqual(link.tagName, "A");
+  assertEqual(link.hasAttribute("href"), false, "nothing left to navigate to");
+  assertEqual(link.hasAttribute("disabled"), false, "disabled is not an anchor attribute");
+  assertEqual(link.getAttribute("role"), "link", "without href an <a> loses its implicit role");
+  assertEqual(link.getAttribute("aria-disabled"), "true");
+
+  link.focus();
+  assert(document.activeElement !== link, "a disabled link cannot take focus");
+  assertEqual(getComputedStyle(link).pointerEvents, "none");
 });

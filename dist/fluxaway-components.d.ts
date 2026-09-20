@@ -41,7 +41,18 @@ export declare function Button(props?: {
   accent?: boolean;
   effect?: ButtonEffect;
   className?: string;
+  /** Ignored when `href` is set. */
   type?: "button" | "submit" | "reset";
+  /**
+   * Renders `<a>` instead of `<button>`, with the same classes. Passed through
+   * untouched — wrap untrusted URLs in `safeUrl()`.
+   */
+  href?: string;
+  /** With `href`. `"_blank"` gets `rel="noopener noreferrer"` unless `rel` is given. */
+  target?: string;
+  rel?: string;
+  /** On a link this drops the `href` and sets `role="link"` + `aria-disabled="true"`. */
+  disabled?: boolean;
   ariaLabel?: string;
   ariaLabelledby?: string;
   children?: VNode;
@@ -53,6 +64,8 @@ export declare function IconButton(props?: {
   label: string;
   variant?: "text" | "contained" | "tonal" | "danger" | "outline" | "outlined";
   effect?: ButtonEffect;
+  /** Forwarded to `Button`: renders `<a>` instead of `<button>`. */
+  href?: string;
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;

@@ -1600,6 +1600,12 @@ select.m-field option:disabled {
 
 .m-button:hover:not(.m-button-effect) { background: var(--m-primary-soft); }
 
+/* Button with `href` renders an <a>, which has no :disabled state. */
+a.m-button[aria-disabled="true"] {
+  opacity: 0.56;
+  pointer-events: none;
+}
+
 .m-button-contained {
   border-color: var(--m-primary);
   background: var(--m-primary);

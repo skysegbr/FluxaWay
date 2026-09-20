@@ -61,11 +61,14 @@ export function Button({
   effect,
   className = "",
   type = "button",
+  href,
+  disabled,
   ariaLabel,
   ariaLabelledby,
   children,
   ...props
 } = {}) {
+  const isLink = typeof href === "string";
   const hasIcon = icon !== undefined && icon !== null && icon !== false;
   const hasLabel = hasChildren(children);
   const effectClass = typeof effect === "string" && BUTTON_EFFECTS.includes(effect)
@@ -85,13 +88,27 @@ export function Button({
     );
   }
 
+  // With `href` the button is a real link, so it keeps link behavior (open in a
+  // new tab, copy address, no JS needed). The URL is passed through untouched,
+  // like on any h("a") — wrap untrusted values in safeUrl(). An <a> has no
+  // `disabled`, so a disabled link drops its href instead: that takes it out of
+  // the tab order and leaves nothing to navigate to.
+  const hostProps = isLink
+    ? {
+        href: disabled ? undefined : href,
+        role: disabled ? "link" : undefined,
+        ariaDisabled: disabled ? "true" : undefined,
+        ...(props.target === "_blank" && !props.rel && { rel: "noopener noreferrer" }),
+      }
+    : { type, disabled };
+
   return h(
-    "button",
+    isLink ? "a" : "button",
     {
       ariaLabel,
       ariaLabelledby,
       ...props,
-      type,
+      ...hostProps,
       className: joinClasses(
         buttonVariants[variant] || buttonVariants.text,
         hasIcon && "m-button-with-icon",

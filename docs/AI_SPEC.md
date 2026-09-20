@@ -1189,6 +1189,21 @@ h(Button, {
   onClick: fn,
 }, 'Clear filters')
 
+// Button as a LINK — pass `href` and it renders <a class="m-button …"> instead of
+// <button>, identical to look at. Use it for every call-to-action that navigates
+// (anchors, other pages, WhatsApp/mailto/tel) — never onClick + location.href,
+// and never hand-write the m-button classes on your own <a>.
+h(Button, { variant: 'contained', href: '#pricing' }, 'See plans')
+h(Button, { variant: 'outline', href: 'https://example.com', target: '_blank' }, 'Docs')
+//   target: '_blank' gets rel="noopener noreferrer" unless you pass your own rel.
+//   disabled + href → the href is dropped (role="link" aria-disabled="true"):
+//   out of the tab order, nothing to navigate to. `type` is ignored on a link.
+//   IconButton forwards href the same way.
+// SECURITY: `href` is passed through UNTOUCHED, exactly like h('a', { href }) —
+// FluxaWay never rewrites URLs. Any URL that came from user input, an API or
+// third-party content goes through safeUrl() (§8):
+h(Button, { href: safeUrl(shop.website, '#') }, 'Visit the shop')
+
 // Official Button effects — exported as BUTTON_EFFECTS from the core module:
 // 'reflection' | 'edge' | 'split' | 'aperture' | 'charge' | 'corners' |
 // 'pulse' | 'phase' | 'conductor'

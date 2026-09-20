@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **`Button` (and `IconButton`) accept `href` and render a real `<a>`** with the
+  same classes and size as the `<button>` form, so a call-to-action that
+  navigates keeps link behavior — open in a new tab, copy address, works without
+  JS. Until now the only way to get a link that looks like a button was to
+  discover the `m-button m-button-contained` classes by inspecting the DOM.
+  `target="_blank"` gets `rel="noopener noreferrer"` unless a `rel` is passed; a
+  disabled link drops its `href` and takes `role="link"` + `aria-disabled`, which
+  removes it from the tab order. The URL is passed through untouched, like on any
+  `h("a")`: untrusted values still go through `safeUrl()`.
+
 ### Fixed
 - **`useForm`: a valid form could swallow the click on its submit button.** Blur
   validates the whole form, so leaving one field recorded an error for the next,
