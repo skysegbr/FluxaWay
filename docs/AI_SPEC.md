@@ -316,9 +316,12 @@ the content genuinely cannot fit one viewport, abandon the one-screen promise
 and make the continuation visually explicit.
 
 Validate the result after real anchor navigation in Chromium, Firefox and
-WebKit. Measure the target and important descendants with `getBoundingClientRect()`
-or Playwright `bounding_box()`; for a one-screen frame their visible bottom must
-be `<= window.innerHeight`. A screenshot taken after manually scrolling to a
+WebKit. This is the engine-sensitive exception that "How many browsers?" above
+names, not a contradiction of its one-browser bar: only this contract needs the
+three engines, and the rest of the page still needs one. Measure the target and
+important descendants with `getBoundingClientRect()` or Playwright
+`bounding_box()`; for a one-screen frame their visible bottom must be
+`<= window.innerHeight`. A screenshot taken after manually scrolling to a
 convenient position does not prove the Next link lands correctly.
 
 `examples/inox-landing` is the reference: its Material → Assembly → Systems →
@@ -507,7 +510,7 @@ Options: `initialValues`, `validate(values) → { field: 'message' }`, `onSubmit
 | `isValid` | no error is currently recorded |
 | `dirty` | any value differs from `initialValues` |
 | `submitCount` | how many times submit was attempted |
-| `reset(nextValues?)` | back to `initialValues` (or new ones); clears errors, touched, submitCount |
+| `reset(nextValues?)` | back to `initialValues` (or new ones); clears errors, touched, submitCount; does not move focus |
 | `setValue(name, value)`, `setValues(partial \| fn)` | set programmatically |
 | `setFieldError(name, message)` | record an error and touch the field — for **server-side** errors |
 | `setErrors(errors)`, `setFieldTouched(name, bool?)`, `setTouched(map)` | low-level setters |
@@ -547,6 +550,15 @@ Prefer a real form so Enter submits too:
   blur from Tab still validates at once. A submit, a `reset()` or an unmount in
   between supersedes the pending blur. **Keep `validateOnBlur: true`**: turning
   it off to "protect" the Submit click is not needed.
+- **`reset()` clears values, errors and touched, and leaves focus where it
+  is.** Enter submits from inside a field, so that field is still focused, and
+  now empty, when `onSubmit` calls `reset()`. The blur that ends that focus (a
+  success notice taking it, the next click anywhere) touches and validates
+  nothing. That holds whether you move focus in the same handler or in a
+  `useEffect`, so no `blur()` around `reset()` is needed. Because focus stays
+  put, Enter → `reset()` → type the next entry works. A reset form is empty, not
+  valid: once the person edits that field, or later leaves a required empty
+  field again, its error appears as on a freshly loaded form.
 
 Do not add your own `onBlur`/`onInput` revalidation on top of `field()` — the
 error line appearing or vanishing between a button's `mousedown` and `mouseup`
@@ -883,13 +895,6 @@ const { containerRef, virtualItems, totalHeight, startIndex, endIndex } =
 //                                   height: '48px' } }, item.label)
 // wrapped in a { height: totalHeight, position: 'relative' } spacer.
 
-// reset() clears values, errors AND touched — no error line survives it. It does
-// not make the form valid: the next blur on a field that is required and now
-// empty touches and validates it, and its error appears, exactly as it would on
-// a freshly loaded form. That is the documented blur behaviour, not a bug and
-// not something to suppress; if a reset should leave no field focused, move
-// focus yourself after calling it.
-
 // i18n
 const { t } = useTranslation({ hello: 'Hello, {name}!' });
 t('hello', { name: 'Ana' }) // → 'Hello, Ana!'
@@ -898,6 +903,11 @@ t('hello', { name: 'Ana' }) // → 'Hello, Ana!'
 // `$&`, a `$1` or another `{name}` inside a value is not expanded — so text a
 // person typed is safe to interpolate. The result is a plain string: pass it as
 // a child and h() escapes it. Dictionary entries must be strings.
+// Any dictionary works, an inline literal included: t reads the one passed on
+// the current render. Only t's identity follows the dictionary's — an inline
+// literal makes a new t every render. That matters only when t sits in an
+// effect/useMemo dependency list or goes to a memo() child; then pass a
+// module-level constant (from data.js, say) so t stays the same function.
 
 // Context menu position state (pair with ContextMenu component)
 const { menu, openMenu, closeMenu } = useContextMenu();
@@ -1197,14 +1207,24 @@ h('img', { src:  safeUrl(user.avatar) })
 h('a',   { href: safeUrl(user.link, '#') }, 'Profile')  // custom fallback
 ```
 
-`safeUrl(url, fallback = '')`:
-- Blocks `javascript:` and `vbscript:` (never legitimate in a link/resource)
-  and `data:` URLs **other than images** (`data:text/html,…` navigates to
-  attacker markup; `data:image/*` is a safe inline image and passes through).
-- Strips control characters and whitespace before testing the scheme, so
-  `"java\tscript:"` / `" JAVASCRIPT:"` can't slip past.
-- Returns safe URLs **unchanged** and unsafe ones as `fallback` (default `""`).
-- Pure string logic — works identically on the client and in `renderToString`.
+`safeUrl(url, fallback = '')` checks only the scheme. What passes comes back
+**unchanged**; what is blocked comes back as `fallback` (default `""`):
+
+| Input | Result |
+|---|---|
+| `#catalogue` (fragment) | unchanged |
+| `images/roses.jpg`, `./a`, `../b` (relative path) | unchanged |
+| `/shop` (root-relative), `//cdn.example.com/x.js` | unchanged |
+| `https://…`, `http://…`, any other scheme (`ftp:`, an app's own) | unchanged |
+| `mailto:…`, `tel:…` | unchanged |
+| `data:image/png;base64,…` (any `data:image/*`) | unchanged, a safe inline image |
+| `javascript:…`, `vbscript:…` | `fallback` |
+| `data:text/html,…` (any `data:` that is not an image) | `fallback` |
+| `null`, `undefined`, `false` | `fallback` |
+
+- The scheme test ignores case and strips control characters and whitespace
+  first, so `"java\tscript:"` and `" JAVASCRIPT:"` are blocked too.
+- Pure string logic: it works the same on the client and in `renderToString`.
 
 FluxaWay never rewrites URLs automatically (a `data:` image or a custom app scheme
 may be exactly what you want), so this is opt-in — reach for it on any URL that
@@ -1361,7 +1381,7 @@ otherwise a screen reader announces English in the middle of your page.
 | Combobox | `placeholder` ("Select..."), `searchPlaceholder` ("Search..."), `emptyLabel` ("No results") |
 | DatePicker | `placeholder`, `previousMonthLabel`, `nextMonthLabel`, `monthNames` (12, January first), `weekdayNames` (7, Sunday first), `formatValue(date)`, `formatDayLabel(date)` |
 | TimePicker / NumberInput / RangeSlider / FileDropZone | `placeholder` / `decrementLabel`, `incrementLabel` / `minLabel`, `maxLabel` / `label` |
-| Table, DataTable / EmptyState / Spinner | `emptyTitle`, `emptyDescription` / `title` / `label` ("Loading") |
+| Table, DataTable / EmptyState / Spinner | `emptyTitle` ("No rows"), `emptyDescription` ("Try changing the filters.") / `title` ("No results"; `description` has no default and renders nothing when absent) / `label` ("Loading") |
 | CommandPalette | `ariaLabel`, `placeholder`, `emptyLabel` |
 | AvatarGroup | `moreLabel` — a function: `(count) => 'mais ' + count` |
 | SpeedDial / Breadcrumb, TreeView, ContextMenu | `label` / `ariaLabel` |
@@ -1718,6 +1738,17 @@ h(FormField, { id: 'price', label: 'Price' },
   h('div', { className: 'price-row' }, h('input', { id: 'price', className: 'm-field' }), ' USD')
 )
 
+// How a field's error reaches the DOM, for tests and for your own CSS. While
+// `error` is non-empty, every form control (TextField, Textarea, Select,
+// Checkbox, Radio, RadioGroup, Slider, RangeSlider, NumberInput, DatePicker,
+// TimePicker, and a control FormField wires) renders
+//   <p class="m-error" id="{id}-error">message</p>
+// and gives the control aria-invalid="true" with that id in aria-describedby
+// (for RadioGroup, the role="radiogroup" element). {id} is yours or a
+// generated one. When `error` goes back to '', the line and aria-invalid are
+// removed. Query `#email-error`, `.m-error` or `[aria-invalid="true"]`; the
+// line has no role="alert".
+
 // TextField
 h(TextField, {
   label: 'E-mail',
@@ -2037,6 +2068,9 @@ h(Navbar, {
 // yourself and reserve its height for anchors:
 //   header { position: sticky; top: 0; z-index: var(--m-z-appbar); }
 //   html   { scroll-padding-top: 60px; }        /* the closed Navbar's height, at any width */
+// 60px is the bar alone, its own bottom border included. Reserve the height of
+// what is sticky: a border, padding or second row on YOUR <header> adds to it
+// (`border-bottom: 1px` on the header → 61px).
 // Do NOT rebuild the menu as a position:fixed/absolute overlay to work around
 // scrolling — that was only needed before this was fixed.
 
@@ -2896,6 +2930,31 @@ Never hard-code `color: #fff` on a `var(--m-primary)` background in app CSS —
 use `color: var(--m-on-primary)`. `usePalette().setCustomColor(hex)` derives
 `--m-on-primary` for you (white or black, whichever contrasts more).
 
+**Text over a photo** (a landing page's cover) has no token, because the photo
+is the same in both themes and so is the text on it. Dim the photo over black
+and write light text. Put the image in an `<img>`, not in a CSS `url()`, so a
+URL from data still goes through `safeUrl()` (§8):
+
+```js
+h('section', { className: 'a-cover' },
+  h('img', { className: 'a-cover-photo', src: safeUrl(cover.image), alt: '' }),
+  h('h1', null, cover.title),
+)
+```
+
+```css
+.a-cover       { position: relative; isolation: isolate; background: #000; color: #fff; }
+.a-cover-photo { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%;
+                 object-fit: cover; opacity: 0.4; } /* same as a 60% black scrim */
+```
+
+At `opacity: 0.4`, white text reaches 5.7:1 even where the photo is pure white.
+Do not go above 0.45 (4.8:1; the 4.5:1 floor is near 0.46). This is the one
+place a fixed `#fff` is right. A contained `Button` on the cover keeps its own
+`--m-primary` fill and needs nothing. If the text sits in a `Card` over the
+photo instead, the Card is opaque `--m-surface` with `--m-text` and already
+follows the theme. Do not make it translucent.
+
 ### The reset, the grid and the utility classes
 
 All of it ships in `fluxaway-ui.css` (category file: `fluxaway-ui-base.css`).
@@ -3747,7 +3806,7 @@ export function Pricing({ plans }) {
 @import './components/TopBar.css';
 @import './components/Pricing.css';
 
-html { scroll-behavior: smooth; scroll-padding-top: 60px; } /* anchors clear the sticky bar */
+html { scroll-behavior: smooth; scroll-padding-top: 60px; } /* anchors clear the sticky header's closed height (§9) */
 
 .a-page { min-height: 100vh; }
 ```

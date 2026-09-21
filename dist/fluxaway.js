@@ -512,6 +512,8 @@ export function useForm({
   const valuesRef = useRef(values);
   valuesRef.current = values;
   const pendingBlurRef = useRef(null);
+  // The element that held focus when reset() ran (see reset).
+  const resetFocusRef = useRef(null);
   trackPress();
   useEffect(() => () => {
     pendingBlurRef.current = null;
@@ -555,6 +557,13 @@ export function useForm({
   const reset = (nextValues = initialValuesRef.current) => {
     const nextInitialValues = { ...nextValues };
     pendingBlurRef.current = null;
+    // Focus usually outlives a reset: Enter submits from inside the last field,
+    // and that field stays focused, now empty. The blur that finally ends that
+    // focus — a success notice taking it, the next click anywhere — would touch
+    // and validate a field the person has not used since, and put "required"
+    // under the notice. That one blur is ignored; editing the field first, or
+    // focusing it again later, makes a blur count as on a fresh form.
+    resetFocusRef.current = typeof document === "undefined" ? null : document.activeElement;
     initialValuesRef.current = nextInitialValues;
     setValuesState(nextInitialValues);
     setErrors({});
@@ -577,7 +586,11 @@ export function useForm({
   // not reached yet. Showing those on the first keystroke, and clearing them only
   // on the blur caused by pressing Submit, shifted the layout between mousedown
   // and mouseup and ate the click.
-  const handleEdit = (name, nextValue) => {
+  const handleEdit = (name, nextValue, target) => {
+    if (target && target === resetFocusRef.current) {
+      resetFocusRef.current = null;
+    }
+
     setValue(name, nextValue);
 
     if (validateOnChange) {
@@ -601,6 +614,12 @@ export function useForm({
     const value = values[name] ?? "";
 
     const handleBlur = (event) => {
+      if (event?.target && event.target === resetFocusRef.current) {
+        resetFocusRef.current = null;
+        onBlur?.(event);
+        return;
+      }
+
       const liveValue =
         type === "checkbox"
           ? Boolean(event?.target?.checked)
@@ -646,7 +665,7 @@ export function useForm({
         // edits the form; a caller's onInput is still forwarded, not dropped.
         ...(onInput && { onInput }),
         onChange: (event) => {
-          handleEdit(name, Boolean(event.target.checked));
+          handleEdit(name, Boolean(event.target.checked), event.target);
           onChange?.(event);
         },
       };
@@ -660,11 +679,11 @@ export function useForm({
       error: touched[name] ? errors[name] : "",
       onBlur: handleBlur,
       onInput: (event) => {
-        handleEdit(name, event.target.value);
+        handleEdit(name, event.target.value, event.target);
         onInput?.(event);
       },
       onChange: (event) => {
-        handleEdit(name, event.target.value);
+        handleEdit(name, event.target.value, event.target);
         onChange?.(event);
       },
     };
@@ -674,6 +693,7 @@ export function useForm({
     event?.preventDefault?.();
 
     pendingBlurRef.current = null;
+    resetFocusRef.current = null;
     setSubmitCount((count) => count + 1);
     const nextErrors = validateForm(values);
 

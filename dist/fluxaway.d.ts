@@ -333,6 +333,10 @@ export interface UseFormReturn<V extends Record<string, unknown>> {
   ) => (event: Event | null) => Promise<boolean>;
   isSubmitting: boolean;
   isValid: boolean;
+  /**
+   * Back to `initialValues` (or `nextValues`); clears errors, touched and
+   * submitCount. Focus stays put, and the blur that ends it validates nothing.
+   */
   reset: (nextValues?: V) => void;
   serialize: () => V;
   setErrors: (errors: Partial<Record<keyof V, string>>) => void;

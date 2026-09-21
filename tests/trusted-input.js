@@ -4,7 +4,7 @@
 // need what a script cannot fake: a real mousedown (which blurs the focused
 // field), a human pause, then the mouseup.
 
-import { h, render, useForm } from "../dist/fluxaway.js";
+import { h, render, useEffect, useForm, useRef, useState } from "../dist/fluxaway.js";
 import { Button } from "../dist/fluxaway-components-core.js";
 import { Checkbox, TextField, Textarea } from "../dist/fluxaway-components-forms.js";
 import { Navbar } from "../dist/fluxaway-components-nav.js";
@@ -63,6 +63,31 @@ function ClickForm() {
   );
 }
 
+// Enter from the field, and onSubmit resets and shows a notice. With
+// window.__focusNotice the notice takes focus in an effect, as AI_SPEC §6 suggests.
+function ResetForm() {
+  const [sent, setSent] = useState(0);
+  const notice = useRef(null);
+  const form = useForm({
+    initialValues: { name: "" },
+    validate: (v) => ({ name: v.name.trim() ? "" : "Required" }),
+    onSubmit: (_values, { reset }) => {
+      reset();
+      setSent((count) => count + 1);
+    },
+  });
+  useEffect(() => {
+    if (sent && window.__focusNotice) notice.current.focus();
+  }, [sent]);
+
+  return h(
+    "form",
+    { noValidate: true, onSubmit: form.handleSubmit() },
+    h(TextField, { ...form.field("name"), label: "Name", id: "t-reset-name" }),
+    sent ? h("p", { ref: notice, tabIndex: -1, id: "t-reset-sent" }, "Sent.") : null,
+  );
+}
+
 const navItems = [
   { label: "One", href: "#one" },
   { label: "Two", href: "#two" },
@@ -85,6 +110,7 @@ function App() {
     h("section", { id: "s-navbar-bare" }, h(Navbar, { items: navItems })),
     h("section", { id: "s-submit" }, h(SubmitForm, null)),
     h("section", { id: "s-click" }, h(ClickForm, null)),
+    h("section", { id: "s-reset" }, h(ResetForm, null)),
     // A grid item is never narrower than its content: a bar that could not wrap
     // would push this column out to the width of its links.
     h("section", { id: "s-navbar-column" }, h(Navbar, { items: manyNavItems })),

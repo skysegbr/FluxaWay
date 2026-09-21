@@ -219,6 +219,13 @@ The `helpers` object passed to your handler exposes every setter on the form
 `reset()` restores every field to `initialValues` and clears errors, touched flags,
 `isSubmitting`, and `submitCount`.
 
+It does not move focus. After Enter submits, the field that was focused stays
+focused, now empty. When that focus ends (a success notice taking it, or the
+next click anywhere), the blur touches and validates nothing, so no "required"
+error appears under a form that just succeeded. Once the person edits that
+field, or later leaves a required empty field again, validation works as on a
+freshly loaded form.
+
 Pass a custom object to reset to a different baseline:
 
 ```js

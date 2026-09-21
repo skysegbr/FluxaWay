@@ -3,6 +3,8 @@
 import {
   h,
   render,
+  useEffect,
+  useRef,
   useState,
   useForm,
   useRouter,
@@ -330,6 +332,101 @@ test("useForm: the submit button does not move when the last valid field blurs",
   const after = container.querySelector("#shift-submit").getBoundingClientRect().top;
 
   assertEqual(after, before, "a layout shift here lands mouseup off the button and eats the click");
+});
+
+// Enter submits from inside the last field, so that field is still focused, and
+// now empty, when onSubmit calls reset(). Whatever ends that focus must not put
+// "Required" under the success notice. `order` is where the app moves focus:
+// "notice" (in an effect, once the notice exists), "blur-after" / "blur-before"
+// (synchronously, around reset()), or "none".
+function mountResetForm(order) {
+  const container = mountPoint();
+  const id = `reset-${order}`;
+  const state = {};
+
+  function Form() {
+    const [sent, setSent] = useState(0);
+    const notice = useRef(null);
+    state.form = useForm({
+      initialValues: { name: "" },
+      validate: (v) => ({ name: v.name.trim() ? "" : "Required" }),
+      onSubmit: (_values, { reset }) => {
+        if (order === "blur-before") document.activeElement.blur();
+        reset();
+        if (order === "blur-after") document.activeElement.blur();
+        setSent((count) => count + 1);
+      },
+    });
+    useEffect(() => {
+      if (order === "notice" && sent) notice.current.focus();
+    }, [sent]);
+    return h(
+      "form",
+      { noValidate: true, onSubmit: state.form.handleSubmit() },
+      h(TextField, { ...state.form.field("name"), label: "Name", id }),
+      sent ? h("p", { ref: notice, tabIndex: -1, id: `${id}-sent` }, "Sent.") : null,
+    );
+  }
+
+  render(Form, container);
+  const input = () => container.querySelector(`#${id}`);
+  const errorLines = () => container.querySelectorAll(".m-error").length;
+  const type = async (text) => {
+    input().value = text;
+    input().dispatchEvent(new Event("input", { bubbles: true }));
+    await flush();
+  };
+  const typeAndSubmit = async (text) => {
+    await flush();
+    input().focus();
+    await type(text);
+    input().form.requestSubmit();
+    await flush();
+  };
+  return { state, input, errorLines, type, typeAndSubmit };
+}
+
+for (const [order, how] of [
+  ["notice", "focus moved to the notice in an effect"],
+  ["blur-after", "blur() right after reset()"],
+  ["blur-before", "blur() right before reset()"],
+]) {
+  test(`useForm: Enter, reset(), then ${how}: no error under the notice`, async () => {
+    const t = mountResetForm(order);
+    await t.typeAndSubmit("Ana");
+    await flush();
+    assert(document.activeElement !== t.input(), "the field should have lost focus");
+    assertEqual(t.state.form.values.name, "", "reset() cleared the value");
+    assertEqual(t.errorLines(), 0, "an error line appeared next to the success notice");
+    assert(!t.state.form.touched.name, "the field was touched by the blur that ended its old focus");
+  });
+}
+
+test("useForm: reset() leaves focus in the field, and the blur that ends it validates nothing", async () => {
+  const t = mountResetForm("none");
+  await t.typeAndSubmit("Ana");
+  assertEqual(document.activeElement, t.input(), "reset() must not move focus: Enter, reset, type the next one");
+
+  t.input().blur(); // the first click anywhere
+  await flush();
+  assertEqual(t.errorLines(), 0, "the first click after an Enter submit showed an error");
+  assert(!t.state.form.touched.name, "the field was touched");
+
+  // Only that one blur is ignored: a new visit behaves like a fresh form.
+  t.input().focus();
+  t.input().blur();
+  await flush();
+  assertEqual(t.state.form.field("name").error, "Required", "focusing and leaving the field again validates it");
+});
+
+test("useForm: editing the field that kept focus through reset() makes its blur count again", async () => {
+  const t = mountResetForm("none");
+  await t.typeAndSubmit("Ana");
+  await t.type("B");
+  await t.type("");
+  t.input().blur();
+  await flush();
+  assertEqual(t.state.form.field("name").error, "Required", "the person used the field after the reset");
 });
 
 // ── useRouter (hash mode) ─────────────────────────────────────────────────────
