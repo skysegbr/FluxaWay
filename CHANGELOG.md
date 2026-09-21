@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **`Navbar`: 0.25.3's rules outweighed app CSS that used to override them.**
+  Making the layout depend on a state class turned every `.m-navbar-*` rule from
+  one class into three (`.m-navbar:is(…) .m-navbar-toggle`), so a stylesheet that
+  had been overriding them with two classes silently lost — but only from 768px
+  up, and only on a bar whose own layout still fitted. FluxaWay's documentation
+  site hit exactly that: between 768 and 900px its header stopped collapsing and
+  opened to 741px tall. The state now lives in `:where()`, which adds no
+  specificity, so each rule weighs the single class it names, as it did in
+  0.25.2. Behaviour is unchanged for a bar nobody restyles.
+
 ## [0.25.3] - 2026-09-21
 
 ### Fixed

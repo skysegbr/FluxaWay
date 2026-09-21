@@ -959,6 +959,55 @@ test("Navbar: Escape and an outside click both close the open menu", async () =>
   );
 });
 
+// Measuring made the bar's layout depend on a state class, and a state class is
+// easy to write in a way that outweighs the app. It must not: every .m-navbar-*
+// rule has to keep weighing the single class it names, or app CSS that used to
+// win silently loses — which is exactly how the docs site's own mobile header
+// blew open at 768-900px. The state lives in :where(), which adds nothing.
+test("Navbar: app CSS with two classes still overrides the bar's own rules at every width", async () => {
+  if (!window.matchMedia("(min-width: 768px)").matches) return;
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .app-nav .m-navbar-toggle { display: inline-flex; }
+    .app-nav .m-navbar-menu-wrap { display: grid; grid-template-rows: 0fr; order: 3; flex: 0 0 100%; }
+    .app-nav .m-navbar-menu { flex-direction: column; }
+    .app-nav .m-navbar-actions { display: block; }
+  `;
+  document.head.append(style);
+
+  try {
+    const container = mountPoint();
+    container.style.width = "1100px";
+    render(
+      () =>
+        h(Navbar, {
+          className: "app-nav",
+          brand: "Docs",
+          items: [{ label: "Overview", href: "#a" }, { label: "Reports", href: "#b" }],
+          actions: h(Button, null, "Search"),
+        }),
+      container,
+    );
+    await flush();
+
+    const nav = container.querySelector(".m-navbar");
+    const styleOf = (selector) => getComputedStyle(nav.querySelector(selector));
+    // The app's own layout has to be the one that fits, or the bar collapses and
+    // these rules never apply — which is what hid this from the first version
+    // of this test.
+    assert(!nav.classList.contains("m-navbar-collapsed"), "the bar collapsed: this does not test the rules");
+    // A flex item blockifies inline-flex to flex; what matters is that it is shown.
+    assert(styleOf(".m-navbar-toggle").display !== "none", "the app's toggle rule lost to the framework's display:none");
+    assertEqual(styleOf(".m-navbar-menu-wrap").display, "grid", "the app's wrap rule");
+    assertEqual(styleOf(".m-navbar-menu-wrap").order, "3", "the app's order rule");
+    assertEqual(styleOf(".m-navbar-menu").flexDirection, "column", "the app's menu direction");
+    assertEqual(styleOf(".m-navbar-actions").display, "block", "the app's actions rule");
+  } finally {
+    style.remove();
+  }
+});
+
 // ── Slider ────────────────────────────────────────────────────────────────
 
 test("Slider: renders a native range input wired to min/max/step/value and shows the value when asked", async () => {

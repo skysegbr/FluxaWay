@@ -287,7 +287,14 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   `error` event everywhere, a **page error in WebKit** — which is why the one flip
   that does change the height (menu open) waits for the next frame.
   `run_browser_tests.py` prints page errors but does not fail on them; the Navbar
-  sweep scenario reads `window.__errors` for that reason.
+  sweep scenario reads `window.__errors` for that reason. (4) the state selectors
+  are wrapped in `:where()`, which adds **no** specificity, so every rule still
+  weighs the one `.m-navbar-*` class it names. Written with `:is()` they weigh
+  three, and app CSS overriding those classes with two silently loses from 768px
+  up — that shipped in 0.25.3 and broke the docs site's own header at 768-900px.
+  A rule whose weight changes is a breaking change even when its declarations do
+  not; `tests/coverage.test.js` pins it, and a test for it must assert the bar
+  is *not* collapsed, or the rules never apply and it proves nothing.
 - **`h(Component)` runs the component on the spot** — outside a render pass it
   throws "can only be used during rendering". That includes test code:
   `renderToString(() => h(Button, …))`, never `renderToString(h(Button, …))`.
