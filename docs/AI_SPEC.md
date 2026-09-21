@@ -120,7 +120,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.25.0`. In a multi-file project the URL must be
+release tag such as `@v0.25.1`. In a multi-file project the URL must be
 **identical in every file**, or the framework loads twice — see §14, "The same
 app from the CDN".
 
