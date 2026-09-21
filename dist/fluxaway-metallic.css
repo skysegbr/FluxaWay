@@ -733,7 +733,9 @@ html[data-design="metallic"] body {
     linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.16) 48%, transparent 58%),
     color-mix(in srgb, var(--m-surface-soft) 88%, var(--mx-metal));
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.14) inset;
-  color: color-mix(in srgb, var(--mx-state) 68%, var(--m-text));
+  /* 55%, not more: the gold accent of aurum/cobalt-aurum is a light color, and
+     at 68% it read 3.88:1 on the light theme. 55% keeps every finish at AA. */
+  color: color-mix(in srgb, var(--mx-state) 55%, var(--m-text));
 }
 
 [data-design="metallic"] .m-badge-success { --mx-state: var(--m-success); }

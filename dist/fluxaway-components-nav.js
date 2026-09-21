@@ -449,6 +449,7 @@ export function SwipeableListItem({
   }, [maxOffset]);
 
   const close = () => { currentRef.current = 0; setOffset(0); };
+  const open = () => { currentRef.current = -maxOffset; setOffset(-maxOffset); };
 
   return h(
     "div",
@@ -471,7 +472,22 @@ export function SwipeableListItem({
           type: "button",
           className: joinClasses("m-swipeable-action", action.className),
           style: { width: `${actionWidth}px`, ...action.style },
-          onClick: () => { close(); action.onClick?.(); },
+          // An icon alone has no accessible name; `label` names the button then.
+          ariaLabel: action.icon != null && action.label ? action.label : undefined,
+          // The actions sit behind the row. Focus landing on one (Tab, a screen
+          // reader) reveals them, so focus is never on a button nobody can see;
+          // focus leaving the group hides them again. This is the keyboard
+          // alternative to the swipe.
+          onFocus: open,
+          onBlur: (event) => {
+            if (!event.currentTarget.parentNode.contains(event.relatedTarget)) close();
+          },
+          onClick: (event) => {
+            // Activated from the keyboard (`detail` 0) the button still holds
+            // focus, so the row stays revealed until focus moves on.
+            if (event.detail !== 0) close();
+            action.onClick?.();
+          },
         }, action.icon ?? action.label),
       ),
     ),

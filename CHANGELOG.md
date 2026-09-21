@@ -29,6 +29,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `.m-dialog-header-draggable` sat inside the CodeEditor section of
   `fluxaway-ui.css`, so it shipped in `fluxaway-ui-forms.css` instead of
   `fluxaway-ui-overlay.css`.
+- **`SwipeableListItem` had no keyboard path**, and Tab still landed on its
+  action buttons while they sat hidden behind the row. Focus on an action now
+  reveals them and focus leaving the group hides them again. An action with
+  `icon` dropped its `label`; it is now the button's `aria-label`.
+- **Metallic `Badge` text read 3.88:1 on the light theme** with the default
+  aurum/cobalt-aurum finish — the gold accent is a light color. The accent share
+  of the text mix goes from 68% to 55%, which keeps every finish × theme at AA
+  (now asserted across all seven finishes).
 - **`useForm().field(name, { type: "checkbox", onInput })` dropped `onInput`
   silently**, against the documented "chains your own handlers". It is forwarded.
 

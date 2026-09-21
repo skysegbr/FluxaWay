@@ -581,6 +581,7 @@ export declare function SpeedDial(props?: {
 
 export interface SwipeableAction {
   key?: string | number;
+  /** The button's text — or, when `icon` is set, its accessible name (`aria-label`). Always pass it. */
   label?: string;
   icon?: VNode;
   className?: string;

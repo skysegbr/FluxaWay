@@ -1941,6 +1941,10 @@ h(SwipeableListItem, {
 },
   h('div', { className: 'list-row' }, 'Row content')
 )
+// a11y: the actions are real buttons behind the row — tabbing to one reveals
+// them (the keyboard alternative to the swipe) and focus moving on hides them.
+// An action with `icon` shows only the icon; ALWAYS pass `label` too, it becomes
+// the button's aria-label.
 
 // Stepper
 h(Stepper, {

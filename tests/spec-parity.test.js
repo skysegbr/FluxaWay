@@ -7,6 +7,7 @@ import { Badge, Button, FormField } from "../dist/fluxaway-components-core.js";
 import { Checkbox, NumberInput, Radio } from "../dist/fluxaway-components-forms.js";
 import { Menu } from "../dist/fluxaway-components-overlay.js";
 import { SwipeableListItem } from "../dist/fluxaway-components-nav.js";
+import { METAL_THEMES } from "../dist/fluxaway-metallic.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 // Computed colors come back as `rgb(r, g, b)` or, out of color-mix(), as
@@ -72,18 +73,30 @@ test("Badge: the m-badge-success/-warning/-danger classes exist and read at AA i
   assertEqual(failures.join("; "), "");
 });
 
-test("Badge: the Metallic design keeps the status visible instead of flattening it", async () => {
+// The accent doubles as the plain badge's text color, and some finishes have a
+// light one (aurum's gold read 3.88:1 on the light theme) — so every finish is
+// walked, plain badge included.
+test("Badge: every Metallic finish keeps the status visible and the text at AA", async () => {
   const container = mountPoint();
-  render(() => h("div", null, badgeSamples({ design: "metallic" })), container);
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        METAL_THEMES.map((metalTheme) =>
+          h("div", { key: metalTheme, dataset: { finish: metalTheme } }, badgeSamples({ design: "metallic", metalTheme })),
+        ),
+      ),
+    container,
+  );
   await flush();
 
   const failures = [];
   for (const scope of container.querySelectorAll("[data-scope]")) {
-    const plain = getComputedStyle(scope.querySelector('[data-variant="plain"]'));
-    const seen = new Set([plain.color]);
-    for (const variant of BADGE_VARIANTS) {
+    const seen = new Set();
+    for (const variant of ["plain", ...BADGE_VARIANTS]) {
       const style = getComputedStyle(scope.querySelector(`[data-variant="${variant}"]`));
-      const label = `${scope.dataset.scope} ${variant}`;
+      const label = `${scope.dataset.metalTheme} ${scope.dataset.scope} ${variant}`;
       if (seen.has(style.color)) failures.push(`${label}: text color repeats another badge`);
       seen.add(style.color);
       const ratio = contrast(style.color, style.backgroundColor);
@@ -451,4 +464,65 @@ test("SwipeableListItem: a press that stays inside the slop is a plain click", a
   assertEqual(rowClicks, 1);
   assertEqual(track.style.transform, "translateX(0px)");
   assert(!track.classList.contains("m-swipeable-swiping"));
+});
+
+test("SwipeableListItem: focus on an action reveals them, focus leaving the group hides them", async () => {
+  const container = mountPoint();
+  let archived = 0;
+
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h(
+          SwipeableListItem,
+          { actions: [{ label: "Delete" }, { label: "Archive", onClick: () => { archived += 1; } }], actionWidth: 72 },
+          h("div", { className: "row" }, "Row"),
+        ),
+        h("button", { type: "button", id: "swipe-outside" }, "Outside"),
+      ),
+    container,
+  );
+  await flush();
+
+  const track = container.querySelector(".m-swipeable-track");
+  const action = (index) => container.querySelectorAll(".m-swipeable-action")[index];
+
+  action(0).focus();
+  await flush();
+  assertEqual(track.style.transform, "translateX(-144px)", "tabbing in reveals the actions");
+
+  action(1).focus();
+  await flush();
+  assertEqual(track.style.transform, "translateX(-144px)", "moving between actions keeps them revealed");
+
+  // .click() is a detail-0 click, the shape Enter and Space produce.
+  action(1).click();
+  await flush();
+  assertEqual(archived, 1);
+  assertEqual(track.style.transform, "translateX(-144px)", "focus is still there, so they stay visible");
+
+  container.querySelector("#swipe-outside").focus();
+  await flush();
+  assertEqual(track.style.transform, "translateX(0px)", "focus moving on hides them");
+});
+
+test("SwipeableListItem: with an icon, the action's label becomes its accessible name", async () => {
+  const container = mountPoint();
+  render(
+    () =>
+      h(
+        SwipeableListItem,
+        { actions: [{ label: "Delete", icon: "x" }, { label: "Archive" }] },
+        h("div", null, "Row"),
+      ),
+    container,
+  );
+  await flush();
+
+  const [iconOnly, textOnly] = container.querySelectorAll(".m-swipeable-action");
+  assertEqual(iconOnly.getAttribute("aria-label"), "Delete");
+  assertEqual(textOnly.getAttribute("aria-label"), null, "visible text needs no aria-label");
+  assertEqual(textOnly.textContent, "Archive");
 });

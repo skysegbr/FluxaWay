@@ -1134,7 +1134,7 @@ version of FluxaWay.
 | `BottomSheet` | `open`, `title`, `onClose` | Slides up from bottom; adapts to dialog on desktop |
 | `FAB` | `label`, `extended`, `aboveNav`, `onClick` | Floating action button; `aboveNav` shifts above `BottomNav` |
 | `SpeedDial` | `label`, `icon`, `items`, `orbit` | Trigger that expands a row of `IconButton`s (`orbit: true` stacks them upward); manages its own open/close state |
-| `SwipeableListItem` | `actions`, `actionWidth` | Swipe (touch, pen) or drag (mouse) left to reveal action buttons |
+| `SwipeableListItem` | `actions`, `actionWidth` | Swipe (touch, pen) or drag (mouse) left to reveal action buttons; tabbing to an action reveals them too. With `icon`, `label` becomes the button's `aria-label` |
 | `ThemeToggle` | — | `IconButton` that calls `useTheme().toggleTheme()` internally |
 | `PaletteSwitcher` | — | Row of color swatches; calls `usePalette().setPalette()` internally |
 | `DesignSwitcher` | — | Chip toggle between designs; calls `useDesign().setDesign()` internally |
@@ -1143,8 +1143,8 @@ version of FluxaWay.
 // SwipeableListItem — swipe left to reveal actions
 h(SwipeableListItem, {
   actions: [
-    { key: "delete",  icon: "🗑",  className: "m-swipeable-action",         onClick: () => deleteItem(id) },
-    { key: "archive", icon: "📦", className: "m-swipeable-action-info",     onClick: () => archiveItem(id) },
+    { key: "delete",  label: "Delete",  icon: "🗑",  className: "m-swipeable-action",      onClick: () => deleteItem(id) },
+    { key: "archive", label: "Archive", icon: "📦", className: "m-swipeable-action-info", onClick: () => archiveItem(id) },
   ],
 },
   h("div", { className: "m-list-item" }, "Task title"),
