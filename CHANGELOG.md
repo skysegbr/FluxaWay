@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.26.0] - 2026-09-21
 
 ### Added
 - **`useForm`: `...form.field(name)` works on every form control.** DatePicker,
