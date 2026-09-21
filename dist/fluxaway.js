@@ -609,6 +609,9 @@ export function useForm({
         checked: Boolean(values[name]),
         error: touched[name] ? errors[name] : "",
         onBlur: handleBlur,
+        // A checkbox fires `input` and `change` back to back, so only `change`
+        // edits the form; a caller's onInput is still forwarded, not dropped.
+        ...(onInput && { onInput }),
         onChange: (event) => {
           handleEdit(name, Boolean(event.target.checked));
           onChange?.(event);
@@ -2786,6 +2789,8 @@ export function useThrottle(fn, delay) {
 // while it is exiting cancels the exit. Pair the exit class with the
 // animation utility classes in fluxaway-ui.css or your own CSS transition.
 
+let warnedPresenceKey = false;
+
 export function usePresence(source, { duration = 300, getKey = defaultPresenceKey } = {}) {
   const isList = Array.isArray(source);
   const [, bump] = useState(0);
@@ -2805,7 +2810,16 @@ export function usePresence(source, { duration = 300, getKey = defaultPresenceKe
 
   const liveKeys = new Map();
   for (const item of items) {
-    liveKeys.set(String(keyOf(item)), item);
+    const key = keyOf(item);
+    // Every keyless item lands on the same "undefined" entry and silently
+    // replaces the previous one — warn once instead of losing rows quietly.
+    if (key == null && !warnedPresenceKey) {
+      warnedPresenceKey = true;
+      console.warn(
+        "FluxaWay: usePresence got a list item without a key — items without `key` or `id` collide. Pass `getKey` (e.g. `{ getKey: (item) => item.slug }`).",
+      );
+    }
+    liveKeys.set(String(key), item);
   }
 
   const result = [];

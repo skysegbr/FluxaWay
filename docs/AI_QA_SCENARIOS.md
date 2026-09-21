@@ -264,7 +264,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-C-NAV-05 | Stepper | steps; active/complete; horizontal/vertical | visual |
 | SC-C-NAV-06 | FAB | `label` a11y; `extended` shows text; positioned | browser |
 | SC-C-NAV-07 | SpeedDial | expands IconButton row; `orbit`; closes on outside/select; own state | browser |
-| SC-C-NAV-08 | SwipeableListItem | swipe reveals actions; snaps back; keyboard alternative | browser (touch) |
+| SC-C-NAV-08 | SwipeableListItem | swipe (touch) and mouse drag reveal actions; snaps back; the drag's click does not activate the row; keyboard alternative | browser (touch + mouse) |
 
 ### §9.6 Theme — `SC-C-THM`
 | ID | Component | Specific scenarios | Verify |

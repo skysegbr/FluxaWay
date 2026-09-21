@@ -727,13 +727,18 @@ html[data-design="metallic"] body {
 }
 
 [data-design="metallic"] .m-badge {
-  border: 1px solid color-mix(in srgb, var(--mx-accent) 42%, var(--m-border));
+  --mx-state: var(--mx-accent);
+  border: 1px solid color-mix(in srgb, var(--mx-state) 42%, var(--m-border));
   background:
     linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.16) 48%, transparent 58%),
     color-mix(in srgb, var(--m-surface-soft) 88%, var(--mx-metal));
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.14) inset;
-  color: color-mix(in srgb, var(--mx-accent) 68%, var(--m-text));
+  color: color-mix(in srgb, var(--mx-state) 68%, var(--m-text));
 }
+
+[data-design="metallic"] .m-badge-success { --mx-state: var(--m-success); }
+[data-design="metallic"] .m-badge-warning { --mx-state: var(--m-warning); }
+[data-design="metallic"] .m-badge-danger { --mx-state: var(--m-danger); }
 
 [data-design="metallic"] .m-field {
   border-color: color-mix(in srgb, var(--mx-metal) 42%, var(--m-border));

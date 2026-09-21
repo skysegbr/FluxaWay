@@ -623,9 +623,10 @@ export function BottomSheet({
 //   className extra classes
 //
 // Keyboard (per level): ArrowUp/ArrowDown/Home/End move between siblings;
-// ArrowRight (or Enter/click) opens a submenu and focuses its first item;
+// ArrowRight, Enter or Space opens a submenu and focuses its first item;
 // ArrowLeft closes the current submenu and returns focus to its parent
-// item. Escape/Tab close the whole menu, same as Dropdown.
+// item. Escape/Tab close the whole menu, same as Dropdown. A pointer click
+// on a parent item only toggles its submenu — hover already opens it.
 
 function getMenuItemButtons(list) {
   if (!list) return [];
@@ -638,7 +639,10 @@ function MenuItemNode({ item, index, isOpen, menu, onLeafSelect, listRef, submen
   const submenuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const openSubmenu = () => menu.openNow(key);
+  const openAndFocusSubmenu = () => {
+    menu.openNow(key);
+    queueMicrotask(() => focusFirstElementIfOutside(submenuRef.current));
+  };
 
   return h(
     "li",
@@ -661,13 +665,21 @@ function MenuItemNode({ item, index, isOpen, menu, onLeafSelect, listRef, submen
         disabled: item.disabled,
         ariaHaspopup: hasSubmenu ? "true" : undefined,
         ariaExpanded: hasSubmenu ? (isOpen ? "true" : "false") : undefined,
-        onClick: () => {
+        onClick: (event) => {
           if (item.disabled) return;
-          if (hasSubmenu) {
-            menu.openNow(isOpen ? null : key);
+          if (!hasSubmenu) {
+            onLeafSelect(item);
             return;
           }
-          onLeafSelect(item);
+          // Enter and Space reach a button as a click with `detail` 0 (so does a
+          // screen reader's virtual click). They follow the ArrowRight path and
+          // move focus in; toggling here would strand keyboard focus on the
+          // parent, or shut a submenu that hover had already opened.
+          if (event.detail === 0) {
+            openAndFocusSubmenu();
+            return;
+          }
+          menu.openNow(isOpen ? null : key);
         },
         onKeyDown: (event) => {
           const buttons = getMenuItemButtons(listRef.current);
@@ -685,8 +697,7 @@ function MenuItemNode({ item, index, isOpen, menu, onLeafSelect, listRef, submen
             buttons[buttons.length - 1]?.focus();
           } else if (event.key === "ArrowRight" && hasSubmenu) {
             event.preventDefault();
-            openSubmenu();
-            queueMicrotask(() => focusFirstElementIfOutside(submenuRef.current));
+            openAndFocusSubmenu();
           } else if (event.key === "ArrowLeft" && submenu) {
             event.preventDefault();
             onCloseToParent?.();

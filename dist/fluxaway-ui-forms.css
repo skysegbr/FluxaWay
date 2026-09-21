@@ -261,14 +261,6 @@
   background: var(--m-surface);
 }
 
-.m-dialog-header-draggable {
-  cursor: grab;
-}
-
-.m-dialog-header-draggable:active {
-  cursor: grabbing;
-}
-
 .m-code-editor-fallback {
   min-height: 200px;
   height: 200px;

@@ -1076,7 +1076,7 @@ version of FluxaWay.
 | `Alert` | `variant` (info · success · warning · danger), `title` |
 | `Avatar` | `src`, `name` (initials fallback + accessible label), `size` (xs · sm · md · lg · xl) |
 | `AvatarGroup` | `avatars`, `max`, `size` — overlapping stack, extras collapse into a `+N` counter |
-| `Badge` | — |
+| `Badge` | — (status variants via `className`: `m-badge-success` · `m-badge-warning` · `m-badge-danger`) |
 | `Breadcrumb` | `items` (`{ label, href?, onClick?, icon? }`), `separator` — last item gets `aria-current="page"` |
 | `Button` | `variant` (text · contained · tonal · outline · danger), `effect` (reflection · edge · split · aperture · charge · corners · pulse · phase · conductor), `icon`, `accent`, `type`, `disabled` — effects are official token-driven interaction signatures; Metallic gives conductor an exact recipe per finish; icon-only usage requires `ariaLabel`/`ariaLabelledby` |
 | `Card` | `padded` — combine with `m-card-media`/`-zoom`, `m-card-reveal`, `m-card-float`, `m-card-glow` (+ `-amber`/`-violet`/`-emerald`), `m-card-expand-group`/`-expand`, or `m-card-pricing` for the CSS-only card variants (see `docs/AI_SPEC.md` §9) |
@@ -1095,11 +1095,11 @@ version of FluxaWay.
 | `Dropdown` | `trigger`, `items` (`{ key, label, onClick, danger, divider }`), `align` |
 | `EmptyState` | `title`, `description`, `action` |
 | `FileDropZone` | `onFiles`, `accept`, `multiple`, `progress`, `label`, `hint` |
-| `FormField` | `id`, `label`, `help`, `error` |
+| `FormField` | `id`, `label`, `help`, `error` — without `id`, a single input/select/textarea/button child is wired to the label, help and error automatically |
 | `IconButton` | `label`, `variant` |
 | `Menu` | `trigger`, `items` (`{ key, label, onClick, danger, divider, children }`) — like `Dropdown`, but any item can nest a `children` array to open a flyout submenu at any depth |
 | `Navbar` | `brand`, `items`, `actions`, `defaultOpen`/`open`, `onToggle` — collapses into a hamburger menu below 768px |
-| `NumberInput` | `id`, `label`, `min`/`max`/`step`, `value` (number \| `null`), `onChange` — numeric field with −/+ steppers; clamps and rounds to the step precision |
+| `NumberInput` | `id`, `label`, `min`/`max`/`step`, `value` (number \| `null`), `onChange` — numeric field with −/+ steppers; clamps and rounds to the step precision (typed values are clamped on blur) |
 | `Pagination` | `page`, `total`, `siblings`, `onChange` |
 | `Popover` | `trigger`, `placement` (top · bottom · left · right), `title` — generic anchored panel for interactive content; Escape/outside-click close |
 | `Progress` | `value`, `max`, `label` |
@@ -1134,7 +1134,7 @@ version of FluxaWay.
 | `BottomSheet` | `open`, `title`, `onClose` | Slides up from bottom; adapts to dialog on desktop |
 | `FAB` | `label`, `extended`, `aboveNav`, `onClick` | Floating action button; `aboveNav` shifts above `BottomNav` |
 | `SpeedDial` | `label`, `icon`, `items`, `orbit` | Trigger that expands a row of `IconButton`s (`orbit: true` stacks them upward); manages its own open/close state |
-| `SwipeableListItem` | `actions`, `actionWidth` | Swipe left to reveal action buttons |
+| `SwipeableListItem` | `actions`, `actionWidth` | Swipe (touch, pen) or drag (mouse) left to reveal action buttons |
 | `ThemeToggle` | — | `IconButton` that calls `useTheme().toggleTheme()` internally |
 | `PaletteSwitcher` | — | Row of color swatches; calls `usePalette().setPalette()` internally |
 | `DesignSwitcher` | — | Chip toggle between designs; calls `useDesign().setDesign()` internally |

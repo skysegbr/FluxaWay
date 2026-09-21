@@ -95,6 +95,7 @@ export function Checkbox({
   inputClassName = "",
   ...props
 } = {}) {
+  id = useFieldId(id);
   const helpId = help ? `${id}-help` : undefined;
   const errorId = error ? `${id}-error` : undefined;
 
@@ -898,6 +899,7 @@ export function Radio({
   inputClassName = "",
   ...props
 } = {}) {
+  id = useFieldId(id);
   const helpId = help ? `${id}-help` : undefined;
   const errorId = error ? `${id}-error` : undefined;
 
@@ -1063,6 +1065,15 @@ export function NumberInput({
         onInput: (event) => {
           const raw = event.target.value;
           onChange?.(raw === "" ? null : finiteNumber(raw, current));
+        },
+        // Typing has to pass through out-of-range values ("1" on the way to
+        // "15" with min 10), so min/max are enforced when the edit is committed —
+        // the same limits the stepper buttons already respect.
+        onBlur: (event) => {
+          if (current !== null && (current < lo || current > hi)) {
+            onChange?.(clamp(current));
+          }
+          props.onBlur?.(event);
         },
       }),
       h(

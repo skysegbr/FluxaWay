@@ -250,6 +250,11 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   siblings), gets two cores, a blank page and `useState can only be used during
   rendering`. Never suggest a query string on a module URL. AI_SPEC §14 has the
   import-map recipe.
+- **A CSS rule ships in the category of the section banner it sits under**, not of
+  the class it names. `split_css.py` is lossless by design and cannot tell that
+  `.m-dialog-header-draggable` typed inside `/* ── CodeEditor ── */` belongs to
+  overlay — it shipped in `fluxaway-ui-forms.css` for that reason. Add a rule
+  next to its component's other rules; `tests/spec-parity.test.js` guards `.m-dialog`.
 - **`h(Component)` runs the component on the spot** — outside a render pass it
   throws "can only be used during rendering". That includes test code:
   `renderToString(() => h(Button, …))`, never `renderToString(h(Button, …))`.

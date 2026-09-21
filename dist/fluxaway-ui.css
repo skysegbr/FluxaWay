@@ -2112,6 +2112,12 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
   font-weight: 600;
 }
 
+/* Status variants, passed through `className`. Same soft fill + solid text
+   pairing as the Alert variants, so they follow the light and dark themes. */
+.m-badge-success { background: var(--m-success-soft); color: var(--m-success); }
+.m-badge-warning { background: var(--m-warning-soft); color: var(--m-warning); }
+.m-badge-danger  { background: var(--m-danger-soft);  color: var(--m-danger); }
+
 /* ── Alert ─────────────────────────────────────────────── */
 
 .m-alert {
@@ -2489,6 +2495,14 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 .m-dialog-header h2 {
   margin: 0;
   font-size: var(--m-font-size-lg);
+}
+
+.m-dialog-header-draggable {
+  cursor: grab;
+}
+
+.m-dialog-header-draggable:active {
+  cursor: grabbing;
 }
 
 .m-dialog-body {
@@ -3379,14 +3393,6 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
   border-radius: var(--m-radius);
   overflow: hidden;
   background: var(--m-surface);
-}
-
-.m-dialog-header-draggable {
-  cursor: grab;
-}
-
-.m-dialog-header-draggable:active {
-  cursor: grabbing;
 }
 
 .m-code-editor-fallback {

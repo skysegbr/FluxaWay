@@ -14,7 +14,7 @@
  * Full AI reference (fetch this URL for the complete spec):
  * https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
  */
-import { h } from "./fluxaway.js";
+import { h, useId } from "./fluxaway.js";
 import { finiteNumber, hasChildren, joinClasses, requiredMarkProps } from "./fluxaway-components-util.js";
 
 const buttonVariants = {
@@ -203,6 +203,16 @@ export function Chip({ active = false, className = "", children, ...props } = {}
   );
 }
 
+// The elements a <label for> may point at (HTML's "labelable elements").
+const LABELABLE_TAGS = new Set(["input", "select", "textarea", "button", "meter", "output", "progress"]);
+
+// The form controls pass `id` and wire their own control. Used directly without
+// one, FormField still owes the label/help/error association: a lone labelable
+// child lends its id (or receives a generated one) and is cloned with
+// aria-describedby/aria-invalid, the way Tooltip clones onto its trigger. Any
+// other child can't be wired from here, so the label gets no `for` — but the
+// help/error ids stay unique instead of every field emitting "undefined-help".
+// useId runs unconditionally to keep hook order stable.
 export function FormField({
   id,
   label,
@@ -214,8 +224,26 @@ export function FormField({
   children,
   ...props
 } = {}) {
-  const helpId = help ? `${id}-help` : undefined;
-  const errorId = error ? `${id}-error` : undefined;
+  const autoId = useId();
+  const only = Array.isArray(children) && children.length === 1 ? children[0] : null;
+  const control = id == null && only && LABELABLE_TAGS.has(only.type) ? only : null;
+  const fieldId = id ?? control?.props.id ?? autoId;
+  const helpId = help ? `${fieldId}-help` : undefined;
+  const errorId = error ? `${fieldId}-error` : undefined;
+
+  const content = control
+    ? [
+        {
+          ...control,
+          props: {
+            ...control.props,
+            id: fieldId,
+            ariaInvalid: control.props.ariaInvalid ?? (error ? "true" : undefined),
+            ariaDescribedby: joinClasses(control.props.ariaDescribedby, helpId, errorId) || undefined,
+          },
+        },
+      ]
+    : children;
 
   return h(
     "div",
@@ -223,11 +251,11 @@ export function FormField({
     label &&
       h(
         "label",
-        { className: "m-label", htmlFor: id },
+        { className: "m-label", htmlFor: id ?? (control ? fieldId : undefined) },
         label,
         required && h("span", requiredMarkProps(requiredLabel), "*"),
       ),
-    children,
+    content,
     help && h("p", { id: helpId, className: "m-help" }, help),
     error && h("p", { id: errorId, className: "m-error" }, error),
   );

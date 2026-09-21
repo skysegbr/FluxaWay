@@ -872,7 +872,8 @@ return mounted
 
 // List form (items leaving a collection) — exiting items keep their position,
 // re-adding an item mid-exit cancels it. getKey defaults to item.key ?? item.id
-// ?? the item itself:
+// (a primitive item is its own key). Objects with neither collide on one key —
+// FluxaWay warns once in the console; pass getKey:
 const rows = usePresence(todos, { duration: 200, getKey: (t) => t.id });
 return rows.map(({ key, item, exiting }) =>
   h('li', { key, className: exiting ? 'row row-exit' : 'row' }, item.label));
@@ -1368,7 +1369,7 @@ h(Button, {
 // `accent` composes especially well with `outline`; it uses --m-primary and
 // logical border properties, so it follows palettes, themes and RTL layouts.
 
-// IconButton — round button for icons
+// IconButton — square 44×44 button for a single icon (corners follow --m-radius)
 h(IconButton, {
   label: 'Close',         // aria-label (required)
   variant: 'tonal',       // same variants as Button
@@ -1378,6 +1379,8 @@ h(IconButton, {
 // Badge
 h(Badge, null, 'New')
 h(Badge, { className: 'm-badge-success' }, '3')
+// Status variants are classes, not a prop: m-badge-success | m-badge-warning |
+// m-badge-danger. No class = the default primary tint.
 
 // Chip — a static label, or a toggle/filter when it has onClick
 h(Chip, { active: form.dirty }, 'Modified')             // no onClick → <span>, not focusable
@@ -1611,6 +1614,13 @@ h(DataTable, {
 h(FormField, { label: 'Name', help: 'Optional', error: '' },
   h('input', { className: 'm-field', type: 'text' })
 )
+// With no `id` and a single input/select/textarea/button child, FormField wires
+// it for you: the child gets an id (its own, or a generated one), the label's
+// `for`, and aria-describedby/aria-invalid for help and error. When the control
+// sits inside a wrapper, pass the same id to both:
+h(FormField, { id: 'price', label: 'Price' },
+  h('div', { className: 'price-row' }, h('input', { id: 'price', className: 'm-field' }), ' USD')
+)
 
 // TextField
 h(TextField, {
@@ -1768,7 +1778,8 @@ h(NumberInput, {
 })
 // Steppers clamp at min/max and round to the step's precision (no float
 // drift with step: 0.1); ArrowUp/Down on the input come from the native
-// number input.
+// number input. A typed value passes through onChange as-is while editing and
+// is clamped to min/max on blur (one more onChange with the clamped number).
 
 // TimePicker — trigger + listbox of "HH:MM" options every `step` minutes
 h(TimePicker, {
@@ -1920,7 +1931,7 @@ h('nav', { className: 'm-sidebar-section' },
   ),
 )
 
-// SwipeableListItem — mobile swipe-to-reveal actions
+// SwipeableListItem — swipe (touch, pen) or drag (mouse) left to reveal actions
 h(SwipeableListItem, {
   actions: [
     { label: 'Delete', className: 'm-swipeable-action-danger', onClick: del },
@@ -2040,9 +2051,10 @@ h(Menu, {
 })
 // a11y: same base interaction as Dropdown (initial focus, arrow-key nav,
 // Tab/Escape close everything). Additionally: hovering an item with
-// `children` (or ArrowRight/Enter/click on it) opens its submenu and
-// focuses its first item; ArrowLeft closes that submenu and returns focus
-// to the parent item. Only one submenu per level is open at a time.
+// `children` opens its submenu; ArrowRight, Enter or Space on it opens the
+// submenu and focuses its first item; a pointer click toggles it. ArrowLeft
+// closes that submenu and returns focus to the parent item. Only one submenu
+// per level is open at a time.
 
 // Tooltip
 h(Tooltip, { content: 'Click to save' },

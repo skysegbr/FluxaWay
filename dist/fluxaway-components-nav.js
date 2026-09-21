@@ -330,6 +330,9 @@ export function SpeedDial({
   );
 }
 
+// Horizontal travel, in px, before a press counts as a swipe rather than a tap.
+const SWIPE_SLOP = 6;
+
 export function SwipeableListItem({
   children,
   actions = [],
@@ -352,37 +355,96 @@ export function SwipeableListItem({
     setSwiping(false);
   };
 
+  // Pointer events cover mouse, pen and touch in one path. `.m-swipeable` sets
+  // `touch-action: pan-y`, so a vertical pan still scrolls the page (the browser
+  // then sends pointercancel) while horizontal travel is delivered here.
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
 
-    const onTouchStart = (e) => {
-      startXRef.current = e.touches[0].clientX;
-      setSwiping(true);
+    let pointerId = null;
+    let downX = 0;
+    let dragging = false;
+    let suppressClick = false;
+
+    const onPointerDown = (e) => {
+      if (!e.isPrimary || e.button !== 0) return;
+      pointerId = e.pointerId;
+      downX = e.clientX;
+      dragging = false;
+      suppressClick = false;
     };
 
-    const onTouchMove = (e) => {
-      if (startXRef.current === null) return;
-      const dx = e.touches[0].clientX - startXRef.current;
+    const finish = () => {
+      if (pointerId === null) return;
+      pointerId = null;
+      startXRef.current = null;
+      if (!dragging) return;
+      dragging = false;
+      // A mouse or pen drag still ends in a click on the row; swallow that one
+      // so a swipe never activates the row's own content. The click is
+      // dispatched right after pointerup, before this timer runs.
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0);
+      settle(currentRef.current);
+    };
+
+    const onPointerMove = (e) => {
+      if (e.pointerId !== pointerId) return;
+
+      // A mouse has no implicit capture: released outside the row before the
+      // drag began, its pointerup never arrives here.
+      if (e.pointerType === "mouse" && e.buttons === 0) {
+        finish();
+        return;
+      }
+
+      if (!dragging) {
+        // A press only becomes a swipe past a small slop, so taps and clicks on
+        // the row's content keep working. Capture starts here rather than on
+        // pointerdown: capturing a plain press retargets its click to the track.
+        if (Math.abs(e.clientX - downX) < SWIPE_SLOP) return;
+        dragging = true;
+        startXRef.current = e.clientX;
+        setSwiping(true);
+        try {
+          el.setPointerCapture(pointerId);
+        } catch {
+          // The pointer is already gone — the drag still works without capture.
+        }
+        return;
+      }
+
+      const dx = e.clientX - startXRef.current;
       const next = Math.min(0, Math.max(-maxOffset, currentRef.current + dx));
-      startXRef.current = e.touches[0].clientX;
+      startXRef.current = e.clientX;
       currentRef.current = next;
       setOffset(next);
     };
 
-    const onTouchEnd = () => {
-      startXRef.current = null;
-      settle(currentRef.current);
+    const onPointerEnd = (e) => {
+      if (e.pointerId === pointerId) finish();
     };
 
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchmove",  onTouchMove,  { passive: true });
-    el.addEventListener("touchend",   onTouchEnd,   { passive: true });
+    const onClickCapture = (e) => {
+      if (!suppressClick) return;
+      suppressClick = false;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    el.addEventListener("pointerdown",   onPointerDown);
+    el.addEventListener("pointermove",   onPointerMove);
+    el.addEventListener("pointerup",     onPointerEnd);
+    el.addEventListener("pointercancel", onPointerEnd);
+    el.addEventListener("click",         onClickCapture, true);
 
     return () => {
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove",  onTouchMove);
-      el.removeEventListener("touchend",   onTouchEnd);
+      el.removeEventListener("pointerdown",   onPointerDown);
+      el.removeEventListener("pointermove",   onPointerMove);
+      el.removeEventListener("pointerup",     onPointerEnd);
+      el.removeEventListener("pointercancel", onPointerEnd);
+      el.removeEventListener("click",         onClickCapture, true);
     };
   }, [maxOffset]);
 

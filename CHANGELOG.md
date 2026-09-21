@@ -5,6 +5,45 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **`Badge`: the `m-badge-success` class the spec teaches did not exist.** No
+  stylesheet defined it, so a status badge rendered as a plain one.
+  `m-badge-success`, `m-badge-warning` and `m-badge-danger` now exist, paired
+  like the Alert variants (`--m-*-soft` fill, solid text), and the Metallic design
+  carries the state through its border and text instead of flattening it.
+- **`FormField` used directly emitted `id="undefined-help"` on every field** and a
+  `<label>` with no `for`. The 0.16.0 fix only covered the components built on
+  it. Without `id`, a single `input`/`select`/`textarea`/`button` child is now
+  wired automatically — it keeps its own id or receives a generated one, plus
+  `aria-describedby` and `aria-invalid` — so the AI_SPEC example is accessible as
+  written. With a wrapper child, pass the same `id` to both; help and error ids
+  are unique either way. `Checkbox` and `Radio` had the same `undefined-help`
+  leak and now generate an id too.
+- **`Menu`: Enter and Space opened a submenu but left focus on the parent item**
+  (only ArrowRight moved it), and they closed a submenu that hover had already
+  opened. Keyboard activation now follows the ArrowRight path. A pointer click
+  still toggles.
+- **A draggable `Dialog` lost its grab cursor with the split stylesheets.**
+  `.m-dialog-header-draggable` sat inside the CodeEditor section of
+  `fluxaway-ui.css`, so it shipped in `fluxaway-ui-forms.css` instead of
+  `fluxaway-ui-overlay.css`.
+- **`useForm().field(name, { type: "checkbox", onInput })` dropped `onInput`
+  silently**, against the documented "chains your own handlers". It is forwarded.
+
+### Changed
+- **`SwipeableListItem` answers mouse and pen, not only touch.** It listened to
+  touch events, so on a desktop the component looked broken. It now uses pointer
+  events: a press becomes a swipe after 6px of horizontal travel, and the click
+  that ends a mouse drag is swallowed so it never activates the row's content.
+- **`NumberInput` clamps a typed value to `min`/`max` on blur.** Only the stepper
+  buttons respected the limits; a typed value reached `onChange` out of range and
+  stayed there. Values still pass through untouched while typing.
+- `usePresence` warns once when a list item has no `key`/`id` and no `getKey` —
+  those items collided on the key `"undefined"` without a trace.
+- AI_SPEC: `IconButton` is a 44×44 square with `--m-radius` corners, not "round".
+
 ## [0.25.0] - 2026-09-20
 
 ### Added

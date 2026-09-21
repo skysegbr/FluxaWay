@@ -90,6 +90,7 @@ export declare function Alert(props?: {
 // ── Badge ──────────────────────────────────────────────────────────────────
 
 export declare function Badge(props?: {
+  /** Status variants are classes: `"m-badge-success"`, `"m-badge-warning"` or `"m-badge-danger"`. */
   className?: string;
   children?: VNode;
 } & ExtraProps): VNode;
@@ -114,7 +115,14 @@ export declare function Chip(props?: {
 
 // ── FormField ──────────────────────────────────────────────────────────────
 
+/**
+ * Label + control + help/error wrapper. Without `id`, a single labelable child
+ * (`input`, `select`, `textarea`, `button`…) is wired automatically: it keeps its
+ * own `id` or receives a generated one, and gets `aria-describedby`/`aria-invalid`.
+ * With any other child, pass the same `id` here and to the control.
+ */
 export declare function FormField(props?: {
+  /** The control's id — links the label's `for` and names the help/error elements. */
   id?: string;
   label?: string;
   help?: string;
@@ -893,6 +901,7 @@ export declare function NumberInput(props?: {
   step?: number;
   /** null when the input is cleared. */
   value?: number | null;
+  /** Typed values arrive as-is while editing; an out-of-range one is clamped to `min`/`max` on blur. */
   onChange?: (value: number | null) => void;
   decrementLabel?: string;
   incrementLabel?: string;
