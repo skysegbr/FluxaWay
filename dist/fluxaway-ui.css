@@ -3060,9 +3060,14 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 /* .m-navbar-measuring is on for one synchronous reading and never painted. It
    takes every inline rule that lays the menu out, so the reading is the same
    whatever the state, and none that would start or cut a transition: the wrap
-   keeps its display, its rows and its visibility. */
+   keeps its display, its rows and its visibility.
+
+   The state lives in :where(), which adds NO specificity: each rule below still
+   weighs exactly the one class it names, as it did when this was a plain media
+   query. App CSS that overrides a .m-navbar-* rule with two classes therefore
+   keeps winning — the docs site's own mobile header does, at 768-900px. */
 @media (min-width: 768px) {
-  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-toggle { display: none; }
+  :where(.m-navbar:not(.m-navbar-collapsed), .m-navbar.m-navbar-measuring) .m-navbar-toggle { display: none; }
 }
 
 /* Collapsed means hidden, not just clipped: `visibility` takes the links and the
@@ -3099,22 +3104,22 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 @media (min-width: 768px) {
-  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-menu-wrap {
+  :where(.m-navbar:not(.m-navbar-collapsed), .m-navbar.m-navbar-measuring) .m-navbar-menu-wrap {
     order: 0;
     flex: 1;
     min-width: 0;
   }
 
-  .m-navbar:not(.m-navbar-collapsed) .m-navbar-menu-wrap {
+  :where(.m-navbar:not(.m-navbar-collapsed)) .m-navbar-menu-wrap {
     display: block;
     grid-template-rows: none;
     visibility: visible;
     transition: none;
   }
 
-  .m-navbar:not(.m-navbar-collapsed) .m-navbar-menu-inner { overflow: visible; }
+  :where(.m-navbar:not(.m-navbar-collapsed)) .m-navbar-menu-inner { overflow: visible; }
 
-  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-menu {
+  :where(.m-navbar:not(.m-navbar-collapsed), .m-navbar.m-navbar-measuring) .m-navbar-menu {
     flex-direction: row;
     align-items: center;
     gap: var(--m-space-4);
@@ -3138,7 +3143,7 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
    can still narrow it; max-height — one row of links — keeps its height. The bar
    is the same box fitting or not, which is what lets a ResizeObserver decide. */
 @media (min-width: 768px) {
-  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-nav {
+  :where(.m-navbar:not(.m-navbar-collapsed), .m-navbar.m-navbar-measuring) .m-navbar-nav {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
@@ -3163,7 +3168,7 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 @media (min-width: 768px) {
-  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-link { width: auto; }
+  :where(.m-navbar:not(.m-navbar-collapsed), .m-navbar.m-navbar-measuring) .m-navbar-link { width: auto; }
 }
 
 .m-navbar-link:hover {
@@ -3186,7 +3191,7 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 @media (min-width: 768px) {
-  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-actions { margin-inline-start: auto; }
+  :where(.m-navbar:not(.m-navbar-collapsed), .m-navbar.m-navbar-measuring) .m-navbar-actions { margin-inline-start: auto; }
 }
 
 /* ── Combobox ──────────────────────────────────────────── */
