@@ -144,7 +144,7 @@ GitHub build through jsDelivr:
 ```
 
 For production, prefer a fixed tag instead of `@main`, such as
-`https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.25.6/dist/fluxaway.js`.
+`https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@v0.26.0/dist/fluxaway.js`.
 
 ## 3. First Component
 
@@ -324,7 +324,8 @@ render(ContactForm, document.getElementById("app"));
 
 `form.field(name)` returns the value and input handlers for a field. For
 checkboxes, pass `{ type: "checkbox" }`. For select and textarea controls, pass
-`{ type: "select" }` or `{ type: "textarea" }`.
+`{ type: "select" }` or `{ type: "textarea" }`. It fits the value-based controls
+too (`DatePicker`, `RadioGroup`, `NumberInput`, …): spread it the same way.
 
 Use `form.serialize()` when you need a plain object with the current values, and
 `form.reset()` to return the form to its initial values.

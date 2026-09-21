@@ -276,11 +276,17 @@ export declare function useId(): string;
 
 // ── useForm ────────────────────────────────────────────────────────────────
 
-/** Props returned by `field(name)` ready to spread onto an input/select/textarea. */
+/**
+ * Props returned by `field(name)`, ready to spread onto any form control:
+ * native ones (TextField, Select, Checkbox…) and value-based ones (DatePicker,
+ * Combobox, RadioGroup, NumberInput, RangeSlider…).
+ */
 export interface FieldProps {
   name: string;
+  /** Only when passed: `field(name, { type: 'email' })`. */
   type?: string;
-  value?: string;
+  /** What `values[name]` holds: a string, a NumberInput's number, a RangeSlider's pair. */
+  value?: any;
   checked?: boolean;
   /**
    * Error message for this field — empty until the field is touched (on blur or
@@ -289,8 +295,10 @@ export interface FieldProps {
    */
   error?: string;
   onBlur: (event: Event) => void;
-  onInput?: (event: Event) => void;
-  onChange?: (event: Event) => void;
+  /** A DOM event from a native control, or the value a value-based control reports. */
+  onInput?: (eventOrValue: unknown) => void;
+  /** A DOM event from a native control, or the value a value-based control reports. */
+  onChange?: (eventOrValue: unknown) => void;
   [key: string]: unknown;
 }
 

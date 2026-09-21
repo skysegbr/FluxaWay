@@ -5,6 +5,32 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.26.0] - 2026-09-21
+
+### Added
+- **`useForm`: `...form.field(name)` works on every form control.** DatePicker,
+  TimePicker, Combobox, RadioGroup, NumberInput, RangeSlider and CodeEditor
+  report the value itself instead of a DOM event, and spreading `field()` on
+  them threw `Cannot read properties of undefined (reading 'value')`.
+  `docs/FORMS.md` said to wire them by hand with `setValue`, but that recipe
+  left "required" next to a picked value, because `setValue` does not re-check
+  a recorded error. `field()`'s handlers now take either an event or a value.
+  They store the value as reported (a number stays a number) and re-check the
+  error the way typing does.
+
+### Changed
+- **A blur from a `<button>` no longer touches or validates a field.** A
+  Combobox's trigger blurs when its own list opens, and a button holds no value.
+  Pickers are validated on submit.
+- **On blur, the value comes from the DOM only on the element that edited the
+  field through its own events,** and otherwise from the form state, which now
+  updates as soon as a value is edited. A NumberInput that clamps on blur is
+  validated with the clamped value, not with the one it replaced.
+- **`field()` no longer adds `type: "text"` when no type is passed.** Spread
+  on a DatePicker, it landed on the wrapper `<div>`. Spread after an author's
+  own `type: 'email'`, it replaced that type with `text`, and now it leaves it
+  alone. An `<input>` without a type is a text input anyway.
+
 ## [0.25.6] - 2026-09-21
 
 ### Fixed

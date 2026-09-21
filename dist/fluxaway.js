@@ -493,6 +493,13 @@ export function useId() {
   return owner.hooks[cursor];
 }
 
+// A DOM event, as opposed to the plain value a value-based control reports.
+// Duck-typed on `target` alone: an event from another realm (an iframe) is not
+// `instanceof Event`, and app code calls handlers with `{ target: { value } }`.
+function isDomEvent(value) {
+  return typeof value === "object" && value !== null && typeof value.target === "object" && value.target !== null;
+}
+
 export function useForm({
   initialValues = {},
   validate = () => ({}),
@@ -514,6 +521,9 @@ export function useForm({
   const pendingBlurRef = useRef(null);
   // The element that held focus when reset() ran (see reset).
   const resetFocusRef = useRef(null);
+  // Per field, the native control that last edited it through its own DOM
+  // events (see field). Only that element's value is read back on blur.
+  const domEditorsRef = useRef({});
   trackPress();
   useEffect(() => () => {
     pendingBlurRef.current = null;
@@ -527,6 +537,9 @@ export function useForm({
   };
 
   const setValue = (name, value) => {
+    // A blur can follow the edit before the render does: NumberInput clamps
+    // on blur and blurs in the same handler. The blur must see the new value.
+    valuesRef.current = { ...valuesRef.current, [name]: value };
     setValuesState((currentValues) => ({
       ...currentValues,
       [name]: value,
@@ -608,22 +621,51 @@ export function useForm({
     }
   };
 
+  // field() fits every form control. A native one (TextField, Checkbox, Slider)
+  // reports a DOM event; a value-based one (DatePicker, TimePicker, Combobox,
+  // RadioGroup, NumberInput, RangeSlider, CodeEditor) reports the value itself.
   const field = (name, options = {}) => {
-    const { onChange, onInput, onBlur, ...fieldOptions } = options;
-    const type = options.type || "text";
+    const { onChange, onInput, onBlur, type, ...fieldOptions } = options;
     const value = values[name] ?? "";
 
+    const edit = (eventOrValue, read) => {
+      if (isDomEvent(eventOrValue)) {
+        const target = eventOrValue.target;
+        domEditorsRef.current[name] = target;
+        handleEdit(name, read(target), target);
+      } else {
+        domEditorsRef.current[name] = null;
+        handleEdit(name, type === "checkbox" ? Boolean(eventOrValue) : eventOrValue);
+      }
+    };
+
     const handleBlur = (event) => {
-      if (event?.target && event.target === resetFocusRef.current) {
+      const target = event?.target;
+
+      if (target && target === resetFocusRef.current) {
         resetFocusRef.current = null;
         onBlur?.(event);
         return;
       }
 
-      const liveValue =
-        type === "checkbox"
-          ? Boolean(event?.target?.checked)
-          : (event?.target?.value ?? values[name]);
+      // Combobox opens from a <button>, and focus moving into its own list
+      // blurs it. That is not leaving the field, and a button holds no value:
+      // a picker is validated on submit and re-checked when a value is picked.
+      if (target?.tagName === "BUTTON") {
+        onBlur?.(event);
+        return;
+      }
+
+      // The DOM can be a step ahead of the state, but only on the element that
+      // edits this field through its own events. A NumberInput's .value is a
+      // string for a number, and an element that never edited the field holds
+      // nothing the state does not.
+      const fromDom = target != null && target === domEditorsRef.current[name];
+      const liveValue = !fromDom
+        ? values[name]
+        : type === "checkbox"
+          ? Boolean(target.checked)
+          : target.value;
 
       // Touching is deferred with the validation: it alone reveals an error a
       // previous blur already recorded for this field.
@@ -664,27 +706,30 @@ export function useForm({
         // A checkbox fires `input` and `change` back to back, so only `change`
         // edits the form; a caller's onInput is still forwarded, not dropped.
         ...(onInput && { onInput }),
-        onChange: (event) => {
-          handleEdit(name, Boolean(event.target.checked), event.target);
-          onChange?.(event);
+        onChange: (eventOrValue) => {
+          edit(eventOrValue, (target) => Boolean(target.checked));
+          onChange?.(eventOrValue);
         },
       };
     }
 
+    // No default `type`, not even an undefined one: spread on a DatePicker it
+    // would land on the wrapper <div>, and spread after an author's own `type`
+    // it would erase it. An <input> without one is a text input anyway.
     return {
       ...fieldOptions,
       name,
-      type: type === "select" || type === "textarea" ? undefined : type,
+      ...(type && type !== "select" && type !== "textarea" && { type }),
       value,
       error: touched[name] ? errors[name] : "",
       onBlur: handleBlur,
-      onInput: (event) => {
-        handleEdit(name, event.target.value, event.target);
-        onInput?.(event);
+      onInput: (eventOrValue) => {
+        edit(eventOrValue, (target) => target.value);
+        onInput?.(eventOrValue);
       },
-      onChange: (event) => {
-        handleEdit(name, event.target.value, event.target);
-        onChange?.(event);
+      onChange: (eventOrValue) => {
+        edit(eventOrValue, (target) => target.value);
+        onChange?.(eventOrValue);
       },
     };
   };
