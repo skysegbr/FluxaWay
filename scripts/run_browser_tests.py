@@ -221,8 +221,72 @@ def navbar_menu_is_inline_and_focusable_on_desktop(page) -> None:
     expect(page.evaluate(FOCUSED)["text"] == "One", "a desktop nav link could not take focus")
 
 
-# (name, viewport, scenario). The page loads at its viewport: resizing a loaded
-# page across the 768px breakpoint would start the Navbar's own transitions.
+NAVBAR_FIT = """(scope) => {
+    const nav = document.querySelector(scope + " .m-navbar");
+    const links = [...nav.querySelectorAll(".m-navbar-link")].map((a) => a.getBoundingClientRect());
+    const actions = nav.querySelector(".m-navbar-actions").getBoundingClientRect();
+    return {
+        height: nav.getBoundingClientRect().height,
+        toggle: getComputedStyle(nav.querySelector(".m-navbar-toggle")).display !== "none",
+        menu: getComputedStyle(nav.querySelector(".m-navbar-menu-wrap")).visibility,
+        lines: new Set(links.map((r) => Math.round(r.top))).size,
+        overlap: links[links.length - 1].right - actions.left,
+        pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    };
+}"""
+
+
+NAVBAR_FIT_COLUMN = """() => {
+    const nav = document.querySelector("#s-navbar-column .m-navbar");
+    return {
+        width: nav.getBoundingClientRect().width,
+        toggle: getComputedStyle(nav.querySelector(".m-navbar-toggle")).display !== "none",
+    };
+}"""
+
+
+def navbar_goes_behind_the_toggle_until_it_fits(page) -> None:
+    scope = "#s-navbar-many"
+    inline_from = None
+    for width in range(740, 1101, 12):
+        page.set_viewport_size({"width": width, "height": 720})
+        page.wait_for_timeout(50)
+        fit = page.evaluate(NAVBAR_FIT, scope)
+        at = f"{width}px"
+        expect(fit["height"] == 60, f"{at}: the bar is {fit['height']}px tall, not 60")
+        expect(fit["pageOverflow"] <= 0, f"{at}: the page scrolls sideways by {fit['pageOverflow']}px")
+        if fit["toggle"]:
+            expect(inline_from is None, f"{at}: the bar collapsed again after fitting at {inline_from}px")
+            expect(fit["menu"] == "hidden", f"{at}: behind the toggle, yet the closed menu is {fit['menu']}")
+        else:
+            inline_from = inline_from or width
+            expect(fit["lines"] == 1, f"{at}: the links take {fit['lines']} lines")
+            expect(fit["overlap"] <= 0.5, f"{at}: the last link runs {fit['overlap']:.1f}px into the actions")
+    expect(inline_from is not None and inline_from > 768,
+           f"seven links went inline from {inline_from}px: the sweep never saw them not fitting")
+
+    # The same links in the 388px column stayed behind the toggle all along, and
+    # the bar never resized itself from its own ResizeObserver callback.
+    column = page.evaluate(NAVBAR_FIT_COLUMN)
+    expect(column["toggle"] and column["width"] <= 388, f"the bar in the narrow column: {column}")
+    errors = page.evaluate("window.__errors")
+    expect(errors == [], f"the sweep raised {errors}")
+
+    # Collapsed above 768px is the same collapsed: hidden from the keyboard too.
+    page.set_viewport_size({"width": inline_from - 24, "height": 720})
+    page.wait_for_timeout(50)
+    page.focus(scope + " .m-navbar-toggle")
+    page.keyboard.press("Tab")
+    focused = page.evaluate(FOCUSED)
+    expect(not focused["inMenu"], f"Tab from the toggle landed on hidden \"{focused['text']}\" at {inline_from - 24}px")
+    page.click(scope + " .m-navbar-toggle")
+    page.wait_for_timeout(350)
+    expect(page.evaluate(NAVBAR_FIT, scope)["height"] > 60, "the menu did not open above 768px")
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(350)
+
+
+# (name, viewport, scenario). Each scenario gets a fresh page at its viewport.
 TRUSTED_INPUT_TESTS = (
     ("useForm (real mouse): a slow click on Submit lands while the focused field is invalid",
      DESKTOP, submit_with_invalid_focused_field),
@@ -240,6 +304,8 @@ TRUSTED_INPUT_TESTS = (
      PHONE, navbar_first_line_is_centred_and_does_not_move),
     ("Navbar (1280px): the menu is inline, focusable, and the bar keeps its height",
      DESKTOP, navbar_menu_is_inline_and_focusable_on_desktop),
+    ("Navbar (740-1100px, 7 links): the bar stays 60px and the links wait behind the toggle until they fit",
+     DESKTOP, navbar_goes_behind_the_toggle_until_it_fits),
 )
 
 

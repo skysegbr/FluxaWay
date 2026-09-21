@@ -2,9 +2,9 @@
 // the docs site. Each test pins a claim the spec makes, so the two can't drift
 // apart again unnoticed.
 
-import { h, render, useForm, usePresence, useState } from "../dist/fluxaway.js";
-import { Badge, Button, FormField } from "../dist/fluxaway-components-core.js";
-import { Checkbox, NumberInput, Radio } from "../dist/fluxaway-components-forms.js";
+import { h, render, useForm, usePresence, useRef, useState, useTranslation } from "../dist/fluxaway.js";
+import { Alert, Avatar, Badge, Button, FormField } from "../dist/fluxaway-components-core.js";
+import { Checkbox, NumberInput, Radio, TextField } from "../dist/fluxaway-components-forms.js";
 import { Menu } from "../dist/fluxaway-components-overlay.js";
 import { SwipeableListItem } from "../dist/fluxaway-components-nav.js";
 import { METAL_THEMES } from "../dist/fluxaway-metallic.js";
@@ -525,4 +525,68 @@ test("SwipeableListItem: with an icon, the action's label becomes its accessible
   assertEqual(iconOnly.getAttribute("aria-label"), "Delete");
   assertEqual(textOnly.getAttribute("aria-label"), null, "visible text needs no aria-label");
   assertEqual(textOnly.textContent, "Archive");
+});
+
+// ── Claims AI_SPEC gained after the third context-free rebuild of the tutorial ──
+// Each was something the AI had to probe for, or worked around for want of a line.
+
+test("spec §9: `ref` is forwarded to the root like any other unknown prop — and to the control on a field", async () => {
+  const refs = {};
+  const container = mountPoint();
+
+  function Widget() {
+    refs.alert = useRef(null);
+    refs.input = useRef(null);
+    return h(
+      "div",
+      null,
+      h(Alert, { ref: refs.alert, variant: "success" }, "Sent"),
+      h(TextField, { ref: refs.input, id: "parity-ref", label: "Name" }),
+    );
+  }
+
+  render(Widget, container);
+  await flush();
+
+  assert(refs.alert.current?.classList.contains("m-alert"), "the Alert's ref is its root element");
+  assertEqual(refs.input.current?.tagName, "INPUT", "a field's ref is the control");
+});
+
+test("spec §8: an aria attribute outside the table is written under its own name, on any element", async () => {
+  const container = mountPoint();
+  render(() => h("div", { id: "parity-aria", "aria-owns": "parity-list", ariaLabelledby: "parity-title" }), container);
+  await flush();
+
+  const node = container.querySelector("#parity-aria");
+  assertEqual(node.getAttribute("aria-owns"), "parity-list", "the hyphenated key");
+  assertEqual(node.getAttribute("aria-labelledby"), "parity-title", "the camelCase alias");
+});
+
+test("spec §6: useTranslation puts values in literally, once, and falls back to the key", async () => {
+  let t;
+  const container = mountPoint();
+
+  function Widget() {
+    ({ t } = useTranslation({ thanks: "Thanks, {name}! Code {code}." }));
+    return h("p", null, t("thanks", { name: "$& $1 {code}", code: 7 }));
+  }
+
+  render(Widget, container);
+  await flush();
+
+  assertEqual(container.textContent, "Thanks, $& $1 {code}! Code 7.", "a value is never expanded again");
+  assertEqual(t("missing.key"), "missing.key", "a missing key");
+  assertEqual(t("thanks", { name: "Ana" }), "Thanks, Ana! Code {code}.", "a placeholder with no var");
+});
+
+test("spec §9: Avatar initials are the first and the last word's first letters", async () => {
+  const container = mountPoint();
+  render(
+    () => h("div", null, ["Ada", "Ada Lovelace", "ada king lovelace"].map((name) => h(Avatar, { key: name, name }))),
+    container,
+  );
+  await flush();
+
+  const shown = [...container.querySelectorAll(".m-avatar")].map((avatar) => avatar.textContent);
+  assertEqual(shown.join(), "A,AL,AL");
 });

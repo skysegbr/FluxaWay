@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **`Navbar`: links that did not fit wrapped onto a second line.** The ☰ gave way
+  to the links at a fixed `min-width: 768px`, whether they fitted or not. Between
+  768px and the width where everything fits, the last link dropped to a second
+  row: the bar grew from 60 to 77px, the links touched its top edge, and the
+  `scroll-padding-top: 60px` the spec recommends for a sticky header left anchor
+  targets under the bar. Six short links were enough; five with a 20px brand and
+  24px gutters too. There was no prop or token to move the breakpoint, so the only
+  way out was to shrink one's own brand. The bar now measures itself: from 768px
+  up the links sit on it only while they fit on one line beside the brand and the
+  `actions`, and wait behind the ☰ otherwise. Labels, font and the bar's own
+  width count — not the window's — and it is measured again on every render, on
+  resize and when a web font arrives, before the frame is painted. The bar is
+  60px tall at every width. No new prop; below 768px nothing changes.
+- **`Navbar`: crossing 768px downward left the hidden links focusable for
+  220ms.** The closed menu's `visibility` flips after the collapse animation, and
+  leaving the bar was taken for a closing. It is now hidden in the same frame.
+
 ## [0.25.2] - 2026-09-21
 
 ### Fixed

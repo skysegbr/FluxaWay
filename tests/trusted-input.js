@@ -12,6 +12,10 @@ import { Navbar } from "../dist/fluxaway-components-nav.js";
 window.__submits = 0;
 window.__sends = 0;
 
+// A ResizeObserver that resizes what it observes reports here, not as a throw.
+window.__errors = [];
+window.addEventListener("error", (event) => window.__errors.push(String(event.message)));
+
 const validate = (v) => ({
   name: v.name.trim().length < 2 ? "Name too short" : "",
   message: v.message.trim().length < 10 ? "Message too short" : "",
@@ -64,6 +68,11 @@ const navItems = [
   { label: "Two", href: "#two" },
 ];
 
+// Too many links for a narrow desktop: the bar has to measure, not guess.
+const manyNavItems = ["Features", "Catalogue", "About us", "Testimonials", "Contact", "Journal", "Our team"].map(
+  (label, index) => ({ label, href: `#many-${index}` }),
+);
+
 function App() {
   return h(
     "div",
@@ -76,8 +85,20 @@ function App() {
     h("section", { id: "s-navbar-bare" }, h(Navbar, { items: navItems })),
     h("section", { id: "s-submit" }, h(SubmitForm, null)),
     h("section", { id: "s-click" }, h(ClickForm, null)),
+    // A grid item is never narrower than its content: a bar that could not wrap
+    // would push this column out to the width of its links.
+    h("section", { id: "s-navbar-column" }, h(Navbar, { items: manyNavItems })),
+  );
+}
+
+function Wide() {
+  return h(
+    "section",
+    { id: "s-navbar-many" },
+    h(Navbar, { brand: "Garden Flowers", items: manyNavItems, actions: h(Button, null, "Sign in") }),
   );
 }
 
 render(App, document.getElementById("app"));
+render(Wide, document.getElementById("wide"));
 window.__ready = true;

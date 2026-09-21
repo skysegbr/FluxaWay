@@ -1098,7 +1098,7 @@ version of FluxaWay.
 | `FormField` | `id`, `label`, `help`, `error` — without `id`, a single input/select/textarea/button child is wired to the label, help and error automatically |
 | `IconButton` | `label`, `variant` |
 | `Menu` | `trigger`, `items` (`{ key, label, onClick, danger, divider, children }`) — like `Dropdown`, but any item can nest a `children` array to open a flyout submenu at any depth |
-| `Navbar` | `brand`, `items`, `actions`, `defaultOpen`/`open`, `onToggle` — collapses into a hamburger menu below 768px |
+| `Navbar` | `brand`, `items`, `actions`, `defaultOpen`/`open`, `onToggle` — collapses into a hamburger menu below 768px, and above it for as long as the links do not fit on one line (the bar measures itself and never wraps) |
 | `NumberInput` | `id`, `label`, `min`/`max`/`step`, `value` (number \| `null`), `onChange` — numeric field with −/+ steppers; clamps and rounds to the step precision (typed values are clamped on blur) |
 | `Pagination` | `page`, `total`, `siblings`, `onChange` |
 | `Popover` | `trigger`, `placement` (top · bottom · left · right), `title` — generic anchored panel for interactive content; Escape/outside-click close |

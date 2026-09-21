@@ -878,6 +878,11 @@ const { containerRef, virtualItems, totalHeight, startIndex, endIndex } =
 // i18n
 const { t } = useTranslation({ hello: 'Hello, {name}!' });
 t('hello', { name: 'Ana' }) // → 'Hello, Ana!'
+// A missing key returns the key itself: t('nope') → 'nope'. A {placeholder} with
+// no matching var stays as written. Values go in LITERALLY and in one pass — a
+// `$&`, a `$1` or another `{name}` inside a value is not expanded — so text a
+// person typed is safe to interpolate. The result is a plain string: pass it as
+// a child and h() escapes it. Dictionary entries must be strings.
 
 // Context menu position state (pair with ContextMenu component)
 const { menu, openMenu, closeMenu } = useContextMenu();
@@ -1042,6 +1047,11 @@ in a domain-componentized project.
 | `ariaCurrent` | `aria-current` |
 | `ariaModal` | `aria-modal` |
 | `ariaSelected` | `aria-selected` |
+| `ariaLabelledby` | `aria-labelledby` |
+| `ariaDescribedby` | `aria-describedby` |
+| `ariaInvalid` | `aria-invalid` |
+| `ariaActivedescendant` | `aria-activedescendant` |
+| `ariaAutocomplete` | `aria-autocomplete` |
 | `ariaValuenow/min/max` | `aria-valuenow/min/max` |
 | `ref` | DOM ref (see §6 useRef) |
 | `key` | Reconciler key (not set on DOM) |
@@ -1060,6 +1070,10 @@ h('button', { ariaExpanded: isOpen ? 'true' : 'false' })
 
 h('span', { ariaHidden: true })                 // WRONG — sets aria-hidden=""
 ```
+
+The attribute name itself also works as a key, on any element (not only SVG):
+`h('div', { 'aria-owns': listId })` is set verbatim. Use that form for an
+`aria-*` attribute the table does not list; the string rule above applies to it too.
 
 ### SVG through `h()`
 
@@ -1279,10 +1293,17 @@ it never replaces the component's own `m-*` classes. Use it to position or size
 a component from your CSS: `h(Card, { className: 'l-plan' })`.
 
 Any prop the component does not know (`id`, `style`, `dataset`, `aria*`, `on*`,
-`title`…) is forwarded to that same root element, so
+`title`, `ref`…) is forwarded to that same root element, so
 `h(Navbar, { id: 'top', ariaLabel: 'Main' })` puts both on the `<nav>`. The
 exceptions take **only** their documented props plus `className`: `Tabs`,
 `BottomNav`, `Pagination`, `ContextMenu`, `ToastStack`, `BottomSheet`.
+
+`ref` travels the same way: `h(Alert, { ref: boxRef })` gives you the alert's root
+`<div>` — no wrapper element needed — and on a field component, the control.
+These keep their own ref on the root and ignore yours: `Navbar`, `SpeedDial`,
+`Dialog`, `Drawer`, `Dropdown`, `Menu`, `Popover`, `CommandPalette`, `Combobox`,
+`DatePicker`, `TimePicker`, `CodeEditor`, `TreeView`. Give those an `id`, or put
+the ref on an element of your own around them.
 
 Field components (TextField, Textarea, Select, NumberInput…) split it: `className`
 styles the **wrapper** (label + control + help), `inputClassName` styles the
@@ -1439,6 +1460,9 @@ h(SpeedDial, {
 
 // Avatar — initials fallback derived from `name` when there is no src
 h(Avatar, { name: 'Ada Lovelace', size: 'md' })   // renders "AL"
+// Initials = first letter of the FIRST word + first letter of the LAST word,
+// uppercased: 'Ada' → "A", 'Ada King Lovelace' → "AL". Pass children to show
+// something else: h(Avatar, { name: 'Ada Lovelace' }, 'AK').
 h(Avatar, { src: '/u/ada.png', name: 'Ada Lovelace' })
 // a11y: Avatar names itself — role="img" + aria-label from `name` (or the img alt).
 // Right when it stands ALONE. When the same name is written next to it, a screen
@@ -1467,6 +1491,12 @@ h(Divider, { vertical: true }) // inline separator, role="separator"
 // in this document spell it out only for clarity.
 h(Card, null, h('p', null, 'Content'))                 // padded
 h(Card, { padded: false }, h('img', { src, alt }))     // edge-to-edge: media, tables, lists
+// `padded` is 16px or nothing — there is no size in between. For another padding
+// or another background, pass your own class; that is supported, restyling
+// `.m-card` is not:
+//   h(Card, { padded: false, className: 'l-plan' }, …)
+//   .l-plan { padding: var(--m-space-6); background: var(--m-surface-muted); }
+// (`padded: false` so the padding never depends on which stylesheet loads last.)
 // Renders an <article>. It does NOT clip its content (a Menu, Combobox or
 // DatePicker opened inside a card must be able to overflow it), so an
 // edge-to-edge image keeps square corners over the card's rounded ones. Round
@@ -1840,6 +1870,10 @@ h(Alert, {
 // Already has role="status" (announced politely) — do not wrap it in a live
 // region. Pass role: 'alert' for an error that must interrupt. `title` renders a
 // <strong>, not a heading: it stays out of the page's heading outline.
+// It has NO close button and no `onClose` / `dismissible` prop: it shows for as
+// long as you render it. To dismiss it, keep a boolean in state and stop
+// rendering it (`sent && h(Alert, …)`); for an ✕, put your own IconButton in the
+// children. For a message that leaves by itself, use useToast() instead.
 
 // Spinner
 h(Spinner, { label: 'Loading...' })
@@ -1918,17 +1952,31 @@ h(Navbar, {
 // brand: a string or any VNode (a logo <img>, an <a> you build). It is rendered
 //   as given — NOT turned into a link; pass h('a', { href: '#top' }, 'My App')
 //   if you want one.
-// Below 768px `items` AND `actions` collapse together behind a ☰ button — a
-// ThemeToggle or Login button in `actions` moves inside the menu. Whatever must
-// stay on the bar at phone width goes in `brand`, not `actions`. Collapsed means
-// hidden: nothing inside takes keyboard focus or is read out, yet `actions`
+// items[].href is passed through UNTOUCHED, like Button's: wrap a URL you did
+//   not write yourself in safeUrl(). A missing href becomes '#'.
+// items[].active is yours alone — the Navbar never sets it. A link that looks
+//   lit right after a click is only `:hover` (the pointer is still on it). On a
+//   one-page site either track the current section yourself or leave it out.
+// `items` AND `actions` collapse together behind a ☰ button below 768px — and
+// from 768px up for as long as the links do not fit on one line beside the brand.
+// The bar measures that itself: the labels, the brand, the `actions`, the font
+// and the bar's own width all count, so there is no breakpoint to choose and no
+// prop for one. It never wraps onto a second line, with any number of links.
+// Do NOT shrink the brand, drop a link or write a media query to make the links
+// fit, and do not switch layouts on the viewport width yourself — add the items
+// you need and let the bar decide.
+// A ThemeToggle or Login button in `actions` moves inside the menu. Whatever must
+// stay on the bar while it is collapsed goes in `brand`, not `actions`. Collapsed
+// means hidden: nothing inside takes keyboard focus or is read out, yet `actions`
 // stay MOUNTED (a ThemeToggle there keeps applying the theme). Do not mount and
 // unmount `items` / `actions` yourself with useMediaQuery to "fix" focus.
 // Uncontrolled by default (`defaultOpen: false`). Controlled: pass `open` and
 //   onToggle(nextOpen: boolean) — called with !open by the ☰, and with false by
 //   Escape, by a press outside the bar, and by a click on any item (at every
 //   width, also when the menu is already closed).
-// The bar is 60px tall, full-width, with 16px side padding (24px from 768px).
+// The closed bar is 60px tall at every width, full-width, with 16px side padding
+// (24px from 768px). Keep it as wide as its container (the default): in a parent
+// that shrinks to its content the bar has no width of its own to measure against.
 // To line the brand and links up with a centred content column, keep the bar
 // full-bleed and move the padding — `className` lands on the <nav>:
 //   h(Navbar, { className: 'a-nav', … })
@@ -1940,7 +1988,7 @@ h(Navbar, {
 // frame, so the section lands where it should. For a sticky header wrap it
 // yourself and reserve its height for anchors:
 //   header { position: sticky; top: 0; z-index: var(--m-z-appbar); }
-//   html   { scroll-padding-top: 60px; }        /* the closed Navbar's height */
+//   html   { scroll-padding-top: 60px; }        /* the closed Navbar's height, at any width */
 // Do NOT rebuild the menu as a position:fixed/absolute overlay to work around
 // scrolling — that was only needed before this was fixed.
 
@@ -2800,6 +2848,35 @@ Never hard-code `color: #fff` on a `var(--m-primary)` background in app CSS —
 use `color: var(--m-on-primary)`. `usePalette().setCustomColor(hex)` derives
 `--m-on-primary` for you (white or black, whichever contrasts more).
 
+### The reset, the grid and the utility classes
+
+All of it ships in `fluxaway-ui.css` (category file: `fluxaway-ui-base.css`).
+
+**The reset is small.** `box-sizing: border-box` on everything. `body` gets
+`margin: 0`, `min-height: 100dvh`, `background: var(--m-bg)`,
+`color: var(--m-text)`, `font-family: var(--m-font)` at `--m-font-size-base` and
+`line-height: 1.5`. Form controls inherit the font; `img` and `video` get
+`max-width: 100%; height: auto`. Nothing else: headings, paragraphs and lists
+keep the browser's default margins — space them in your own CSS.
+
+**These `m-*` classes are public API** — unlike the class names inside a
+component (§9), write them freely in `className`. Breakpoints: `sm` 576px,
+`md` 768px, `lg` 992px, `xl` 1200px, all `min-width`.
+
+| Group | Classes |
+|---|---|
+| Container | `m-container` (centred; max-width 540 / 720 / 960 / 1140px by breakpoint, 16px side padding), `m-container-fluid` |
+| 12-col grid | `m-row` > `m-col`, `m-col-auto`, `m-col-{1-12}`, and `m-col-{sm,md,lg,xl}-{1-12}` / `-auto`. Gutters: `m-row-gap-0`, `m-row-gap-2`, `m-row-gap-4` (default 12px each side) |
+| Layout helpers | `m-stack` (grid, 16px gap), `m-cluster` (wrapping flex row, centred, 12px gap), `m-split` (space-between row), `m-center` (place-items: center), `m-grid-2` / `m-grid-3` / `m-grid-4` (1 column on phones, up to N) |
+| Display | `m-d-{none,block,flex,grid,inline,inline-flex,inline-block}` and `m-d-{sm,md,lg,xl}-*` |
+| Flex | `m-flex-row`, `m-flex-column`, `m-flex-wrap`, `m-flex-nowrap`, `m-flex-grow`, `m-flex-shrink-0`, `m-justify-{start,end,center,between,around}`, `m-align-{start,end,center,baseline,stretch}` |
+| Spacing (the number is the `--m-space-N` step) | `m-m-*`, `m-mt-*`, `m-mb-*`, `m-p-*` with 0–6 and 8; `m-px-*`, `m-py-*` with 0–6; `m-ms-*`, `m-me-*` with 0–4 and `auto`; `m-m-auto`, `m-mx-auto`; `m-gap-*` with 0–6, 8, 10, 12 |
+| Text | `m-text-{start,center,end}` (+ `m-text-sm-*`, `m-text-md-*`), sizes `m-text-{xs,sm,base,lg,xl,2xl,3xl}`, weights `m-fw-{normal,medium,bold,black}`, colors `m-text-{muted,primary,danger,success,warning,info}`, `m-text-truncate` |
+| Size / position / overflow / cursor | `m-w-full`, `m-w-auto`, `m-h-full`, `m-min-w-0`; `m-relative`, `m-absolute`, `m-fixed`, `m-sticky`; `m-overflow-{hidden,auto,x-auto,y-auto,x-hidden}`; `m-cursor-{pointer,default,not-allowed}` |
+
+They are conveniences, not a requirement: a component's own paired CSS file
+(§12) is just as correct, and is the better home for anything a utility cannot say.
+
 Public animation utility classes (apply directly to any element — distinct
 from the internal `m-fade-in`/`m-scale-in`/`m-slide-up` keyframes used by
 Dialog/Toast/Drawer):
@@ -2991,7 +3068,7 @@ my-app/
 |------|--------|
 | **No `src/` wrapper** | Projects live directly in their named folder |
 | **No `pages/` / `store/` / `utils/`** | Not used in FluxaWay — keep it flat |
-| **Small helpers get a named module** | A pure function that is neither a component nor a hook (format a price, build a WhatsApp URL) lives in its own lower-case file **named after what it does** — `format.js`, `links.js` — next to what uses it: in `components/` (or the domain folder) when one area uses it, at the root when the whole app does. Never a `utils/` folder or a grab-bag `utils.js`, never inlined in `app.js`, never a second export squeezed into a component file |
+| **Small helpers get a named module** | A pure function that is neither a component nor a hook (format a price, build a WhatsApp URL) lives in its own lower-case file **named after what it does** — `format.js`, `links.js` — next to what uses it: in `components/` (or the domain folder) when one area uses it, at the root when the whole app does. Never a `utils/` folder or a grab-bag `utils.js`, never inlined in `app.js`, never a second export squeezed into a component file. **Not a helper:** a function that only makes sense inside one component — the `validate` of that form's `useForm`, with its messages, or an event handler — stays in that component's file, as every `useForm` example in §6 writes it. It becomes a module the day a second file needs it |
 | **One component per file** | Small, single-purpose function |
 | **Paired CSS** | `Hero.js` → `Hero.css` — always a sibling file |
 | **CSS imported centrally** | `styles.css` collects all component CSS via `@import`. Components do NOT import CSS themselves |
@@ -3004,8 +3081,9 @@ my-app/
 
 **The trigger is a domain, not a count.** Create `components/<domain>/` when
 **three or more files belong to the same feature** — `LoginForm.js`,
-`RegisterForm.js`, `useAuth.js` → `auth/`. A component's paired `.css` does not
-count toward the three. Until then, stay flat, however many components there
+`RegisterForm.js`, `useAuth.js` → `auth/`. Every `.js` file that belongs to the
+feature counts — a component, its hook, **and a small helper only that feature
+uses** (`catalog/format.js`); a component's paired `.css` does not. Until then, stay flat, however many components there
 are: a landing page of eight independent sections (`Hero`, `Features`, `Pricing`,
 … `Footer`) is eight flat component files, because no two of them share a
 feature. Never group by type (`forms/`, `ui/`, `shared/`).
@@ -3014,7 +3092,9 @@ Decide the split first, then count — never the other way round. One component
 per file, split when a file outgrows one job; if that leaves a feature with
 three files (`Catalog.js`, `ProductCard.js`, `useCatalogFilter.js`) it gets
 `catalog/`, and if it leaves two they stay flat. Both are correct. Do not carve
-a third file out to earn a folder, and do not merge two to avoid one.
+a third file out to earn a folder, and do not merge two to avoid one. A helper
+counts because the "small helpers" rule above already made it a file; a helper
+the whole app uses lives at the root and counts for no domain.
 
 ```
 my-app/
@@ -3028,6 +3108,7 @@ my-app/
       LoginForm.css
       RegisterForm.js
       RegisterForm.css
+      useAuth.js          ← third .js file of the feature: this is what earns the folder
     dashboard/
       MetricsRow.js
       MetricsRow.css
@@ -3039,6 +3120,7 @@ my-app/
       ProfileForm.css
       BillingSection.js
       BillingSection.css
+      plans.js            ← a helper only `settings/` uses counts too
 ```
 
 **Rules for domain subfolders:**
@@ -3568,8 +3650,8 @@ export function TopBar({ links }) {
 }
 ```
 
-Below 768px the `ThemeToggle` collapses into the ☰ menu with the links (§9
-Navbar). That is the intended default; it stays mounted there, so the saved
+Below 768px — and above it while the links do not fit on the bar — the
+`ThemeToggle` collapses into the ☰ menu with the links (§9 Navbar). That is the intended default; it stays mounted there, so the saved
 theme still applies.
 
 **`components/TopBar.css`** — paired, imported by `styles.css`
@@ -3692,7 +3774,7 @@ Before submitting any FluxaWay code, verify:
 
 **Validation (§3)**
 - [ ] Code was verified by serving over HTTP (`python server.py` / `python -m http.server`) and checking the browser console — **never** with `node`, `npm test` or `npx`
-- [ ] In this repo: `python scripts/validate_fluxaway.py` and `python scripts/run_browser_tests.py` pass
+- [ ] In this repo: `python scripts/validate_fluxaway.py` and `python scripts/run_browser_tests.py` pass. In an app of your own those scripts do not exist and nothing replaces them: the line above — served over HTTP, console clean, every interaction tried — **is** the check
 
 **Right module for the task (§1 table)**
 - [ ] Presentation / slide deck / zoom tour → built on **ZoomStage** (`fluxaway-zoom.js`), not scroll-snap sections or an external slides library

@@ -155,7 +155,14 @@ Releases are cut on a branch, never straight on `main`:
 3. Run the full gate set **at the merge commit**, not just on the branch.
 4. `git merge --no-ff` into main with subject `merge: release FluxaWay vX.Y.Z`.
 5. Annotated tag `vX.Y.Z`, message `FluxaWay vX.Y.Z`.
-6. Then move the docs: in `fluxaway-docs-site`, sync `--ref vX.Y.Z` and bump its
+6. After the push, purge jsDelivr for **every file the release changed** —
+   `git diff --name-only vPREV vX.Y.Z -- dist docs/AI_SPEC.md`, each one through
+   `https://purge.jsdelivr.net/gh/skysegbr/FluxaWay@main/<path>` — then check with
+   a real browser, not `curl`. After 0.25.2 `curl` got the new files while
+   browsers kept the old ones: jsDelivr caches the **Brotli** variant separately.
+   `curl --compressed -H "Accept-Encoding: br"` sees what a browser sees; the
+   tutorial project's `conferir_achados.py` without `--dist` is the full check.
+7. Then move the docs: in `fluxaway-docs-site`, sync `--ref vX.Y.Z` and bump its
    own CDN pin (`site/content/css/guides.js`) — that pin left this repo with the app.
 
 `grep -rn "0\.22\.10" --include='*.md' --include='*.js' --include='*.json' . | grep -v build/`
@@ -265,6 +272,22 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   work while the primary button is down for this reason (`trackPress` in
   `dist/fluxaway.js`); do not "simplify" it to `relatedTarget` — that is the
   Submit button for a click *and* for Tab, and `null` on macOS Safari.
+- **`Navbar` collapses by measuring, not by breakpoint — and the CSS around it is
+  load-bearing.** From 768px up it puts `.m-navbar-measuring` on for one
+  synchronous reading and asks whether the links stayed on one line. Three things
+  look like cleanup and are not: (1) the inline list keeps `flex-wrap: wrap` plus
+  `max-height` — with `nowrap` the bar's min-content becomes the whole row, and a
+  grid/flex-item parent (min-width: auto) is pushed out to it, so the bar measures
+  itself in room it just made; (2) the measuring rules never touch the wrap's
+  `display`, `grid-template-rows`, `visibility` or `transition`, or a reading
+  taken on the render that opens the menu kills its animation and re-opens the
+  220ms focusable-while-hidden window; (3) the bar must be the same box fitting
+  or not. A `ResizeObserver` callback that resizes what it observes raises
+  "ResizeObserver loop completed with undelivered notifications" — a window
+  `error` event everywhere, a **page error in WebKit** — which is why the one flip
+  that does change the height (menu open) waits for the next frame.
+  `run_browser_tests.py` prints page errors but does not fail on them; the Navbar
+  sweep scenario reads `window.__errors` for that reason.
 - **`h(Component)` runs the component on the spot** — outside a render pass it
   throws "can only be used during rendering". That includes test code:
   `renderToString(() => h(Button, …))`, never `renderToString(h(Button, …))`.
