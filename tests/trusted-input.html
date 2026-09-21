@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FluxaWay - Trusted input tests</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg" />
+    <link rel="stylesheet" href="/dist/fluxaway-ui.css" />
+  </head>
+  <body>
+    <!-- Driven by scripts/run_browser_tests.py with a real mouse and keyboard.
+         The in-page suite cannot cover these: a dispatched mousedown is
+         untrusted, so it moves no focus and leaves no gap before mouseup. -->
+    <main id="app" style="max-width: 420px; padding: 16px"></main>
+    <script type="module" src="./trusted-input.js"></script>
+  </body>
+</html>

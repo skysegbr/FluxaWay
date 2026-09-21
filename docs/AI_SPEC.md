@@ -120,7 +120,7 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
 ```
 
 Use `@main` for the latest code during development. For production, pin a
-release tag such as `@v0.25.1`. In a multi-file project the URL must be
+release tag such as `@v0.25.2`. In a multi-file project the URL must be
 **identical in every file**, or the framework loads twice — see §14, "The same
 app from the CDN".
 
@@ -532,6 +532,13 @@ Prefer a real form so Enter submits too:
   becomes valid — it does not wait for the next blur.
 - `validateOnChange: true` opts into the eager mode: the field is touched and
   the whole form validated on every keystroke.
+- **A blur caused by a mouse press waits for the release.** Pressing anything
+  blurs the focused field first; an error line appearing at that moment would
+  push the pressed button, checkbox or link away and the browser would drop the
+  click. So the touch and the validation run right after the click lands — a
+  blur from Tab still validates at once. A submit, a `reset()` or an unmount in
+  between supersedes the pending blur. **Keep `validateOnBlur: true`**: turning
+  it off to "protect" the Submit click is not needed.
 
 Do not add your own `onBlur`/`onInput` revalidation on top of `field()` — the
 error line appearing or vanishing between a button's `mousedown` and `mouseup`
@@ -745,6 +752,17 @@ const { theme, setTheme, toggleTheme } = useTheme();
 // Standalone — reads/writes localStorage('fluxaway-theme') and sets data-theme on <html>
 // Does NOT require ThemeProvider. Multiple useTheme() instances stay in sync via
 // a 'fluxaway:themechange' CustomEvent.
+//
+// Initial theme: the stored value (the plain string 'light' or 'dark') if there
+// is one, else the OS setting (prefers-color-scheme). The first mount stores
+// what it resolved, so from then on the choice is the user's, not the OS's.
+//
+// data-theme is written by a MOUNTED useTheme() — the hook itself or a
+// ThemeToggle, which calls it. With neither on the page the stored theme is
+// never applied and fluxaway-ui.css just follows the OS. So keep one mounted
+// for the whole session: a ThemeToggle in the top bar, or a bare `useTheme()`
+// in App. A ThemeToggle in Navbar `actions` counts — it stays mounted while
+// the mobile menu is collapsed.
 ```
 
 ### `usePalette`
@@ -757,6 +775,10 @@ const { palette, palettes, setPalette, customColor, setCustomColor } = usePalett
 // and sets data-palette on <html>. Independent of useTheme: fluxaway-ui.css pairs
 // each preset palette with both a light and a dark variant, so the two compose freely.
 // setPalette(x) is a no-op if x isn't in `palettes`.
+// A fixed PRESET palette needs no hook: `<html data-palette="violet">` by hand
+// is supported, in both themes (the stylesheet only reads the attribute). Do not
+// combine the two — a mounted usePalette() overwrites the attribute with the
+// stored choice. 'custom' does need the hook: it writes --m-primary inline.
 //
 // setCustomColor(hex) accepts any '#rgb' or '#rrggbb' color, switches palette
 // to 'custom', and writes --m-primary inline on <html>. fluxaway-ui.css derives
@@ -830,7 +852,8 @@ const query = useDebounce(inputValue, 300);
 // Throttle — returns a function that fires at most once per delay ms
 const onScroll = useThrottle((e) => setY(e.target.scrollTop), 100);
 
-// CSS media query — reactive boolean
+// CSS media query — reactive boolean. Correct on the FIRST render (it reads
+// matchMedia synchronously), so there is no false→true flash to guard against.
 const isMobile = useMediaQuery('(max-width: 768px)');
 
 // Intersection observer — returns the latest IntersectionObserverEntry
@@ -1298,9 +1321,10 @@ otherwise a screen reader announces English in the middle of your page.
 // A Brazilian Portuguese contact form
 h(Navbar, { brand: 'Flor & Cia', items, openMenuLabel: 'Abrir menu', closeMenuLabel: 'Fechar menu' })
 h(ThemeToggle, { switchToLightLabel: 'Mudar para o tema claro', switchToDarkLabel: 'Mudar para o tema escuro' })
-h(TextField, { ...field('nome'), label: 'Seu nome', required: true, requiredLabel: 'obrigatório' })
+h(TextField, { ...field('nome'), label: 'Seu nome', required: true, requiredLabel: '' })  // see below
 h(DatePicker, {
   label: 'Data da entrega', value, onChange, placeholder: 'Escolha uma data',
+  required: true, requiredLabel: 'obrigatório',
   previousMonthLabel: 'Mês anterior', nextMonthLabel: 'Próximo mês',
   monthNames: MESES, weekdayNames: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
   formatValue: (date) => date.toLocaleDateString('pt-BR'),            // trigger shows 20/09/2026
@@ -1314,7 +1338,9 @@ or in a `useTranslation(dict)` dictionary (§6) and pass it where needed.
 `requiredLabel: ''` hides the asterisk from screen readers (it stays visible).
 Use it on TextField / Textarea / Select: their native `required` attribute
 already makes the reader say "required" in the **user's** language, so a spoken
-asterisk only repeats it.
+asterisk only repeats it. Translate `requiredLabel` on the fields that have no
+native `required` control to speak for them — DatePicker, Combobox, TimePicker,
+RangeSlider — as the example above does.
 
 ### Basic
 
@@ -1418,7 +1444,7 @@ h(Avatar, { src: '/u/ada.png', name: 'Ada Lovelace' })
 // Right when it stands ALONE. When the same name is written next to it, a screen
 // reader says it twice; hide the avatar from readers and let the text speak:
 h('div', { className: 'author' },
-  h(Avatar, { name: 'Ada Lovelace', ariaHidden: 'true' }),
+  h(Avatar, { name: 'Ada Lovelace', ariaHidden: 'true' }),   // drops role + aria-label too
   h('span', null, 'Ada Lovelace'),
 )
 // sizes: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -1441,6 +1467,11 @@ h(Divider, { vertical: true }) // inline separator, role="separator"
 // in this document spell it out only for clarity.
 h(Card, null, h('p', null, 'Content'))                 // padded
 h(Card, { padded: false }, h('img', { src, alt }))     // edge-to-edge: media, tables, lists
+// Renders an <article>. It does NOT clip its content (a Menu, Combobox or
+// DatePicker opened inside a card must be able to overflow it), so an
+// edge-to-edge image keeps square corners over the card's rounded ones. Round
+// the image — border-radius: var(--m-radius) var(--m-radius) 0 0 — or, in a
+// card that holds no popover, pass a className that sets overflow: hidden.
 // CSS: add m-card-hover for a clickable card (pointer + hover border/shadow)
 
 // Card variants — CSS-only modifier classes on top of Card/.m-card, combine
@@ -1634,6 +1665,9 @@ h(TextField, {
   error: 'Required field',
   help: 'Help text',
 })
+// `help` and `error` show TOGETHER (help first, error below it) and both ids go
+// into the input's aria-describedby — true for every field component and
+// FormField. To swap one for the other, do it yourself: help: error ? '' : '…'.
 
 // Textarea
 h(Textarea, {
@@ -1803,6 +1837,9 @@ h(Alert, {
   variant: 'info',    // 'info' | 'success' | 'warning' | 'danger'
   title: 'Attention',
 }, 'Alert message')
+// Already has role="status" (announced politely) — do not wrap it in a live
+// region. Pass role: 'alert' for an error that must interrupt. `title` renders a
+// <strong>, not a heading: it stays out of the page's heading outline.
 
 // Spinner
 h(Spinner, { label: 'Loading...' })
@@ -1878,9 +1915,27 @@ h(Navbar, {
   ],
   actions: h(Button, { variant: 'tonal' }, 'Login'),
 })
-// Below 768px the items collapse behind a ☰ button. The mobile menu is IN-FLOW:
-// it pushes the page down instead of covering it (open/defaultOpen/onToggle
-// control it). Anchor links (`href: '#contact'`) are safe with a sticky header
+// brand: a string or any VNode (a logo <img>, an <a> you build). It is rendered
+//   as given — NOT turned into a link; pass h('a', { href: '#top' }, 'My App')
+//   if you want one.
+// Below 768px `items` AND `actions` collapse together behind a ☰ button — a
+// ThemeToggle or Login button in `actions` moves inside the menu. Whatever must
+// stay on the bar at phone width goes in `brand`, not `actions`. Collapsed means
+// hidden: nothing inside takes keyboard focus or is read out, yet `actions`
+// stay MOUNTED (a ThemeToggle there keeps applying the theme). Do not mount and
+// unmount `items` / `actions` yourself with useMediaQuery to "fix" focus.
+// Uncontrolled by default (`defaultOpen: false`). Controlled: pass `open` and
+//   onToggle(nextOpen: boolean) — called with !open by the ☰, and with false by
+//   Escape, by a press outside the bar, and by a click on any item (at every
+//   width, also when the menu is already closed).
+// The bar is 60px tall, full-width, with 16px side padding (24px from 768px).
+// To line the brand and links up with a centred content column, keep the bar
+// full-bleed and move the padding — `className` lands on the <nav>:
+//   h(Navbar, { className: 'a-nav', … })
+//   .a-nav { padding-inline: max(var(--m-space-4), calc((100% - 1120px) / 2)); }
+//   /* 1120px = the max-width of your content shell */
+// The mobile menu is IN-FLOW: it pushes the page down instead of covering it.
+// Anchor links (`href: '#contact'`) are safe with a sticky header
 // and `scroll-behavior: smooth`: a tapped link closes the menu in the same
 // frame, so the section lands where it should. For a sticky header wrap it
 // yourself and reserve its height for anchors:
@@ -2955,6 +3010,12 @@ are: a landing page of eight independent sections (`Hero`, `Features`, `Pricing`
 … `Footer`) is eight flat component files, because no two of them share a
 feature. Never group by type (`forms/`, `ui/`, `shared/`).
 
+Decide the split first, then count — never the other way round. One component
+per file, split when a file outgrows one job; if that leaves a feature with
+three files (`Catalog.js`, `ProductCard.js`, `useCatalogFilter.js`) it gets
+`catalog/`, and if it leaves two they stay flat. Both are correct. Do not carve
+a third file out to earn a folder, and do not merge two to avoid one.
+
 ```
 my-app/
   index.html
@@ -3487,7 +3548,7 @@ export const NAV_LINKS = [
 ];
 ```
 
-**`format.js`** — a small pure helper: its own lower-case module, named after what it does (§12)
+**`components/format.js`** — a small pure helper: its own lower-case module, named after what it does, next to the one component that uses it (§12). It would sit at the root only if the whole app used it
 ```js
 export function formatPrice(price) {
   return price === 0 ? 'Free' : `$${price}/mo`;
@@ -3507,6 +3568,10 @@ export function TopBar({ links }) {
 }
 ```
 
+Below 768px the `ThemeToggle` collapses into the ☰ menu with the links (§9
+Navbar). That is the intended default; it stays mounted there, so the saved
+theme still applies.
+
 **`components/TopBar.css`** — paired, imported by `styles.css`
 ```css
 .a-topbar { position: sticky; top: 0; z-index: var(--m-z-appbar); }
@@ -3516,7 +3581,7 @@ export function TopBar({ links }) {
 ```js
 import { h } from '/dist/fluxaway.js';
 import { Button, Card } from '/dist/fluxaway-components-core.js';
-import { formatPrice } from '../format.js';
+import { formatPrice } from './format.js';
 
 export function Pricing({ plans }) {
   return h('section', { className: 'a-pricing', id: 'pricing' },
@@ -3555,6 +3620,12 @@ html { scroll-behavior: smooth; scroll-padding-top: 60px; } /* anchors clear the
 
 .a-page { min-height: 100vh; }
 ```
+
+`@import` must come first, so every rule written below it is **later in the
+cascade than all component CSS** and wins any tie in specificity. Keep this file
+to element-level globals (`html`, `body`, the page shell). A class rule that also
+lives in a paired file — `.a-plan { … }` here and in `Pricing.css` — silently
+overrides the component; put it in the paired file instead.
 
 **`app.js`** — orchestrator: imports data + components, calls render
 ```js

@@ -402,14 +402,18 @@ export function Avatar({
   ...props
 } = {}) {
   const fallback = hasChildren(children) ? children : avatarInitials(name);
+  // Hidden from assistive tech because the name is written next to it: then it
+  // carries no role or label either. Naming an element nobody can reach only
+  // trips accessibility validators.
+  const named = !src && String(props.ariaHidden) !== "true";
 
   return h(
     "span",
     {
       ...props,
       className: joinClasses("m-avatar", `m-avatar-${size}`, className),
-      role: src ? undefined : "img",
-      ariaLabel: src ? undefined : name,
+      role: named ? "img" : undefined,
+      ariaLabel: named ? name : undefined,
     },
     src ? h("img", { src, alt: alt || name || "" }) : fallback,
   );
