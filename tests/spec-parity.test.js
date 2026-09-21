@@ -5,7 +5,9 @@
 import { h, render, useForm, usePresence, useRef, useState, useTranslation } from "../dist/fluxaway.js";
 import { Alert, Avatar, Badge, Button, FormField } from "../dist/fluxaway-components-core.js";
 import { Navbar } from "../dist/fluxaway-components-nav.js";
-import { Checkbox, NumberInput, Radio, TextField } from "../dist/fluxaway-components-forms.js";
+import {
+  Checkbox, DatePicker, NumberInput, Radio, RadioGroup, RangeSlider, Select, Slider, Textarea, TextField, TimePicker,
+} from "../dist/fluxaway-components-forms.js";
 import { Menu } from "../dist/fluxaway-components-overlay.js";
 import { SwipeableListItem } from "../dist/fluxaway-components-nav.js";
 import { METAL_THEMES } from "../dist/fluxaway-metallic.js";
@@ -682,7 +684,7 @@ test("spec §8: spellcheck, draggable and translate accept a boolean or HTML's o
   assertEqual(node("#p-tr").getAttribute("translate"), "no", "translate: false writes HTML's own value");
 });
 
-test("spec §6: reset() clears the error, and the next blur on a required empty field brings it back", async () => {
+test("spec §6: reset() clears the error, and a later visit to a required empty field brings it back", async () => {
   let form;
   const container = mountPoint();
 
@@ -714,9 +716,55 @@ test("spec §6: reset() clears the error, and the next blur on a required empty 
   assert(!form.errors.name, "reset clears the error");
   assertEqual(container.querySelector("#parity-reset-error"), null, "and the error line with it");
 
-  // A reset form is empty, not valid: the next blur behaves like a fresh one.
+  // A reset form is empty, not valid: a later visit behaves like a fresh form.
   field.focus();
   field.blur();
   await flush();
   assertEqual(form.errors.name, "Required", "the first blur after a reset validates again");
+});
+
+test("spec §9: a field's error is a .m-error line with id {id}-error, named by the control's aria-describedby", async () => {
+  const fields = [
+    ["TextField", (error) => h(TextField, { id: "pe-text", label: "Name", error })],
+    ["Textarea", (error) => h(Textarea, { id: "pe-area", label: "Notes", error })],
+    ["Select", (error) => h(Select, { id: "pe-select", label: "Size", options: [{ value: "s", label: "S" }], error })],
+    ["Checkbox", (error) => h(Checkbox, { id: "pe-check", label: "Terms", error })],
+    ["Radio", (error) => h(Radio, { id: "pe-radio", label: "Yes", error })],
+    ["RadioGroup", (error) => h(RadioGroup, { id: "pe-group", label: "Pick", options: [{ value: "a", label: "A" }], error })],
+    ["Slider", (error) => h(Slider, { id: "pe-slider", label: "Volume", value: 5, error })],
+    ["RangeSlider", (error) => h(RangeSlider, { id: "pe-range", label: "Price", error })],
+    ["NumberInput", (error) => h(NumberInput, { id: "pe-number", label: "Qty", value: 1, error })],
+    ["DatePicker", (error) => h(DatePicker, { id: "pe-date", label: "Date", error })],
+    ["TimePicker", (error) => h(TimePicker, { id: "pe-time", label: "Time", error })],
+    // No id and one control: FormField wires it (a generated id).
+    ["FormField", (error) => h(FormField, { label: "Wired", error }, h("input", { className: "m-field" }))],
+  ];
+
+  for (const [name, make] of fields) {
+    const container = mountPoint();
+    let error = "Bad";
+    let setError;
+    function Widget() {
+      const [e, set] = useState(error);
+      setError = set;
+      return make(e);
+    }
+    render(Widget, container);
+    await flush();
+
+    const line = container.querySelector(".m-error");
+    assert(line, `${name}: no .m-error line`);
+    assertEqual(line.textContent, "Bad", `${name}: the line carries the message`);
+    const control = container.querySelector('[aria-invalid="true"]');
+    assert(control, `${name}: no control with aria-invalid="true"`);
+    assert(line.id.endsWith("-error"), `${name}: the line's id is ${line.id}`);
+    assert((control.getAttribute("aria-describedby") || "").split(" ").includes(line.id),
+      `${name}: aria-describedby does not name the error line`);
+    assertEqual(line.getAttribute("role"), null, `${name}: the line is not a live region`);
+
+    setError("");
+    await flush();
+    assertEqual(container.querySelector(".m-error"), null, `${name}: the line stays after the error clears`);
+    assertEqual(container.querySelector("[aria-invalid]"), null, `${name}: aria-invalid stays after the error clears`);
+  }
 });

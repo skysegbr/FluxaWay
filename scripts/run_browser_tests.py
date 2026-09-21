@@ -148,6 +148,30 @@ def reset_supersedes_a_pending_blur(page) -> None:
     expect(page.evaluate("window.__form.values.name") == "", "reset did not clear the value")
 
 
+
+def enter_reset_then_the_notice_takes_focus(page) -> None:
+    page.evaluate("window.__focusNotice = true")
+    page.click("#t-reset-name")
+    page.keyboard.type("Ana")
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(150)
+    expect(page.evaluate("document.activeElement.id") == "t-reset-sent", "the notice did not take focus")
+    expect(error_texts(page, "#s-reset") == [], "an error appeared under the success notice")
+
+
+def enter_reset_then_a_click_anywhere(page) -> None:
+    page.click("#t-reset-name")
+    page.keyboard.type("Ana")
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(150)
+    expect(page.evaluate("document.activeElement.id") == "t-reset-name", "reset() moved focus out of the field")
+    slow_click(page, "#t-reset-sent")
+    expect(error_texts(page, "#s-reset") == [], "the first click after the submit showed an error")
+    page.click("#t-reset-name")
+    page.keyboard.press("Tab")
+    page.wait_for_timeout(50)
+    expect(error_texts(page, "#s-reset") == ["Required"], "a new visit to the empty field did not validate it")
+
 PHONE = {"width": 390, "height": 800}
 DESKTOP = {"width": 1280, "height": 720}
 
@@ -298,6 +322,10 @@ TRUSTED_INPUT_TESTS = (
      DESKTOP, keyboard_blur_validates_at_once),
     ("useForm (real mouse): Reset pressed over a pending blur leaves the form clean",
      DESKTOP, reset_supersedes_a_pending_blur),
+    ("useForm (keyboard): Enter, reset(), then the notice takes focus: no error under it",
+     DESKTOP, enter_reset_then_the_notice_takes_focus),
+    ("useForm (real mouse): Enter, reset(), then a click anywhere shows no error; a new visit validates",
+     DESKTOP, enter_reset_then_a_click_anywhere),
     ("Navbar (keyboard, 390px): Tab skips the collapsed menu and walks it in order when open",
      PHONE, collapsed_navbar_menu_is_out_of_the_tab_order),
     ("Navbar (390px): the toggle is centred in the bar and the first line does not move when the menu opens",

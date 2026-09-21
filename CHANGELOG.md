@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.25.6] - 2026-09-21
+
+### Fixed
+- **`useForm`: a form that had just been sent showed "required" under its
+  success notice.** Enter submits from inside a field, so that field is still
+  focused, and now empty, when `onSubmit` calls `reset()`. The blur that
+  finally ended that focus touched and validated it. A notice taking focus in a
+  `useEffect` put the error next to "message sent"; with no focus move, the
+  first click anywhere did. `reset()` now ignores that one blur. Focus still
+  stays where it was, so Enter → `reset()` → type the next entry keeps working,
+  and editing the field, or leaving a required empty field again later,
+  validates as on a freshly loaded form. `docs/AI_SPEC.md` §6 no longer
+  presents the error as intended.
+
 ## [0.25.5] - 2026-09-21
 
 ### Fixed
