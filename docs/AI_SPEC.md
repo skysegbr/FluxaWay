@@ -496,6 +496,19 @@ h(Button, { onClick: handleSubmit(), disabled: isSubmitting }, 'Sign in')
 For a checkbox: `field('terms', { type: 'checkbox' })` returns `checked` instead
 of `value`. `field(name, { onBlur, onInput, onChange })` chains your own handlers.
 
+Spread it on **every** form control. The native ones (TextField, Textarea,
+Select, Checkbox, Switch, Slider) report a DOM event. The value-based ones
+(DatePicker, TimePicker, Combobox, RadioGroup, NumberInput, RangeSlider,
+CodeEditor) report the value itself, and `values` stores it as reported: a
+NumberInput's number stays a number, and a RadioGroup option keeps its type.
+Start `initialValues` in the control's own shape: `''` for a date, a time or a
+choice, `null` for an empty NumberInput, `[min, max]` for a RangeSlider.
+
+```js
+h(DatePicker, { ...form.field('delivery'), label: 'Delivery date' })
+h(RadioGroup, { ...form.field('size'), label: 'Size', options: sizes })
+```
+
 Options: `initialValues`, `validate(values) → { field: 'message' }`, `onSubmit(values, helpers)`,
 `validateOnBlur` (default `true`), `validateOnChange` (default `false`).
 
@@ -543,6 +556,14 @@ Prefer a real form so Enter submits too:
   becomes valid — it does not wait for the next blur.
 - `validateOnChange: true` opts into the eager mode: the field is touched and
   the whole form validated on every keystroke.
+- **A picker is validated on submit, not when it is left.** Combobox,
+  DatePicker and TimePicker move focus into their own popup, which is not
+  leaving the field. A RadioGroup has no blur of its own, and neither does a
+  CodeEditor running CodeMirror. Picking a value re-checks an error already
+  recorded, like typing does, so "required" goes away the moment a value is
+  picked. NumberInput and RangeSlider are inputs and validate on blur like a
+  TextField. A NumberInput that clamps on blur is validated with the clamped
+  value.
 - **A blur caused by a mouse press waits for the release.** Pressing anything
   blurs the focused field first; an error line appearing at that moment would
   push the pressed button, checkbox or link away and the browser would drop the

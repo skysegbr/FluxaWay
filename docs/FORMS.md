@@ -11,12 +11,15 @@ A controlled form in FluxaWay follows this pattern:
 
 1. Declare initial values and a validation function.
 2. Call `useForm` once at the top of your component.
-3. Spread `form.field(name)` onto each input, select, textarea, or checkbox.
+3. Spread `form.field(name)` onto each form control.
 4. Wire `form.handleSubmit()` to the `<form>` `onSubmit` event.
 
 Every field helper returned by `field()` provides `value`, `error`, `onBlur`,
-`onInput`, and `onChange` — exactly what the built-in `TextField`, `Select`,
-`Textarea`, and `Checkbox` components expect.
+`onInput`, and `onChange`, which is what every built-in form control expects.
+The native ones (`TextField`, `Select`, `Textarea`, `Checkbox`, `Switch`,
+`Slider`) report a DOM event. The value-based ones (`DatePicker`, `TimePicker`,
+`Combobox`, `RadioGroup`, `NumberInput`, `RangeSlider`, `CodeEditor`) report the
+value itself, and `values` stores it as reported.
 
 ---
 
@@ -166,17 +169,14 @@ h(Checkbox, {
 
 ### RadioGroup
 
-`RadioGroup` is controlled through `value`/`onChange` (one value for the whole
-group) rather than per-input events, so wire it to the form state directly
-instead of spreading `form.field()`:
+`RadioGroup` reports one value for the whole group instead of a DOM event.
+`form.field()` takes it as it comes, so an option's value keeps its type:
 
 ```js
 h(RadioGroup, {
   id: "size",
   label: "Size",
-  value: form.values.size,
-  onChange: (v) => form.setValue("size", v),
-  error: form.touched.size ? form.errors.size : undefined,
+  ...form.field("size"),
   options: [
     { value: "s", label: "Small" },
     { value: "m", label: "Medium" },
@@ -185,9 +185,15 @@ h(RadioGroup, {
 })
 ```
 
-The same pattern applies to the other value-based controls: `NumberInput`
-(`value`/`onChange` with a number), `DatePicker` and `TimePicker`
-(`"YYYY-MM-DD"` / `"HH:MM"` strings).
+The other value-based controls take `...form.field(name)` the same way:
+`NumberInput` (a number, or `null` when empty), `DatePicker` and `TimePicker`
+(`"YYYY-MM-DD"` / `"HH:MM"` strings), `Combobox` (the option's value) and
+`RangeSlider` (a `[min, max]` pair). Start `initialValues` in that shape.
+
+A picker (`Combobox`, `DatePicker`, `TimePicker`, `RadioGroup`) is validated
+on submit, not when it is left: opening it moves focus into its own popup,
+which is not leaving the field. Picking a value re-checks an error already
+recorded, so "required" goes away as soon as a value is picked.
 
 ---
 

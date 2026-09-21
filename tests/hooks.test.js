@@ -12,7 +12,9 @@ import {
   matchPath,
 } from "../dist/fluxaway.js";
 import { Button } from "../dist/fluxaway-components-core.js";
-import { TextField, Textarea } from "../dist/fluxaway-components-forms.js";
+import {
+  Checkbox, CodeEditor, Combobox, DatePicker, NumberInput, RadioGroup, RangeSlider, TextField, Textarea, TimePicker,
+} from "../dist/fluxaway-components-forms.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 // ── useForm ───────────────────────────────────────────────────────────────────
@@ -427,6 +429,192 @@ test("useForm: editing the field that kept focus through reset() makes its blur 
   t.input().blur();
   await flush();
   assertEqual(t.state.form.field("name").error, "Required", "the person used the field after the reset");
+});
+
+// ── useForm: field() on value-based controls ─────────────────────────────────
+// These controls call onChange with the value itself, not a DOM event. Spread
+// `...form.field(name)` must store that value as reported (a number stays a
+// number) and clear a recorded error the moment the value becomes valid.
+
+const pickButton = (container, selector) => {
+  const button = [...container.querySelectorAll(selector)].find((el) => !el.disabled);
+  button.click();
+};
+
+const VALUE_CONTROLS = [
+  {
+    name: "DatePicker",
+    initial: "",
+    valid: (v) => /^\d{4}-\d{2}-\d{2}$/.test(v),
+    render: (props) => h(DatePicker, { ...props, label: "Date" }),
+    pick: async (c, id) => {
+      c.querySelector(`#${id}`).click();
+      await flush();
+      pickButton(c, ".m-datepicker-day:not(.m-datepicker-day-outside)");
+    },
+  },
+  {
+    name: "TimePicker",
+    initial: "",
+    valid: (v) => /^\d{2}:\d{2}$/.test(v),
+    render: (props) => h(TimePicker, { ...props, label: "Time" }),
+    pick: async (c, id) => {
+      c.querySelector(`#${id}`).click();
+      await flush();
+      pickButton(c, ".m-timepicker-option");
+    },
+  },
+  {
+    name: "Combobox",
+    initial: "",
+    valid: (v) => v === 2,
+    render: (props) => h(Combobox, { ...props, label: "Pick", options: [{ value: 1, label: "One" }, { value: 2, label: "Two" }] }),
+    pick: async (c, id) => {
+      c.querySelector(`#${id}`).click();
+      await flush();
+      c.querySelectorAll(".m-combobox-option")[1].dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+    },
+  },
+  {
+    name: "RadioGroup",
+    initial: "",
+    valid: (v) => v === 2,
+    render: (props) => h(RadioGroup, { ...props, label: "Pick", options: [{ value: 1, label: "One" }, { value: 2, label: "Two" }] }),
+    pick: async (c) => c.querySelectorAll('input[type="radio"]')[1].click(),
+  },
+  {
+    name: "NumberInput",
+    initial: null,
+    valid: (v) => typeof v === "number",
+    render: (props) => h(NumberInput, { ...props, label: "Qty" }),
+    pick: async (c) => c.querySelector('button[aria-label="Increase"]').click(),
+  },
+  {
+    name: "RangeSlider",
+    initial: [0, 100],
+    valid: (v) => Array.isArray(v) && v[1] === 60,
+    render: (props) => h(RangeSlider, { ...props, label: "Price" }),
+    pick: async (c) => {
+      const upper = c.querySelectorAll('input[type="range"]')[1];
+      upper.value = "60";
+      upper.dispatchEvent(new Event("input", { bubbles: true }));
+    },
+  },
+  {
+    name: "CodeEditor",
+    initial: "",
+    valid: (v) => v === "let a = 1;",
+    showsError: false, // no label, no error line: it is not a FormField
+    render: (props) => h(CodeEditor, props),
+    pick: async (c) => {
+      const area = c.querySelector("textarea");
+      area.value = "let a = 1;";
+      area.dispatchEvent(new Event("input", { bubbles: true }));
+    },
+  },
+];
+
+function mountValueControl(control) {
+  const container = mountPoint();
+  const id = `vc-${control.name}`;
+  const state = {};
+
+  function Form() {
+    state.form = useForm({
+      initialValues: { v: control.initial },
+      validate: (values) => ({ v: control.valid(values.v) ? "" : "Required" }),
+      onSubmit: () => {},
+    });
+    return h(
+      "form",
+      { noValidate: true, onSubmit: state.form.handleSubmit() },
+      control.render({ ...state.form.field("v"), id }),
+    );
+  }
+
+  render(Form, container);
+  const errorLines = () => [...container.querySelectorAll(".m-error")].map((el) => el.textContent);
+  return { container, id, state, errorLines };
+}
+
+for (const control of VALUE_CONTROLS) {
+  test(`useForm: ...field() on ${control.name} stores the value it reports and clears the error`, async () => {
+    const t = mountValueControl(control);
+    await flush();
+
+    t.container.querySelector("form").requestSubmit();
+    await flush();
+    if (control.showsError !== false) {
+      assertEqual(t.errorLines().join(), "Required", "an empty submit shows the error");
+    }
+
+    await control.pick(t.container, t.id);
+    await flush();
+    const stored = t.state.form.values.v;
+    assert(control.valid(stored), `stored ${JSON.stringify(stored)}, not the value the control reported`);
+    assertEqual(t.errorLines().length, 0, "the error stayed next to a valid value");
+    assertEqual(t.state.form.errors.v, "", "the recorded error was not re-checked");
+  });
+}
+
+test("useForm: opening a Combobox moves focus off its trigger without validating the field", async () => {
+  const t = mountValueControl(VALUE_CONTROLS.find((c) => c.name === "Combobox"));
+  await flush();
+  const trigger = t.container.querySelector(`#${t.id}`);
+  trigger.focus();
+  trigger.click();
+  await flush();
+  await flush();
+  assert(document.activeElement !== trigger, "the list should have taken focus");
+  assertEqual(t.errorLines().length, 0, "the trigger's blur showed 'Required' while the list was open");
+  assert(!t.state.form.touched.v, "the trigger's blur touched the field");
+});
+
+test("useForm: a NumberInput clamped on blur is validated with the clamped value", async () => {
+  const container = mountPoint();
+  const state = {};
+  function Form() {
+    state.form = useForm({
+      initialValues: { qty: 5 },
+      validate: (v) => ({ qty: v.qty >= 1 && v.qty <= 10 ? "" : "Between 1 and 10" }),
+    });
+    return h(NumberInput, { ...state.form.field("qty"), id: "vc-clamp", label: "Qty", min: 1, max: 10 });
+  }
+  render(Form, container);
+  await flush();
+
+  const input = container.querySelector("#vc-clamp");
+  input.focus();
+  input.value = "15"; // on the way to a value the blur will clamp
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  await flush();
+  input.blur();
+  await flush();
+
+  assertEqual(state.form.values.qty, 10, "NumberInput clamps on blur");
+  assertEqual(state.form.errors.qty, "", "the blur validated the value from before the clamp");
+  assertEqual(container.querySelectorAll(".m-error").length, 0, "an error showed next to a value in range");
+});
+
+test("useForm: field() adds no default type, and a checkbox field takes a plain boolean", async () => {
+  let form;
+  function Form() {
+    form = useForm({ initialValues: { name: "", terms: false } });
+    return h("div", null, h(TextField, { ...form.field("name"), id: "vc-type", label: "Name" }));
+  }
+  const container = mountPoint();
+  render(Form, container);
+  await flush();
+
+  assert(!("type" in form.field("name")), "a type would land on a DatePicker's wrapper <div>");
+  assert(!("type" in form.field("role", { type: "select" })), "a <select> takes no type");
+  assertEqual(container.querySelector("#vc-type").type, "text", "an <input> with no type is still a text input");
+  assertEqual(form.field("name", { type: "email" }).type, "email", "an explicit type still passes through");
+  assertEqual({ type: "email", ...form.field("name") }.type, "email", "spread after an author's type, it kept it");
+
+  form.field("terms", { type: "checkbox" }).onChange(true);
+  await flush();
+  assertEqual(form.values.terms, true);
 });
 
 // ── useRouter (hash mode) ─────────────────────────────────────────────────────
