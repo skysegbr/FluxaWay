@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.25.5] - 2026-09-21
+
+### Fixed
+- **`spellcheck` could not be turned off through props.** It is one of HTML's
+  three enumerated attributes with a boolean IDL property (`draggable` and
+  `translate` are the others), and both generic paths got them wrong in the same
+  direction: assigning the string `"false"` to a boolean property is truthy, and
+  passing `false` removed the attribute, which restores the default — on. They
+  are now written as attributes with the value HTML spells, so
+  `spellcheck: false` and `spellcheck: 'false'` both turn it off, and
+  `translate: false` writes `translate="no"`. Other attributes are untouched.
+
+### Changed
+- **`docs/AI_SPEC.md` §9: the recipe for lining a full-bleed `Navbar` up with a
+  centred content column was 16px off.** It cleared the shell's centring margin
+  but not the shell's own side padding, which `box-sizing: border-box` puts
+  inside its max-width — and the error vanishes below the shell's width, so a
+  phone screenshot never showed it. Also documented in this pass: the per-category
+  CDN URLs (§2), how many links fit on a bar (§9), equal-height Cards in a grid
+  (§9), the spelling of plain HTML attributes (§8), what `reset()` leaves for the
+  next blur (§6), and where a layout class shared by several sections lives (§12).
+
 ## [0.25.4] - 2026-09-21
 
 ### Fixed

@@ -1647,6 +1647,12 @@ function updateDom(dom, previousProps, nextProps) {
   }
 }
 
+const ENUMERATED_BOOLEANS = {
+  spellcheck: ["true", "false"],
+  draggable: ["true", "false"],
+  translate: ["yes", "no"],
+};
+
 function setProp(dom, name, previousValue, nextValue) {
   if (name === "ref") {
     if (previousValue && previousValue !== nextValue) {
@@ -1684,6 +1690,18 @@ function setProp(dom, name, previousValue, nextValue) {
   }
 
   const attributeName = attributeAlias(name);
+
+  // HTML's three ENUMERATED attributes whose IDL property is a boolean. Both of
+  // the generic paths below get them wrong, in the same direction: the string
+  // "false" assigned to a boolean property is truthy, and removing the attribute
+  // restores the default, which is on. So `spellcheck` could not be turned off
+  // at all. They are written as attributes, with the value HTML spells, whether
+  // the app passes a boolean or the literal string.
+  if (name in ENUMERATED_BOOLEANS && nextValue !== null && nextValue !== undefined) {
+    const [on, off] = ENUMERATED_BOOLEANS[name];
+    dom.setAttribute(attributeName, nextValue === false || nextValue === off ? off : on);
+    return;
+  }
 
   if (nextValue === null || nextValue === undefined || nextValue === false) {
     if (name in dom && typeof dom[name] === "boolean") {
