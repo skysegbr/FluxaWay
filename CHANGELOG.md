@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.25.4] - 2026-09-21
 
 ### Fixed
 - **`Navbar`: 0.25.3's rules outweighed app CSS that used to override them.**
