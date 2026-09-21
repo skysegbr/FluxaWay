@@ -255,6 +255,16 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   `.m-dialog-header-draggable` typed inside `/* ── CodeEditor ── */` belongs to
   overlay — it shipped in `fluxaway-ui-forms.css` for that reason. Add a rule
   next to its component's other rules; `tests/spec-parity.test.js` guards `.m-dialog`.
+- **A click is a `mousedown` and a `mouseup` on the same element — and tests
+  press for 0 ms.** Anything that moves the layout on blur (an error line, a
+  collapsing panel) slides the pressed control out from under a real pointer and
+  the browser fires no `click`. `el.click()`, a dispatched `MouseEvent` and
+  Playwright's `page.click()` all pass regardless. Such a bug is only visible to
+  `mouse.down()` → wait ~120 ms → `mouse.up()`: that is the trusted-input phase
+  of `run_browser_tests.py` (`tests/trusted-input.html`). `useForm` defers blur
+  work while the primary button is down for this reason (`trackPress` in
+  `dist/fluxaway.js`); do not "simplify" it to `relatedTarget` — that is the
+  Submit button for a click *and* for Tab, and `null` on macOS Safari.
 - **`h(Component)` runs the component on the spot** — outside a render pass it
   throws "can only be used during rendering". That includes test code:
   `renderToString(() => h(Button, …))`, never `renderToString(h(Button, …))`.

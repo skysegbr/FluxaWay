@@ -507,6 +507,16 @@ export function useForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
 
+  // Blur work queued while the mouse is pressed (see trackPress). A submit, a
+  // reset or an unmount before the release supersedes it.
+  const valuesRef = useRef(values);
+  valuesRef.current = values;
+  const pendingBlurRef = useRef(null);
+  trackPress();
+  useEffect(() => () => {
+    pendingBlurRef.current = null;
+  }, []);
+
   const setValues = (nextValues) => {
     setValuesState((currentValues) => ({
       ...currentValues,
@@ -544,6 +554,7 @@ export function useForm({
 
   const reset = (nextValues = initialValuesRef.current) => {
     const nextInitialValues = { ...nextValues };
+    pendingBlurRef.current = null;
     initialValuesRef.current = nextInitialValues;
     setValuesState(nextInitialValues);
     setErrors({});
@@ -590,14 +601,36 @@ export function useForm({
     const value = values[name] ?? "";
 
     const handleBlur = (event) => {
-      setFieldTouched(name);
-      if (validateOnBlur) {
-        const liveValue =
-          type === "checkbox"
-            ? Boolean(event?.target?.checked)
-            : (event?.target?.value ?? values[name]);
-        validateForm({ ...values, [name]: liveValue });
+      const liveValue =
+        type === "checkbox"
+          ? Boolean(event?.target?.checked)
+          : (event?.target?.value ?? values[name]);
+
+      // Touching is deferred with the validation: it alone reveals an error a
+      // previous blur already recorded for this field.
+      const settle = () => {
+        setFieldTouched(name);
+        if (validateOnBlur) {
+          // Values set while the press was held (the click toggled a checkbox)
+          // are newer than what the field held when it blurred.
+          const latest = valuesRef.current;
+          validateForm(latest === values ? { ...values, [name]: liveValue } : latest);
+        }
+      };
+
+      if (pressActive) {
+        const ticket = {};
+        pendingBlurRef.current = ticket;
+        afterPress.push(() => {
+          if (pendingBlurRef.current === ticket) {
+            pendingBlurRef.current = null;
+            settle();
+          }
+        });
+      } else {
+        settle();
       }
+
       onBlur?.(event);
     };
 
@@ -640,6 +673,7 @@ export function useForm({
   const handleSubmit = (submit = onSubmit) => async (event) => {
     event?.preventDefault?.();
 
+    pendingBlurRef.current = null;
     setSubmitCount((count) => count + 1);
     const nextErrors = validateForm(values);
 
@@ -896,6 +930,65 @@ function touchAll(values) {
     nextTouched[name] = true;
     return nextTouched;
   }, {});
+}
+
+// ── Press tracking (useForm) ──────────────────────────────────────────────────
+//
+// Pressing the mouse on anything blurs the focused field first. If that blur
+// validates, an error line can appear and push the pressed element away before
+// mouseup; the browser then drops the click. So while the primary button is
+// down, useForm queues its blur work here and runs it once the click has landed.
+//
+// Only trusted events count: a synthetic mousedown moves no focus, and one
+// dispatched without its mouseup would otherwise hold the queue forever.
+
+let pressActive = false;
+let pressTracked = false;
+const afterPress = [];
+
+function releasePress() {
+  if (!pressActive) {
+    return;
+  }
+
+  pressActive = false;
+  document.removeEventListener("mousemove", releaseOnIdleMove, true);
+  // `click` is dispatched right after `mouseup`, in the same task; a timer runs
+  // the queue after it. A microtask would run between the two.
+  setTimeout(() => afterPress.splice(0).forEach((run) => run()), 0);
+}
+
+// A native <select> popup, a context menu or a drag can swallow the mouseup.
+// The next move with no button held, or the next key, ends the press instead.
+function releaseOnIdleMove(event) {
+  if (event.buttons === 0) {
+    releasePress();
+  }
+}
+
+function trackPress() {
+  if (pressTracked || typeof document === "undefined") {
+    return;
+  }
+
+  pressTracked = true;
+
+  document.addEventListener("mousedown", (event) => {
+    if (!event.isTrusted || event.button !== 0 || pressActive) {
+      return;
+    }
+
+    pressActive = true;
+    document.addEventListener("mousemove", releaseOnIdleMove, true);
+  }, true);
+
+  document.addEventListener("mouseup", releasePress, true);
+  document.addEventListener("dragend", releasePress, true);
+  document.addEventListener("keydown", (event) => {
+    if (!event.repeat) {
+      releasePress();
+    }
+  }, true);
 }
 
 // Returns true if any component in the owner's subtree has pending state

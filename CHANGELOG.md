@@ -5,6 +5,56 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **`useForm`: a click was lost when the focused field was invalid.** Pressing
+  the mouse blurs the focused field first; the blur touched and validated it, an
+  error line appeared, and the pressed button sat 25px lower by the time the
+  mouse came up — so the browser fired no `click`. 0.25.0 fixed the mirror case
+  (an error *clearing*); this is the error *appearing*, and it hit any target
+  below the field: Submit, a `handleSubmit()` button outside a `<form>`, a
+  checkbox, a link. While the primary button is down, blur work is now queued and
+  runs right after the click lands. A blur from Tab still validates at once. A
+  submit, a `reset()` or an unmount in between supersedes the queued blur, and it
+  validates the values as they are after the click, not as they were at the
+  blur. A swallowed `mouseup` (native `<select>` popup, context menu, drag) ends
+  the press on the next idle mouse move or key. `validateOnBlur: false` is no
+  longer needed as a workaround.
+- **`Navbar`: below 768px, Tab walked into the collapsed menu.** The closed menu
+  was only clipped (`grid-template-rows: 0fr`), so its links and `actions` kept
+  taking keyboard focus off-screen and stayed in the accessibility tree. It is
+  now `visibility: hidden` while collapsed, flipped after the collapse animation
+  and before the expand one. `actions` stay mounted, so a `ThemeToggle` there
+  keeps applying the saved theme.
+- **`Navbar`: below 768px the brand and the ☰ sat 9px above the centre of the
+  bar.** The collapsed menu is a zero-height second flex line that still took
+  the 16px `row-gap` and half of the remaining free height. The row-gap is gone
+  and a zero-width strut gives the first line the bar's height — with or without
+  a `brand` — so the toggle is centred and no longer moves when the menu opens.
+  The bar is still 60px; the desktop layout is unchanged to the pixel.
+- **`Avatar` with `ariaHidden: 'true'` still declared `role="img"` and an
+  `aria-label`.** A hidden avatar now carries neither.
+
+### Changed
+- `scripts/run_browser_tests.py` gained a **trusted-input phase**: after the
+  in-page suite it drives `tests/trusted-input.html` with a real mouse and
+  keyboard. A script inside a page can only dispatch untrusted events, which
+  move no focus and leave no pause between `mousedown` and `mouseup` — exactly
+  where both `useForm` bugs lived, and why the suite never saw them. Eight
+  scenarios, on all three engines.
+- AI_SPEC, from two independent AI builds that tripped on the same gaps:
+  `Navbar` (`brand` is rendered as given, `actions` collapse with `items`,
+  `onToggle(nextOpen)` and who calls it, side padding, and a recipe to align the
+  bar with a centred content column); `useTheme` (initial value, storage format,
+  and that only a **mounted** hook applies the saved theme); `useForm` (what the
+  default guarantees about clicks); fields show `help` and `error` together;
+  `Card` is an `<article>` and does not clip; `Alert` is `role="status"` and its
+  `title` is not a heading; `usePalette` vs a hand-written `data-palette`;
+  `useMediaQuery` is right on the first render. The §14 example now keeps
+  `format.js` next to its only user, as §12 asks, and the Portuguese example no
+  longer contradicts the `requiredLabel: ''` advice beside it.
+
 ## [0.25.1] - 2026-09-20
 
 ### Fixed

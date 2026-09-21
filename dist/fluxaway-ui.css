@@ -2965,11 +2965,14 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ── Navbar ────────────────────────────────────────────── */
 
+/* Below 768px the menu is a second flex line, zero-height while collapsed. No
+   row-gap, or that empty line still takes it and pushes the brand and the
+   toggle 9px above the centre of the bar. */
 .m-navbar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--m-space-4);
+  gap: 0 var(--m-space-4);
   min-height: 60px;
   padding: 0 var(--m-space-4);
   background: var(--m-surface);
@@ -2979,6 +2982,17 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 
 @media (min-width: 768px) {
   .m-navbar { padding: 0 var(--m-space-6); }
+}
+
+/* A zero-width strut gives the first line the bar's height, with or without a
+   brand, so the toggle sits at the same place while the menu is open and nothing
+   shifts when it expands. The negative margins give back what the strut would
+   add: the bar's 1px border (its min-height is border-box) and one column gap. */
+.m-navbar::before {
+  content: "";
+  min-height: inherit;
+  margin-block-end: -1px;
+  margin-inline-end: calc(-1 * var(--m-space-4));
 }
 
 .m-navbar-brand {
@@ -3043,21 +3057,27 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
   .m-navbar-toggle { display: none; }
 }
 
+/* Collapsed means hidden, not just clipped: `visibility` takes the links and the
+   actions out of the tab order and the accessibility tree. It flips after the
+   collapse animation and before the expand one, so both stay visible. */
 .m-navbar-menu-wrap {
   flex-basis: 100%;
   order: 3;
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 220ms ease;
+  visibility: hidden;
+  transition: grid-template-rows 220ms ease, visibility 0s linear 220ms;
+}
+
+.m-navbar-open .m-navbar-menu-wrap {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 220ms ease, visibility 0s;
 }
 
 /* Closed by tapping one of its links: collapse in the same frame, so the anchor
    the browser scrolls to is measured against the final layout (see Navbar). */
 .m-navbar-instant .m-navbar-menu-wrap { transition: none; }
-
-.m-navbar-open .m-navbar-menu-wrap {
-  grid-template-rows: 1fr;
-}
 
 .m-navbar-menu-inner { overflow: hidden; }
 
@@ -3077,6 +3097,7 @@ button.m-chip:disabled { opacity: 0.45; cursor: not-allowed; }
     min-width: 0;
     display: block;
     grid-template-rows: none;
+    visibility: visible;
     transition: none;
   }
 

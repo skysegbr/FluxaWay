@@ -315,7 +315,11 @@ export interface UseFormOptions<V extends Record<string, unknown>> {
   validate?: (values: V) => Partial<Record<keyof V, string>>;
   /** Touch the field and validate the whole form on every keystroke. Default `false`. */
   validateOnChange?: boolean;
-  /** Validate the whole form when a field blurs (blur always marks it touched). Default `true`. */
+  /**
+   * Validate the whole form when a field blurs (blur always marks it touched). Default `true`.
+   * A blur caused by a mouse press settles right after the click lands, so an error line
+   * never moves the pressed control away from the pointer.
+   */
   validateOnBlur?: boolean;
   onSubmit?: (values: V, helpers: FormHelpers<V>) => void | Promise<void>;
 }

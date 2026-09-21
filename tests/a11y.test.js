@@ -479,6 +479,8 @@ test("Avatar: names itself when alone, and ariaHidden takes it out of the readin
   for (const id of ["avatar-beside-text", "avatar-photo-beside-text"]) {
     const hidden = container.querySelector(`#${id}`);
     assertEqual(hidden.getAttribute("aria-hidden"), "true", `${id}: the prop reaches the element`);
+    assertEqual(hidden.hasAttribute("role"), false, `${id}: a hidden avatar claims no role`);
+    assertEqual(hidden.hasAttribute("aria-label"), false, `${id}: and no label`);
     assert(hidden.classList.contains("m-avatar"), "still drawn as an avatar");
   }
 });

@@ -145,6 +145,15 @@ page overflow.
 test framework, no build. `tests/run.js` imports every `*.test.js` and exposes
 the outcome on `window.__fluxawayTestResults`, which `run_browser_tests.py` reads.
 
+The runner then adds a short **trusted-input phase**: it drives
+`tests/trusted-input.html` with a real mouse and keyboard and appends those
+results to the same list. An in-page test can only dispatch untrusted events —
+they move no focus, and `page.click()` leaves 0 ms between `mousedown` and
+`mouseup`. A bug that needs a person's ~120 ms press (a layout shift under the
+pointer that eats the click) or a real Tab walk is invisible to everything
+else. Put such a scenario there, as a Python function in the runner, not in a
+`*.test.js`.
+
 Coverage (~400 tests across 16 files):
 
 | File | Area |
