@@ -453,6 +453,141 @@ test("Navbar: a tapped link closes the menu without the collapse animation; ever
   history.replaceState(null, "", location.pathname + location.search);
 });
 
+// From 768px up the menu sits on the bar only while it fits there. Labels,
+// brand, actions and font decide that, not a breakpoint, so the bar measures
+// itself. The viewport sweep lives in run_browser_tests.py; these hold what it
+// cannot see: the width that counts is the bar's own, not the window's, and the
+// content can change with no resize at all.
+const MANY_LINKS = ["Features", "Catalogue", "About us", "Testimonials", "Contact", "Journal", "Our team"];
+const fitItems = (labels) => labels.map((label, index) => ({ label, href: `#fit-${index}` }));
+
+// A ResizeObserver reports on the next frame, and its re-render follows.
+const resized = () =>
+  new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 0))));
+
+function navbarFit(container) {
+  const nav = container.querySelector(".m-navbar");
+  const links = [...nav.querySelectorAll(".m-navbar-link")].map((link) => link.getBoundingClientRect());
+  return {
+    height: nav.getBoundingClientRect().height,
+    toggle: getComputedStyle(nav.querySelector(".m-navbar-toggle")).display !== "none",
+    menu: getComputedStyle(nav.querySelector(".m-navbar-menu-wrap")).visibility,
+    lines: new Set(links.map((rect) => Math.round(rect.top))).size,
+  };
+}
+
+test("Navbar: links that do not fit wait behind the toggle — the bar never wraps, whatever its own width", async () => {
+  // Below 768px the stylesheet collapses the bar by itself; nothing to measure.
+  if (!window.matchMedia("(min-width: 768px)").matches) return;
+
+  const container = mountPoint();
+  container.style.width = "760px";
+  render(
+    () => h(Navbar, { brand: "Garden Flowers", items: fitItems(MANY_LINKS), actions: h(Button, null, "Sign in") }),
+    container,
+  );
+  await flush();
+
+  let inlineFrom = null;
+  for (let width = 760; width <= 1120; width += 40) {
+    container.style.width = `${width}px`;
+    await resized();
+    const fit = navbarFit(container);
+    assertEqual(fit.height, 60, `the bar's height at ${width}px`);
+    if (fit.toggle) {
+      assert(inlineFrom === null, `collapsed again at ${width}px after fitting at ${inlineFrom}px`);
+      assertEqual(fit.menu, "hidden", `the closed menu at ${width}px, behind the toggle`);
+    } else {
+      inlineFrom = inlineFrom ?? width;
+      assertEqual(fit.lines, 1, `lines of links at ${width}px`);
+      assertEqual(fit.menu, "visible", `the inline menu at ${width}px`);
+    }
+  }
+  assert(inlineFrom !== null && inlineFrom > 760, `seven links went inline from ${inlineFrom}px: never seen not fitting`);
+
+  // Back under: hidden in the same frame, not after a 220ms collapse animation
+  // during which the links would still take focus.
+  container.style.width = "760px";
+  await resized();
+  const fit = navbarFit(container);
+  assert(fit.toggle && fit.menu === "hidden", `narrow again: toggle=${fit.toggle}, menu ${fit.menu}`);
+});
+
+test("Navbar: a bar as wide as its content keeps the links inline", async () => {
+  if (!window.matchMedia("(min-width: 768px)").matches) return;
+
+  // Measuring must not take the menu out of flow: in a shrink-to-fit parent the
+  // bar would narrow to the brand, find no room, and stay collapsed for good.
+  const container = mountPoint();
+  container.style.display = "inline-block";
+  render(() => h(Navbar, { brand: "Shop", items: fitItems(MANY_LINKS) }), container);
+  await flush();
+  await resized();
+
+  const fit = navbarFit(container);
+  assert(!fit.toggle && fit.lines === 1, `toggle=${fit.toggle}, ${fit.lines} line(s) of links`);
+});
+
+test("Navbar: a parent sized by its content can still narrow the bar", async () => {
+  if (!window.matchMedia("(min-width: 768px)").matches) return;
+
+  // A grid item is at least as wide as its content. Were the inline links unable
+  // to wrap, the bar's minimum width would be the whole row: it would push the
+  // column out, measure itself in the room it had just made, and "fit".
+  const container = mountPoint();
+  container.style.cssText = "display: grid; width: 400px";
+  render(() => h("section", null, h(Navbar, { items: fitItems(MANY_LINKS) })), container);
+  await flush();
+  await resized();
+
+  const nav = container.querySelector(".m-navbar");
+  assertEqual(nav.getBoundingClientRect().width, 400, "the bar's width in a 400px grid");
+  const fit = navbarFit(container);
+  assert(fit.toggle && fit.height === 60, `toggle=${fit.toggle}, height ${fit.height}`);
+});
+
+test("Navbar: new labels are measured on the render that brings them, with no resize", async () => {
+  if (!window.matchMedia("(min-width: 768px)").matches) return;
+
+  let setLabels;
+  const container = mountPoint();
+  container.style.width = "600px";
+
+  function Wrapper() {
+    const [labels, set] = useState(MANY_LINKS);
+    setLabels = set;
+    return h(Navbar, { brand: "Garden Flowers", items: fitItems(labels) });
+  }
+
+  render(Wrapper, container);
+  await flush();
+  assert(navbarFit(container).toggle, "seven long links do not fit in 600px");
+
+  // Collapsed, the links are stretched to the bar: no observed box changes size.
+  setLabels(MANY_LINKS.map((label) => label.slice(0, 2)));
+  await flush();
+  let fit = navbarFit(container);
+  assert(!fit.toggle && fit.lines === 1 && fit.height === 60, `short labels: toggle=${fit.toggle}, ${fit.lines} line(s)`);
+
+  setLabels(MANY_LINKS);
+  await flush();
+  fit = navbarFit(container);
+  assert(fit.toggle && fit.menu === "hidden" && fit.height === 60, `long labels again: toggle=${fit.toggle}, menu ${fit.menu}`);
+
+  // Measuring after every render must settle, not feed itself. Each reading
+  // puts .m-navbar-measuring on and off, so the class attribute counts them —
+  // once the observer's first report, which always comes, is behind.
+  await resized();
+  let readings = 0;
+  const watcher = new MutationObserver((records) => {
+    readings += records.length;
+  });
+  watcher.observe(container.querySelector(".m-navbar"), { attributes: true, attributeFilter: ["class"] });
+  await resized();
+  watcher.disconnect();
+  assertEqual(readings, 0, "class changes on a bar that had settled");
+});
+
 // ── Avatar ──────────────────────────────────────────────────────────────────
 
 // The recipe AI_SPEC teaches for an avatar that sits next to its written name.

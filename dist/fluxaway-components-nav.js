@@ -88,22 +88,103 @@ export function Navbar({
   // by the menu's height in Chromium and Firefox, and WebKit abandons the scroll.
   // So a link closes the menu with no transition — the re-render runs in a
   // microtask, before the click's default action — while the toggle, Escape and
-  // an outside press keep the animation.
-  const [closedByLink, setClosedByLink] = useState(false);
+  // an outside press keep the animation. The menu leaving the bar — it stopped
+  // fitting, or the window went under 768px — is no closing either: animated, the
+  // links would stay focusable for the 220ms the collapse takes.
+  const [instant, setInstant] = useState(false);
+  // From 768px up the menu sits on the bar — when it fits. Whether it does
+  // depends on the labels, the brand, the actions and the font, which no
+  // breakpoint knows, so the bar measures itself and stays behind the ☰ while one
+  // line is not enough. Below 768px the stylesheet alone keeps it collapsed.
+  const [collapsed, setCollapsed] = useState(false);
   const isOpen = open !== undefined ? open : internalOpen;
   const menuId = useId();
   const navRef = useRef(null);
+  const menuRef = useRef(null);
+  const onBarRef = useRef(true);
 
   const setOpen = (next) => {
     if (open === undefined) setInternalOpen(next);
     onToggle?.(next);
   };
 
+  // `.m-navbar-measuring` lays the menu out on the bar whatever the current
+  // state, and the browser answers: did the links stay on one line, with nothing
+  // pushed out? It is the very layout that would be painted, so the answer holds
+  // in any parent — a fixed column, one sized by its content — and depends on the
+  // width and the content alone: it cannot flip back and forth. The class leaves
+  // the wrap's visibility and transition alone, so the collapsed links stay out
+  // of the tab order and a running open/close animation goes on; and it is gone
+  // before the task ends, so nothing of this is painted.
+  const measure = () => {
+    const nav = navRef.current;
+    const menu = menuRef.current;
+    if (!nav || !menu || !nav.isConnected) return;
+
+    nav.classList.add("m-navbar-measuring");
+    // Below 768px the stylesheet ignores the class: nothing to decide there.
+    const inline = getComputedStyle(menu).flexDirection === "row";
+    const links = menu.querySelectorAll(".m-navbar-link");
+    const first = links[0];
+    const last = links[links.length - 1];
+    const oneLine = !first || last.offsetTop < first.offsetTop + first.offsetHeight;
+    const fits = !inline || (oneLine && menu.scrollWidth <= menu.clientWidth + 1);
+    nav.classList.remove("m-navbar-measuring");
+
+    const onBar = inline && fits;
+    if (onBarRef.current && !onBar && !nav.classList.contains("m-navbar-open")) setInstant(true);
+    onBarRef.current = onBar;
+    setCollapsed(!fits);
+  };
+
+  // The content only changes through a render — and collapsed, the links and the
+  // actions are stretched to the bar, so no observed box would tell.
+  useEffect(measure);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return undefined;
+
+    // Width only: the height changes on every frame of the menu animation. With
+    // the menu open the answer changes the bar's height, and resizing the
+    // observed box from its own callback is a "ResizeObserver loop" error — so
+    // that one case waits for the next frame; both layouts are sound meanwhile.
+    let width = -1;
+    let frame = 0;
+    const onWidth = (next) => {
+      if (next === width) return;
+      width = next;
+      cancelAnimationFrame(frame);
+      if (nav.classList.contains("m-navbar-open")) frame = requestAnimationFrame(measure);
+      else measure();
+    };
+
+    // A web font that arrives late resizes the labels without a render.
+    const fonts = document.fonts;
+    fonts?.addEventListener?.("loadingdone", measure);
+
+    const onWindowResize = () => onWidth(nav.clientWidth);
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver((entries) => onWidth(entries[0].contentRect.width));
+
+    if (observer) observer.observe(nav);
+    else window.addEventListener("resize", onWindowResize);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("resize", onWindowResize);
+      fonts?.removeEventListener?.("loadingdone", measure);
+    };
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return undefined;
 
     // Every opening starts animated again, however the previous one ended.
-    setClosedByLink(false);
+    setInstant(false);
 
     const onMouseDown = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -129,7 +210,13 @@ export function Navbar({
     {
       ...props,
       ref: navRef,
-      className: joinClasses("m-navbar", isOpen && "m-navbar-open", closedByLink && !isOpen && "m-navbar-instant", className),
+      className: joinClasses(
+        "m-navbar",
+        isOpen && "m-navbar-open",
+        collapsed && "m-navbar-collapsed",
+        instant && !isOpen && "m-navbar-instant",
+        className,
+      ),
     },
     hasChildren(brand) && h("div", { className: "m-navbar-brand" }, brand),
     hasMenu &&
@@ -154,7 +241,7 @@ export function Navbar({
           { className: "m-navbar-menu-inner" },
           h(
             "div",
-            { id: menuId, className: "m-navbar-menu" },
+            { ref: menuRef, id: menuId, className: "m-navbar-menu" },
             items.length > 0 &&
               h(
                 "ul",
@@ -172,7 +259,7 @@ export function Navbar({
                         ),
                         href: item.href || "#",
                         onClick: (event) => {
-                          setClosedByLink(true);
+                          setInstant(true);
                           setOpen(false);
                           item.onClick?.(event);
                         },

@@ -2,9 +2,13 @@
 /* AUTO-GENERATED — do not edit. Edit dist/fluxaway-ui.css and re-run scripts/split_css.py. */
 /* ── Navbar ────────────────────────────────────────────── */
 
-/* Below 768px the menu is a second flex line, zero-height while collapsed. No
+/* Collapsed, the menu is a second flex line, zero-height while closed. No
    row-gap, or that empty line still takes it and pushes the brand and the
-   toggle 9px above the centre of the bar. */
+   toggle 9px above the centre of the bar.
+
+   The bar is collapsed below 768px, and from there up for as long as its content
+   does not fit on one line: Navbar measures that and sets .m-navbar-collapsed,
+   so the bar keeps its height instead of wrapping. */
 .m-navbar {
   display: flex;
   align-items: center;
@@ -90,8 +94,12 @@
 .m-navbar-open .m-navbar-toggle-icon::before { top: 0; transform: rotate(45deg); }
 .m-navbar-open .m-navbar-toggle-icon::after { top: 0; transform: rotate(-45deg); }
 
+/* .m-navbar-measuring is on for one synchronous reading and never painted. It
+   takes every inline rule that lays the menu out, so the reading is the same
+   whatever the state, and none that would start or cut a transition: the wrap
+   keeps its display, its rows and its visibility. */
 @media (min-width: 768px) {
-  .m-navbar-toggle { display: none; }
+  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-toggle { display: none; }
 }
 
 /* Collapsed means hidden, not just clipped: `visibility` takes the links and the
@@ -113,7 +121,8 @@
 }
 
 /* Closed by tapping one of its links: collapse in the same frame, so the anchor
-   the browser scrolls to is measured against the final layout (see Navbar). */
+   the browser scrolls to is measured against the final layout (see Navbar). Also
+   when the bar goes behind the toggle because it stopped fitting: hidden at once. */
 .m-navbar-instant .m-navbar-menu-wrap { transition: none; }
 
 .m-navbar-menu-inner { overflow: hidden; }
@@ -127,20 +136,22 @@
 }
 
 @media (min-width: 768px) {
-  .m-navbar-menu-wrap {
-    flex-basis: auto;
+  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-menu-wrap {
     order: 0;
     flex: 1;
     min-width: 0;
+  }
+
+  .m-navbar:not(.m-navbar-collapsed) .m-navbar-menu-wrap {
     display: block;
     grid-template-rows: none;
     visibility: visible;
     transition: none;
   }
 
-  .m-navbar-menu-inner { overflow: visible; }
+  .m-navbar:not(.m-navbar-collapsed) .m-navbar-menu-inner { overflow: visible; }
 
-  .m-navbar-menu {
+  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-menu {
     flex-direction: row;
     align-items: center;
     gap: var(--m-space-4);
@@ -150,17 +161,26 @@
 
 .m-navbar-nav {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--m-space-1);
   list-style: none;
   margin: 0;
   padding: 0;
-  flex-wrap: wrap;
 }
 
-@media (max-width: 767px) {
-  .m-navbar-nav { flex-direction: column; align-items: stretch; }
-  .m-navbar-link { width: 100%; }
+/* The links may wrap, and that is the measurement: Navbar looks for a second
+   line and collapses the bar before one is painted. Wrapping keeps the bar's
+   minimum width small, so a parent sized by its content (a grid or flex item)
+   can still narrow it; max-height — one row of links — keeps its height. The bar
+   is the same box fitting or not, which is what lets a ResizeObserver decide. */
+@media (min-width: 768px) {
+  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    max-height: 36px;
+  }
 }
 
 .m-navbar-link {
@@ -175,7 +195,12 @@
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
+  width: 100%;
   transition: color 120ms ease, background 120ms ease;
+}
+
+@media (min-width: 768px) {
+  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-link { width: auto; }
 }
 
 .m-navbar-link:hover {
@@ -198,7 +223,7 @@
 }
 
 @media (min-width: 768px) {
-  .m-navbar-actions { margin-inline-start: auto; }
+  .m-navbar:is(:not(.m-navbar-collapsed), .m-navbar-measuring) .m-navbar-actions { margin-inline-start: auto; }
 }
 
 /* ── App shell (desktop) ───────────────────────────────── */

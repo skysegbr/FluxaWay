@@ -417,6 +417,10 @@ export interface NavbarItem {
 
 export declare function Navbar(props?: {
   brand?: VNode;
+  /**
+   * Collapse behind the ☰, together with `actions`, below 768px — and above it
+   * for as long as they do not fit on one line. The bar measures itself.
+   */
   items?: NavbarItem[];
   actions?: VNode;
   defaultOpen?: boolean;
