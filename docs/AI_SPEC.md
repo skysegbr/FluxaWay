@@ -111,12 +111,20 @@ Consequences you must respect when writing code, tooling, or reviews:
 /dist/fluxaway-editor-snippets.js ← boilerplate snippet catalog for fluxaway-editor
 ```
 
-Public CDN URLs:
+Public CDN URLs — **every** file in the list above is served, at the same path:
 
 ```text
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-ui.css
+
+# the per-category modules this document tells you to prefer (§9) are there too
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-core.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-forms.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-nav.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-components-theme.js
+#   …and -overlay.js, -data.js, the fluxaway-ui-*.css category files, every
+#   .min.* build and every add-on. Swap /dist/<file> into the same URL.
 ```
 
 Use `@main` for the latest code during development. For production, pin a
@@ -875,6 +883,13 @@ const { containerRef, virtualItems, totalHeight, startIndex, endIndex } =
 //                                   height: '48px' } }, item.label)
 // wrapped in a { height: totalHeight, position: 'relative' } spacer.
 
+// reset() clears values, errors AND touched — no error line survives it. It does
+// not make the form valid: the next blur on a field that is required and now
+// empty touches and validates it, and its error appears, exactly as it would on
+// a freshly loaded form. That is the documented blur behaviour, not a bug and
+// not something to suppress; if a reset should leave no field focused, move
+// focus yourself after calling it.
+
 // i18n
 const { t } = useTranslation({ hello: 'Hello, {name}!' });
 t('hello', { name: 'Ana' }) // → 'Hello, Ana!'
@@ -1074,6 +1089,19 @@ h('span', { ariaHidden: true })                 // WRONG — sets aria-hidden=""
 The attribute name itself also works as a key, on any element (not only SVG):
 `h('div', { 'aria-owns': listId })` is set verbatim. Use that form for an
 `aria-*` attribute the table does not list; the string rule above applies to it too.
+
+Any other HTML attribute is written **exactly as HTML spells it** — lower-case,
+hyphens and all — and passed straight through: `inputmode: 'email'`,
+`autocomplete: 'given-name'`, `'data-testid': 'submit'`. Only the handful in the
+table above have a camelCase alias. This holds on a field component too, where
+extra props reach the control:
+`h(TextField, { ...form.field('email'), inputmode: 'email', autocomplete: 'email' })`.
+
+A true boolean attribute takes a JS boolean — `disabled: true`, `hidden: isHidden`,
+`required: true` — and `false` removes it. `spellcheck`, `draggable` and
+`translate` are neither: HTML gives them a *value* (`spellcheck="false"`), so
+both forms are accepted and mean the same thing — `spellcheck: false` and
+`spellcheck: 'false'` both turn it off.
 
 ### SVG through `h()`
 
@@ -1503,6 +1531,13 @@ h(Card, { padded: false }, h('img', { src, alt }))     // edge-to-edge: media, t
 // the image — border-radius: var(--m-radius) var(--m-radius) 0 0 — or, in a
 // card that holds no popover, pass a className that sets overflow: hidden.
 // CSS: add m-card-hover for a clickable card (pointer + hover border/shadow)
+// Equal heights in a grid come free: a CSS grid stretches its items, so sibling
+// Cards in `grid-template-columns` already match the tallest — unless you wrote
+// `align-items: start`, which opts out. What does NOT come free is lining up
+// what is INSIDE cards of different content lengths (a price, a button on the
+// bottom edge). Make the card itself the column and let one row absorb the
+// slack — the Card takes `className`, so this is your CSS, not a restyle:
+//   .l-plan { display: grid; grid-template-rows: auto 1fr auto; }
 
 // Card variants — CSS-only modifier classes on top of Card/.m-card, combine
 // with a plain `<article className="...">` when you need children the Card()
@@ -1978,10 +2013,23 @@ h(Navbar, {
 // (24px from 768px). Keep it as wide as its container (the default): in a parent
 // that shrinks to its content the bar has no width of its own to measure against.
 // To line the brand and links up with a centred content column, keep the bar
-// full-bleed and move the padding — `className` lands on the <nav>:
+// full-bleed and move the padding — `className` lands on the <nav>. The bar has
+// to clear TWO things: how far the shell is inset by being centred, AND the
+// shell's own side padding, because `box-sizing: border-box` (§11) puts that
+// padding inside its max-width. Add them:
+//   .a-shell { max-width: 1120px; margin-inline: auto; padding-inline: var(--m-space-4); }
 //   h(Navbar, { className: 'a-nav', … })
-//   .a-nav { padding-inline: max(var(--m-space-4), calc((100% - 1120px) / 2)); }
-//   /* 1120px = the max-width of your content shell */
+//   .a-nav { padding-inline: max(var(--m-space-4), calc((100% - 1120px) / 2 + var(--m-space-4))); }
+//   /* 1120px = your shell's max-width; var(--m-space-4) = ITS side padding,
+//      written twice on purpose — change the shell's and change both here. */
+// Dropping the second `+ var(--m-space-4)` lines the brand up with the shell's
+// outer edge instead of its text, which is 16px off at every width WIDER than
+// the shell and exact below it — so a phone screenshot will not show it.
+// How many links fit, measured with a ~125px brand and a ThemeToggle in
+// `actions`, labels of 5-11 characters at the default font: 5 links ride the bar
+// from 768px, 6 from ~820px, 7 from ~900px. Roughly 100px per link, plus the
+// brand and the actions. Below that the ☰ takes over — which is correct, not a
+// layout to fix. Use it to judge what a menu item costs, never as a breakpoint.
 // The mobile menu is IN-FLOW: it pushes the page down instead of covering it.
 // Anchor links (`href: '#contact'`) are safe with a sticky header
 // and `scroll-behavior: smooth`: a tapped link closes the menu in the same
@@ -3076,6 +3124,7 @@ my-app/
 | **`app.js` is orchestrator only** | Imports data + components, holds top-level UI state (open/closed, active tab). Zero business logic |
 | **Hooks in `components/`** | `useXxx.js` alongside the components — centralizes fetching and complex state |
 | **CSS class prefix** | Pick a short prefix per project (`l-` landing, `tm-` task-manager) to avoid collisions with FluxaWay's `m-*` classes |
+| **Shared layout lives in `styles.css`** | A class more than one component uses — the page shell's width and gutter, an alternating section background, a shared band — belongs in the root `styles.css`, next to its `@import`s, NOT in one component's paired file. The test: if inserting a new section would make you edit a *sibling* component's CSS, the rule was in the wrong file. Keep the cross-component **decision** there too (`.l-shell`, `.l-band:nth-of-type(even)`), so a component's own file only ever styles that component |
 
 ### Scaling to domain subfolders
 

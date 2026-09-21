@@ -4,6 +4,7 @@
 
 import { h, render, useForm, usePresence, useRef, useState, useTranslation } from "../dist/fluxaway.js";
 import { Alert, Avatar, Badge, Button, FormField } from "../dist/fluxaway-components-core.js";
+import { Navbar } from "../dist/fluxaway-components-nav.js";
 import { Checkbox, NumberInput, Radio, TextField } from "../dist/fluxaway-components-forms.js";
 import { Menu } from "../dist/fluxaway-components-overlay.js";
 import { SwipeableListItem } from "../dist/fluxaway-components-nav.js";
@@ -589,4 +590,133 @@ test("spec §9: Avatar initials are the first and the last word's first letters"
 
   const shown = [...container.querySelectorAll(".m-avatar")].map((avatar) => avatar.textContent);
   assertEqual(shown.join(), "A,AL,AL");
+});
+
+// §9 tells an app how to line a full-bleed Navbar's brand up with its centred
+// content column. The formula has to clear the shell's own side padding as well
+// as its centring margin — box-sizing: border-box puts that padding inside the
+// max-width — and getting it wrong is invisible on a phone, where both terms
+// collapse to the same 16px. The recipe here is the one the spec prints.
+test("spec §9: the documented recipe lines the Navbar's brand up with the content column", async () => {
+  const SHELL_MAX = 1120;
+  const style = document.createElement("style");
+  style.textContent = `
+    .sp-shell { max-width: ${SHELL_MAX}px; margin-inline: auto; padding-inline: var(--m-space-4); }
+    .sp-nav { padding-inline: max(var(--m-space-4), calc((100% - ${SHELL_MAX}px) / 2 + var(--m-space-4))); }
+  `;
+  document.head.append(style);
+
+  try {
+    const container = mountPoint();
+    render(
+      () =>
+        h(
+          "div",
+          null,
+          h(Navbar, { className: "sp-nav", brand: h("span", { id: "sp-brand" }, "Shop"), items: [{ label: "One", href: "#one" }] }),
+          h("main", { className: "sp-shell" }, h("h2", { id: "sp-title" }, "Section")),
+        ),
+      container,
+    );
+    await flush();
+
+    const left = (id) => container.querySelector(id).getBoundingClientRect().left;
+    for (const width of [1400, 1280, 1152, 1120, 1000, 800, 390]) {
+      container.style.width = `${width}px`;
+      await flush();
+      assertEqual(Math.round(left("#sp-brand") - left("#sp-title")), 0, `the brand's offset at ${width}px`);
+    }
+  } finally {
+    style.remove();
+  }
+});
+
+test("spec §8: a plain HTML attribute is written as HTML spells it, and reaches a field's control", async () => {
+  const container = mountPoint();
+  render(
+    () =>
+      h(TextField, {
+        id: "parity-attrs",
+        label: "E-mail",
+        inputmode: "email",
+        autocomplete: "email",
+        spellcheck: "false",
+        "data-testid": "email",
+      }),
+    container,
+  );
+  await flush();
+
+  const input = container.querySelector("#parity-attrs");
+  assertEqual(input.getAttribute("inputmode"), "email", "inputmode");
+  assertEqual(input.getAttribute("autocomplete"), "email", "autocomplete");
+  assertEqual(input.getAttribute("data-testid"), "email", "a data-* attribute");
+});
+
+// spellcheck, draggable and translate are enumerated attributes with a boolean
+// IDL property. The string "false" assigned to that property is truthy, and
+// removing the attribute restores the default — which is on — so both generic
+// paths turned spellcheck ON when asked to turn it off.
+test("spec §8: spellcheck, draggable and translate accept a boolean or HTML's own string", async () => {
+  const container = mountPoint();
+  render(
+    () =>
+      h(
+        "div",
+        null,
+        h("input", { id: "p-sc-bool", spellcheck: false }),
+        h("input", { id: "p-sc-str", spellcheck: "false" }),
+        h("input", { id: "p-sc-on", spellcheck: true }),
+        h("div", { id: "p-drag", draggable: true }),
+        h("div", { id: "p-tr", translate: false }),
+      ),
+    container,
+  );
+  await flush();
+
+  const node = (id) => container.querySelector(id);
+  assertEqual(node("#p-sc-bool").spellcheck, false, "spellcheck: false");
+  assertEqual(node("#p-sc-str").spellcheck, false, 'spellcheck: "false"');
+  assertEqual(node("#p-sc-on").spellcheck, true, "spellcheck: true");
+  assertEqual(node("#p-drag").draggable, true, "draggable: true");
+  assertEqual(node("#p-tr").getAttribute("translate"), "no", "translate: false writes HTML's own value");
+});
+
+test("spec §6: reset() clears the error, and the next blur on a required empty field brings it back", async () => {
+  let form;
+  const container = mountPoint();
+
+  function Widget() {
+    form = useForm({
+      initialValues: { name: "" },
+      validate: (values) => ({ name: values.name.trim() ? "" : "Required" }),
+      onSubmit: () => {},
+    });
+    return h(
+      "form",
+      { noValidate: true, onSubmit: form.handleSubmit() },
+      h(TextField, { ...form.field("name"), id: "parity-reset", label: "Name", required: true }),
+    );
+  }
+
+  render(Widget, container);
+  await flush();
+
+  const field = container.querySelector("#parity-reset");
+  field.focus();
+  field.blur();
+  await flush();
+  assertEqual(form.errors.name, "Required", "the blur validated the empty required field");
+
+  form.reset();
+  await flush();
+  assertEqual(Object.keys(form.touched).length, 0, "reset clears touched");
+  assert(!form.errors.name, "reset clears the error");
+  assertEqual(container.querySelector("#parity-reset-error"), null, "and the error line with it");
+
+  // A reset form is empty, not valid: the next blur behaves like a fresh one.
+  field.focus();
+  field.blur();
+  await flush();
+  assertEqual(form.errors.name, "Required", "the first blur after a reset validates again");
 });
