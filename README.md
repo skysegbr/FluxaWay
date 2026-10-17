@@ -756,6 +756,9 @@ vibrate([100, 50, 100]); // pattern
 | `useRoutes(routes, options?)` | Resolves a nested route config against the current path and returns the matched element; route fields: `path`, `index`, `component`, `element`, `lazy`, `css`, `fallback`, `children`. Calls `useRouter` internally |
 | `matchPath(pattern, path, options?)` | Segment matcher used internally by `useRoutes` — `:name` captures a segment, a trailing `*` captures the rest, `{ end: false }` prefix-matches |
 | `useTranslation(dict)` | `{ t }` — `t(key, vars)` looks up `dict[key]` and interpolates `{var}` placeholders |
+| `createI18n({ locale, messages })` | an app's i18n store — `setLocale`, `addMessages`, `t`, `formatNumber/Date/List`; plurals via `Intl.PluralRules` |
+| `I18n` / `useI18n()` / `useLocale(store)` | the context that carries a translator to a tree (FluxaWay's components read their own texts from it), the hook that reads it, the hook that re-renders on a locale change |
+| `matchLocale(available)` | the best of `available` for the browser's languages |
 | `useContextMenu()` | `{ menu, openMenu, closeMenu }` — wires a right-click handler to `ContextMenu` |
 | `useHistory(initial, options)` | `{ state, set, undo, redo, canUndo, canRedo }` — undo/redo wrapper around a state value |
 | `useFetch(url, options)` | `{ data, loading, error, refetch }` — fetches JSON, aborts in-flight requests, re-fetches on `url` change; `options` is a plain fetch init (used as-is; `refetch()` picks up the latest one) |
@@ -1500,6 +1503,12 @@ FluxaWay `0.12.1` covers:
 **Utility hooks**
 - `useLocalStorage`, `useToast`, `useRouter`, `useTranslation`, `useContextMenu`,
   `useHistory`, `useFetch`
+
+**i18n**
+- `createI18n` + the `I18n` context, `useI18n`, `useLocale`, `matchLocale` — an app in
+  several languages with no global state: plurals and number/date/list formats from
+  `Intl`, and the components' own texts translated by one provide
+  (`dist/locales/pt-BR.js` ships; any other locale is a dictionary of `FX_MESSAGES`)
 - `useDebounce`, `useThrottle` — timing helpers
 - `useMediaQuery` — reactive CSS media query matching
 - `useIntersectionObserver` — scroll-triggered visibility detection

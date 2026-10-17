@@ -5,7 +5,7 @@
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useEffect, useId, useRef, useState } from "./fluxaway.js";
-import { finiteNumber, focusFirstElement, hasChildren, joinClasses, moveMenuFocus, requiredMarkProps } from "./fluxaway-components-util.js";
+import { finiteNumber, focusFirstElement, fxText, fxTranslator, hasChildren, joinClasses, moveMenuFocus, requiredMarkProps } from "./fluxaway-components-util.js";
 import { IconButton, FormField, Progress } from "./fluxaway-components-core.js";
 
 // Resolves the field id: the caller's explicit id wins, otherwise a stable
@@ -173,9 +173,9 @@ export function Combobox({
   value,
   onChange,
   options = [],
-  placeholder = "Select...",
-  searchPlaceholder = "Search...",
-  emptyLabel = "No results",
+  placeholder = fxText("fx.select.placeholder"),
+  searchPlaceholder = fxText("fx.select.search"),
+  emptyLabel = fxText("fx.noResults"),
   required = false,
   requiredLabel,
   className = "",
@@ -364,7 +364,7 @@ export function FileDropZone({
   accept,
   multiple = false,
   progress,
-  label = "Drop files here or click to browse",
+  label = fxText("fx.fileDrop.label"),
   hint,
   disabled = false,
   className = "",
@@ -579,8 +579,8 @@ export function RangeSlider({
   step = 1,
   value = [min, max],
   onChange,
-  minLabel = "Minimum",
-  maxLabel = "Maximum",
+  minLabel = fxText("fx.range.min"),
+  maxLabel = fxText("fx.range.max"),
   className = "",
   inputClassName = "",
   ...props
@@ -650,6 +650,47 @@ const DATE_PICKER_MONTHS = [
 ];
 const DATE_PICKER_WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
+// The calendar in the tree's locale (see I18n in fluxaway.js): FluxaWay's English
+// as before, any other language from Intl. Per locale, computed once.
+const calendarNames = new Map();
+const isEnglish = (translator) => translator.locale.split("-")[0] === "en";
+
+function namesFor(translator) {
+  let names = calendarNames.get(translator.locale);
+  if (!names) {
+    const capital = (text) => text.charAt(0).toLocaleUpperCase(translator.locale) + text.slice(1);
+    names = {
+      months: DATE_PICKER_MONTHS.map((_, month) => translator.formatDate(new Date(2024, month, 1), { month: "long" })),
+      // 2024-01-07 was a Sunday; "dom." → "Dom"
+      weekdays: DATE_PICKER_WEEKDAYS.map((_, day) =>
+        capital(translator.formatDate(new Date(2024, 0, 7 + day), { weekday: "short" }).replace(/\.$/, ""))),
+    };
+    calendarNames.set(translator.locale, names);
+  }
+  return names;
+}
+
+function fxMonthNames() {
+  const translator = fxTranslator();
+  return isEnglish(translator) ? DATE_PICKER_MONTHS : namesFor(translator).months;
+}
+
+function fxWeekdayNames() {
+  const translator = fxTranslator();
+  return isEnglish(translator) ? DATE_PICKER_WEEKDAYS : namesFor(translator).weekdays;
+}
+
+// The trigger: ISO in English (as before), the locale's short date otherwise.
+function fxDateValue() {
+  const translator = fxTranslator();
+  return isEnglish(translator) ? toISODate : (date) => translator.formatDate(date);
+}
+
+function fxDayLabel() {
+  const translator = fxTranslator();
+  return isEnglish(translator) ? (date) => date.toDateString() : (date) => translator.formatDate(date, { dateStyle: "full" });
+}
+
 function pad2(n) {
   return String(n).padStart(2, "0");
 }
@@ -698,13 +739,13 @@ export function DatePicker({
   onChange,
   min,
   max,
-  placeholder = "Select a date",
-  previousMonthLabel = "Previous month",
-  nextMonthLabel = "Next month",
-  monthNames = DATE_PICKER_MONTHS,
-  weekdayNames = DATE_PICKER_WEEKDAYS,
-  formatValue = toISODate,
-  formatDayLabel = (date) => date.toDateString(),
+  placeholder = fxText("fx.date.placeholder"),
+  previousMonthLabel = fxText("fx.date.previousMonth"),
+  nextMonthLabel = fxText("fx.date.nextMonth"),
+  monthNames = fxMonthNames(),
+  weekdayNames = fxWeekdayNames(),
+  formatValue = fxDateValue(),
+  formatDayLabel = fxDayLabel(),
   className = "",
   inputClassName = "",
   ...props
@@ -930,7 +971,7 @@ export function RadioGroup({
   help,
   error,
   required = false,
-  requiredLabel = "required",
+  requiredLabel = fxText("fx.required"),
   disabled = false,
   name,
   options = [],
@@ -1009,8 +1050,8 @@ export function NumberInput({
   step = 1,
   value,
   onChange,
-  decrementLabel = "Decrease",
-  incrementLabel = "Increase",
+  decrementLabel = fxText("fx.number.decrement"),
+  incrementLabel = fxText("fx.number.increment"),
   className = "",
   inputClassName = "",
   ...props
@@ -1124,7 +1165,7 @@ export function TimePicker({
   min = "00:00",
   max = "23:59",
   step = 30,
-  placeholder = "Select a time",
+  placeholder = fxText("fx.time.placeholder"),
   className = "",
   inputClassName = "",
   ...props

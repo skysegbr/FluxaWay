@@ -67,7 +67,8 @@ three browser engines.
 
 ## Files
 
-- `dist/fluxaway.js`: core runtime (h, render, hooks, context, router, SSR)
+- `dist/fluxaway.js`: core runtime (h, render, hooks, context, router, SSR, i18n: createI18n + the I18n context)
+- `dist/locales/pt-BR.js`: Brazilian Portuguese for the components' own texts (give it to createI18n)
 - `dist/fluxaway-components.js`: UI component library (barrel; re-exports the six
   category modules `dist/fluxaway-components-{core,forms,overlay,data,nav,theme}.js`
   — import a category directly to load only what you use). `Button.effect` is

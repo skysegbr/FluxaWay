@@ -606,6 +606,82 @@ export declare function useTranslation(dict?: Record<string, string>): {
   t: (key: string, vars?: Record<string, unknown>) => string;
 };
 
+// ── i18n: createI18n, I18n, useI18n, useLocale, matchLocale ───────────────
+
+/**
+ * A message: a string with `{placeholders}`, or plural forms picked by
+ * `Intl.PluralRules` from `vars.count` (an optional `zero` wins for 0).
+ */
+export type I18nMessage =
+  | string
+  | { zero?: string; one?: string; two?: string; few?: string; many?: string; other: string };
+
+export type I18nDictionary = Record<string, I18nMessage>;
+
+/** One locale's view of the messages — what the I18n context holds. Frozen. */
+export interface Translator {
+  readonly locale: string;
+  /** The message for `key` (locale → its language → fallback → FX_MESSAGES → the key itself). */
+  t(key: string, vars?: Record<string, unknown>): string;
+  has(key: string): boolean;
+  /** The CLDR plural category of `count` in this locale ("one", "other"…). */
+  plural(count: number): Intl.LDMLPluralRule;
+  formatNumber(value: number | bigint, options?: Intl.NumberFormatOptions): string;
+  formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions): string;
+  formatList(items: Iterable<string>, options?: Intl.ListFormatOptions): string;
+}
+
+/** The app's i18n store. Its `t` / `format*` use the current locale (for code outside components). */
+export interface I18nStore extends Omit<Translator, "locale"> {
+  readonly locale: string;
+  readonly fallback: string;
+  /** The current translator; a new object after every change. */
+  readonly translator: Translator;
+  /** The locales that have messages. */
+  readonly locales: string[];
+  /** Switches the locale (ignored when it isn't a language tag) and notifies subscribers. */
+  setLocale(locale: string): void;
+  /** Adds dictionaries to a locale; a later one wins over an earlier one. */
+  addMessages(locale: string, messages: I18nDictionary | I18nDictionary[]): void;
+  subscribe(listener: () => void): () => void;
+}
+
+/**
+ * Creates an app's i18n store — no global state: provide its translator to the
+ * tree with `I18n.provide(useLocale(i18n), () => h(Shell))`.
+ *
+ * @example
+ * import ptBR from '/dist/locales/pt-BR.js';
+ * const i18n = createI18n({
+ *   locale: matchLocale(['pt-BR', 'en']),
+ *   messages: { 'pt-BR': [ptBR, { files: { one: '{count} arquivo', other: '{count} arquivos' } }] },
+ * });
+ * i18n.t('files', { count: 3 }); // '3 arquivos'
+ */
+export declare function createI18n(options?: {
+  locale?: string;
+  fallback?: string;
+  messages?: Record<string, I18nDictionary | I18nDictionary[]>;
+}): I18nStore;
+
+/** The texts FluxaWay's components write on their own, in English — the keys a locale pack translates. */
+export declare const FX_MESSAGES: Readonly<I18nDictionary>;
+
+/** The translator components read (FluxaWay's own included). Default: English over FX_MESSAGES. */
+export declare const I18n: FluxaWayContext<Translator>;
+
+/** The translator provided to this component's tree. */
+export declare function useI18n(): Translator;
+
+/** The store's current translator; re-renders the component on setLocale/addMessages. */
+export declare function useLocale(store: I18nStore): Translator;
+
+/**
+ * The best of `available` for the reader: each requested locale in order (default:
+ * `navigator.languages`), exactly, then by language; else `fallback` (default: the first).
+ */
+export declare function matchLocale(available: string[], requested?: readonly string[], fallback?: string): string;
+
 // ── useHead ────────────────────────────────────────────────────────────────
 
 /** One meta tag managed by useHead — keyed by `name` OR `property`. */

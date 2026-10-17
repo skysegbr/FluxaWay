@@ -5,6 +5,29 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **i18n: an app in several languages, with no global state.** `createI18n({
+  locale, fallback, messages })` makes the app's store (`setLocale`,
+  `addMessages`, `subscribe`, and `t` / `formatNumber` / `formatDate` /
+  `formatList` for code outside components); the new `I18n` context carries a
+  frozen translator to a tree — `I18n.provide(useLocale(i18n), () => h(Shell))`
+  — and `useI18n()` reads it. Messages are strings with `{placeholders}` or plural
+  forms picked by `Intl.PluralRules` (an optional `zero` wins for 0); lookup goes
+  locale → language → fallback → the components' English → the key. Formatters
+  are `Intl`'s, cached. `matchLocale(available)` picks the best of the browser's
+  languages. A new translator per change, so `memo()` boundaries re-render.
+- **The components' own texts follow the locale.** Every default that was an
+  English literal (`closeLabel`, `requiredLabel`, `placeholder`, `emptyLabel`,
+  Pagination, Navbar, ThemeToggle, PaletteSwitcher names, AvatarGroup's
+  `moreLabel`…) now reads the `I18n` context; the English is `FX_MESSAGES`, the
+  keys a locale pack translates. Without a provider nothing changes, and a prop
+  still wins. In another language the DatePicker takes its month and weekday
+  names, the trigger's date and the days' labels from `Intl`.
+- `dist/locales/pt-BR.js` (+ `.d.ts`): Brazilian Portuguese for every
+  `FX_MESSAGES` key — `tests/i18n.test.js` keeps a pack's keys equal to the table.
+
 ## [0.26.0] - 2026-09-21
 
 ### Added

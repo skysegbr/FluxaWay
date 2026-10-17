@@ -1,7 +1,8 @@
 // Every piece of text a component writes on its own is a prop with an English
 // default, so a page in another language can replace each one.
 
-import { h, render } from "../dist/fluxaway.js";
+import { h, render, createI18n, I18n } from "../dist/fluxaway.js";
+import ptBR from "../dist/locales/pt-BR.js";
 import { AvatarGroup, FormField } from "../dist/fluxaway-components-core.js";
 import { Navbar } from "../dist/fluxaway-components-nav.js";
 import { TextField, RadioGroup, Combobox, DatePicker } from "../dist/fluxaway-components-forms.js";
@@ -77,6 +78,20 @@ test("labels: every built-in text can be replaced by a prop, leaving no English 
   const leaked = spoken(container).filter((text) => ENGLISH_DEFAULTS.includes(text));
   assertEqual(leaked.join(" | "), "", "an English default leaked through");
   assertEqual(spoken(container).filter((text) => text === "obrigatório").length, 2, "TextField forwards requiredLabel to FormField; RadioGroup has its own");
+});
+
+test("labels: a pt-BR locale pack replaces every built-in text, with no props at all", async () => {
+  const translator = createI18n({ locale: "pt-BR", messages: { "pt-BR": ptBR } }).translator;
+  const container = mountPoint();
+  render(() => I18n.provide(translator, () => h(Sampler, null)), container);
+  await flush();
+
+  const found = spoken(container).concat(spoken(document.body).filter((text) => !ENGLISH_DEFAULTS.includes(text)));
+  for (const expected of ["Abrir menu", "obrigatório", "Paginação", "Página anterior", "Próxima página", "Dispensar", "Fechar", "Paleta de comandos", "Paleta de cores", "Cor personalizada", "Estilo visual", "mais 2", "Violeta"]) {
+    assert(found.includes(expected), `missing "${expected}" in ${JSON.stringify(found)}`);
+  }
+  const leaked = spoken(container).filter((text) => ENGLISH_DEFAULTS.includes(text));
+  assertEqual(leaked.join(" | "), "", "an English default leaked through");
 });
 
 test("labels: requiredLabel \"\" keeps the asterisk visual when the control already says required", async () => {

@@ -15,7 +15,7 @@
  * https://raw.githubusercontent.com/skysegbr/FluxaWay/main/docs/AI_SPEC.md
  */
 import { h, useId } from "./fluxaway.js";
-import { finiteNumber, hasChildren, joinClasses, requiredMarkProps } from "./fluxaway-components-util.js";
+import { finiteNumber, fxCount, fxText, hasChildren, joinClasses, requiredMarkProps } from "./fluxaway-components-util.js";
 
 const buttonVariants = {
   text: "m-button",
@@ -219,7 +219,7 @@ export function FormField({
   help,
   error,
   required = false,
-  requiredLabel = "required",
+  requiredLabel = fxText("fx.required"),
   className = "",
   children,
   ...props
@@ -261,7 +261,7 @@ export function FormField({
   );
 }
 
-export function Spinner({ label = "Loading", className = "", ...props } = {}) {
+export function Spinner({ label = fxText("fx.loading"), className = "", ...props } = {}) {
   return h(
     "span",
     {
@@ -274,7 +274,7 @@ export function Spinner({ label = "Loading", className = "", ...props } = {}) {
 }
 
 export function EmptyState({
-  title = "No results",
+  title = fxText("fx.noResults"),
   description,
   action,
   className = "",
@@ -423,7 +423,7 @@ export function AvatarGroup({
   avatars = [],
   max = 4,
   size = "md",
-  moreLabel = (count) => `${count} more`,
+  moreLabel = fxCount("fx.more"),
   className = "",
   ...props
 } = {}) {

@@ -3,6 +3,25 @@
  * Not part of the public API — import components from the category
  * modules (fluxaway-components-core.js, -forms.js, ...) or ./fluxaway-components.js.
  */
+import { I18n, useContext } from "./fluxaway.js";
+
+// A component's own text in the locale its tree was given (see I18n in
+// fluxaway.js) — FluxaWay's English when none was. useContext keeps no hook slot,
+// so a prop's default may call these: `closeLabel = fxText("fx.close")`.
+export function fxText(key, vars) {
+  return useContext(I18n).t(key, vars);
+}
+
+export function fxTranslator() {
+  return useContext(I18n);
+}
+
+// (count) => the counted text, for props that are functions (AvatarGroup's moreLabel).
+export function fxCount(key) {
+  const translator = useContext(I18n);
+  return (count) => translator.t(key, { count });
+}
+
 export function joinClasses(...classes) {
   return classes.filter(Boolean).join(" ");
 }

@@ -5,7 +5,7 @@
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useEffect, useRef, useState, useMemo, useId } from "./fluxaway.js";
-import { hasChildren, joinClasses } from "./fluxaway-components-util.js";
+import { fxText, hasChildren, joinClasses } from "./fluxaway-components-util.js";
 import { IconButton } from "./fluxaway-components-core.js";
 
 export function Tabs({ value, onChange, items = [], className = "" } = {}) {
@@ -74,8 +74,8 @@ export function Navbar({
   defaultOpen = false,
   open,
   onToggle,
-  openMenuLabel = "Open menu",
-  closeMenuLabel = "Close menu",
+  openMenuLabel = fxText("fx.navbar.openMenu"),
+  closeMenuLabel = fxText("fx.navbar.closeMenu"),
   className = "",
   ...props
 } = {}) {
@@ -358,7 +358,7 @@ export function FAB({
 // upward above the trigger instead of inline to the side.
 export function SpeedDial({
   icon,
-  label = "More actions",
+  label = fxText("fx.speedDial.label"),
   items = [],
   orbit = false,
   className = "",
@@ -635,7 +635,7 @@ export function Stepper({ steps = [], activeStep = 0, orientation = "horizontal"
 export function Breadcrumb({
   items = [],
   separator = "/",
-  ariaLabel = "Breadcrumb",
+  ariaLabel = fxText("fx.breadcrumb.label"),
   className = "",
   ...props
 } = {}) {

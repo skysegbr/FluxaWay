@@ -5,7 +5,7 @@
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useTheme, usePalette, useDesign } from "./fluxaway.js";
-import { joinClasses } from "./fluxaway-components-util.js";
+import { fxText, fxTranslator, joinClasses } from "./fluxaway-components-util.js";
 import { IconButton } from "./fluxaway-components-core.js";
 
 function _SunIcon() {
@@ -22,8 +22,8 @@ function _MoonIcon() {
 }
 
 export function ThemeToggle({
-  switchToLightLabel = "Switch to light theme",
-  switchToDarkLabel = "Switch to dark theme",
+  switchToLightLabel = fxText("fx.theme.toLight"),
+  switchToDarkLabel = fxText("fx.theme.toDark"),
   className = "",
   ...props
 } = {}) {
@@ -54,15 +54,19 @@ const _PALETTE_SWATCH_COLORS = {
 };
 
 // `paletteLabels` maps a palette name to its spoken/hover label, e.g.
-// { violet: "Violeta" }; a name left out falls back to its capitalized id.
+// { violet: "Violeta" }; a name left out takes the locale's (fx.palette.<name>),
+// else its capitalized id.
 export function PaletteSwitcher({
-  ariaLabel = "Color palette",
-  customLabel = "Custom color",
+  ariaLabel = fxText("fx.palette.label"),
+  customLabel = fxText("fx.palette.custom"),
   paletteLabels = {},
   className = "",
   ...props
 } = {}) {
   const { palette, palettes, setPalette, customColor, setCustomColor } = usePalette();
+  const translator = fxTranslator();
+  const nameOf = (name) => paletteLabels[name]
+    ?? (translator.has(`fx.palette.${name}`) ? translator.t(`fx.palette.${name}`) : name.charAt(0).toUpperCase() + name.slice(1));
 
   return h(
     "div",
@@ -80,8 +84,8 @@ export function PaletteSwitcher({
           type: "button",
           role: "radio",
           "aria-checked": name === palette,
-          "aria-label": paletteLabels[name] ?? name.charAt(0).toUpperCase() + name.slice(1),
-          title: paletteLabels[name] ?? name.charAt(0).toUpperCase() + name.slice(1),
+          "aria-label": nameOf(name),
+          title: nameOf(name),
           className: joinClasses("m-palette-swatch", name === palette && "is-active"),
           style: { backgroundColor: _PALETTE_SWATCH_COLORS[name] },
           onClick: () => setPalette(name),
@@ -109,7 +113,7 @@ const _DESIGN_LABELS = {
 
 // Switches data-design via useDesign(). Optional designs only become visible
 // when their companion design stylesheet is loaded.
-export function DesignSwitcher({ ariaLabel = "Design", className = "", ...props } = {}) {
+export function DesignSwitcher({ ariaLabel = fxText("fx.design.label"), className = "", ...props } = {}) {
   const { design, designs, setDesign } = useDesign();
 
   return h(

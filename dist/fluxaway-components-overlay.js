@@ -5,7 +5,7 @@
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useEffect, useRef, useState } from "./fluxaway.js";
-import { focusFirstElement, focusFirstElementIfOutside, hasChildren, joinClasses, moveMenuFocus, trapFocus } from "./fluxaway-components-util.js";
+import { focusFirstElement, focusFirstElementIfOutside, fxText, hasChildren, joinClasses, moveMenuFocus, trapFocus } from "./fluxaway-components-util.js";
 import { IconButton } from "./fluxaway-components-core.js";
 
 function startDrag(e, panel) {
@@ -42,7 +42,7 @@ export function Dialog({
   open = false,
   id = "fluxaway-dialog",
   title,
-  closeLabel = "Close",
+  closeLabel = fxText("fx.close"),
   onClose,
   actions,
   size,
@@ -139,7 +139,7 @@ export function Toast({
   message,
   duration = 0,
   onClose,
-  closeLabel = "Dismiss",
+  closeLabel = fxText("fx.dismiss"),
   action,
   className = "",
   children,
@@ -184,7 +184,7 @@ export function Drawer({
   side = "left",
   width = 280,
   title,
-  closeLabel = "Close",
+  closeLabel = fxText("fx.close"),
   onClose,
   className = "",
   children,
@@ -435,7 +435,7 @@ export function ContextMenu({
   y = 0,
   items = [],
   onClose,
-  ariaLabel = "Context menu",
+  ariaLabel = fxText("fx.contextMenu.label"),
   className = "",
 } = {}) {
   const menuRef = useRef(null);
@@ -538,7 +538,7 @@ export function BottomSheet({
   open,
   title,
   onClose,
-  closeLabel = "Close",
+  closeLabel = fxText("fx.close"),
   children,
   className = "",
 } = {}) {
@@ -1040,9 +1040,9 @@ export function CommandPalette({
   id = "fluxaway-command",
   onClose,
   commands = [],
-  placeholder = "Type a command…",
-  emptyLabel = "No matching commands",
-  ariaLabel = "Command palette",
+  placeholder = fxText("fx.commandPalette.placeholder"),
+  emptyLabel = fxText("fx.commandPalette.empty"),
+  ariaLabel = fxText("fx.commandPalette.label"),
   className = "",
   ...props
 } = {}) {

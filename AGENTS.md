@@ -238,11 +238,18 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   `main` that touches `dist/` is live for users (jsDelivr caches a branch for up
   to 12h; `https://purge.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/<file>`
   forces it). Behavior changes land on a branch and reach `main` together.
-- **Text a component writes on its own is a prop with an English default**, in the
-  existing convention: `closeLabel`, `ariaLabel`, `placeholder`, `emptyLabel`,
-  `requiredLabel`, `openMenuLabel`… A new component that needs an `aria-label` or
-  a placeholder takes it as a prop; it never hard-codes the string and never
-  reads a global table. `tests/labels.test.js` holds the contract.
+- **Text a component writes on its own is a prop whose default comes from the
+  `I18n` context**, in the existing convention: `closeLabel`, `ariaLabel`,
+  `placeholder`, `emptyLabel`, `requiredLabel`, `openMenuLabel`… written
+  `closeLabel = fxText("fx.close")` (util module). A new text gets a key in
+  `FX_MESSAGES` (English, in `dist/fluxaway.js`) **and** in every
+  `dist/locales/*.js` pack — `tests/i18n.test.js` fails on a pack missing a key.
+  It never hard-codes the string and never reads module-level state: the
+  translator comes from context (`useContext` keeps no hook slot, which is why
+  a prop default may call it), so there is no global locale, SSR stays
+  per-render and two languages can share a page. Without a provider the
+  defaults are the English they always were. `tests/labels.test.js` holds the
+  contract.
 - **Whoever sets `--m-primary` sets `--m-on-primary` in the same rule** (same for
   `--m-danger` / `--m-on-danger`). The fill is dark in the light theme and light
   in the dark one, so a fixed `#fff` reads ~1.8:1 in dark. Never write

@@ -109,6 +109,7 @@ Consequences you must respect when writing code, tooling, or reviews:
 /dist/fluxaway-editor.js       ← full-featured code editor component
 /dist/fluxaway-editor.css      ← styles for fluxaway-editor
 /dist/fluxaway-editor-snippets.js ← boilerplate snippet catalog for fluxaway-editor
+/dist/locales/pt-BR.js         ← Brazilian Portuguese for the components' own texts (i18n, §6)
 ```
 
 Public CDN URLs — **every** file in the list above is served, at the same path:
@@ -863,6 +864,64 @@ viewport never changes the interactive control's declared state.
 
 See §7 below.
 
+### i18n — `createI18n`, `I18n`, `useI18n`, `useLocale`, `matchLocale`
+
+An app in one or more languages. **No global state**: the app creates its
+store, and the `I18n` context carries a translator to its tree — FluxaWay's
+own components read their texts (`closeLabel`, `requiredLabel`, the DatePicker
+calendar…) from there too, so one provide translates them all.
+
+```js
+import { h, useEffect, createI18n, I18n, useI18n, useLocale, matchLocale } from '/dist/fluxaway.js';
+import ptBR from '/dist/locales/pt-BR.js';                 // the components' texts
+import { APP_PT, APP_EN } from './data.js';                  // the app's own
+
+export const i18n = createI18n({
+  locale: matchLocale(['pt-BR', 'en']),                      // the browser's best match
+  fallback: 'en',
+  messages: { 'pt-BR': [ptBR, APP_PT], en: APP_EN },         // in a list, later wins
+});
+
+function App() {
+  const translator = useLocale(i18n);                        // re-renders on setLocale
+  useEffect(() => { document.documentElement.lang = translator.locale; }, [translator.locale]);
+  return I18n.provide(translator, () => h(Shell));          // §7: provide, no Provider component
+}
+
+function Inbox({ count }) {
+  const { t, formatDate } = useI18n();                       // any component below
+  return h('p', null, t('inbox', { count }), ' · ', formatDate(Date.now(), { dateStyle: 'long' }));
+}
+
+i18n.setLocale('en');                                        // a language picker
+i18n.t('saved');                                             // outside components (a callback, a toast)
+```
+
+```js
+// data.js — messages are strings with {placeholders}, or plural forms
+export const APP_PT = {
+  saved: 'Salvo',
+  inbox: { zero: 'Nenhuma mensagem', one: '{count} mensagem', other: '{count} mensagens' },
+};
+```
+
+- **Lookup**: the locale (`pt-BR`), its language (`pt`), the fallback, then
+  `FX_MESSAGES` (the components' English), then the key itself — never a blank.
+- **Plurals**: `Intl.PluralRules` picks `one` / `few` / `many` / `other`… for
+  `vars.count`; an optional `zero` wins for 0 (Portuguese CLDR files 0 under `one`).
+- **Values** go in literally and in one pass (like `useTranslation`); the result
+  is plain text.
+- **`formatNumber` / `formatDate` / `formatList`** wrap `Intl` in the locale
+  (`1.234,5`, `17/10/2026`, `a, b e c`), formatters cached.
+- **A prop still wins**: `h(Dialog, { closeLabel: 'Sair' })` beats the locale.
+- **Two languages on one page**: provide a different translator to each subtree.
+- **SSR**: `renderToString(() => I18n.provide(translator, () => h(Page)))`.
+- A locale pack for the components is `dist/locales/<locale>.js`, a dictionary of
+  the `FX_MESSAGES` keys. Write a new one from that table; the DatePicker's month
+  and weekday names come from `Intl` and need no entry.
+- Never read a module-level store from inside a component (`i18n.t` in render):
+  it doesn't re-render on `setLocale`. Use `useI18n()`.
+
 ### Mobile hooks
 
 ```js
@@ -929,6 +988,8 @@ t('hello', { name: 'Ana' }) // → 'Hello, Ana!'
 // literal makes a new t every render. That matters only when t sits in an
 // effect/useMemo dependency list or goes to a memo() child; then pass a
 // module-level constant (from data.js, say) so t stays the same function.
+// A whole app in another language (or several, plurals, dates, and the
+// components' own texts) uses createI18n instead — see "i18n" below.
 
 // Context menu position state (pair with ContextMenu component)
 const { menu, openMenu, closeMenu } = useContextMenu();
@@ -1388,8 +1449,11 @@ tokens on a wrapper (§11).
 A few components have to write text of their own: mostly *invisible*
 `aria-label`s a screen reader speaks ("Open menu", "required", "Next page"),
 plus some visible placeholders and the DatePicker calendar. Each one is a prop
-with an English default. **On a page in another language, pass them** —
-otherwise a screen reader announces English in the middle of your page.
+whose default comes from the locale the tree was given — the `I18n` context
+(§6), English when none was. **On a page in another language, provide one**
+(`dist/locales/pt-BR.js` covers them all) **or pass the props** — otherwise a
+screen reader announces English in the middle of your page. A prop wins over
+the locale.
 
 | Component | Props (English default) |
 |---|---|

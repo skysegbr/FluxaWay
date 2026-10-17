@@ -2445,6 +2445,254 @@ export function useTranslation(dict = {}) {
   return { t };
 }
 
+// ── i18n: createI18n, the I18n context, useI18n, useLocale ─
+//
+// Text in the user's language with no global state: the app creates its i18n
+// store and provides it to its tree through the I18n context; every component
+// below — FluxaWay's own included — reads its texts from there.
+//
+//   import ptBR from "/dist/locales/pt-BR.js";   // FluxaWay's component texts
+//
+//   const i18n = createI18n({
+//     locale: matchLocale(["pt-BR", "en"]),     // the browser's best match
+//     messages: { "pt-BR": [ptBR, APP_PT], en: APP_EN },
+//   });
+//
+//   function App() {
+//     const translator = useLocale(i18n);       // re-renders on i18n.setLocale()
+//     return I18n.provide(translator, () => h(Shell));
+//   }
+//
+//   const { t, formatDate } = useI18n();        // in any component below
+//   t("files", { count: 3 });                   // "3 arquivos"
+//   i18n.t("saved");                            // outside components (a callback)
+//
+// A message is a string with {placeholders}, or — for counts — an object of the
+// forms Intl.PluralRules picks: { one: "{count} file", other: "{count} files" }
+// (an optional `zero` wins for 0). Lookup order: the locale ("pt-BR"), its
+// language ("pt"), the fallback locale, FX_MESSAGES (the components' English),
+// then the key itself. Values go in literally and in one pass, like
+// useTranslation. Numbers, dates and lists format through Intl in the locale.
+// Nothing here touches the page: the app sets <html lang> itself.
+//
+// Without a provider, useI18n() is an English translator over FX_MESSAGES —
+// the components' defaults, unchanged.
+
+// The texts FluxaWay's components write on their own, in English. A locale pack
+// (dist/locales/*.js) translates these keys; a prop still wins over both.
+export const FX_MESSAGES = Object.freeze({
+  "fx.required": "required",
+  "fx.loading": "Loading",
+  "fx.noResults": "No results",
+  "fx.more": { one: "{count} more", other: "{count} more" },
+  "fx.close": "Close",
+  "fx.dismiss": "Dismiss",
+  "fx.select.placeholder": "Select...",
+  "fx.select.search": "Search...",
+  "fx.fileDrop.label": "Drop files here or click to browse",
+  "fx.range.min": "Minimum",
+  "fx.range.max": "Maximum",
+  "fx.number.decrement": "Decrease",
+  "fx.number.increment": "Increase",
+  "fx.date.placeholder": "Select a date",
+  "fx.date.previousMonth": "Previous month",
+  "fx.date.nextMonth": "Next month",
+  "fx.time.placeholder": "Select a time",
+  "fx.contextMenu.label": "Context menu",
+  "fx.commandPalette.label": "Command palette",
+  "fx.commandPalette.placeholder": "Type a command…",
+  "fx.commandPalette.empty": "No matching commands",
+  "fx.table.emptyTitle": "No rows",
+  "fx.table.emptyDescription": "Try changing the filters.",
+  "fx.pagination.label": "Pagination",
+  "fx.pagination.previous": "Previous page",
+  "fx.pagination.next": "Next page",
+  "fx.tree.label": "Tree",
+  "fx.navbar.openMenu": "Open menu",
+  "fx.navbar.closeMenu": "Close menu",
+  "fx.speedDial.label": "More actions",
+  "fx.breadcrumb.label": "Breadcrumb",
+  "fx.theme.toLight": "Switch to light theme",
+  "fx.theme.toDark": "Switch to dark theme",
+  "fx.palette.label": "Color palette",
+  "fx.palette.custom": "Custom color",
+  "fx.palette.default": "Default",
+  "fx.palette.violet": "Violet",
+  "fx.palette.rose": "Rose",
+  "fx.palette.blue": "Blue",
+  "fx.palette.amber": "Amber",
+  "fx.palette.emerald": "Emerald",
+  "fx.design.label": "Design",
+});
+
+// "pt-br" → "pt-BR"; null when it isn't a language tag.
+function canonicalLocale(locale) {
+  try {
+    return Intl.getCanonicalLocales(String(locale))[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+const languageOf = (locale) => locale.split("-")[0];
+
+const intlCache = new Map();
+function intlFormatter(Kind, locale, options) {
+  const key = `${Kind.name}|${locale}|${JSON.stringify(options ?? {})}`;
+  let formatter = intlCache.get(key);
+  if (!formatter) {
+    formatter = new Kind(locale, options);
+    intlCache.set(key, formatter);
+  }
+  return formatter;
+}
+
+function fillIn(template, vars) {
+  return String(template).replace(/\{(\w+)\}/g, (match, name) =>
+    vars && Object.prototype.hasOwnProperty.call(vars, name) ? String(vars[name]) : match,
+  );
+}
+
+// A frozen translator for one locale over a chain of dictionaries (most specific
+// first). A new one is made on every change, so the I18n context value changes
+// identity and memo() boundaries re-render.
+function makeTranslator(locale, chain) {
+  const lookup = (key) => {
+    for (const dict of chain) {
+      if (Object.prototype.hasOwnProperty.call(dict, key)) return dict[key];
+    }
+    return undefined;
+  };
+  const plural = (count) => intlFormatter(Intl.PluralRules, locale).select(count);
+  const t = (key, vars) => {
+    let message = lookup(key);
+    if (message === undefined) return String(key);
+    if (message !== null && typeof message === "object") {
+      const count = Number(vars?.count);
+      message = count === 0 && message.zero !== undefined
+        ? message.zero
+        : message[plural(count)] ?? message.other ?? "";
+    }
+    return fillIn(message, vars);
+  };
+  return Object.freeze({
+    locale,
+    t,
+    has: (key) => lookup(key) !== undefined,
+    plural,
+    formatNumber: (value, options) => intlFormatter(Intl.NumberFormat, locale, options).format(value),
+    formatDate: (value, options) =>
+      intlFormatter(Intl.DateTimeFormat, locale, options).format(value instanceof Date ? value : new Date(value)),
+    formatList: (items, options) => intlFormatter(Intl.ListFormat, locale, options).format(items),
+  });
+}
+
+// createI18n({ locale, fallback, messages }) → the app's store: setLocale,
+// addMessages, subscribe, and the current translator's t / format* (for code
+// outside components). messages: { [locale]: dictionary | dictionary[] } — in a
+// list, a later dictionary wins over an earlier one.
+export function createI18n({ locale = "en", fallback = "en", messages = {} } = {}) {
+  const catalogs = new Map(); // locale → dictionaries, in the order added
+  const listeners = new Set();
+  const fallbackLocale = canonicalLocale(fallback) ?? "en";
+  let current = canonicalLocale(locale) ?? fallbackLocale;
+  let translator = null;
+
+  const add = (target, dicts) => {
+    const key = canonicalLocale(target);
+    if (!key) throw new RangeError(`createI18n: "${target}" is not a language tag`);
+    for (const dict of [].concat(dicts)) {
+      if (dict && typeof dict === "object") {
+        if (!catalogs.has(key)) catalogs.set(key, []);
+        catalogs.get(key).push(dict);
+      }
+    }
+  };
+  for (const [target, dicts] of Object.entries(messages)) add(target, dicts);
+
+  const chainFor = (target) => {
+    const order = [...new Set([target, languageOf(target), fallbackLocale, languageOf(fallbackLocale)])];
+    return [...order.flatMap((l) => [...(catalogs.get(l) ?? [])].reverse()), FX_MESSAGES];
+  };
+
+  const changed = () => {
+    translator = null;
+    for (const listener of [...listeners]) listener();
+  };
+
+  const store = {
+    get locale() {
+      return current;
+    },
+    get fallback() {
+      return fallbackLocale;
+    },
+    get translator() {
+      if (!translator) translator = makeTranslator(current, chainFor(current));
+      return translator;
+    },
+    // The locales that have messages (for a language picker).
+    get locales() {
+      return [...catalogs.keys()];
+    },
+    setLocale(next) {
+      const key = canonicalLocale(next);
+      if (key && key !== current) {
+        current = key;
+        changed();
+      }
+    },
+    addMessages(target, dicts) {
+      add(target, dicts);
+      changed();
+    },
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    t: (key, vars) => store.translator.t(key, vars),
+    has: (key) => store.translator.has(key),
+    plural: (count) => store.translator.plural(count),
+    formatNumber: (value, options) => store.translator.formatNumber(value, options),
+    formatDate: (value, options) => store.translator.formatDate(value, options),
+    formatList: (items, options) => store.translator.formatList(items, options),
+  };
+  return store;
+}
+
+// The translator components read. Its default is FluxaWay's English.
+export const I18n = createContext(makeTranslator("en", [FX_MESSAGES]));
+
+export function useI18n() {
+  return useContext(I18n);
+}
+
+// The store's current translator, re-rendering the component when the locale or
+// the messages change. Provide what it returns: I18n.provide(useLocale(i18n), …).
+export function useLocale(store) {
+  const [, setVersion] = useState(0);
+  useEffect(() => store.subscribe(() => setVersion((v) => v + 1)), [store]);
+  return store.translator;
+}
+
+// The best of `available` for the reader: each requested locale in order
+// (default: the browser's languages), exactly, then by language ("pt-PT" takes
+// "pt-BR"); else `fallback` (default: the first available).
+export function matchLocale(available, requested, fallback = available[0]) {
+  const wanted = requested
+    ?? (typeof navigator !== "undefined" ? navigator.languages ?? [navigator.language] : []);
+  const offered = available.map((locale) => [locale, canonicalLocale(locale)]).filter(([, key]) => key);
+  for (const raw of wanted ?? []) {
+    const key = canonicalLocale(raw);
+    if (!key) continue;
+    const exact = offered.find(([, offer]) => offer === key);
+    if (exact) return exact[0];
+    const sameLanguage = offered.find(([, offer]) => languageOf(offer) === languageOf(key));
+    if (sameLanguage) return sameLanguage[0];
+  }
+  return fallback;
+}
+
 // ── useHead ────────────────────────────────────────────────
 //
 // Declares document metadata (title + meta tags) from a component — the

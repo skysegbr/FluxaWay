@@ -5,15 +5,15 @@
  * Import only the categories you use, or everything via ./fluxaway-components.js.
  */
 import { h, useRef, useState, useMemo } from "./fluxaway.js";
-import { finiteNumber, hasChildren, joinClasses } from "./fluxaway-components-util.js";
+import { finiteNumber, fxText, hasChildren, joinClasses } from "./fluxaway-components-util.js";
 import { EmptyState } from "./fluxaway-components-core.js";
 
 export function Table({
   columns = [],
   rows = [],
   getRowKey = (row, index) => row.id ?? index,
-  emptyTitle = "No rows",
-  emptyDescription = "Try changing the filters.",
+  emptyTitle = fxText("fx.table.emptyTitle"),
+  emptyDescription = fxText("fx.table.emptyDescription"),
   sortable = false,
   defaultSort,
   onSort,
@@ -124,9 +124,9 @@ export function Pagination({
   total = 1,
   siblings = 1,
   onChange,
-  ariaLabel = "Pagination",
-  previousLabel = "Previous page",
-  nextLabel = "Next page",
+  ariaLabel = fxText("fx.pagination.label"),
+  previousLabel = fxText("fx.pagination.previous"),
+  nextLabel = fxText("fx.pagination.next"),
   className = "",
 } = {}) {
   const safeTotal = Math.max(1, Math.floor(finiteNumber(total, 1)));
@@ -380,8 +380,8 @@ export function DataTable({
   defaultSort,
   onSort,
   getRowKey = (row, index) => row.id ?? index,
-  emptyTitle = "No rows",
-  emptyDescription = "Try changing the filters.",
+  emptyTitle = fxText("fx.table.emptyTitle"),
+  emptyDescription = fxText("fx.table.emptyDescription"),
   className = "",
   ...props
 } = {}) {
@@ -574,7 +574,7 @@ export function TreeView({
   onExpandedChange,
   selected,
   onSelect,
-  ariaLabel = "Tree",
+  ariaLabel = fxText("fx.tree.label"),
   className = "",
   ...props
 } = {}) {
