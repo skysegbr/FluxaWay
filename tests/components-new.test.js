@@ -18,6 +18,7 @@ import {
   TreeView,
   CommandPalette,
   Button,
+  Switch,
 } from "../dist/fluxaway-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
@@ -498,4 +499,27 @@ test("FullCodeEditor: language select covers the default list and keeps unknown 
   await flush();
   const select2 = container2.querySelector(".nce-lang-select");
   assertEqual(select2.value, "brainfuck", "expected the unknown mode to stay selected");
+});
+
+test("Switch: its hidden input stays inside the switch, so focusing it scrolls nothing else", async () => {
+  // A switch at the bottom of a scrolled list inside a positioned scroller (a dialog's
+  // body inside the dialog). Without an anchor, the absolute input took the outer
+  // scroller as its containing block: it stayed where the list was before scrolling,
+  // and focusing it (a click on the switch) scrolled the outer box.
+  const container = mountPoint();
+  render(() => h("div", { className: "sw-outer", style: "position: relative; overflow: auto; height: 200px" },
+    h("div", { className: "sw-inner", style: "overflow: auto; height: 150px" },
+      h("div", { style: "height: 600px" }),
+      h(Switch, { id: "sw-anchor", label: "Lá embaixo" }))), container);
+  await flush();
+  const outer = container.querySelector(".sw-outer");
+  const inner = container.querySelector(".sw-inner");
+  inner.scrollTop = inner.scrollHeight;
+  const input = container.querySelector(".m-switch-input");
+  const box = container.querySelector(".m-switch").getBoundingClientRect();
+  const at = input.getBoundingClientRect();
+  assert(at.top >= box.top - 1 && at.bottom <= box.bottom + 1,
+    `expected the input inside the switch (${at.top}–${at.bottom} vs ${box.top}–${box.bottom})`);
+  input.focus();
+  assertEqual(outer.scrollTop, 0, "focusing the switch scrolled the box around the list");
 });

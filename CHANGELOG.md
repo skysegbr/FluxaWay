@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **Clicking a Switch low in a scrolled box no longer scrolls an outer box.**
+  `.m-switch` had no position, so its visually hidden `.m-switch-input`
+  (`position: absolute`) took the nearest positioned ancestor outside the
+  scroller as its containing block. The input stayed where the list was before
+  scrolling, and the focus a click gives it scrolled that ancestor — a Dialog
+  with a scrolling body jumped and hid its title. `.m-switch` is now
+  `position: relative`.
+
 ## [0.26.0] - 2026-09-21
 
 ### Added
