@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **A toast closes on time in an app that keeps re-rendering.** `Toast`
+  restarted its auto-dismiss timer whenever `onClose` changed, and `ToastStack`
+  hands every toast a new `onClose` on each render: a page that re-renders more
+  often than the toast's `duration` (polling, an editor, a status bar) never saw
+  its toasts go away. `Toast` keeps the latest `onClose` in a ref and restarts
+  the timer only when `open` or `duration` change.
+
 ## [0.26.0] - 2026-09-21
 
 ### Added

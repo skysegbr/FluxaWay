@@ -145,14 +145,19 @@ export function Toast({
   children,
   ...props
 } = {}) {
+  // The latest onClose without restarting the timer: ToastStack hands a new
+  // closure on every render, and a busy app re-renders more often than `duration`.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
     if (!open || !duration) {
       return undefined;
     }
 
-    const timeout = window.setTimeout(() => onClose?.(), duration);
+    const timeout = window.setTimeout(() => onCloseRef.current?.(), duration);
     return () => window.clearTimeout(timeout);
-  }, [open, duration, onClose]);
+  }, [open, duration]);
 
   if (!open) {
     return null;
