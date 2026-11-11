@@ -5,7 +5,7 @@
 
 import { h, render, useState } from "../dist/fluxaway.js";
 import { useFetch, useLocalStorage, useTheme, usePalette, useDesign, useToast } from "../dist/fluxaway.js";
-import { Table, Dialog, Drawer, Button, Accordion, Stepper, Pagination, FileDropZone, Navbar, Slider, RangeSlider, Menu, DataTable, DatePicker } from "../dist/fluxaway-components.js";
+import { Table, Dialog, Drawer, Button, Accordion, Stepper, Pagination, FileDropZone, Navbar, Slider, RangeSlider, Menu, DataTable, DatePicker, ToastStack } from "../dist/fluxaway-components.js";
 import { test, assert, assertEqual, mountPoint, flush } from "./runner.js";
 
 // ── useFetch ────────────────────────────────────────────────────────────────
@@ -655,6 +655,32 @@ test('useToast: push adds a toast per variant (error maps to "danger"), dismiss 
   await flush();
   assertEqual(captured.toasts.length, 1);
   assertEqual(captured.toasts[0].variant, "danger");
+});
+
+test("ToastStack: a toast closes on time while its parent keeps re-rendering", async () => {
+  let captured;
+  let bump;
+  function Widget() {
+    captured = useToast();
+    const [, setTick] = useState(0);
+    bump = () => setTick((n) => n + 1);
+    return h(ToastStack, { toasts: captured.toasts, onClose: (id) => captured.dismiss(id) });
+  }
+
+  render(Widget, mountPoint());
+  await flush();
+  captured.toast.info("Saved", { duration: 150 });
+  await flush();
+  assertEqual(captured.toasts.length, 1);
+
+  // Every render hands each Toast a new onClose closure; a busy app re-renders
+  // more often than the toast's duration.
+  for (let i = 0; i < 8; i += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    bump();
+    await flush();
+  }
+  assertEqual(captured.toasts.length, 0, "a new onClose must not restart the auto-dismiss timer");
 });
 
 // ── Accordion ─────────────────────────────────────────────────────────────
