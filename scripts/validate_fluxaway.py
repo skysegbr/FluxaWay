@@ -154,7 +154,9 @@ def find_files(root: Path, pattern: str) -> list[Path]:
     # "codemirror" holds vendored, minified third-party bundles. Their regex
     # literals (e.g. `/Trident\/(?:[7-9]|\d{2,})\../`) defeat the naive
     # bracket-balance lexer below, which has no notion of regex literals.
-    ignored = {".git", ".agents", ".codex", "codemirror"}
+    # "three" is assets/three — the Three.js build the 3D example vendors —
+    # and is skipped for the same reason.
+    ignored = {".git", ".agents", ".codex", "codemirror", "three"}
     files: list[Path] = []
 
     for path in root.rglob(pattern):

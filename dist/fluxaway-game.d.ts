@@ -6,11 +6,13 @@
  */
 
 /**
- * Type declarations for /dist/fluxaway-game.js — a scene-based adventure
- * engine. `createGame` holds the story (state, scenes, inventory, journal,
- * dialogue, one save slot, sounds); `GameStage` puts the world on a ZoomStage
- * and the other components are the shell around it. Requires the stylesheets
- * `dist/fluxaway-zoom.css` and `dist/fluxaway-game.css`.
+ * Type declarations for /dist/fluxaway-game.js — a narrative game engine.
+ * `createGame` holds the story (state, scenes, inventory, journal, dialogue,
+ * one save slot, sounds). `GameStage` puts a 2D world on a ZoomStage;
+ * `GameViewport` hosts a world the app draws itself, with `createLoop` and
+ * `createInput` wired. The other components are the shell around either.
+ * Requires `dist/fluxaway-game.css`, plus `dist/fluxaway-zoom.css` for
+ * `GameStage`.
  */
 import type { VNode } from "./fluxaway.js";
 import type { TimelineController } from "./fluxaway-motion.js";
@@ -58,11 +60,18 @@ export interface GameHotspot {
   id: string;
   /** Accessible name, and the caption shown when pointed at. Defaults to `id`. */
   label?: string;
-  /** Position and size in pixels INSIDE the scene. */
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+  /** Position and size in pixels INSIDE the scene — for `GameStage`. */
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
+  /**
+   * A place in a free-roaming world instead of a rectangle: two or three
+   * numbers in that world's units. One of `at` or `x/y/w/h` is required.
+   */
+  at?: readonly number[];
+  /** How close the player must be to an `at` hotspot (default `spec.reach`). */
+  radius?: number;
   shape?: "rect" | "circle";
   /** Cursor and marker only. Defaults to `exit` with `to`, otherwise `use`. */
   kind?: GameHotspotKind;
@@ -145,6 +154,8 @@ export interface GameSpec {
   size?: { w?: number; h?: number };
   /** Space between auto-placed scenes (default 400). */
   gap?: number;
+  /** Default `radius` of hotspots placed with `at` (default 3). */
+  reach?: number;
   state?: GameState;
   scenes: GameScene[];
   items?: Record<string, GameItem>;
@@ -162,6 +173,8 @@ export interface GameSave {
   notes: string[];
   visited: string[];
   muted: boolean;
+  /** Whatever the attached renderer's `save()` returned (player position…). */
+  stage?: unknown;
 }
 
 export interface GameLineInput {
@@ -186,10 +199,21 @@ export interface GameDialogueLine {
   readonly total: number;
 }
 
-/** How a renderer plugs in. Both return when the move is over. */
+/** A hotspot placed with `at`, as `focus()` hands it to a renderer. */
+export interface GamePlace {
+  id: string;
+  at: readonly number[];
+  radius: number;
+}
+
+/** How a renderer plugs in. `travel` and `focus` return when the move is over. */
 export interface GameStageAdapter {
   travel?(from: string, to: string, options: GameTravelOptions): unknown | Promise<unknown>;
-  focus?(target: GameRect | null, scene: GameScene, options: object): unknown | Promise<unknown>;
+  focus?(target: GameRect | GamePlace | null, scene: GameScene, options: object): unknown | Promise<unknown>;
+  /** JSON to keep in the save slot — where the player stands, for instance. */
+  save?(): unknown;
+  /** Given back on `load()`; `null` means a fresh game (`reset()`). */
+  load?(data: unknown): void;
 }
 
 export interface GameEvents {
@@ -213,6 +237,8 @@ export interface Game {
   readonly inventory: readonly string[];
   /** Inventory item the next hotspot will receive, or null. */
   readonly selected: string | null;
+  /** Hotspot within reach in a free-roaming world (set with `aim`), or null. */
+  readonly target: string | null;
   /** Journal entries found, in the order they were found. */
   readonly notes: readonly string[];
   readonly visited: readonly string[];
@@ -263,8 +289,12 @@ export interface Game {
 
   /** Travel to a scene; resolves after its `enter` script. False if already there. */
   goTo(scene: string, options?: GameTravelOptions): Promise<boolean>;
-  /** Press a hotspot of the current scene. False when it cannot answer. */
-  use(hotspot: string): Promise<boolean>;
+  /** Press a hotspot of the current scene (default: the one within reach). False when it cannot answer. */
+  use(hotspot?: string | null): Promise<boolean>;
+  /** The nearest visible `at` hotspot within its radius of `point`, or null. */
+  near(point: readonly number[], scene?: string): GameHotspot | null;
+  /** Record which hotspot is within reach; `GamePrompt` shows it. */
+  aim(hotspot: string | null): void;
   /** Close-up on a hotspot id or a scene rect; null returns to the whole scene. */
   focus(target: string | GameRect | null, options?: GameTravelOptions & { duration?: number | "auto" }): Promise<boolean>;
   /** Hotspots of a scene (default: the current one) whose `when` passes. */
@@ -277,6 +307,7 @@ export interface Game {
 
   /** Begin: runs the current scene's `enter`. Call from a user gesture. */
   start(): Promise<boolean>;
+  /** Write the slot now. False without an `id`, or while the story is not at rest. */
   save(): boolean;
   /** Restore the save slot. Call before `start()` to continue a game. */
   load(): boolean;
@@ -353,3 +384,130 @@ export interface GameJournalProps {
 }
 
 export declare function GameJournal(props: GameJournalProps): VNode;
+
+/** A fixed-step simulation loop. All times are in seconds. */
+export interface GameLoop {
+  readonly running: boolean;
+  /** Simulated seconds so far. */
+  readonly time: number;
+  /** Length of one update: `1 / rate`. */
+  readonly step: number;
+  start(): void;
+  stop(): void;
+  /** Feed elapsed time by hand; returns how many updates ran. */
+  advance(seconds: number): number;
+}
+
+export interface GameLoopOptions {
+  /** Called at a fixed rate with `dt = 1 / rate`. */
+  update?: (dt: number, time: number) => void;
+  /** Called once per frame; `alpha` (0–1) is the position between two updates. */
+  render?: (alpha: number, time: number) => void;
+  /** Updates per second (default 60). */
+  rate?: number;
+  /** Most seconds simulated per frame (default 0.25). */
+  maxFrame?: number;
+}
+
+export declare function createLoop(options?: GameLoopOptions): GameLoop;
+
+/** Action name → `KeyboardEvent.code` values. */
+export type GameActions = Record<string, readonly string[]>;
+
+export interface GameInput {
+  readonly enabled: boolean;
+  /** The pointer is captured by the target (`pointerLock`). */
+  readonly locked: boolean;
+  readonly stick: { x: number; y: number };
+  held(action: string): boolean;
+  /** True once per press; auto-repeat does not count. */
+  pressed(action: string): boolean;
+  axis(negative: string, positive: string): -1 | 0 | 1;
+  /** Keys plus the analog stick, never longer than 1. `y` is forward. */
+  vector(left: string, right: string, back: string, forward: string): { x: number; y: number };
+  /** Pixels the view was dragged since the last call. */
+  look(): { x: number; y: number };
+  setStick(x: number, y: number): void;
+  /** `false`: everything reads as idle. */
+  enable(flag?: boolean): void;
+  unlock(): void;
+  destroy(): void;
+}
+
+export declare function createInput(
+  target: Element | null,
+  options?: { actions?: GameActions; pointerLock?: boolean },
+): GameInput;
+
+export declare const GAME_ACTIONS: Readonly<{
+  forward: readonly string[];
+  back: readonly string[];
+  left: readonly string[];
+  right: readonly string[];
+  turnLeft: readonly string[];
+  turnRight: readonly string[];
+  run: readonly string[];
+  use: readonly string[];
+}>;
+
+/** What a world factory returns. Every member is optional. */
+export interface GameWorld {
+  update?(dt: number, time: number): void;
+  render?(alpha: number, time: number): void;
+  /** CSS pixels and the device pixel ratio. */
+  resize?(width: number, height: number, pixelRatio: number): void;
+  /** Where the player is, in the components `at` hotspots use. Enables reach and "use". */
+  position?(): readonly number[];
+  travel?: GameStageAdapter["travel"];
+  focus?: GameStageAdapter["focus"];
+  save?(): unknown;
+  load?(data: unknown): void;
+  destroy?(): void;
+}
+
+export type GameWorldFactory = (context: {
+  canvas: HTMLCanvasElement;
+  game: Game;
+  input: GameInput;
+}) => GameWorld | void;
+
+export interface GameViewportProps {
+  game: Game;
+  /** Builds the renderer. Runs once, on mount; a throw shows `errorLabel`. */
+  world: GameWorldFactory;
+  actions?: GameActions;
+  /** Capture the mouse on click (default false: drag to look). */
+  pointerLock?: boolean;
+  /** Updates per second (default 60). */
+  rate?: number;
+  /** Set to `{ input, loop, world }` once mounted. */
+  controllerRef?: { current: { input: GameInput; loop: GameLoop; world: GameWorld } | null };
+  /** Accessible name of the canvas (default "Game world"). */
+  ariaLabel?: string;
+  /** Shown when the world cannot start (default "This world could not start in your browser."). */
+  errorLabel?: string;
+  className?: string;
+  style?: string | Record<string, string | number>;
+}
+
+/** A canvas for a world the app draws itself, with loop, input and story wired. */
+export declare function GameViewport(props: GameViewportProps): VNode;
+
+export interface GamePromptProps {
+  game: Game;
+  /** Key shown next to the hotspot's name (default "E"; "" hides it). */
+  keyLabel?: string;
+  className?: string;
+}
+
+/** The hotspot within reach, as a button. */
+export declare function GamePrompt(props: GamePromptProps): VNode;
+
+export interface GameStickProps {
+  /** `x` right, `y` forward, each -1 to 1; (0, 0) when released. */
+  onMove?: (x: number, y: number) => void;
+  className?: string;
+}
+
+/** An on-screen stick for touch. Hidden from assistive technology. */
+export declare function GameStick(props: GameStickProps): VNode;

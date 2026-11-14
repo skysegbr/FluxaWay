@@ -95,9 +95,16 @@ three browser engines.
   functions (`await game.say()`, `choose()`, `goTo()`, `play(timeline)`,
   `focus()`). `GameStage` is a ZoomStage (load `fluxaway-zoom.css` too);
   `GameDialogue`, `GameInventory` and `GameJournal` are its siblings inside one
-  `.m-game` box. `game.start()` is called from a button. Not for physics,
-  free movement or 3D. Example: `examples/lantern-keeper`. Full reference:
-  docs/AI_SPEC.md §10.
+  `.m-game` box. `game.start()` is called from a button. Example:
+  `examples/lantern-keeper`. FREE-ROAMING WORLDS (first person, top-down, 3D):
+  the app draws the world and `GameViewport` wires it in — `world({ canvas,
+  game, input })` returns `{ update(dt), render(alpha), resize, position,
+  focus, save, load, destroy }`; hotspots become places (`at: [x, z]`,
+  `radius`), `GamePrompt` offers the one within reach, `createLoop` is the
+  fixed-step loop and `createInput` the keys/drag/touch input. The add-on
+  imports no renderer and has no physics: a 3D library is vendored by the app.
+  Example: `examples/signal-island` (Three.js in `assets/three/`). Full
+  reference: docs/AI_SPEC.md §10.
 - `dist/fluxaway-zoom.js|css`: ZoomStage add-on — USE FOR PRESENTATIONS: slide
   decks, pitches, Prezi-style zoom tours, camera flying between frames on an
   infinite canvas (`examples/fluxaway-architecture`, `examples/fluxaway-atlas`). A

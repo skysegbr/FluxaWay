@@ -1,0 +1,26 @@
+.si-end {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-content: center;
+  gap: var(--m-space-3);
+  padding: var(--m-space-6);
+  background: radial-gradient(80% 60% at 50% 45%, rgb(255 90 79 / 0.3), rgb(13 19 38 / 0.86));
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.si-end-title {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.si-end-line {
+  margin: 0;
+  color: #ffd166;
+  font-size: var(--m-font-size-lg);
+}

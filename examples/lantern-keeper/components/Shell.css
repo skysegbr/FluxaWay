@@ -55,3 +55,11 @@ body {
   background: var(--m-surface);
   box-shadow: var(--m-shadow-3);
 }
+
+/* On a narrow screen the bar wraps onto two lines: keep the panel under it. */
+@media (max-width: 560px) {
+  .lk-journal {
+    top: 6.5rem;
+    max-height: calc(100% - 12rem);
+  }
+}

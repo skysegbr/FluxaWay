@@ -37,7 +37,7 @@ mean an add-on, not hand-rolled code:
 | animation, intro/splash, timeline, keyframes, tween, easing, staggered entrance, "like Flash", movie clip | **fluxaway-motion** (`useTimeline`) | `/dist/fluxaway-motion.js` |
 | node editor, flowchart, pipeline, graph of connected boxes, diagram with draggable nodes | **PipelineCanvas** | `/dist/fluxaway-canvas.js` + `fluxaway-canvas.css` |
 | chart, graph of data, plot, dashboard, KPI, metric tile, analytics, line/bar/pie/donut, sparkline, time series | **fluxaway-charts** | `/dist/fluxaway-charts.js` + `fluxaway-charts.css` |
-| game, adventure, point-and-click, visual novel, gamebook, interactive story, scenes with hotspots, inventory, dialogue choices, save game | **fluxaway-game** | `/dist/fluxaway-game.js` + `fluxaway-game.css` (+ `fluxaway-zoom.css`) |
+| game, adventure, point-and-click, visual novel, gamebook, interactive story, scenes with hotspots, inventory, dialogue choices, save game, walking simulator, first-person or top-down exploration, game loop, keyboard/touch game input | **fluxaway-game** | `/dist/fluxaway-game.js` + `fluxaway-game.css` (+ `fluxaway-zoom.css`) |
 | code editor with syntax highlighting / line numbers | **FullCodeEditor** | `/dist/fluxaway-editor.js` + `fluxaway-editor.css` |
 | buttons, forms, dialogs, tables, tabs — regular app UI | UI components (§9) | `/dist/fluxaway-components-*.js` |
 | state, routing, SSR, context, fetch | core hooks (§6) | `/dist/fluxaway.js` |
@@ -108,8 +108,8 @@ Consequences you must respect when writing code, tooling, or reviews:
 /dist/fluxaway-charts.css      ← styles + the validated categorical palette tokens (REQUIRED)
 /dist/fluxaway-zoom.js         ← PRESENTATION / slide-deck add-on: zooming camera over frames (ZoomStage)
 /dist/fluxaway-zoom.css        ← styles for fluxaway-zoom
-/dist/fluxaway-game.js         ← GAME add-on: scene-based adventures — story scripts, hotspots, inventory, journal, save slot (createGame, GameStage)
-/dist/fluxaway-game.css        ← styles for fluxaway-game (load fluxaway-zoom.css with it)
+/dist/fluxaway-game.js         ← GAME add-on: narrative games — story scripts, hotspots, inventory, journal, save slot (createGame, GameStage); free-roaming worlds on the app's own renderer (GameViewport, createLoop, createInput)
+/dist/fluxaway-game.css        ← styles for fluxaway-game (load fluxaway-zoom.css with it when using GameStage)
 /dist/fluxaway-editor.js       ← full-featured code editor component
 /dist/fluxaway-editor.css      ← styles for fluxaway-editor
 /dist/fluxaway-editor-snippets.js ← boilerplate snippet catalog for fluxaway-editor
@@ -2351,7 +2351,8 @@ a game library or CodeMirror-from-CDN when the task fits an add-on. Working refe
 `examples/motion-landing`, `examples/inox-landing` and
 `examples/motion-editor` (animation),
 `examples/star-atlas` (free-zoom explorer), `examples/dashboard` and
-`examples/drug-recalls` (charts), `examples/lantern-keeper` (game). **PipelineCanvas and
+`examples/drug-recalls` (charts), `examples/lantern-keeper` (2D game) and
+`examples/signal-island` (free-roaming 3D game). **PipelineCanvas and
 FullCodeEditor currently have no example app** — their APIs below and the
 README's "Canvas & Editor" section are the reference (`examples/mindmap` is a
 hand-rolled SVG mindmap, *not* a PipelineCanvas demo).
@@ -2712,13 +2713,15 @@ and build the actual `content: h(...)` vdom in `app.js` right before passing
 [examples/fluxaway-architecture](../examples/fluxaway-architecture) for the full
 pattern (`components/FrameContent.js` dispatches on `data.kind`).
 
-### `fluxaway-game` — scene-based adventure games
+### `fluxaway-game` — narrative games, 2D and free-roaming
 
 `dist/fluxaway-game.js` + `dist/fluxaway-game.css` (types in
-`dist/fluxaway-game.d.ts`). **Also load `dist/fluxaway-zoom.css`** — the stage is
-a ZoomStage. A narrative game engine: point-and-click adventures, gamebooks,
-visual novels, exploration by scenes. It is the story and the shell; it draws no
-art and simulates nothing (no physics, no free movement, no 3D).
+`dist/fluxaway-game.d.ts`). **Also load `dist/fluxaway-zoom.css`** when you use
+`GameStage` — that stage is a ZoomStage. A narrative game engine: point-and-click
+adventures, gamebooks, visual novels, and worlds the player walks through. It is
+the story and the shell. It draws no art and has no physics: a 2D world is
+scenes on a ZoomStage (first half of this section), and a free-roaming one is
+drawn by the app and plugged into `GameViewport` (second half).
 
 | Piece | What it is |
 |---|---|
@@ -2836,6 +2839,87 @@ render(App, document.getElementById("app"));
 Working reference: `examples/lantern-keeper` — three scenes on one vertical map,
 an item puzzle, a journal, a choice, synthesised sound and a Motion cutscene the
 story waits for.
+
+**Free-roaming worlds (first person, top-down, 3D).** When the player walks
+instead of pointing, the story is unchanged and only the world differs. The app
+draws it — Canvas 2D, raw WebGL, or a 3D library it vendors — and
+`GameViewport` wires it to the story. `fluxaway-game` never imports a renderer.
+
+```js
+import { GameViewport, GamePrompt, GameDialogue, GameStick } from "/dist/fluxaway-game.js";
+
+// A hotspot is a PLACE in the world's own units, not a rectangle:
+//   { id: "mast", label: "Radio mast", at: [0, -6], radius: 4.5, use: async (game) => { … } }
+
+function createWorld({ canvas, game, input }) {        // runs once, on mount
+  const player = { x: 0, z: 100, yaw: 0 };
+  return {
+    update(dt) {                                        // fixed step, SECONDS
+      player.yaw -= input.look().x * 0.003;
+      const move = input.vector("left", "right", "back", "forward");
+      player.x += move.x * 5 * dt;
+      player.z -= move.y * 5 * dt;
+    },
+    render(alpha) { /* draw; alpha (0–1) interpolates between two updates */ },
+    resize(width, height, pixelRatio) { /* CSS pixels */ },
+    position: () => [player.x, player.z],               // enables reach + "use"
+    focus(target) { /* game.focus("mast"): turn to target.at; return a promise */ },
+    save: () => ({ ...player }),                        // kept in the save slot
+    load(data) { Object.assign(player, data || { x: 0, z: 100, yaw: 0 }); },   // null = fresh game
+    destroy() {},
+  };
+}
+
+h("div", { className: "m-game" },
+  h(GameViewport, { game, world: createWorld, controllerRef: viewRef }),
+  h(GamePrompt, { game }),                              // "E  Radio mast"
+  h(GameStick, { onMove: (x, y) => viewRef.current?.input.setStick(x, y) }),
+  h(GameDialogue, { game }),
+)
+```
+
+- **`GameViewport`** owns a `<canvas>`, a loop and an input, and attaches the
+  world to the game. Every member the factory returns is optional. With
+  `position()`, the viewport does the proximity work itself: each update it
+  calls `game.aim(game.near(position)?.id)` and, when the `use` action is
+  pressed, `game.use()`. If the factory **throws** (no WebGL), it shows
+  `errorLabel` instead of a dead canvas. While the story talks, the input reads
+  as idle — the player stands still — and the loop keeps running. Props:
+  `world`, `actions` (default `GAME_ACTIONS`), `pointerLock`, `rate` (60),
+  `controllerRef` (`{ input, loop, world }`), `ariaLabel`, `errorLabel`.
+- **Places**: `at` is two or three numbers; `radius` defaults to `spec.reach`
+  (3). `game.near(point)` measures over the components `at` has, so `[x, z]`
+  places ignore height. `game.target` is the place within reach;
+  `game.use()` with no argument presses it. `GameStage` ignores places, and
+  `GameViewport` ignores rectangles.
+- **`createLoop({ rate, update, render })`** — `update(dt)` at a fixed rate,
+  `render(alpha)` once per frame, times in **seconds**; a long gap (background
+  tab) is capped at 0.25 s instead of fast-forwarding. `advance(seconds)` steps
+  it by hand. This is the loop for a *simulation*; an animation is still
+  `fluxaway-motion`.
+- **`createInput(target, { actions, pointerLock })`** — `held(name)`,
+  `pressed(name)` (once per press), `axis(negative, positive)`,
+  `vector(left, right, back, forward)` (keys + stick, length ≤ 1), `look()`
+  (pixels dragged since the last call), `setStick(x, y)`, `enable(flag)`. Keys
+  are `KeyboardEvent.code` values (`"KeyW"`, `"ArrowUp"`), so WASD stays WASD on
+  any layout. `GAME_ACTIONS` maps `forward`, `back`, `left`, `right`,
+  `turnLeft`, `turnRight`, `run`, `use`. By default the view turns while the
+  pointer is held and dragged; `pointerLock: true` captures the mouse on click.
+- **The save keeps the world's state too**: whatever `save()` returns is stored
+  under `stage` and handed back to `load()`, also when the world mounts after
+  the load. `game.save()` writes on demand — call it on a timer and on
+  `pagehide` to record where the player stands — and, like the automatic save,
+  does nothing while a script is running.
+- **`GamePrompt`** shows the place within reach as a button (`keyLabel`,
+  default `"E"`); **`GameStick`** is an on-screen stick for touch (`onMove(x, y)`,
+  `y` forward), hidden from assistive technology because the keys do the same.
+- **A 3D library is the app's dependency, never the framework's.** Vendor it
+  next to the app and import it from the world module only.
+
+Working reference: `examples/signal-island` — a first-person island on Three.js
+(vendored in `assets/three/`): walking, places, an item in hand, a choice,
+`game.focus()` turning the camera, a Motion end card, a ZoomStage map and the
+player's position in the save.
 
 ### `FullCodeEditor`
 
@@ -4050,6 +4134,7 @@ Before submitting any FluxaWay code, verify:
 - [ ] Animations with keyframes/sequencing → **fluxaway-motion** (`useTimeline`), not hand-rolled rAF loops or GSAP
 - [ ] Node graphs / flowcharts → **PipelineCanvas**; embedded code editing → **FullCodeEditor**
 - [ ] Adventure / visual novel / story with scenes → **fluxaway-game** (`createGame` + `GameStage`), with `fluxaway-zoom.css` loaded next to `fluxaway-game.css`, the stage and the dialogue as siblings in one `.m-game` box, and `game.start()` called from a button
+- [ ] A world the player walks through → `GameViewport` + a `world` factory, hotspots placed with `at`, simulation in `update(dt)` (seconds) and drawing in `render(alpha)` — never a hand-rolled `requestAnimationFrame` loop or raw `keydown` listeners; a 3D library is vendored by the app and imported only by the world module
 
 **FluxaWay runtime rules**
 - [ ] `render(App, container)` — function ref, not `h(App)`

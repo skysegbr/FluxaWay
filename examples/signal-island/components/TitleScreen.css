@@ -1,0 +1,65 @@
+.si-title {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  padding: var(--m-space-4);
+  background: linear-gradient(180deg, rgb(13 19 38 / 0.9), rgb(13 19 38 / 0.72));
+  overflow-y: auto;
+}
+
+.si-title-card {
+  display: grid;
+  gap: var(--m-space-4);
+  max-width: 32rem;
+}
+
+.si-title-eyebrow {
+  margin: 0;
+  color: #ffd166;
+  font-size: var(--m-font-size-sm);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.si-title h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  line-height: 1;
+}
+
+.si-title-blurb {
+  margin: 0;
+  font-size: var(--m-font-size-lg);
+  line-height: 1.5;
+}
+
+.si-title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-3);
+}
+
+.si-title-controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--m-space-1) var(--m-space-4);
+  margin: 0;
+  padding-top: var(--m-space-3);
+  border-top: 1px solid var(--m-border);
+  font-size: var(--m-font-size-sm);
+}
+
+.si-title-controls dt { font-weight: 600; }
+
+.si-title-controls dd {
+  margin: 0;
+  color: var(--m-text-muted);
+}
+
+.si-title-help {
+  margin: 0;
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+}

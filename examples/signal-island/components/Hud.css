@@ -1,0 +1,33 @@
+.si-hud {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-2);
+  padding: var(--m-space-2) var(--m-space-3);
+  background: linear-gradient(180deg, rgb(13 19 38 / 0.82), rgb(13 19 38 / 0));
+  pointer-events: none;
+}
+
+.si-hud > * { pointer-events: auto; }
+
+.si-hud-place {
+  margin: 0;
+  padding-left: var(--m-space-2);
+  color: #ffd166;
+  font-size: var(--m-font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.si-hud-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-1);
+}

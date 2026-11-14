@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
-- **`fluxaway-game`: a scene-based adventure engine.** `dist/fluxaway-game.js`
+- **`fluxaway-game`: a narrative game engine.** `dist/fluxaway-game.js`
   and `dist/fluxaway-game.css` (types in `dist/fluxaway-game.d.ts`).
   `createGame(spec)` holds the story — author state, scenes, hotspots,
   inventory, journal, dialogue with choices, one localStorage save slot and
@@ -18,8 +18,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   hotspots as real buttons, travel as a camera flight); `GameDialogue`,
   `GameInventory` and `GameJournal` are the shell around it, with every built-in
   string a prop. The save is written only while the story is at rest, so a
-  reload never resumes halfway through a script. Narrative games only: no
-  physics, no free movement, no 3D. Reference app: `examples/lantern-keeper`.
+  reload never resumes halfway through a script. Reference app:
+  `examples/lantern-keeper`.
+- **`fluxaway-game`: free-roaming worlds on a renderer the app owns.**
+  `GameViewport` hosts a `<canvas>` and hands it to a `world` factory —
+  Canvas 2D, WebGL or a vendored 3D library — with the loop, the input and the
+  story already wired; a factory that throws shows a message instead of a dead
+  canvas. `createLoop` runs `update(dt)` at a fixed rate and `render(alpha)`
+  once per frame; `createInput` turns keys, a dragged or locked pointer and an
+  on-screen stick into named actions. A hotspot can be a place
+  (`at: [x, z]`, `radius`) instead of a rectangle: `game.near()`, `game.aim()`
+  and `GamePrompt` offer the one within reach, and `GameStick` walks on touch.
+  The world's own state (`save()` / `load()`) rides in the save slot. The add-on
+  imports no renderer and has no physics. Reference app:
+  `examples/signal-island`, a first-person island on Three.js r185, which is
+  vendored under `assets/three/` for that example only.
 - **Motion: `timeline.finished()`.** A promise for the run in progress — `true`
   when the playhead completes it, `false` when it is cut short by `stop`,
   `gotoAndStop` or `destroy`. It is what lets a script wait for a cutscene.

@@ -212,13 +212,21 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   not scroll-snap sections; node graphs → `PipelineCanvas`; narrative games
   (adventure, visual novel, scenes with hotspots) → `fluxaway-game`; embedded
   code editor → `FullCodeEditor` (needs the local `assets/codemirror/`, no CDN).
-- **`fluxaway-game` is a story engine, not a simulation.** It owns state,
-  scripts, the save slot and the shell; ZoomStage is its camera and Motion its
-  acting. It has no game loop, no input mapping, no physics and no 3D — a game
-  that needs those brings its own renderer and plugs it in through
-  `game.attachStage()`. Its scripts wait on promises that are *parked*, not
-  rejected, by `reset()`/`load()`/`destroy()`: do not "fix" that into a
-  rejection, or every stale script throws into the console on restart.
+- **`fluxaway-game` is a story engine with two kinds of world, and no renderer
+  of its own.** It owns state, scripts, the save slot and the shell. A 2D world
+  is `GameStage` (ZoomStage is the camera, Motion the acting). A world the
+  player walks through is drawn by the *app* and hosted by `GameViewport`, which
+  supplies `createLoop` and `createInput`. `dist/fluxaway-game.js` must never
+  import a 3D library: Three.js lives in `assets/three/` for
+  `examples/signal-island` alone (the validator skips that folder, like
+  CodeMirror's, because minified regex literals defeat its lexer). No physics
+  either. Its scripts wait on promises that are *parked*, not rejected, by
+  `reset()`/`load()`/`destroy()`: do not "fix" that into a rejection, or every
+  stale script throws into the console on restart.
+- **Leaving the page saves the game.** `signal-island` calls `game.save()` on
+  `pagehide`, so a browser script that edits the save slot and then reloads has
+  its edit overwritten on the way out. Reload first, edit the slot on the title
+  screen (nothing saves before `game.start()`), then press Continue.
 - **A stateful component that receives stateful children redraws them stale.**
   `h()` runs children eagerly, so `h(Panel, null, h(Counter))` hands Panel a
   finished vnode. When Panel sets its own state, its targeted re-render reuses

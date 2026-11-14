@@ -301,6 +301,128 @@
   line-height: 1.5;
 }
 
+/* ── Viewport (a world the app draws) ──────────────────────────────────────── */
+
+.m-game-viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: var(--m-bg);
+}
+
+.m-game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  /* the world owns every gesture made on it: drag to look, no page scroll */
+  touch-action: none;
+  cursor: grab;
+}
+
+.m-game-canvas:active { cursor: grabbing; }
+
+/* While the story talks, the view does not turn: no hand to grab it with. */
+.m-game-viewport-busy .m-game-canvas { cursor: default; }
+
+.m-game-canvas:focus-visible {
+  outline: 2px solid var(--m-focus);
+  outline-offset: -2px;
+}
+
+.m-game-viewport-error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: var(--m-space-6);
+  color: var(--m-text);
+  font-size: var(--m-font-size-lg);
+  text-align: center;
+}
+
+.m-game-viewport-error:empty { display: none; }
+.m-game-viewport-failed .m-game-canvas { visibility: hidden; }
+
+/* ── Prompt (the hotspot within reach) ─────────────────────────────────────── */
+
+.m-game-prompt {
+  position: absolute;
+  bottom: calc(var(--m-space-8) + 3rem);
+  left: 50%;
+  z-index: 2;
+  max-width: calc(100% - var(--m-space-8));
+  transform: translateX(-50%);
+}
+
+.m-game-prompt-idle { display: none; }
+
+.m-game-prompt-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m-space-3);
+  min-height: 48px;
+  padding: var(--m-space-2) var(--m-space-5) var(--m-space-2) var(--m-space-3);
+  border: 1px solid var(--m-primary);
+  border-radius: 999px;
+  background: var(--m-surface);
+  color: var(--m-text);
+  box-shadow: var(--m-shadow-2);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.m-game-prompt-button:hover { background: var(--m-surface-raised); }
+
+.m-game-prompt-button:focus-visible {
+  outline: 2px solid var(--m-focus);
+  outline-offset: 2px;
+}
+
+.m-game-prompt-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 var(--m-space-2);
+  border-radius: var(--m-radius);
+  background: var(--m-primary);
+  color: var(--m-on-primary);
+  font: inherit;
+  font-size: var(--m-font-size-sm);
+}
+
+/* ── Stick (touch) ─────────────────────────────────────────────────────────── */
+
+.m-game-stick {
+  position: absolute;
+  bottom: var(--m-space-6);
+  left: var(--m-space-6);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  border: 2px solid color-mix(in srgb, var(--m-text) 35%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--m-surface) 45%, transparent);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.m-game-stick-knob {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--m-primary);
+  box-shadow: var(--m-shadow-2);
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .m-game-hotspot-mark,
   .m-game-continue,

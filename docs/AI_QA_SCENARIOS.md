@@ -316,7 +316,7 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-ZOOM-12 | Interrupted/reduced flight | a new flight starts from the live camera without a seam; reduced motion lands with Cut semantics | browser |
 | SC-ZOOM-13 | Motion-composed frame | child timelines begin on `settled`, animate only bounded elements and leave the complete scene inside the unobscured stage viewport | browser/visual (`vitra-protocol`) |
 
-### fluxaway-game (`SC-GAME`) — example: lantern-keeper
+### fluxaway-game (`SC-GAME`) — examples: lantern-keeper (2D), signal-island (free-roaming 3D)
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|
 | SC-GAME-01 | Start and first scene | title screen offers New game (and Continue only with a save); starting runs the scene's `enter` lines | suite (game) + browser |
@@ -327,6 +327,14 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-GAME-06 | Cutscene and close-up | `focus()` closes in, the Motion timeline plays to its end, the story continues after it | browser/visual |
 | SC-GAME-07 | Save slot | reload → Continue restores scene, inventory, journal and mute; Restart asks once, then erases | suite (game) + browser |
 | SC-GAME-08 | Keyboard and touch | Tab reaches every hotspot, Enter presses; `hints` marks hotspots at finger size on a 390px viewport | suite (game) + browser |
+
+| SC-GAME-09 | Free-roaming start | `signal-island`: the 3D world renders, the canvas has focus after New game, W walks up the jetty | browser (needs WebGL) |
+| SC-GAME-10 | Reach and use | walking into a place's radius shows `GamePrompt`; E, Enter or a tap runs its script; walking away hides it | suite (game) + browser |
+| SC-GAME-11 | Story pauses the walk | while a line is on screen the player does not move or turn; afterwards the keyboard is back on the canvas | suite (game) |
+| SC-GAME-12 | Camera focus | fitting the fuse turns the view to the mast, beacon in sight, before the next line | browser/visual |
+| SC-GAME-13 | Position in the save | reload → Continue puts the player where they stood; Restart returns them to the jetty | suite (game) + browser |
+| SC-GAME-14 | No WebGL | a world factory that throws shows `errorLabel` with `role="alert"`, no dead canvas | suite (game) |
+| SC-GAME-15 | Map | the Map panel opens a `ZoomStage` chart: found places are named, the player arrow is where they stand, + / − / Whole island work from the keyboard | browser |
 
 ### fluxaway-motion (`SC-MOTION`) — examples: fluxaway-motion, motion-presentation, motion-landing, inox-landing, motion-editor, vitra-protocol
 | ID | Scenario | Expected | Verify |

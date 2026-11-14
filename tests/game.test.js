@@ -5,12 +5,18 @@
 
 import { h, render } from "../dist/fluxaway.js";
 import {
+  GAME_ACTIONS,
   GAME_HOTSPOT_KINDS,
   GameDialogue,
   GameInventory,
   GameJournal,
+  GamePrompt,
   GameStage,
+  GameStick,
+  GameViewport,
   createGame,
+  createInput,
+  createLoop,
   useGame,
 } from "../dist/fluxaway-game.js";
 import { createTimeline } from "../dist/fluxaway-motion.js";
@@ -775,4 +781,499 @@ test("useGame(spec): owns the game — created once, destroyed with the componen
   await flush();
   first.set("n", 8);
   assertEqual(notified, 0, "a destroyed game notifies nobody");
+});
+
+// ── Free-roaming worlds: loop ───────────────────────────────
+
+test("loop: updates run at the fixed rate whatever the frame time, and render gets the remainder", () => {
+  const updates = [];
+  const renders = [];
+  const loop = createLoop({ rate: 50, update: (dt) => updates.push(dt), render: (alpha) => renders.push(alpha) });
+  assertEqual(loop.step, 0.02);
+
+  assertEqual(loop.advance(0.05), 2, "50 ms hold two 20 ms steps");
+  assert(Math.abs(renders[0] - 0.5) < 1e-6, `the 10 ms left over are half a step, got ${renders[0]}`);
+  assertEqual(loop.advance(0.01), 1, "the remainder carries into the next frame");
+  assert(Math.abs(renders[1]) < 1e-6);
+  assertEqual(loop.advance(0.004), 0, "a frame shorter than a step still renders");
+  assertEqual(renders.length, 3);
+  assert(updates.every((dt) => dt === 0.02), "every update gets the same dt");
+  assert(Math.abs(loop.time - 0.06) < 1e-9);
+});
+
+test("loop: a long gap is capped instead of fast-forwarding the world", () => {
+  let updates = 0;
+  const loop = createLoop({ rate: 60, update: () => { updates += 1; } });
+  loop.advance(30);
+  assertEqual(updates, 15, "0.25 s at 60 updates per second");
+});
+
+test("loop: start() ticks on animation frames and stop() ends it", async () => {
+  let updates = 0;
+  let renders = 0;
+  const loop = createLoop({ rate: 120, update: () => { updates += 1; }, render: () => { renders += 1; } });
+  loop.start();
+  assertEqual(loop.running, true);
+  await sleep(120);
+  loop.stop();
+  assertEqual(loop.running, false);
+  assert(renders >= 2 && updates >= 2, `expected the loop to run, got ${updates} updates / ${renders} renders`);
+  const frozen = updates;
+  await sleep(60);
+  assertEqual(updates, frozen, "a stopped loop must not update");
+});
+
+// ── Free-roaming worlds: input ──────────────────────────────
+
+function keyEvent(type, code, init = {}) {
+  return new KeyboardEvent(type, { code, bubbles: true, cancelable: true, ...init });
+}
+
+function pointerEvent(type, target, init = {}) {
+  target.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 7, button: 0, ...init }));
+}
+
+function inputOn(options) {
+  const target = document.createElement("canvas");
+  mountPoint().appendChild(target);
+  return { target, input: createInput(target, options) };
+}
+
+test("input: actions are held while a key is down, and pressed exactly once per press", () => {
+  const { input } = inputOn({ actions: { forward: ["KeyW", "ArrowUp"], use: ["KeyE"] } });
+  try {
+    assertEqual(input.held("forward"), false);
+    const down = keyEvent("keydown", "KeyW");
+    window.dispatchEvent(down);
+    assertEqual(down.defaultPrevented, true, "a mapped key must not also scroll the page");
+    assertEqual(input.held("forward"), true);
+
+    window.dispatchEvent(keyEvent("keydown", "KeyE"));
+    window.dispatchEvent(keyEvent("keydown", "KeyE", { repeat: true }));
+    assertEqual(input.pressed("use"), true);
+    assertEqual(input.pressed("use"), false, "one press is one answer");
+    window.dispatchEvent(keyEvent("keydown", "KeyE", { repeat: true }));
+    assertEqual(input.pressed("use"), false, "auto-repeat is not a new press");
+
+    window.dispatchEvent(keyEvent("keyup", "KeyW"));
+    assertEqual(input.held("forward"), false);
+    const unmapped = keyEvent("keydown", "KeyZ");
+    window.dispatchEvent(unmapped);
+    assertEqual(unmapped.defaultPrevented, false);
+  } finally {
+    input.destroy();
+  }
+});
+
+test("input: a key typed into a field, or Enter on a button, is not an action", () => {
+  const { input } = inputOn({ actions: { use: ["KeyE", "Enter"] } });
+  const field = document.createElement("input");
+  const button = document.createElement("button");
+  mountPoint().append(field, button);
+  try {
+    field.dispatchEvent(keyEvent("keydown", "KeyE"));
+    assertEqual(input.pressed("use"), false, "typing an E is typing");
+    const enter = keyEvent("keydown", "Enter");
+    button.dispatchEvent(enter);
+    assertEqual(input.pressed("use"), false, "Enter belongs to the focused button");
+    assertEqual(enter.defaultPrevented, false, "and must still activate it");
+    button.dispatchEvent(keyEvent("keydown", "KeyE"));
+    assertEqual(input.pressed("use"), true, "any other key is still the game's");
+  } finally {
+    input.destroy();
+  }
+});
+
+test("input: vector() joins keys and stick and never exceeds 1; losing the window drops held keys", () => {
+  const { input } = inputOn({ actions: GAME_ACTIONS });
+  try {
+    window.dispatchEvent(keyEvent("keydown", "KeyW"));
+    window.dispatchEvent(keyEvent("keydown", "KeyD"));
+    const diagonal = input.vector("left", "right", "back", "forward");
+    assert(Math.abs(Math.hypot(diagonal.x, diagonal.y) - 1) < 1e-9, "a diagonal is not faster than a straight line");
+    assert(diagonal.x > 0 && diagonal.y > 0);
+    assertEqual(input.axis("back", "forward"), 1);
+
+    window.dispatchEvent(new Event("blur"));
+    assertEqual(input.held("forward"), false, "a key released in another window would stay stuck");
+
+    input.setStick(0.3, -0.4);
+    const pushed = input.vector("left", "right", "back", "forward");
+    assertEqual(`${pushed.x},${pushed.y}`, "0.3,-0.4", "a gentle push is a slow walk");
+    input.setStick(0.3, -4);
+    assertEqual(input.stick.y, -1, "the stick is clamped to its rim");
+    const hard = input.vector("left", "right", "back", "forward");
+    assert(Math.abs(Math.hypot(hard.x, hard.y) - 1) < 1e-9, "and the result never exceeds 1");
+  } finally {
+    input.destroy();
+  }
+});
+
+test("input: dragging on the target turns the view; look() hands the delta over once", () => {
+  const { target, input } = inputOn({});
+  try {
+    pointerEvent("pointermove", target, { clientX: 500, clientY: 500 });
+    assertEqual(input.look().x, 0, "a pointer that is not held does not turn the view");
+
+    pointerEvent("pointerdown", target, { clientX: 100, clientY: 100 });
+    pointerEvent("pointermove", target, { clientX: 130, clientY: 90 });
+    pointerEvent("pointermove", target, { clientX: 150, clientY: 95 });
+    const delta = input.look();
+    assertEqual(`${delta.x},${delta.y}`, "50,-5");
+    assertEqual(input.look().x, 0);
+
+    pointerEvent("pointerup", target, { clientX: 150, clientY: 95 });
+    pointerEvent("pointermove", target, { clientX: 400, clientY: 400 });
+    assertEqual(input.look().x, 0);
+  } finally {
+    input.destroy();
+  }
+});
+
+test("input: a locked pointer turns the view by its movement; disable reads as idle", () => {
+  const { target, input } = inputOn({ actions: { use: ["KeyE"] }, pointerLock: true });
+  Object.defineProperty(document, "pointerLockElement", { configurable: true, get: () => target });
+  try {
+    assertEqual(input.locked, true);
+    pointerEvent("pointermove", target, { movementX: 12, movementY: -3 });
+    const delta = input.look();
+    assertEqual(`${delta.x},${delta.y}`, "12,-3");
+
+    input.enable(false);
+    pointerEvent("pointermove", target, { movementX: 40, movementY: 40 });
+    window.dispatchEvent(keyEvent("keydown", "KeyE"));
+    assertEqual(input.look().x, 0);
+    assertEqual(input.pressed("use"), false);
+    assertEqual(input.held("use"), false);
+    input.enable(true);
+    assertEqual(input.pressed("use"), false, "a press made while disabled is not replayed");
+  } finally {
+    delete document.pointerLockElement;
+    input.destroy();
+  }
+});
+
+test("input: destroy() stops listening", () => {
+  const { input } = inputOn({ actions: { use: ["KeyE"] } });
+  input.destroy();
+  window.dispatchEvent(keyEvent("keydown", "KeyE"));
+  assertEqual(input.pressed("use"), false);
+});
+
+// ── Free-roaming worlds: places, reach and the renderer's save ──
+
+function island(extra = {}) {
+  const log = [];
+  const game = createGame({
+    reach: 4,
+    items: { fuse: { name: "Fuse" } },
+    journal: { cairn: { title: "The cairn" } },
+    scenes: [{
+      id: "island",
+      hotspots: [
+        { id: "cairn", label: "Cairn", at: [10, 0], use: (g) => { log.push("cairn"); g.note("cairn"); } },
+        { id: "shed", label: "Shed", at: [13, 0], radius: 6, use: (g, { item }) => { log.push(`shed:${item}`); } },
+        { id: "buoy", label: "Buoy", at: [0, 50, 0], when: (g) => g.has("fuse") },
+      ],
+    }],
+    ...extra,
+  });
+  return { game, log };
+}
+
+test("game: a hotspot is a rectangle or a place — and says so when it is neither", () => {
+  const { game } = island();
+  const [cairn, shed] = game.scenes[0].hotspots;
+  assertEqual(cairn.radius, 4, "the default radius is the spec's reach");
+  assertEqual(shed.radius, 6);
+  assert(throws(() => createGame({ scenes: [{ id: "a", hotspots: [{ id: "x", at: [1] }] }] })).includes("two or three numbers"));
+  assert(throws(() => createGame({ scenes: [{ id: "a", hotspots: [{ id: "x", at: [1, "2"] }] }] })).includes("two or three numbers"));
+});
+
+test("game: near() finds the closest place within its own radius, and skips hidden ones", () => {
+  const { game } = island();
+  assertEqual(game.near([0, 0]), null);
+  assertEqual(game.near([8, 0]).id, "cairn", "2 from the cairn, 5 from the shed: both in reach, the cairn is nearer");
+  assertEqual(game.near([5, 0]), null, "5 from the cairn (radius 4) and 8 from the shed (radius 6)");
+  assertEqual(game.near([12, 0]).id, "shed");
+  assertEqual(game.near([18, 0]).id, "shed", "only the shed reaches that far");
+  assertEqual(game.near([0, 50, 0]), null, "the buoy's `when` fails");
+  game.give("fuse");
+  assertEqual(game.near([0, 52, 0]).id, "buoy");
+  assertEqual(game.near([0, 52, 30]), null, "a three-number place measures height too");
+});
+
+test("game: aim() records the hotspot within reach, and use() without an id presses it", async () => {
+  const { game, log } = island();
+  let changes = 0;
+  game.subscribe(() => { changes += 1; });
+  await game.start();
+  changes = 0;
+
+  game.aim("cairn");
+  game.aim("cairn");
+  assertEqual(game.target, "cairn");
+  assertEqual(changes, 1, "aiming at the same thing every frame must not notify every frame");
+  game.give("fuse");
+  game.select("fuse");
+  assertEqual(await game.use(), true);
+  assertEqual(log.join(), "cairn");
+
+  game.aim("nowhere");
+  assertEqual(game.target, null);
+  assertEqual(await game.use(), false, "nothing within reach, nothing to press");
+});
+
+test("game: the renderer's state rides in the save, and reset() hands it a fresh start", async () => {
+  const storage = memoryStorage();
+  const first = island({ id: "t-world", storage }).game;
+  let position = [1, 2];
+  first.attachStage({ save: () => ({ position }), load: () => {} });
+  await first.start();
+  position = [40, -8];
+  assertEqual(first.save(), true);
+  assertEqual(JSON.parse(storage.getItem("fluxaway-game:t-world")).stage.position.join(), "40,-8");
+
+  const talking = first.say("…");
+  await flush();
+  position = [99, 99];
+  assertEqual(first.save(), false, "no save while a line is on screen");
+  first.advance();
+  await talking;
+
+  const { game } = island({ id: "t-world", storage });
+  const received = [];
+  assertEqual(game.load(), true);
+  // The world mounts after the load: it must still get its data.
+  game.attachStage({ load: (data) => received.push(data), save: () => received[received.length - 1] });
+  assertEqual(received.length, 1);
+  assertEqual(received[0].position.join(), "99,99", "the save written when the line closed");
+
+  game.reset();
+  assertEqual(received[1], null, "null means: start over");
+});
+
+// ── Free-roaming worlds: shell ──────────────────────────────
+
+function fakeWorld(record) {
+  return ({ canvas, game, input }) => {
+    record.created = (record.created || 0) + 1;
+    record.canvas = canvas;
+    record.input = input;
+    record.game = game;
+    record.position = [0, 0];
+    return {
+      update: (dt) => { record.updates = (record.updates || 0) + 1; record.dt = dt; },
+      render: () => { record.renders = (record.renders || 0) + 1; },
+      resize: (width, height, ratio) => { record.size = [width, height, ratio]; },
+      position: () => record.position,
+      focus: (target) => { record.focused = target; return Promise.resolve(true); },
+      save: () => ({ position: record.position }),
+      load: (data) => { record.loaded = data; },
+      destroy: () => { record.destroyed = true; },
+    };
+  };
+}
+
+function mountWorld(game, record, props = {}) {
+  const container = mountPoint();
+  const controllerRef = { current: null };
+  render(() => h(
+    "div",
+    { className: "m-game", style: STAGE_SIZE },
+    h(GameViewport, { game, world: fakeWorld(record), controllerRef, ...props }),
+    h(GamePrompt, { game }),
+    h(GameDialogue, { game }),
+  ), container);
+  return { container, controllerRef };
+}
+
+test("GameViewport: builds the world once, sizes it, and runs it on the loop", async () => {
+  const { game } = island();
+  const record = {};
+  const { container, controllerRef } = mountWorld(game, record);
+  await flush();
+
+  const canvas = container.querySelector("canvas.m-game-canvas");
+  assertEqual(record.canvas, canvas);
+  assertEqual(canvas.getAttribute("aria-label"), "Game world");
+  assertEqual(canvas.getAttribute("role"), "application");
+  assertEqual(`${record.size[0]}x${record.size[1]}`, "800x450");
+  assertEqual(record.size[2], window.devicePixelRatio || 1);
+  assertEqual(controllerRef.current.world.position().join(), "0,0");
+  assertEqual(controllerRef.current.loop.running, true);
+
+  controllerRef.current.loop.stop();
+  record.updates = 0;
+  assertEqual(controllerRef.current.loop.advance(0.05), 3);
+  assertEqual(record.updates, 3);
+  assert(Math.abs(record.dt - 1 / 60) < 1e-9);
+
+  game.set("anything", 1);
+  await flush();
+  assertEqual(record.created, 1, "a re-render must not rebuild the world");
+});
+
+test("GameViewport + GamePrompt: walking into reach offers the hotspot; the use action presses it", async () => {
+  const { game, log } = island();
+  const record = {};
+  const { container, controllerRef } = mountWorld(game, record);
+  await game.start();
+  await flush();
+  const { loop } = controllerRef.current;
+  loop.stop();
+
+  loop.advance(0.02);
+  await flush();
+  assertEqual(game.target, null);
+  assertEqual(container.querySelector(".m-game-prompt-button"), null);
+
+  record.position = [9, 0];
+  loop.advance(0.02);
+  await flush();
+  assertEqual(game.target, "cairn");
+  const prompt = container.querySelector(".m-game-prompt-button");
+  assertEqual(prompt.querySelector(".m-game-prompt-label").textContent, "Cairn");
+  assertEqual(prompt.querySelector(".m-game-prompt-key").textContent, "E");
+  assertEqual(prompt.querySelector(".m-game-prompt-key").getAttribute("aria-hidden"), "true");
+
+  window.dispatchEvent(keyEvent("keydown", "KeyE"));
+  window.dispatchEvent(keyEvent("keyup", "KeyE"));
+  loop.advance(0.02);
+  await flush();
+  assertEqual(log.join(), "cairn", "E pressed the hotspot within reach");
+
+  record.position = [16, 0];
+  loop.advance(0.02);
+  await flush();
+  container.querySelector(".m-game-prompt-button").click();
+  await flush();
+  assertEqual(log.join(), "cairn,shed:null", "and so does the button, for a finger");
+});
+
+test("GameViewport: while the story talks the input is idle and the prompt steps aside", async () => {
+  const { game } = island();
+  const record = {};
+  const { container, controllerRef } = mountWorld(game, record);
+  await game.start();
+  record.position = [9, 0];
+  controllerRef.current.loop.stop();
+  controllerRef.current.loop.advance(0.02);
+  await flush();
+  assert(container.querySelector(".m-game-prompt-button"));
+
+  const talking = game.say("Wind, and nothing else.");
+  await flush();
+  await flush();
+  assertEqual(record.input.enabled, false);
+  assertEqual(container.querySelector(".m-game-prompt-button"), null);
+  window.dispatchEvent(keyEvent("keydown", "KeyW"));
+  assertEqual(record.input.held("forward"), false, "the player does not walk off mid-sentence");
+  window.dispatchEvent(keyEvent("keyup", "KeyW"));
+
+  container.querySelector(".m-game-continue").click();
+  await talking;
+  await flush();
+  await flush();
+  assertEqual(record.input.enabled, true);
+  assertEqual(document.activeElement, record.canvas, "the keyboard goes back to the world");
+});
+
+test("GameViewport: focus(), the save and unmount all reach the world", async () => {
+  const storage = memoryStorage();
+  const { game } = island({ id: "t-view", storage });
+  const record = {};
+  const { container } = mountWorld(game, record);
+  await game.start();
+  await flush();
+
+  assertEqual(await game.focus("shed"), true);
+  assertEqual(record.focused.id, "shed");
+  assertEqual(record.focused.at.join(), "13,0");
+  assertEqual(record.focused.radius, 6);
+
+  record.position = [5, 6];
+  game.save();
+  assertEqual(JSON.parse(storage.getItem("fluxaway-game:t-view")).stage.position.join(), "5,6");
+  game.reset();
+  assertEqual(record.loaded, null);
+
+  render(() => h("p", null, "gone"), container);
+  await flush();
+  assertEqual(record.destroyed, true);
+  window.dispatchEvent(keyEvent("keydown", "KeyW"));
+  assertEqual(record.input.held("forward"), false, "its input stopped listening");
+  window.dispatchEvent(keyEvent("keyup", "KeyW"));
+});
+
+test("GameViewport: a world that cannot start shows the message instead of a dead canvas", async () => {
+  const { game } = island();
+  const container = mountPoint();
+  const original = console.error;
+  console.error = () => {};
+  try {
+    render(() => h("div", { className: "m-game", style: STAGE_SIZE }, h(GameViewport, {
+      game,
+      world: () => { throw new Error("no WebGL"); },
+      errorLabel: "Este mundo não pôde começar.",
+    })), container);
+    await flush();
+    await flush();
+  } finally {
+    console.error = original;
+  }
+  const message = container.querySelector(".m-game-viewport-error");
+  assertEqual(message.textContent, "Este mundo não pôde começar.");
+  assertEqual(message.getAttribute("role"), "alert");
+  assertEqual(getComputedStyle(container.querySelector("canvas")).visibility, "hidden");
+});
+
+test("GameStage: places are not drawn on a 2D stage", async () => {
+  const { game } = island();
+  const container = mountGame(game);
+  await game.start();
+  await flush();
+  assertEqual(container.querySelectorAll(".m-game-hotspot").length, 0);
+  assertEqual(await game.focus("cairn"), false, "and a 2D camera has nowhere to go for one");
+});
+
+test("GameStick: reports x right and y forward, clamped, and zero when let go", async () => {
+  const container = mountPoint();
+  const moves = [];
+  render(() => h("div", { className: "m-game", style: STAGE_SIZE }, h(GameStick, { onMove: (x, y) => moves.push([x, y]) })), container);
+  await flush();
+
+  const stick = container.querySelector(".m-game-stick");
+  assertEqual(stick.getAttribute("aria-hidden"), "true");
+  const box = stick.getBoundingClientRect();
+  const cx = box.left + box.width / 2;
+  const cy = box.top + box.height / 2;
+
+  pointerEvent("pointerdown", stick, { clientX: cx, clientY: cy - box.height / 4 });
+  assertEqual(moves[0][0], 0);
+  assert(Math.abs(moves[0][1] - 0.5) < 1e-6, `up on the screen is forward, got ${moves[0][1]}`);
+  pointerEvent("pointermove", stick, { clientX: cx + box.width * 3, clientY: cy });
+  assert(Math.abs(moves[1][0] - 1) < 1e-6, "past the rim is still 1");
+  pointerEvent("pointerup", stick, { clientX: cx, clientY: cy });
+  assertEqual(moves[2].join(), "0,0");
+  pointerEvent("pointermove", stick, { clientX: cx + 20, clientY: cy });
+  assertEqual(moves.length, 3, "a pointer that is not held moves nothing");
+});
+
+test("game: the free-roaming shell writes no word of its own that is not a prop", async () => {
+  const { game } = island();
+  const record = {};
+  const container = mountPoint();
+  render(() => h(
+    "div",
+    { className: "m-game", style: STAGE_SIZE },
+    h(GameViewport, { game, world: fakeWorld(record), ariaLabel: "Ilha" }),
+    h(GamePrompt, { game, keyLabel: "Espaço" }),
+  ), container);
+  await game.start();
+  game.aim("cairn");
+  await flush();
+  assertEqual(container.querySelector("canvas").getAttribute("aria-label"), "Ilha");
+  assertEqual(container.querySelector(".m-game-prompt-key").textContent, "Espaço");
+  assert(!container.textContent.includes("could not start"));
 });
