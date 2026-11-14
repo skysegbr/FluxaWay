@@ -41,7 +41,11 @@ import { h, useEffect, useRef, useState } from "./fluxaway.js";
 //                 ({ from, to }) => transition; destination frames can override
 //   padding       fraction (0–0.45) of the viewport reserved as margin around
 //                 every framed frame (default 0.06). 0 = fill the viewport.
-//   controllerRef ref — { next, prev, goTo, reset, fitAll, index, frames }
+//   controllerRef ref — { next, prev, goTo, lookAt, reset, fitAll, index, frames }
+//                 lookAt(target, options) flies to a world rect ({ x, y, w, h })
+//                 or an explicit camera ({ cx, cy, scale }) that is not a frame
+//                 — a close-up — and resolves when it arrives; lookAt(null)
+//                 returns to the current frame. `animate: false` jumps.
 //   keyboardNav   bool, default true — Arrow/Space = step, Home/End = first/last;
 //                 with freeZoom, +/- zoom and 0/Esc recenter the current frame
 //   advanceOnClick bool, default true — tap on stage background advances
@@ -224,6 +228,7 @@ class ZoomCameraController {
     this.cam      = { cx: 0, cy: 0, scale: 1, rotate: 0 };
     this._activeFrame = null;
     this._free    = false; // user has zoomed/panned away from the active frame
+    this._look    = null;  // lookAt() target the camera is holding, if any
 
     this._raf   = null;
     this._from  = this.cam;
@@ -294,6 +299,17 @@ class ZoomCameraController {
     const rect = this.wrap.getBoundingClientRect();
     this.vw = rect.width;
     this.vh = rect.height;
+    // A held close-up is refitted like a frame would be.
+    if (this._look) {
+      const to = this._lookCamera(this._look);
+      if (this._raf != null) {
+        this._to = { ...to, rotate: shortestRotate(this._from.rotate, to.rotate) };
+      } else {
+        this.cam = to;
+        applyCamera(this.world, this.cam, this.vw, this.vh);
+      }
+      return;
+    }
     // Free exploration survives a resize: keep the camera, just re-centre it.
     if (this._free || !this._activeFrame) {
       applyCamera(this.world, this.cam, this.vw, this.vh);
@@ -307,6 +323,7 @@ class ZoomCameraController {
     this._cancel();
     this._stopGlide();
     this._free = false;
+    this._look = null;
     this._activeFrame = frame;
     this.cam = cameraFor(frame, this.vw, this.vh, this.padding);
     this._from = this.cam;
@@ -317,8 +334,39 @@ class ZoomCameraController {
   animateTo(frame, opts = {}) {
     if (!frame) return;
     this._free = false;
+    this._look = null;
     this._activeFrame = frame;
     this._animateCam(cameraFor(frame, this.vw, this.vh, this.padding), opts);
+  }
+
+  // The camera for a lookAt() target: the same fit a frame gets, on a rect or
+  // explicit camera that is not one. Rotation defaults to the active frame's,
+  // so a close-up inside a tilted frame stays level with it.
+  _lookCamera(target) {
+    return cameraFor(
+      { x: 0, y: 0, w: 1, h: 1, rotate: this._activeFrame?.rotate ?? 0, camera: target },
+      this.vw,
+      this.vh,
+      this.padding,
+    );
+  }
+
+  // Fly to a close-up that is not a frame; null returns to the active frame.
+  // The active frame does not change, so reset() still leads back to it.
+  lookAt(target, opts = {}) {
+    if (!target) {
+      this._look = null;
+      if (!this._activeFrame) {
+        opts.onComplete?.();
+        return;
+      }
+      this._free = false;
+      this._animateCam(cameraFor(this._activeFrame, this.vw, this.vh, this.padding), opts);
+      return;
+    }
+    this._free = true;
+    this._look = target;
+    this._animateCam(this._lookCamera(target), opts);
   }
 
   // Ease the camera from where it is now to a target camera. Shared by frame
@@ -374,6 +422,7 @@ class ZoomCameraController {
   reset() {
     if (!this._activeFrame) return;
     this._free = false;
+    this._look = null;
     this._animateCam(cameraFor(this._activeFrame, this.vw, this.vh, this.padding));
   }
 
@@ -381,6 +430,7 @@ class ZoomCameraController {
   fitAll(frames) {
     if (!frames || !frames.length) return;
     this._free = true;
+    this._look = null;
     this._animateCam(cameraFor(boundsOf(frames), this.vw, this.vh, this.padding));
   }
 
@@ -405,6 +455,7 @@ class ZoomCameraController {
   _beginInteract() {
     if (!this._free) this.onInteract?.();
     this._free = true;
+    this._look = null;
   }
 
   // The camera that keeps the world point under (clientX, clientY) fixed while
@@ -711,6 +762,26 @@ export function ZoomStage({
     runFlight(frame, options);
   };
 
+  // A close-up is not a navigation: index, settled frame and flight state stay
+  // as they are. Resolves true on arrival, false when another move replaced it.
+  const isLookTarget = (target) => target
+    && ((Number.isFinite(target.cx) && Number.isFinite(target.cy) && Number.isFinite(target.scale))
+      || (Number.isFinite(target.x) && Number.isFinite(target.y) && target.w > 0 && target.h > 0));
+  const lookAt = (target, options = {}) => new Promise((resolve) => {
+    const ctrl = ctrlRef.current;
+    if (!ctrl || (target && !isLookTarget(target))) {
+      resolve(false);
+      return;
+    }
+    ctrl.lookAt(target || null, {
+      duration: options.duration ?? duration,
+      easing: options.easing ?? easing,
+      transition: options.animate === false ? "cut" : options.transition ?? "glide",
+      onComplete: () => resolve(true),
+      onCancel: () => resolve(false),
+    });
+  });
+
   const next = () => { if (curIndex < seq.length - 1) goTo(curIndex + 1); };
   const prev = () => { if (curIndex > 0) goTo(curIndex - 1); };
 
@@ -858,6 +929,7 @@ export function ZoomStage({
       next,
       prev,
       goTo,
+      lookAt,
       reset: () => ctrlRef.current?.reset(),
       fitAll: () => ctrlRef.current?.fitAll(seq),
       zoomIn: () => ctrlRef.current?.zoomCenter(1.3),

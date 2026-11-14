@@ -1,0 +1,19 @@
+.lk-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lk-sky { fill: #0a1226; }
+.lk-star { fill: #dfe7ff; opacity: 0.75; }
+
+.lk-rock { fill: #151c2e; }
+.lk-rock-light { fill: #232c44; }
+.lk-stone { fill: #3a4257; }
+.lk-stone-dark { fill: #262d40; }
+.lk-wood { fill: #6b4a33; }
+.lk-wood-dark { fill: #4a3324; }
+.lk-brass { fill: #c9973f; }
+.lk-line { fill: none; stroke: #0a1226; stroke-width: 4; stroke-linecap: round; }
+.lk-chalk { fill: none; stroke: #e6ecf7; stroke-width: 5; stroke-linecap: round; opacity: 0.8; }
+.lk-glow { fill: #ffd98a; }

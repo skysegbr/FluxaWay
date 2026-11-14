@@ -316,6 +316,18 @@ Apply the relevant baseline to every component, then its specific rows.
 | SC-ZOOM-12 | Interrupted/reduced flight | a new flight starts from the live camera without a seam; reduced motion lands with Cut semantics | browser |
 | SC-ZOOM-13 | Motion-composed frame | child timelines begin on `settled`, animate only bounded elements and leave the complete scene inside the unobscured stage viewport | browser/visual (`vitra-protocol`) |
 
+### fluxaway-game (`SC-GAME`) — example: lantern-keeper
+| ID | Scenario | Expected | Verify |
+|---|---|---|---|
+| SC-GAME-01 | Start and first scene | title screen offers New game (and Continue only with a save); starting runs the scene's `enter` lines | suite (game) + browser |
+| SC-GAME-02 | Hotspot script | pressing a hotspot shows its lines in order; other hotspots do not answer until the story is quiet | suite (game) |
+| SC-GAME-03 | Item in hand | a locked hotspot refuses until its item is selected in the inventory, then consumes it and travels | suite (game) + browser |
+| SC-GAME-04 | Travel | the camera flies to the destination scene; its hotspots answer only after landing and after `enter` | suite (game) |
+| SC-GAME-05 | Choice | choices are buttons, the first takes focus, pressing the box does not skip them | suite (game) |
+| SC-GAME-06 | Cutscene and close-up | `focus()` closes in, the Motion timeline plays to its end, the story continues after it | browser/visual |
+| SC-GAME-07 | Save slot | reload → Continue restores scene, inventory, journal and mute; Restart asks once, then erases | suite (game) + browser |
+| SC-GAME-08 | Keyboard and touch | Tab reaches every hotspot, Enter presses; `hints` marks hotspots at finger size on a 390px viewport | suite (game) + browser |
+
 ### fluxaway-motion (`SC-MOTION`) — examples: fluxaway-motion, motion-presentation, motion-landing, inox-landing, motion-editor, vitra-protocol
 | ID | Scenario | Expected | Verify |
 |---|---|---|---|

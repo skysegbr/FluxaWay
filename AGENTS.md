@@ -209,8 +209,24 @@ Commit subjects follow Conventional Commits with a scope, e.g.
   `fluxaway-charts` (never Chart.js/D3/Recharts, never hand-rolled
   `stroke-dasharray` arcs); animation → `fluxaway-motion` (never GSAP, never a
   hand-rolled rAF loop); presentations/decks → `ZoomStage` (`fluxaway-zoom`),
-  not scroll-snap sections; node graphs → `PipelineCanvas`; embedded code
-  editor → `FullCodeEditor` (needs the local `assets/codemirror/`, no CDN).
+  not scroll-snap sections; node graphs → `PipelineCanvas`; narrative games
+  (adventure, visual novel, scenes with hotspots) → `fluxaway-game`; embedded
+  code editor → `FullCodeEditor` (needs the local `assets/codemirror/`, no CDN).
+- **`fluxaway-game` is a story engine, not a simulation.** It owns state,
+  scripts, the save slot and the shell; ZoomStage is its camera and Motion its
+  acting. It has no game loop, no input mapping, no physics and no 3D — a game
+  that needs those brings its own renderer and plugs it in through
+  `game.attachStage()`. Its scripts wait on promises that are *parked*, not
+  rejected, by `reset()`/`load()`/`destroy()`: do not "fix" that into a
+  rejection, or every stale script throws into the console on restart.
+- **A stateful component that receives stateful children redraws them stale.**
+  `h()` runs children eagerly, so `h(Panel, null, h(Counter))` hands Panel a
+  finished vnode. When Panel sets its own state, its targeted re-render reuses
+  that old vnode: Counter's later updates are painted over, and stay frozen.
+  A full root render hides it. Until the core handles it, a component with
+  state takes data and renders its own children, or the two are siblings —
+  which is why `GameStage` takes no children and `tests/game.test.js` has
+  "a change made before the component subscribes is not lost".
 - ZoomStage selection and camera settlement are different moments. Keep
   navigation UI on `onIndexChange`, but start destination content motion from
   `onSettledIndexChange` or `frame.render({ settled })`; resetting an incoming

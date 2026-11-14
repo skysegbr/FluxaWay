@@ -1,0 +1,49 @@
+.lk-title {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  padding: var(--m-space-4);
+  background: radial-gradient(120% 90% at 70% 110%, rgb(255 217 138 / 0.18), transparent 55%), rgb(6 11 22 / 0.82);
+  overflow-y: auto;
+}
+
+.lk-title-card {
+  display: grid;
+  gap: var(--m-space-4);
+  max-width: 32rem;
+}
+
+.lk-title-eyebrow {
+  margin: 0;
+  color: #ffd98a;
+  font-size: var(--m-font-size-sm);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.lk-title h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.lk-title-blurb {
+  margin: 0;
+  font-size: var(--m-font-size-lg);
+  line-height: 1.5;
+}
+
+.lk-title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-3);
+}
+
+.lk-title-help {
+  margin: 0;
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+}

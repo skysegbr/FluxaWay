@@ -100,6 +100,21 @@ export interface ZoomController {
   prev(): void;
   /** Go to a frame by sequence index or id; `animate: false` jumps. */
   goTo(target: number | string, options?: { animate?: boolean; transition?: ZoomTransitionInput }): void;
+  /**
+   * Fly to a close-up that is not a frame — a world rect or an explicit
+   * camera — and resolve `true` on arrival (`false` when another move replaced
+   * it, or the target is not usable). `null` returns to the current frame.
+   * Not a navigation: `index`, `settledIndex` and `moving` do not change.
+   */
+  lookAt(
+    target: ZoomCameraTarget | null,
+    options?: {
+      animate?: boolean;
+      duration?: number | "auto";
+      easing?: (t: number) => number;
+      transition?: ZoomTransitionInput;
+    },
+  ): Promise<boolean>;
   /** Ease back to the current frame's fit, undoing any free exploration. */
   reset(): void;
   /** Zoom out to frame every frame at once (a whole-canvas overview). */

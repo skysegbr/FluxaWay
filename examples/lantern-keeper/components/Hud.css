@@ -1,0 +1,33 @@
+.lk-hud {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-2);
+  padding: var(--m-space-2) var(--m-space-3);
+  background: linear-gradient(180deg, rgb(6 11 22 / 0.86), rgb(6 11 22 / 0));
+  pointer-events: none;
+}
+
+.lk-hud > * { pointer-events: auto; }
+
+.lk-hud-place {
+  margin: 0;
+  padding-left: var(--m-space-2);
+  color: #ffd98a;
+  font-size: var(--m-font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lk-hud-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--m-space-1);
+}

@@ -518,7 +518,17 @@ function styleAt(compiled, time, defaultEase, settle) {
 //   onComplete fn() when the playhead finishes (no loops left)
 //
 // controller: play, stop, gotoAndPlay, gotoAndStop, seek, reverse, setSpeed,
-//   track(name) → ref, time, duration, isPlaying, direction, destroy.
+//   finished() → Promise, track(name) → ref, time, duration, isPlaying,
+//   direction, destroy.
+//
+// finished() is how a script WAITS for a movie: it resolves `true` when the
+// playhead completes the run in progress and `false` when that run is cut
+// short (stop, gotoAndStop, destroy). On a timeline that is not playing it
+// resolves at once — `true` only if the playhead already sits at the end. A
+// `loop: true` timeline never completes, so it settles only when stopped.
+//
+//   tl.gotoAndPlay("open");
+//   await tl.finished();
 
 export function createTimeline(spec = {}) {
   const tracks = new Map();
@@ -566,6 +576,14 @@ export function createTimeline(spec = {}) {
   let rafHandle = null;
   let lastNow = null;
   let destroyed = false;
+  let waiters = []; // resolvers handed out by finished()
+
+  function settleWaiters(completed) {
+    if (waiters.length === 0) return;
+    const pending = waiters;
+    waiters = [];
+    for (const resolve of pending) resolve(completed);
+  }
 
   function applyTrack(name, compiled) {
     const bound = elements.get(name);
@@ -672,6 +690,7 @@ export function createTimeline(spec = {}) {
 
     if (completed) {
       spec.onComplete?.();
+      settleWaiters(true);
       return;
     }
 
@@ -727,6 +746,15 @@ export function createTimeline(spec = {}) {
       stopTicker();
       // Re-commit the settled frame (no onUpdate) so the element de-promotes.
       applyAll(false);
+      settleWaiters(false);
+    },
+    finished() {
+      if (!playing) {
+        return Promise.resolve(direction > 0 ? time >= duration : time <= 0);
+      }
+      return new Promise((resolve) => {
+        waiters.push(resolve);
+      });
     },
     gotoAndPlay(target) {
       if (destroyed) return;
@@ -814,6 +842,7 @@ export function createTimeline(spec = {}) {
       stopTicker();
       // De-promote any elements still bound before we release them.
       applyAll(false);
+      settleWaiters(false);
       elements.clear();
       // Guides are pre-sampled at compile time — their temporary <path>
       // elements already left the hidden <svg>; nothing to clean up here.

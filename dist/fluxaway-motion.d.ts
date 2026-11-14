@@ -116,6 +116,13 @@ export interface TimelineController {
   seek(target: number | string): void;
   reverse(): void;
   setSpeed(speed: number): void;
+  /**
+   * Wait for the run in progress: resolves `true` when the playhead completes
+   * it, `false` when it is cut short (`stop`, `gotoAndStop`, `destroy`). Not
+   * playing: resolves at once, `true` only at the end of the timeline. A
+   * `loop: true` timeline settles only when stopped.
+   */
+  finished(): Promise<boolean>;
   /** Ref for h(): `h("div", { ref: tl.track("logo") })`. */
   track(name: string): TrackRef;
   destroy(): void;

@@ -171,6 +171,7 @@ Coverage (~400 tests across 16 files):
 | `addons.test.js` | PipelineCanvas (`fluxaway-canvas`), ZoomStage (`fluxaway-zoom`) |
 | `metallic.test.js` | finish allowlist, persistence and local/global Metallic scoping |
 | `motion.test.js` / `motion-editor.test.js` | `fluxaway-motion` runtime + the visual editor |
+| `game.test.js` | `fluxaway-game` — scripts, dialogue, save slot, sound, GameStage and its shell — plus `timeline.finished()` and ZoomStage `lookAt()` |
 | `security.test.js` | `safeUrl()` scheme guard (client + SSR) |
 
 Running:

@@ -88,6 +88,16 @@ three browser engines.
   the validated 8-slot categorical palette). Entrance animation rides
   fluxaway-motion via `animate`. Examples: `examples/dashboard`,
   `examples/drug-recalls`. Full reference: docs/AI_SPEC.md §10.
+- `dist/fluxaway-game.js|css`: Game add-on — USE FOR NARRATIVE GAMES:
+  point-and-click adventures, gamebooks, visual novels, any story told in
+  scenes with hotspots. `createGame(spec)` holds state, scenes, inventory,
+  journal, dialogue, one save slot and sounds; story scripts are plain async
+  functions (`await game.say()`, `choose()`, `goTo()`, `play(timeline)`,
+  `focus()`). `GameStage` is a ZoomStage (load `fluxaway-zoom.css` too);
+  `GameDialogue`, `GameInventory` and `GameJournal` are its siblings inside one
+  `.m-game` box. `game.start()` is called from a button. Not for physics,
+  free movement or 3D. Example: `examples/lantern-keeper`. Full reference:
+  docs/AI_SPEC.md §10.
 - `dist/fluxaway-zoom.js|css`: ZoomStage add-on — USE FOR PRESENTATIONS: slide
   decks, pitches, Prezi-style zoom tours, camera flying between frames on an
   infinite canvas (`examples/fluxaway-architecture`, `examples/fluxaway-atlas`). A
@@ -97,6 +107,8 @@ three browser engines.
   bounds from card/circle/pill/frameless surfaces, `frame.render(state)` exposes
   departing/arriving/settled, and adjacent image decode prevents arrival flash.
   Canonical comparison: `examples/zoom-lab`
+  `controllerRef.lookAt(rect | camera | null)` flies to a close-up that is not
+  a frame and resolves on arrival.
   Combined Zoom + Motion reference: `examples/vitra-protocol`
 - `dist/fluxaway-motion.js`: Flash-style timeline animation add-on — USE FOR
   ANIMATION: intros/splashes, keyframes, tweens, easing, staggered

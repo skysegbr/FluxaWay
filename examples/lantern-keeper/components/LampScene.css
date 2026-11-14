@@ -1,0 +1,20 @@
+.lk-lamp-lens { fill: #1c2a45; stroke: #c9973f; stroke-width: 8; opacity: 0.92; }
+.lk-lamp-ribs { fill: none; stroke: #c9973f; stroke-width: 5; opacity: 0.7; }
+.lk-lamp-core { fill: #fff6dc; }
+.lk-lamp-book { fill: #d8ccb0; }
+.lk-lamp-hatch { fill: #05070d; }
+
+/* Motion scales and turns these two: say what the transform is measured from. */
+.lk-lamp-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 70%;
+  filter: drop-shadow(0 0 26px #ffd98a);
+}
+
+.lk-lamp-beam {
+  transform-box: view-box;
+  transform-origin: 800px 400px;
+  fill: #ffe9b0;
+}
+
+.lk-lamp-beam path { opacity: 0.26; }

@@ -5,7 +5,8 @@
 >
 > FluxaWay is more than hooks + UI components: it ships first-party add-ons for
 > **presentations / slide decks** (ZoomStage, §10), **timeline animation**
-> (fluxaway-motion, §10), **node/pipeline diagrams** (PipelineCanvas, §10) and a
+> (fluxaway-motion, §10), **node/pipeline diagrams** (PipelineCanvas, §10),
+> **narrative games** (fluxaway-game, §10) and a
 > **code editor** (FullCodeEditor, §10). If the user's task sounds like one
 > of those, use the add-on — do not hand-roll it and do not reach for an
 > external library.
@@ -36,6 +37,7 @@ mean an add-on, not hand-rolled code:
 | animation, intro/splash, timeline, keyframes, tween, easing, staggered entrance, "like Flash", movie clip | **fluxaway-motion** (`useTimeline`) | `/dist/fluxaway-motion.js` |
 | node editor, flowchart, pipeline, graph of connected boxes, diagram with draggable nodes | **PipelineCanvas** | `/dist/fluxaway-canvas.js` + `fluxaway-canvas.css` |
 | chart, graph of data, plot, dashboard, KPI, metric tile, analytics, line/bar/pie/donut, sparkline, time series | **fluxaway-charts** | `/dist/fluxaway-charts.js` + `fluxaway-charts.css` |
+| game, adventure, point-and-click, visual novel, gamebook, interactive story, scenes with hotspots, inventory, dialogue choices, save game | **fluxaway-game** | `/dist/fluxaway-game.js` + `fluxaway-game.css` (+ `fluxaway-zoom.css`) |
 | code editor with syntax highlighting / line numbers | **FullCodeEditor** | `/dist/fluxaway-editor.js` + `fluxaway-editor.css` |
 | buttons, forms, dialogs, tables, tabs — regular app UI | UI components (§9) | `/dist/fluxaway-components-*.js` |
 | state, routing, SSR, context, fetch | core hooks (§6) | `/dist/fluxaway.js` |
@@ -106,6 +108,8 @@ Consequences you must respect when writing code, tooling, or reviews:
 /dist/fluxaway-charts.css      ← styles + the validated categorical palette tokens (REQUIRED)
 /dist/fluxaway-zoom.js         ← PRESENTATION / slide-deck add-on: zooming camera over frames (ZoomStage)
 /dist/fluxaway-zoom.css        ← styles for fluxaway-zoom
+/dist/fluxaway-game.js         ← GAME add-on: scene-based adventures — story scripts, hotspots, inventory, journal, save slot (createGame, GameStage)
+/dist/fluxaway-game.css        ← styles for fluxaway-game (load fluxaway-zoom.css with it)
 /dist/fluxaway-editor.js       ← full-featured code editor component
 /dist/fluxaway-editor.css      ← styles for fluxaway-editor
 /dist/fluxaway-editor-snippets.js ← boilerplate snippet catalog for fluxaway-editor
@@ -2338,15 +2342,16 @@ still knows the API exists and how to call it.
 **ZoomStage**; fixed-stage Flash-style deck / animation / intro / keyframes →
 **fluxaway-motion**;
 node graph / flowchart / pipeline → **PipelineCanvas**; chart / dashboard /
-KPI → **fluxaway-charts**; embedded code editor → **FullCodeEditor**. These
-are first-party — never substitute reveal.js, GSAP, mermaid, Chart.js, D3 or
-CodeMirror-from-CDN when the task fits an add-on. Working references:
+KPI → **fluxaway-charts**; adventure / visual novel / story with scenes and
+hotspots → **fluxaway-game**; embedded code editor → **FullCodeEditor**. These
+are first-party — never substitute reveal.js, GSAP, mermaid, Chart.js, D3,
+a game library or CodeMirror-from-CDN when the task fits an add-on. Working references:
 `examples/fluxaway-architecture` and
 `examples/fluxaway-atlas` (presentations), `examples/fluxaway-motion`,
 `examples/motion-landing`, `examples/inox-landing` and
 `examples/motion-editor` (animation),
 `examples/star-atlas` (free-zoom explorer), `examples/dashboard` and
-`examples/drug-recalls` (charts). **PipelineCanvas and
+`examples/drug-recalls` (charts), `examples/lantern-keeper` (game). **PipelineCanvas and
 FullCodeEditor currently have no example app** — their APIs below and the
 README's "Canvas & Editor" section are the reference (`examples/mindmap` is a
 hand-rolled SVG mindmap, *not* a PipelineCanvas demo).
@@ -2411,7 +2416,12 @@ function Intro() {
 - **Controller**: `play`, `stop`, `gotoAndPlay(msOrLabel)`,
   `gotoAndStop(msOrLabel)`, `seek`, `reverse()`, `setSpeed(n)`,
   `track(name)` → ref, `time`, `duration`, `isPlaying`, `label(name)`,
-  `destroy`.
+  `finished()`, `destroy`.
+- **Waiting for a movie**: `await tl.finished()` resolves `true` when the run
+  in progress completes and `false` when it is cut short (`stop`,
+  `gotoAndStop`, `destroy`). Not playing, it resolves at once — `true` only if
+  the playhead already sits at the end. A `loop: true` timeline never
+  completes, so it settles only when stopped.
 - **Frame scripts** fire when the playhead crosses them while playing
   (direction-aware); `gotoAndPlay` also executes a script sitting exactly on
   the target (as Flash did); plain seeks fire nothing.
@@ -2507,7 +2517,7 @@ import or migration package.
 | `duration` / `easing` | Camera animation duration (`number` or `"auto"`) and easing function; automatic timing uses travel, zoom and rotation distance |
 | `transition` | `"glide"`, `"arc"`, `"dolly"`, `"orbit"`, `"focus"`, `"cut"`, an options object, or `({ from, to }) => options`; a destination frame may override it |
 | `padding` | Viewport-margin fraction (0–0.45) kept around each framed frame (default `0.06`; `0` fills the viewport) |
-| `controllerRef` | ref, set to `{ next, prev, goTo, reset, fitAll, zoomIn, zoomOut, prepare, index, settledIndex, moving, frames }` every render |
+| `controllerRef` | ref, set to `{ next, prev, goTo, lookAt, reset, fitAll, zoomIn, zoomOut, prepare, index, settledIndex, moving, frames }` every render |
 | `keyboardNav` | Arrow/Space step, Home/End jump to first/last (default `true`); with `freeZoom`, `+`/`-` zoom and `0`/`Esc` recenter; ignores keys typed into inputs, `<select>` and contentEditable |
 | `advanceOnClick` | Tap the stage background to advance (default `true`) — a drag/pan/swipe never counts as a tap |
 | `swipeNav` | Horizontal swipe steps frames on touch/pen (default `true`; a `freeZoom` drag pans instead) |
@@ -2651,7 +2661,12 @@ What you explored survives a resize (it isn't snapped back to the frame), and
 navigating still eases smoothly from wherever the camera is to the next frame.
 `controllerRef.reset()` (or the `0`/`Esc` keys) eases back to the current
 frame's fit, and `controllerRef.fitAll()` zooms out to an overview of every
-frame. While `freeZoom` is on a one-finger drag pans (so `swipeNav` steps only
+frame. `await controllerRef.lookAt(target, options)` flies to a close-up that
+is not a frame — a world rect `{ x, y, w, h }` or an explicit camera
+`{ cx, cy, scale }` — and resolves `true` on arrival (`false` when another move
+replaced it); `lookAt(null)` returns to the current frame, `animate: false`
+jumps. It is not a navigation: `index`, `settledIndex` and `moving` do not
+change, and the close-up is refitted on resize like a frame would be. While `freeZoom` is on a one-finger drag pans (so `swipeNav` steps only
 when it's off); a plain tap still advances. For a self-running deck, `autoplay`
 auto-advances and `onInteract` lets you pause it the moment the viewer grabs the
 canvas; `hashNav` deep-links each frame to the URL hash. See
@@ -2696,6 +2711,131 @@ and build the actual `content: h(...)` vdom in `app.js` right before passing
 `frames` to `ZoomStage`. See
 [examples/fluxaway-architecture](../examples/fluxaway-architecture) for the full
 pattern (`components/FrameContent.js` dispatches on `data.kind`).
+
+### `fluxaway-game` — scene-based adventure games
+
+`dist/fluxaway-game.js` + `dist/fluxaway-game.css` (types in
+`dist/fluxaway-game.d.ts`). **Also load `dist/fluxaway-zoom.css`** — the stage is
+a ZoomStage. A narrative game engine: point-and-click adventures, gamebooks,
+visual novels, exploration by scenes. It is the story and the shell; it draws no
+art and simulates nothing (no physics, no free movement, no 3D).
+
+| Piece | What it is |
+|---|---|
+| `createGame(spec)` / `useGame(spec)` | The game: author state, scenes, inventory, journal, dialogue, one save slot, sounds |
+| `GameStage` | The world: one ZoomStage frame per scene, hotspots as real `<button>`s, the camera flying between scenes |
+| `GameDialogue` | The line being spoken and its Continue button, or the choices |
+| `GameInventory` / `GameJournal` | Items held (press to select) / entries found, with the count |
+
+```js
+import { h, render } from "/dist/fluxaway.js";
+import { createGame, useGame, GameStage, GameDialogue, GameInventory } from "/dist/fluxaway-game.js";
+
+const game = createGame({
+  id: "lantern",                        // save slot; omit and nothing is saved
+  state: { unlocked: false },           // author variables — JSON only
+  items: { key: { name: "Iron key", icon: "🗝" } },
+  journal: { tide: { title: "The tide board", text: "Low water until dawn." } },
+  scenes: [
+    {
+      id: "shore", label: "The cove",
+      render: (scene) => h(ShoreArt, scene),   // a component: it may use hooks
+      enter: async (game, { first }) => { if (first) await game.say("The lighthouse is dark."); },
+      hotspots: [
+        { id: "crate", label: "Crate", kind: "take", x: 230, y: 610, w: 240, h: 170,
+          when: (game) => !game.has("key"),
+          use: async (game) => { await game.say("An iron key."); game.give("key"); } },
+        { id: "door", label: "Door", x: 1100, y: 300, w: 200, h: 420, to: "tower",
+          use: async (game, { item }) => {
+            if (item === "key") { game.take("key"); game.set("unlocked", true); }
+            if (game.get("unlocked")) return true;
+            await game.say("Locked.");
+            return false;                      // false cancels the `to` travel
+          } },
+      ],
+    },
+    { id: "tower", label: "The tower" },
+  ],
+});
+
+function App() {
+  useGame(game);                               // re-render when the game changes
+  return h("div", { className: "m-game", style: { height: "100vh" } },
+    h(GameStage, { game }),
+    h(GameDialogue, { game }),
+    game.started
+      ? h(GameInventory, { game })
+      : h("button", { onClick: () => { game.load(); game.start(); } }, "Play"),
+  );
+}
+
+render(App, document.getElementById("app"));
+```
+
+- **Scripts are plain `async` functions** (`use`, `enter`, anything passed to
+  `game.run`). What they await settles in story order: `say(lines)`,
+  `choose(prompt, options)` → the picked id, `goTo(sceneId)` (resolves after the
+  camera lands *and* the destination's `enter` ran), `wait(ms)`,
+  `play(timeline, target?)` and `focus(target)`. While a script runs,
+  `game.busy` is true and hotspots do not answer. A script that throws is logged
+  and releases the lock.
+- **Scenes** are world rectangles: `{ id, label, x, y, w, h, hotspots, enter,
+  render }` plus ZoomStage's `rotate`, `camera`, `transition`, `surface`
+  (default `"none"`) and `shape`. Leave `x/y/w/h` out and scenes take
+  `spec.size` (1600×900) and line up left to right, `spec.gap` (400) apart;
+  place them yourself when the world is one map the camera should travel across.
+  `render(state)` receives `{ game, scene, active, live, visited, phase, settled }`
+  and is **not** a component — hand the state to one (`h(ShoreArt, state)`) when
+  the art needs hooks.
+- **Hotspots** are `{ id, label, x, y, w, h }` in pixels *inside the scene*, plus
+  `shape: "circle"`, `kind` (`GAME_HOTSPOT_KINDS`: `use`, `look`, `talk`, `take`,
+  `exit` — cursor and marker only), `when(game)`, `to`, `travel`, `use` and
+  `render`. `label` is the accessible name and the caption. They are real
+  buttons: Tab reaches them in spec order, Enter presses them.
+- **State**: `game.get(key)` / `game.state` to read; `game.set(patch)`,
+  `set(key, value)` or `set((state) => patch)` to write. Inventory:
+  `give` / `take` / `has` / `select`. Journal: `note(id)` / `noted(id)`. `give`,
+  `note`, `goTo` and `sound` **throw on an id the spec does not declare** — a
+  typo fails at the line that has it.
+- **Item on hotspot**: `GameInventory` selects an item; the next hotspot pressed
+  receives it as `use(game, { item })`, and the selection is put away afterwards.
+- **Saving** is one localStorage slot, `fluxaway-game:<id>`, written by the
+  engine whenever the story is *at rest* (no script running, no line on screen),
+  so a reload never resumes halfway through a script. Nothing is read back on its
+  own: `game.hasSave` tells a title screen to offer "Continue", `game.load()`
+  restores, `game.reset()` erases. Bump `spec.version` when the shape of the
+  state changes; old saves are dropped unless `spec.migrate(saved, fromVersion)`
+  adopts them.
+- **`game.start()` begins the game** (runs the current scene's `enter`) and is
+  not called for you. Call it from the button that starts play: that press is
+  also what lets the browser play sound.
+- **Sound**: `sounds: { id: url | (audioContext, output) => void }` and
+  `game.sound(id, { volume })`; `game.mute()` toggles and is saved. One-shots
+  only — there is no music channel yet.
+- **Motion**: `await game.play(timeline)` waits for a `fluxaway-motion` timeline
+  (it uses `timeline.finished()`). The timeline belongs to the component that
+  draws it; register it somewhere the script can reach
+  (`examples/lantern-keeper/cutscenes.js`).
+- **Camera**: travel uses the destination scene's `transition`, a hotspot's
+  `travel: { transition }`, or the stage's. `await game.focus("hotspotId")`
+  (or a scene rect) closes in — ZoomStage's `lookAt` — and `game.focus(null)`
+  gives the scene back.
+- **Events**: `game.on("scene" | "item" | "note" | "line", fn)` — where sound
+  cues belong. `game.subscribe(fn)` fires on every change.
+- **Layout: `GameStage` takes no children.** The stage, the dialogue and any HUD
+  are *siblings* inside one `.m-game` box (a positioned, clipped frame), as in
+  the example above. `GameStage` props: `hints` (mark every hotspot — touch has
+  no hover), `transition`, `duration` (default `"auto"`), `padding`, `ariaLabel`.
+- **Every word the shell writes is a prop**: `GameStage.ariaLabel`,
+  `GameDialogue.continueLabel` / `ariaLabel`, `GameInventory.emptyLabel` /
+  `ariaLabel`, `GameJournal.emptyLabel` / `countLabel(found, total)` / `ariaLabel`.
+- **Another renderer** (a canvas, WebGL) can replace `GameStage` and keep the
+  rest: `game.attachStage({ travel(from, to, options), focus(target, scene) })`,
+  each returning a promise that settles when the move is over.
+
+Working reference: `examples/lantern-keeper` — three scenes on one vertical map,
+an item puzzle, a journal, a choice, synthesised sound and a Motion cutscene the
+story waits for.
 
 ### `FullCodeEditor`
 
@@ -3909,6 +4049,7 @@ Before submitting any FluxaWay code, verify:
 - [ ] Presentation / slide deck / zoom tour → built on **ZoomStage** (`fluxaway-zoom.js`), not scroll-snap sections or an external slides library
 - [ ] Animations with keyframes/sequencing → **fluxaway-motion** (`useTimeline`), not hand-rolled rAF loops or GSAP
 - [ ] Node graphs / flowcharts → **PipelineCanvas**; embedded code editing → **FullCodeEditor**
+- [ ] Adventure / visual novel / story with scenes → **fluxaway-game** (`createGame` + `GameStage`), with `fluxaway-zoom.css` loaded next to `fluxaway-game.css`, the stage and the dialogue as siblings in one `.m-game` box, and `game.start()` called from a button
 
 **FluxaWay runtime rules**
 - [ ] `render(App, container)` — function ref, not `h(App)`

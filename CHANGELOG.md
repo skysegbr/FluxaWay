@@ -5,6 +5,29 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **`fluxaway-game`: a scene-based adventure engine.** `dist/fluxaway-game.js`
+  and `dist/fluxaway-game.css` (types in `dist/fluxaway-game.d.ts`).
+  `createGame(spec)` holds the story — author state, scenes, hotspots,
+  inventory, journal, dialogue with choices, one localStorage save slot and
+  sounds — and runs scripts written as plain `async` functions:
+  `await game.say()`, `choose()`, `goTo()`, `wait()`, `play(timeline)`,
+  `focus()`. `GameStage` puts the world on a `ZoomStage` (one frame per scene,
+  hotspots as real buttons, travel as a camera flight); `GameDialogue`,
+  `GameInventory` and `GameJournal` are the shell around it, with every built-in
+  string a prop. The save is written only while the story is at rest, so a
+  reload never resumes halfway through a script. Narrative games only: no
+  physics, no free movement, no 3D. Reference app: `examples/lantern-keeper`.
+- **Motion: `timeline.finished()`.** A promise for the run in progress — `true`
+  when the playhead completes it, `false` when it is cut short by `stop`,
+  `gotoAndStop` or `destroy`. It is what lets a script wait for a cutscene.
+- **ZoomStage: `controllerRef.lookAt(target, options)`.** Flies to a close-up
+  that is not a frame — a world rect or an explicit camera — and resolves on
+  arrival; `lookAt(null)` returns to the current frame. Index, settled frame and
+  flight state do not change, and the close-up is refitted on resize.
+
 ## [0.26.1] - 2026-11-11
 
 ### Fixed

@@ -45,6 +45,12 @@ Optional modules build on top of that core:
   independent camera targets and non-card surfaces, stable flight lifecycle,
   optional free zoom/pan exploration (`freeZoom`), swipe/keyboard nav, and
   screen-reader announcements.
+- `dist/fluxaway-game.js` + `dist/fluxaway-game.css` — a scene-based adventure
+  engine: `createGame` (async story scripts, hotspots, inventory, journal,
+  dialogue and choices, one save slot, synthesised or sampled sound) with
+  `GameStage`, `GameDialogue`, `GameInventory` and `GameJournal`. The stage is a
+  `ZoomStage` (load `dist/fluxaway-zoom.css` with it) and cutscenes are
+  `fluxaway-motion` timelines the story waits for.
 - `dist/fluxaway-editor.js` + `dist/fluxaway-editor.css` (+ `dist/fluxaway-editor-snippets.js`)
   — `FullCodeEditor`, a [CodeMirror](https://codemirror.net/5/) wrapper with a
   toolbar, snippet browser, and autocomplete. Requires the local CodeMirror
@@ -129,6 +135,8 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-charts.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-charts.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-game.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-game.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor-snippets.js
@@ -149,6 +157,8 @@ https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.min.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-canvas.min.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.min.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-zoom.min.css
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-game.min.js
+https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-game.min.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.min.js
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor.min.css
 https://cdn.jsdelivr.net/gh/skysegbr/FluxaWay@main/dist/fluxaway-editor-snippets.min.js
@@ -449,6 +459,7 @@ python -m http.server 8080
 | [examples/palate-journey](./examples/palate-journey) | Ten-course food & drink tasting journey: full-screen course cards with staggered `fluxaway-motion` timelines, dot-rail navigation and a "serve for me" autopilot |
 | [examples/vitra-protocol](./examples/vitra-protocol) | VITRA material narrative combining ZoomStage v2 and `fluxaway-motion`: six Inox, transparent-glass and red-signal scenes, five camera trajectories, settlement-driven entrances, closed loops, an interactive seal and a clickable world overview |
 | [examples/zoom-lab](./examples/zoom-lab) | Canonical ZoomStage v2 laboratory: compare Glide, Arc, Dolly, Orbit and Focus on one route, with automatic duration, frameless/circular/pill/polygon surfaces, independent camera bounds and visible flight lifecycle |
+| [examples/lantern-keeper](./examples/lantern-keeper) | Three-scene point-and-click adventure on `fluxaway-game`: the camera climbs a lighthouse scene by scene (`ZoomStage`), an item puzzle with the key "in hand", a journal, a choice, a save slot with Continue, synthesised sound, and a `fluxaway-motion` cutscene the story waits for. |
 | [examples/burger-shop-fastapi](./examples/burger-shop-fastapi) | Same app as burger-shop, backed by a real FastAPI + SQLModel + SQLite app instead of `http.server` — same frontend, `/dist` mounted straight from the monorepo |
 
 The burger shop example requires its own backend:
@@ -1525,6 +1536,8 @@ FluxaWay `0.12.1` covers:
   pan/zoom/rotate (`fluxaway-zoom.js` / `fluxaway-zoom.css`)
 - `FullCodeEditor` — CodeMirror 5 wrapper with toolbar, snippet browser, and
   autocomplete (`fluxaway-editor.js` / `fluxaway-editor.css` / `fluxaway-editor-snippets.js`)
+- `createGame` / `GameStage` / `GameDialogue` / `GameInventory` / `GameJournal` —
+  scene-based adventure engine (`fluxaway-game.js` / `fluxaway-game.css`)
 
 **CSS framework**
 - Mobile-first with `sm / md / lg / xl` breakpoints

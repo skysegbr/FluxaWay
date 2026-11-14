@@ -1,0 +1,16 @@
+.lk-sea-far { fill: #14294a; }
+.lk-sea-near { fill: #0f2140; }
+.lk-sand { fill: #2b2f3f; }
+.lk-slate { fill: #1b2233; stroke: #6b4a33; stroke-width: 8; }
+
+.lk-shore-path {
+  fill: none;
+  stroke: #4a5670;
+  stroke-width: 10;
+  stroke-dasharray: 4 26;
+  stroke-linecap: round;
+}
+
+.lk-shore-lamp { filter: drop-shadow(0 0 14px #ffd98a); }
+.lk-shore-beam { fill: #ffd98a; opacity: 0.16; }
+.lk-shore-road { fill: #ffd98a; opacity: 0.2; }

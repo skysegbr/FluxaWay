@@ -1,0 +1,57 @@
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #060b16;
+  color: var(--m-text);
+  font-family: var(--m-font);
+}
+
+.lk-shell {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(90% 70% at 50% 0%, #101a33, #060b16 70%);
+}
+
+/* The night is the backdrop; each scene is a lit panel on it. */
+.lk-game .m-game-stage,
+.lk-game .m-zoom-stage { background: transparent; }
+
+.lk-game .m-game-scene {
+  overflow: hidden;
+  border-radius: 36px;
+  box-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+}
+
+.lk-inventory {
+  position: absolute;
+  bottom: var(--m-space-4);
+  left: var(--m-space-4);
+  z-index: 2;
+  max-width: calc(100% - var(--m-space-8));
+}
+
+.lk-journal {
+  position: absolute;
+  top: 3.5rem;
+  right: var(--m-space-3);
+  z-index: 4;
+  width: min(22rem, calc(100% - var(--m-space-6)));
+  max-height: calc(100% - 9rem);
+  padding: var(--m-space-4);
+  overflow-y: auto;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-lg);
+  background: var(--m-surface);
+  box-shadow: var(--m-shadow-3);
+}
