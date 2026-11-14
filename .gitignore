@@ -13,6 +13,9 @@ examples/burger-shop/uploads/*
 build/
 tools/
 
+# Local scratch space (experiments, one-off files) — never committed
+tmp/
+
 # QA run artifacts — kept locally, never committed (heavy PNG/PDF evidence,
 # dated reports, and the exploratory QA runners). run_browser_tests.py stays
 # tracked because CI (.github/workflows/ci.yml) runs it.
