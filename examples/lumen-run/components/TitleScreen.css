@@ -1,0 +1,36 @@
+.lr-title { position: absolute; inset: 0; z-index: 5; background: linear-gradient(90deg, #112e32 0%, #112e32f2 25%, #112e3240 60%, transparent 80%); display: flex; align-items: center; padding: clamp(28px, 5vw, 80px); }
+.lr-title-copy { width: min(440px, 44%); }
+.lr-title .lr-eyebrow { color: #c0cfab; font-size: 9px; letter-spacing: .21em; display: flex; align-items: center; gap: 9px; }
+.lr-tiny-star { font-size: 23px; color: var(--lr-gold); }
+.lr-title h1 { margin: 18px 0 15px; font: 400 clamp(70px, 8.5vw, 125px)/.84 Georgia, "Times New Roman", serif; letter-spacing: -.055em; color: #e8ebce; }
+.lr-title h1 em { display: block; color: #f0cc87; font-weight: 400; margin: 9px 0 0 2px; }
+.lr-tagline { font: italic 20px/1.4 Georgia, serif; color: #d9dfc3; margin: 24px 0 14px; }
+.lr-title-description { color: #a8bfb0; font-size: 13px; line-height: 1.9; max-width: 325px; margin: 0 0 25px; }
+.lr-title-actions { display: grid; gap: 10px; max-width: 292px; }
+.lr-relaxed { display: grid; grid-template-columns: 15px 1fr; column-gap: 9px; align-items: center; margin-top: 20px; font-size: 11px; color: #d0dac0; cursor: pointer; width: fit-content; }
+.lr-relaxed input { margin: 0; accent-color: #edcc8d; width: 14px; height: 14px; }
+.lr-relaxed span { grid-column: 2; font-size: 10px; margin-top: 4px; color: #9db6a8; }
+.lr-title-details { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; color: #8eac9a; font-size: 9px; letter-spacing: .02em; }
+.lr-world-caption { position: absolute; bottom: 32px; right: 32px; text-align: right; color: #a9bfa5; }
+.lr-world-caption span { font-size: 8px; letter-spacing: .16em; }
+.lr-world-caption p { margin: 8px 0 0; font: italic 17px Georgia, serif; color: #d0d8b9; }
+@media (max-height: 750px) and (min-width: 651px) {
+  .lr-title h1 { font-size: 78px; }
+  .lr-title-description { margin-bottom: 17px; }
+  .lr-title-details { margin-top: 18px; }
+  .lr-title h1 { margin-top: 12px; }
+  .lr-tagline { margin-top: 18px; }
+}
+@media (max-width: 650px) {
+  .lr-title { padding: 25px 26px; align-items: flex-start; overflow-y: auto; background: linear-gradient(180deg, #112e32 0%, #112e32f0 40%, #112e3220 100%); }
+  .lr-title-copy { width: 100%; }
+  .lr-title .lr-eyebrow { font-size: 8px; letter-spacing: .13em; }
+  .lr-title h1 { font-size: clamp(68px, 19vw, 95px); line-height: .95; margin: 12px 0 10px; }
+  .lr-title h1 em { display: inline; margin-left: 7px; }
+  .lr-tagline { font-size: 17px; margin: 15px 0 10px; }
+  .lr-title-description { max-width: 300px; font-size: 12px; line-height: 1.7; margin-bottom: 20px; }
+  .lr-title-actions { max-width: 290px; }
+  .lr-title-details { margin-top: 18px; }
+  .lr-world-caption { display: none; }
+  .lr-relaxed { margin-top: 15px; }
+}

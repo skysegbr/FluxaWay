@@ -1,0 +1,24 @@
+.lr-overlay { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; padding: 24px; overflow-y: auto; background: #0b2329b8; backdrop-filter: blur(7px); }
+.lr-overlay-card { width: min(480px, 100%); text-align: center; padding: 35px 38px; border: 1px solid #a7bf9766; border-radius: 16px; background: linear-gradient(150deg, #294b43, #173635); box-shadow: 0 20px 80px #061c2677; }
+.lr-overlay-star { font-size: 53px; color: #ebcc8b; display: block; line-height: 1; margin-bottom: 18px; }
+.lr-overlay-card .lr-eyebrow { color: #b9cba6; font-size: 9px; }
+.lr-overlay h2 { font: 400 39px/1.12 Georgia, serif; color: #ececd1; letter-spacing: -.035em; margin: 17px 0; }
+.lr-overlay-description { color: #becfb8; font-size: 12px; line-height: 1.8; margin-bottom: 23px; }
+.lr-results { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #a7bf9733; border-bottom: 1px solid #a7bf9733; padding: 20px 0; gap: 12px; margin-bottom: 24px; }
+.lr-results > div { display: grid; gap: 7px; }
+.lr-results strong { font: 26px Georgia, serif; color: #efcf8d; }
+.lr-results span { font-size: 10px; color: #b0c4ae; }
+.lr-overlay-actions { display: grid; gap: 10px; }
+.lr-overlay-actions .lr-button { justify-content: center; }
+.lr-instructions { text-align: left; border-top: 1px solid #a7bf9733; padding-top: 14px; margin-bottom: 22px; color: #c4d1b6; font-size: 11px; line-height: 1.6; }
+.lr-instructions kbd { color: #edcf91; background: transparent; font-size: 9px; }
+.lr-instructions p:last-child { color: #9fbaa7; }
+@media (max-width: 650px) {
+  .lr-overlay { padding: 16px; }
+  .lr-overlay-card { padding: 26px 22px; }
+  .lr-overlay h2 { font-size: 31px; }
+}
+@media (max-height: 650px) {
+  .lr-overlay { place-items: start center; }
+  .lr-overlay-star { font-size: 32px; margin-bottom: 12px; }
+}
